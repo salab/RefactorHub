@@ -4,3 +4,4 @@ pluginManagement {
     }
 }
 rootProject.name = "refactor-hub"
+include("web")
