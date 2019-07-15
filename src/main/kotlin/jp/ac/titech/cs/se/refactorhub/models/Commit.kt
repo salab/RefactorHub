@@ -1,5 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.models
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.*
 
 @Entity
@@ -14,4 +15,9 @@ data class Commit(
 
     @Column(name = "repository", nullable = false)
     var repository: String = ""
-)
+) {
+    @JsonIgnore
+    @OneToMany(mappedBy = "commit")
+    @Column(name = "annotations", nullable = false)
+    val annotations: MutableSet<Annotation> = mutableSetOf()
+}
