@@ -12,7 +12,7 @@ class UserService(
     private val userRepository: UserRepository
 ) {
 
-    fun get(id: Long): User {
+    fun get(id: Int): User {
         val user = userRepository.findById(id)
         if (user.isPresent) return user.get()
         throw NotFoundException("User(id=$id) is not found.")
@@ -24,7 +24,7 @@ class UserService(
         throw NotFoundException("User(name=$name) is not found.")
     }
 
-    fun create(id: Long, name: String): User {
+    fun create(id: Int, name: String): User {
         val user = userRepository.findById(id)
         return if (user.isPresent) {
             val u = user.get()
