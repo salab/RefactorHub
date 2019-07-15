@@ -39,6 +39,7 @@ dependencies {
     implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
     // Other
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.kohsuke:github-api:1.+")
     runtimeOnly("com.h2database:h2")
     // Test
     testImplementation("org.junit.jupiter:junit-jupiter-api")
