@@ -1,6 +1,10 @@
 package jp.ac.titech.cs.se.refactorhub.config
 
+import jp.ac.titech.cs.se.refactorhub.models.User
+import jp.ac.titech.cs.se.refactorhub.services.UserService
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso
+import org.springframework.boot.autoconfigure.security.oauth2.resource.PrincipalExtractor
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -33,6 +37,13 @@ class WebSecurityConfiguration : WebSecurityConfigurerAdapter() {
             .logoutSuccessUrl("/")
             .deleteCookies("JSESSIONID")
             .permitAll()
+    }
+
+    @Bean
+    fun principalExtractor(userService: UserService) = PrincipalExtractor {
+        User.Principal(it).apply {
+            userService.create(id, name)
+        }
     }
 
 }
