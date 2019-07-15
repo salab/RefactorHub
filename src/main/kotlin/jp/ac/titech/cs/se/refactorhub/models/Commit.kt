@@ -20,4 +20,9 @@ data class Commit(
     @OneToMany(mappedBy = "commit")
     @Column(name = "annotations", nullable = false)
     val annotations: MutableSet<Annotation> = mutableSetOf()
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "commit")
+    @Column(name = "drafts", nullable = false)
+    val drafts: MutableSet<Draft> = mutableSetOf()
 }

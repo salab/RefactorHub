@@ -2,8 +2,7 @@ package jp.ac.titech.cs.se.refactorhub.services
 
 import jp.ac.titech.cs.se.refactorhub.exceptions.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.models.Annotation
-import jp.ac.titech.cs.se.refactorhub.models.Commit
-import jp.ac.titech.cs.se.refactorhub.models.User
+import jp.ac.titech.cs.se.refactorhub.models.Draft
 import jp.ac.titech.cs.se.refactorhub.repositories.AnnotationRepository
 import org.springframework.stereotype.Service
 
@@ -18,16 +17,14 @@ class AnnotationService(
         throw NotFoundException("Annotation(id=$id) is not found.")
     }
 
-    fun create(owner: User, commit: Commit) = annotationRepository.save(Annotation(owner, commit))
-
-    fun fork(owner: User, parent: Annotation): Annotation = annotationRepository.save(
+    fun create(draft: Draft) = annotationRepository.save(
         Annotation(
-            owner,
-            parent.commit,
-            parent,
-            parent.type,
-            parent.refactoring,
-            parent.description
+            draft.owner,
+            draft.commit,
+            draft.parent,
+            draft.type,
+            draft.refactoring,
+            draft.description
         )
     )
 

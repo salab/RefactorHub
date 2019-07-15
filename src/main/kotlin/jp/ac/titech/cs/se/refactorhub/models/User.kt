@@ -19,6 +19,11 @@ data class User(
     @Column(name = "annotations", nullable = false)
     val annotations: MutableSet<Annotation> = mutableSetOf()
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "owner", cascade = [CascadeType.REMOVE])
+    @Column(name = "drafts", nullable = false)
+    val drafts: MutableSet<Draft> = mutableSetOf()
+
     data class Principal(
         val attributes: Map<String, Any>
     ) : AuthenticatedPrincipal {
