@@ -17,6 +17,18 @@ class AnnotationService(
         throw NotFoundException("Annotation(id=$id) is not found.")
     }
 
+    fun getChildren(id: Long): List<Annotation> {
+        val annotation = annotationRepository.findByIdAndFetchChildrenEagerly(id)
+        if (annotation.isPresent) return annotation.get().children.toList()
+        throw NotFoundException("Annotation(id=$id) is not found.")
+    }
+
+    fun getDrafts(id: Long): List<Draft> {
+        val annotation = annotationRepository.findByIdAndFetchDraftsEagerly(id)
+        if (annotation.isPresent) return annotation.get().drafts.toList()
+        throw NotFoundException("Annotation(id=$id) is not found.")
+    }
+
     fun create(draft: Draft) = annotationRepository.save(
         Annotation(
             draft.owner,
