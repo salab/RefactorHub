@@ -38,9 +38,6 @@ data class Annotation(
     @Column(name = "last_modified", nullable = false)
     var lastModified: Date = Date(),
 
-    @Column(name = "is_public", nullable = false)
-    var isPublic: Boolean = false,
-
     @Id
     @GeneratedValue
     @Column(name = "id", nullable = false)
@@ -53,6 +50,11 @@ data class Annotation(
 
     @JsonIgnore
     @OneToMany(mappedBy = "parent", cascade = [CascadeType.REMOVE])
+    @Column(name = "draft_children", nullable = false)
+    val draftChildren: MutableSet<Draft> = mutableSetOf()
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "origin", cascade = [CascadeType.REMOVE])
     @Column(name = "drafts", nullable = false)
     val drafts: MutableSet<Draft> = mutableSetOf()
 
@@ -64,5 +66,7 @@ data class Annotation(
     @PreRemove
     private fun onPreRemove() {
         children.forEach { it.parent = null }
+        draftChildren.forEach { it.parent = null }
+        drafts.forEach { it.origin = null }
     }
 }

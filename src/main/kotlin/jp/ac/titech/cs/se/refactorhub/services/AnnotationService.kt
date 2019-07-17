@@ -29,16 +29,18 @@ class AnnotationService(
         throw NotFoundException("Annotation(id=$id) is not found.")
     }
 
-    fun create(draft: Draft) = annotationRepository.save(
-        Annotation(
-            draft.owner,
-            draft.commit,
-            draft.parent,
-            draft.type,
-            draft.refactoring,
-            draft.description
+    fun save(draft: Draft): Annotation {
+        return annotationRepository.save(
+            Annotation(
+                draft.owner,
+                draft.commit,
+                draft.parent,
+                draft.type,
+                draft.refactoring,
+                draft.description
+            )
         )
-    )
+    }
 
     fun save(annotation: Annotation): Annotation = annotationRepository.save(annotation)
 

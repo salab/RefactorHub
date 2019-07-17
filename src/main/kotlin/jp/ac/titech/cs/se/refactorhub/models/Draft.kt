@@ -19,6 +19,10 @@ data class Draft(
     @JoinColumn(name = "parent", nullable = true)
     var parent: Annotation? = null,
 
+    @ManyToOne
+    @JoinColumn(name = "origin", nullable = true)
+    var origin: Annotation? = null,
+
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     var type: Refactoring.Type = Refactoring.Type.Custom,
