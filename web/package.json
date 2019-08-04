@@ -1,8 +1,8 @@
 {
-  "name": "spring-boot-nuxt",
-  "version": "1.0.0",
-  "description": "My Spring Boot &amp; Nuxt.js project",
-  "author": "Deka",
+  "name": "refactor-hub",
+  "version": "0.0.1",
+  "description": "Dataset creation support tool for empirical studies on refactoring activity.",
+  "author": "Ryo Kuramoto <kuramoto@se.cs.titech.ac.jp>",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue --ignore-path .gitignore .",
