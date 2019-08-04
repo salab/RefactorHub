@@ -3,8 +3,8 @@
     <v-flex xs12 sm8 md6>
       {{ message }}
     </v-flex>
-    <v-btn round @click="getHello">get</v-btn>
-    <v-btn round @click="postHello">post</v-btn>
+    <v-btn rounded @click="getHello">get</v-btn>
+    <v-btn rounded @click="postHello">post</v-btn>
   </v-layout>
 </template>
 
