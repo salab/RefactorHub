@@ -1,5 +1,5 @@
-import colors from 'vuetify/es5/util/colors'
 import NuxtConfiguration from '@nuxt/config'
+import MonacoEditorWebpackPlugin from 'monaco-editor-webpack-plugin'
 
 const config: NuxtConfiguration = {
   mode: 'spa',
@@ -82,6 +82,7 @@ const config: NuxtConfiguration = {
      ** You can extend webpack config here
      */
     extend(config, ctx): void {
+      if (config.plugins) config.plugins.push(new MonacoEditorWebpackPlugin())
       // Run ESLint on save
       if (ctx.isDev && ctx.isClient) {
         if (!config.module) return
