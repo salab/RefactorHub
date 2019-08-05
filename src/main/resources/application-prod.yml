@@ -4,6 +4,12 @@ spring:
       enabled: false
     livereload:
       enabled: false
+  datasource:
+    url: jdbc:${JAWSDB_URL}
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: update
 logging:
   level:
     root: ERROR
