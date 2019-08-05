@@ -72,7 +72,8 @@ const config: NuxtConfiguration = {
     },
     icons: {
       iconfont: 'fa'
-    }
+    },
+    customVariables: ['~/assets/styles/variables.scss']
   },
   /*
    ** Build configuration
