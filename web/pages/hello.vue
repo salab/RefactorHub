@@ -29,5 +29,8 @@ export default class extends Vue {
       this.message = response.data
     })
   }
+  private head() {
+    return { title: 'Hello' }
+  }
 }
 </script>

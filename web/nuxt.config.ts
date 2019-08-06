@@ -1,5 +1,6 @@
 import NuxtConfiguration from '@nuxt/config'
 import MonacoEditorWebpackPlugin from 'monaco-editor-webpack-plugin'
+import changeCase from 'change-case'
 
 const config: NuxtConfiguration = {
   mode: 'spa',
@@ -7,8 +8,7 @@ const config: NuxtConfiguration = {
    ** Headers of the page
    */
   head: {
-    titleTemplate: '%s - ' + process.env.npm_package_name,
-    title: process.env.npm_package_name || '',
+    title: changeCase.pascalCase(process.env.npm_package_name || ''),
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },

@@ -41,7 +41,11 @@ import MonacoEditor from '~/components/draft/MonacoEditor.vue'
     MonacoEditor
   }
 })
-export default class extends Vue {}
+export default class extends Vue {
+  private head() {
+    return { title: 'Draft' }
+  }
+}
 </script>
 
 <style lang="scss" scope>
