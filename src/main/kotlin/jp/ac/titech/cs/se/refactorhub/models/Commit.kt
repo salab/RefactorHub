@@ -1,6 +1,8 @@
 package jp.ac.titech.cs.se.refactorhub.models
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import org.kohsuke.github.GHCommit
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -25,4 +27,22 @@ data class Commit(
     @OneToMany(mappedBy = "commit")
     @Column(name = "drafts", nullable = false)
     val drafts: MutableSet<Draft> = mutableSetOf()
+
+    data class Info(
+        val sha: String,
+        val owner: String,
+        val repository: String,
+        val url: String,
+        val message: String,
+        val author: String,
+        val authorDate: Date,
+        val files: List<File>
+    ) {
+        data class File(
+            val sha: String,
+            val status: String,
+            val name: String,
+            val previousName: String
+        )
+    }
 }
