@@ -35,6 +35,7 @@ data class Draft(
     var description: String = "",
 
     @Id
+    @GeneratedValue
     @Column(name = "id", nullable = false)
     val id: Long = 0
 )
