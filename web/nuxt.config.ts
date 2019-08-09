@@ -1,8 +1,8 @@
-import NuxtConfiguration from '@nuxt/config'
+import { Configuration } from '@nuxt/types'
 import MonacoEditorWebpackPlugin from 'monaco-editor-webpack-plugin'
 import changeCase from 'change-case'
 
-const config: NuxtConfiguration = {
+const config: Configuration = {
   mode: 'spa',
   /*
    ** Headers of the page
@@ -96,6 +96,7 @@ const config: NuxtConfiguration = {
       }
     }
   },
+  buildModules: ['@nuxt/typescript-build', '@nuxtjs/eslint-module'],
   proxy: {
     '/api': 'http://localhost:8080',
     '/login': 'http://localhost:8080',

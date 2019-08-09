@@ -1,4 +1,4 @@
-import { Context } from '@nuxt/vue-app'
+import { Context } from '@nuxt/types'
 
 export default ({ $axios }: Context): void => {
   $axios.defaults.withCredentials = true
