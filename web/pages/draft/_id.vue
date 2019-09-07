@@ -1,7 +1,7 @@
 <template>
   <v-layout column fill-height>
     <v-flex>
-      <info />
+      <info :draft="draft" />
     </v-flex>
     <v-flex xs12>
       <v-layout fill-height>
@@ -32,6 +32,7 @@ import Elements from '~/components/draft/Elements.vue'
 import Files from '~/components/draft/Files.vue'
 import Info from '~/components/draft/Info.vue'
 import MonacoEditor from '~/components/draft/MonacoEditor.vue'
+import { Draft } from '~/types'
 
 @Component({
   components: {
@@ -39,9 +40,15 @@ import MonacoEditor from '~/components/draft/MonacoEditor.vue'
     Files,
     Info,
     MonacoEditor
+  },
+  async asyncData({ $axios, params }) {
+    const { data } = await $axios.get<Draft>(`/api/draft/${params.id}`)
+    return { draft: data }
   }
 })
 export default class extends Vue {
+  private draft!: Draft
+
   private head() {
     return { title: 'Draft' }
   }
