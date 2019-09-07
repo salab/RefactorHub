@@ -5,8 +5,8 @@ export interface Annotation {
   type: RefactoringType
   refactoring: Refactoring
   description: string
-  created: Date
-  lastModified: Date
+  created: string
+  lastModified: string
   id: number
 }
 
@@ -67,7 +67,7 @@ export interface CommitInfo {
   url: string
   message: string
   author: string
-  authorDate: Date
+  authorDate: string
   files: CommitFile[]
 }
 
