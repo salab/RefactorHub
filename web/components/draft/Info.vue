@@ -1,15 +1,13 @@
 <template>
   <v-expansion-panels focusable>
-    <v-expansion-panel class="radius-0">
-      <v-expansion-panel-header
-        v-slot="{ open }"
-        class="min-height-0 px-4 py-2"
-      >
-        <v-flex flex-grow-0 pr-5 title>Basic Info</v-flex>
+    <v-expansion-panel>
+      <v-expansion-panel-header v-slot="{ open }" class="info-panel-header">
         <v-fade-transition>
-          <v-flex v-if="!open" d-flex flex-row text--secondary>
-            <v-flex flex-grow-0 pr-3 font-weight-bold>{{ draft.type }}</v-flex>
-            <v-flex>{{ draft.description }}</v-flex>
+          <v-flex v-if="!open" d-flex flex-row>
+            <v-flex flex-grow-0 d-flex align-center pr-3 title>
+              {{ draft.type }}
+            </v-flex>
+            <v-flex d-flex align-center>{{ draft.description }}</v-flex>
           </v-flex>
         </v-fade-transition>
       </v-expansion-panel-header>
@@ -106,3 +104,10 @@ export default class Info extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scope>
+.info-panel-header {
+  min-height: 36px !important;
+  padding: 0 12px;
+}
+</style>

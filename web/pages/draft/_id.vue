@@ -56,11 +56,8 @@ export default class extends Vue {
 </script>
 
 <style lang="scss" scope>
-.radius-0 {
-  border-radius: 0 !important;
-}
-.min-height-0 {
-  min-height: 0 !important;
+.v-expansion-panel.v-expansion-panel--active.v-item--active {
+  border-radius: 0;
 }
 .v-expansion-panel-content__wrap {
   padding: 0;

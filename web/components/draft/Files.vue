@@ -1,13 +1,13 @@
 <template>
   <v-expansion-panels focusable>
-    <v-expansion-panel class="radius-0">
-      <v-expansion-panel-header class="min-height-0 pa-0 pr-2">
+    <v-expansion-panel>
+      <v-expansion-panel-header class="files-panel-header">
         <v-layout>
-          <v-flex xs6 pl-4 py-2 mr-8>
+          <v-flex xs6 pl-3 py-1 mr-8>
             <span class="subtitle-1">src/before/File.java</span>
           </v-flex>
           <v-divider vertical />
-          <v-flex xs6 pl-4 py-2>
+          <v-flex xs6 pl-3 py-1>
             <span class="subtitle-1">src/after/File.java</span>
           </v-flex>
         </v-layout>
@@ -33,3 +33,11 @@ import { Component, Vue } from 'nuxt-property-decorator'
 @Component
 export default class Files extends Vue {}
 </script>
+
+<style lang="scss" scope>
+.files-panel-header {
+  min-height: 36px !important;
+  padding: 0;
+  padding-right: 8px;
+}
+</style>
