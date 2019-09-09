@@ -1,5 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.services
 
+import jp.ac.titech.cs.se.refactorhub.exceptions.BadRequestException
 import jp.ac.titech.cs.se.refactorhub.exceptions.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.models.Commit
 import jp.ac.titech.cs.se.refactorhub.repositories.CommitRepository
@@ -34,7 +35,8 @@ class CommitService(
                     it.fileName,
                     it.previousFilename ?: it.fileName
                 )
-            }
+            },
+            commit.parentSHA1s.firstOrNull() ?: throw BadRequestException("First commit is not supported.")
         )
     }
 

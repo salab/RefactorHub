@@ -36,7 +36,8 @@ data class Commit(
         val message: String,
         val author: String,
         val authorDate: Date,
-        val files: List<File>
+        val files: List<File>,
+        val parent: String
     ) {
         data class File(
             val sha: String,
