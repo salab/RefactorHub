@@ -26,6 +26,17 @@ interface Element : Serializable {
         }
     }
 
-    enum class Type(val dataClass: KClass<out Element>)
+    enum class Type(val dataClass: KClass<out Element>) {
+        Empty(jp.ac.titech.cs.se.refactorhub.models.element.impl.Empty::class),
+        ClassDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.ClassDeclaration::class),
+        ConstructorDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.ConstructorDeclaration::class),
+        FieldDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.FieldDeclaration::class),
+        InterfaceDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.InterfaceDeclaration::class),
+        MethodDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.MethodDeclaration::class),
+        MethodInvocation(jp.ac.titech.cs.se.refactorhub.models.element.impl.MethodInvocation::class),
+        ParameterDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.ParameterDeclaration::class),
+        Statements(jp.ac.titech.cs.se.refactorhub.models.element.impl.Statements::class),
+        VariableDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.VariableDeclaration::class)
+    }
 
 }
