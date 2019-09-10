@@ -20,7 +20,7 @@ class EditorService {
             text,
             extension,
             content.htmlUrl,
-            Parser.get(extension).parse(text)
+            Parser.get(extension).parse(text, content.path)
         )
     }
 

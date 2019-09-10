@@ -37,6 +37,8 @@ dependencies {
     // Swagger
     implementation("io.springfox:springfox-swagger2:$swaggerVersion")
     implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
+    // Parser
+    implementation("org.eclipse.jdt:org.eclipse.jdt.core:3.+")
     // Other
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.kohsuke:github-api:1.+")
