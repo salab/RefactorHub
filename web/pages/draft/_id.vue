@@ -1,7 +1,7 @@
 <template>
   <v-layout column fill-height>
     <v-flex>
-      <info :draft="draft" />
+      <info />
     </v-flex>
     <v-flex xs12>
       <v-layout fill-height>
@@ -27,12 +27,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, State } from 'nuxt-property-decorator'
+import { Dispatcher } from 'vuex-type-helper'
 import Elements from '~/components/draft/Elements.vue'
 import Files from '~/components/draft/Files.vue'
 import Info from '~/components/draft/Info.vue'
 import MonacoEditor from '~/components/draft/MonacoEditor.vue'
 import { Draft } from '~/types'
+import { DraftActions } from '~/store'
 
 @Component({
   components: {
@@ -40,14 +42,17 @@ import { Draft } from '~/types'
     Files,
     Info,
     MonacoEditor
-  },
-  async asyncData({ $axios, params }) {
-    const { data } = await $axios.get<Draft>(`/api/draft/${params.id}`)
-    return { draft: data }
   }
 })
 export default class extends Vue {
-  private draft!: Draft
+  @State('draft') private draft?: Draft
+
+  private mounted() {
+    this.$store.dispatch<Dispatcher<DraftActions>>({
+      type: 'fetchDraft',
+      id: this.$route.params.id
+    })
+  }
 
   private head() {
     return { title: 'Draft' }

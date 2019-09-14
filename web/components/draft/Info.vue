@@ -3,7 +3,7 @@
     <v-expansion-panel>
       <v-expansion-panel-header v-slot="{ open }" class="info-panel-header">
         <v-fade-transition>
-          <v-flex v-if="!open" d-flex flex-row>
+          <v-flex v-if="draft && !open" d-flex flex-row>
             <v-flex flex-grow-0 d-flex align-center pr-3 title>
               {{ draft.type }}
             </v-flex>
@@ -13,7 +13,7 @@
       </v-expansion-panel-header>
       <v-expansion-panel-content>
         <v-layout>
-          <v-flex xs6 px-3 pt-2>
+          <v-flex v-if="draft" xs6 px-3 pt-2>
             <form @submit.prevent="">
               <v-select
                 v-model="draft.type"
@@ -75,14 +75,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, State } from 'nuxt-property-decorator'
 import { Draft, CommitInfo } from '~/types'
 
 @Component
 export default class Info extends Vue {
-  @Prop({ required: true })
-  private draft!: Draft
-  private commit: CommitInfo | null = null
+  @State('draft') private draft?: Draft
+  @State('commit') private commit?: CommitInfo
   private refactoringTypes: string[] = []
 
   private get messageLines(): string[] {
@@ -91,16 +90,8 @@ export default class Info extends Vue {
   }
 
   private async created() {
-    {
-      const { data } = await this.$axios.get<CommitInfo>(
-        `/api/commit/${this.draft.commit.sha}/info`
-      )
-      this.commit = data
-    }
-    {
-      const { data } = await this.$axios.get<string[]>('/api/refactoring/types')
-      this.refactoringTypes.push(...data)
-    }
+    const { data } = await this.$axios.get<string[]>('/api/refactoring/types')
+    this.refactoringTypes.push(...data)
   }
 }
 </script>

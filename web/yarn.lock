@@ -8639,6 +8639,11 @@ vuex-class@^0.3.2:
   resolved "https://registry.yarnpkg.com/vuex-class/-/vuex-class-0.3.2.tgz#c7e96a076c1682137d4d23a8dcfdc63f220e17a8"
   integrity sha512-m0w7/FMsNcwJgunJeM+wcNaHzK2KX1K1rw2WUQf7Q16ndXHo7pflRyOV/E8795JO/7fstyjH3EgqBI4h4n4qXQ==
 
+vuex-type-helper@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/vuex-type-helper/-/vuex-type-helper-1.2.2.tgz#a0d4d1d440bbb64df5b469bc65001935372b1a73"
+  integrity sha512-s8SKx952+eKyfgne2i74rup2u6vEfV12rFO0o43XpmU2SPtprnx+9Dm0g3eWiKmfoiCLkVhUshwwFb9pfo7LpQ==
+
 vuex@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.1.1.tgz#0c264bfe30cdbccf96ab9db3177d211828a5910e"
