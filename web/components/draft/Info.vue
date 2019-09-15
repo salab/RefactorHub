@@ -16,12 +16,13 @@
           <v-flex v-if="draft" xs6 px-3 pt-2>
             <form @submit.prevent="">
               <v-select
-                v-model="draft.type"
+                v-if="refactoringTypes"
+                :value="draft.type"
                 :items="refactoringTypes"
                 label="Refactoring Type"
               />
               <v-textarea
-                v-model="draft.description"
+                :value="draft.description"
                 rows="2"
                 label="Description"
               />
@@ -82,16 +83,11 @@ import { Draft, CommitInfo } from '~/types'
 export default class Info extends Vue {
   @State('draft') private draft?: Draft
   @State('commit') private commit?: CommitInfo
-  private refactoringTypes: string[] = []
+  @State('refactoringTypes') private refactoringTypes?: string[]
 
   private get messageLines(): string[] {
     if (!this.commit) return []
     return this.commit.message.split('\n')
-  }
-
-  private async created() {
-    const { data } = await this.$axios.get<string[]>('/api/refactoring/types')
-    this.refactoringTypes.push(...data)
   }
 }
 </script>

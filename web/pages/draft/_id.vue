@@ -52,6 +52,9 @@ export default class extends Vue {
       type: 'fetchDraft',
       id: this.$route.params.id
     })
+    this.$store.dispatch<Dispatcher<DraftActions>>({
+      type: 'fetchRefactoringTypes'
+    })
   }
 
   private head() {

@@ -4,20 +4,24 @@ import { Draft, CommitInfo } from '~/types'
 export interface DraftState {
   draft?: Draft
   commit?: CommitInfo
+  refactoringTypes: string[]
 }
 export interface DraftGetters {}
 export interface DraftMutations {
   setDraft: { draft: Draft }
   setCommit: { commit: CommitInfo }
+  setRefactoringTypes: { types: string[] }
 }
 export interface DraftActions {
   fetchDraft: { id: string }
   fetchCommit: { sha: string }
+  fetchRefactoringTypes: {}
 }
 
 export const state = (): DraftState => ({
   draft: undefined,
-  commit: undefined
+  commit: undefined,
+  refactoringTypes: []
 })
 export const getters: DefineGetters<DraftGetters, DraftState> = {}
 export const mutations: DefineMutations<DraftMutations, DraftState> = {
@@ -26,6 +30,9 @@ export const mutations: DefineMutations<DraftMutations, DraftState> = {
   },
   setCommit: (state, { commit }) => {
     state.commit = commit
+  },
+  setRefactoringTypes: (state, { types }) => {
+    state.refactoringTypes = types
   }
 }
 export const actions: DefineActions<
@@ -44,5 +51,9 @@ export const actions: DefineActions<
       `/api/commit/${sha}/info`
     )
     ctx.commit({ type: 'setCommit', commit: data })
+  },
+  async fetchRefactoringTypes(ctx) {
+    const { data } = await this.$axios.get<string[]>('/api/refactoring/types')
+    ctx.commit({ type: 'setRefactoringTypes', types: data })
   }
 }
