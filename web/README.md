@@ -1,6 +1,6 @@
-# spring-boot-nuxt
+# RefactorHub client
 
-> My Spring Boot &amp; Nuxt.js project
+RefactorHub client by Nuxt.js
 
 ## Build Setup
 
