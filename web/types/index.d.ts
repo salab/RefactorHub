@@ -69,6 +69,7 @@ export interface CommitInfo {
   author: string
   authorDate: string
   files: CommitFile[]
+  parent: string
 }
 
 export interface CommitFile {
@@ -88,4 +89,11 @@ export enum CommitFileStatus {
 export interface User {
   id: number
   name: string
+}
+
+export interface TextModel {
+  value: string
+  language?: string
+  uri?: string
+  elements: Element[]
 }

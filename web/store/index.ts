@@ -43,14 +43,14 @@ export const actions: DefineActions<
 > = {
   async fetchDraft(ctx, { id }) {
     const { data } = await this.$axios.get<Draft>(`/api/draft/${id}`)
-    ctx.commit({ type: 'setDraft', draft: data })
-    ctx.dispatch({ type: 'fetchCommit', sha: data.commit.sha })
+    await ctx.commit({ type: 'setDraft', draft: data })
+    await ctx.dispatch({ type: 'fetchCommit', sha: data.commit.sha })
   },
   async fetchCommit(ctx, { sha }) {
     const { data } = await this.$axios.get<CommitInfo>(
       `/api/commit/${sha}/info`
     )
-    ctx.commit({ type: 'setCommit', commit: data })
+    await ctx.commit({ type: 'setCommit', commit: data })
   },
   async fetchRefactoringTypes(ctx) {
     const { data } = await this.$axios.get<string[]>('/api/refactoring/types')

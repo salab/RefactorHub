@@ -17,7 +17,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 })
 export default class MonacoEditor extends Vue {
   public diffEditor!: monaco.editor.IStandaloneDiffEditor
-  public isLoading = false
+  public isLoading = true
 
   private mounted() {
     const container = document.getElementById('container')
