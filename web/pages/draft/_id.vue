@@ -14,7 +14,7 @@
               <monaco-editor ref="editor" />
             </v-flex>
             <v-flex>
-              <files />
+              <files v-model="file" />
             </v-flex>
           </v-layout>
         </v-flex>
@@ -46,6 +46,10 @@ import { DraftActions } from '~/store'
 })
 export default class extends Vue {
   @State('draft') private draft?: Draft
+  private file: { before?: number; after?: number } = {
+    before: 0,
+    after: 0
+  }
 
   private mounted() {
     this.$store.dispatch<Dispatcher<DraftActions>>({

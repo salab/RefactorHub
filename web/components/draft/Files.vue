@@ -4,22 +4,60 @@
       <v-expansion-panel-header class="files-panel-header">
         <v-layout>
           <v-flex xs6 pl-3 py-1 mr-8>
-            <span class="subtitle-1">src/before/File.java</span>
+            <span
+              v-if="files.length > 0 && value.before !== undefined"
+              class="subtitle-1"
+            >
+              {{ files[value.before].previousName }}
+            </span>
           </v-flex>
           <v-divider vertical />
           <v-flex xs6 pl-3 py-1>
-            <span class="subtitle-1">src/after/File.java</span>
+            <span
+              v-if="files.length > 0 && value.after !== undefined"
+              class="subtitle-1"
+            >
+              {{ files[value.after].name }}
+            </span>
           </v-flex>
         </v-layout>
       </v-expansion-panel-header>
-      <v-expansion-panel-content class="panel-pa-0">
+      <v-expansion-panel-content>
         <v-layout>
           <v-flex xs6>
-            Before Files
+            <v-list dense>
+              <v-list-item-group v-model="value.before">
+                <v-list-item
+                  v-for="(file, i) in files"
+                  :key="i"
+                  :disabled="file.status === 'added' || i === value.before"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title v-if="file.status !== 'added'">{{
+                      file.previousName
+                    }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
           </v-flex>
           <v-divider vertical />
           <v-flex xs6>
-            After Files
+            <v-list dense>
+              <v-list-item-group v-model="value.after">
+                <v-list-item
+                  v-for="(file, i) in files"
+                  :key="i"
+                  :disabled="file.status === 'removed' || i === value.after"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title v-if="file.status !== 'removed'">{{
+                      file.name
+                    }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
           </v-flex>
         </v-layout>
       </v-expansion-panel-content>
@@ -28,10 +66,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, State, Prop } from 'nuxt-property-decorator'
+import { CommitInfo } from '~/types'
 
 @Component
-export default class Files extends Vue {}
+export default class Files extends Vue {
+  @State('commit') private commit?: CommitInfo
+  @Prop({ required: true })
+  private value!: { before?: number; after?: number }
+
+  private get files() {
+    return this.commit ? this.commit.files : []
+  }
+}
 </script>
 
 <style lang="scss" scope>
