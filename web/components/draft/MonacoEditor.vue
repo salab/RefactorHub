@@ -1,14 +1,23 @@
 <template>
-  <div id="container" class="fill-height" />
+  <div id="container" class="fill-height">
+    <loading :active.sync="isLoading" :is-full-page="false" />
+  </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'nuxt-property-decorator'
 import * as monaco from 'monaco-editor'
+import Loading from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/vue-loading.css'
 
-@Component
+@Component({
+  components: {
+    Loading
+  }
+})
 export default class MonacoEditor extends Vue {
   public diffEditor!: monaco.editor.IStandaloneDiffEditor
+  public isLoading = false
 
   private mounted() {
     const container = document.getElementById('container')
@@ -23,3 +32,9 @@ export default class MonacoEditor extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+#container {
+  position: relative;
+}
+</style>
