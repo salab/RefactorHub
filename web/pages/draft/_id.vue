@@ -29,12 +29,11 @@
 <script lang="ts">
 import { Component, Vue, State, Watch } from 'nuxt-property-decorator'
 import { Dispatcher } from 'vuex-type-helper'
-import * as monaco from 'monaco-editor'
 import Elements from '~/components/draft/Elements.vue'
 import Files from '~/components/draft/Files.vue'
 import Info from '~/components/draft/Info.vue'
 import MonacoEditor from '~/components/draft/MonacoEditor.vue'
-import { Draft, CommitInfo, TextModel } from '~/types'
+import { Draft, CommitInfo } from '~/types'
 import { DraftActions } from '~/store'
 
 @Component({
@@ -70,74 +69,41 @@ export default class extends Vue {
     newValue: { before?: number; after?: number },
     oldValue: { before?: number; after?: number }
   ) {
-    if (!this.editor) return
+    if (!this.editor || !this.commit) return
     const promises: Promise<void>[] = []
-    if (oldValue.before !== newValue.before) {
+    const owner = this.commit.owner
+    const repository = this.commit.repository
+    if (oldValue.before !== newValue.before && newValue.before !== undefined) {
+      const sha = this.commit.parent
+      const path = this.commit.files[newValue.before].previousName
       promises.push(
         (async () => {
-          if (!this.commit || newValue.before === undefined) return
-          const model = await this.getTextModel(
-            this.commit.owner,
-            this.commit.repository,
-            this.commit.parent,
-            this.commit.files[newValue.before].previousName
-          )
-          await this.setTextModel('original', model)
+          if (this.editor) {
+            this.editor.setTextModel(
+              'original',
+              await this.editor.getTextModel(owner, repository, sha, path)
+            )
+          }
         })()
       )
     }
-    if (oldValue.after !== newValue.after) {
+    if (oldValue.after !== newValue.after && newValue.after !== undefined) {
+      const sha = this.commit.sha
+      const path = this.commit.files[newValue.after].name
       promises.push(
         (async () => {
-          if (!this.commit || newValue.after === undefined) return
-          const model = await this.getTextModel(
-            this.commit.owner,
-            this.commit.repository,
-            this.commit.sha,
-            this.commit.files[newValue.after].name
-          )
-          await this.setTextModel('modified', model)
+          if (this.editor) {
+            this.editor.setTextModel(
+              'modified',
+              await this.editor.getTextModel(owner, repository, sha, path)
+            )
+          }
         })()
       )
     }
     this.editor.isLoading = true
     await Promise.all(promises)
     this.editor.isLoading = false
-  }
-
-  private async getTextModel(
-    owner: string,
-    repository: string,
-    sha: string,
-    path: string
-  ) {
-    return (await this.$axios.get<TextModel>(`/api/editor/text_model`, {
-      params: { owner, repository, sha, path }
-    })).data
-  }
-
-  private setTextModel(which: 'original' | 'modified', model: TextModel) {
-    if (!this.editor) return
-    const newModel = monaco.editor.createModel(
-      model.value,
-      model.language,
-      model.uri ? monaco.Uri.parse(model.uri) : undefined
-    )
-    if (which === 'original') {
-      this.editor.diffEditor.setModel({
-        original: newModel,
-        modified:
-          this.editor.diffEditor.getModifiedEditor().getModel() ||
-          monaco.editor.createModel('', 'text/plain')
-      })
-    } else if (which === 'modified') {
-      this.editor.diffEditor.setModel({
-        original:
-          this.editor.diffEditor.getOriginalEditor().getModel() ||
-          monaco.editor.createModel('', 'text/plain'),
-        modified: newModel
-      })
-    }
   }
 
   private head() {

@@ -9,6 +9,7 @@ import { Vue, Component } from 'nuxt-property-decorator'
 import * as monaco from 'monaco-editor'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
+import { TextModel } from '~/types'
 
 @Component({
   components: {
@@ -27,6 +28,40 @@ export default class MonacoEditor extends Vue {
         automaticLayout: true,
         readOnly: true,
         theme: 'vs-dark'
+      })
+    }
+  }
+
+  public async getTextModel(
+    owner: string,
+    repository: string,
+    sha: string,
+    path: string
+  ) {
+    return (await this.$axios.get<TextModel>(`/api/editor/text_model`, {
+      params: { owner, repository, sha, path }
+    })).data
+  }
+
+  public setTextModel(which: 'original' | 'modified', model: TextModel) {
+    const newModel = monaco.editor.createModel(
+      model.value,
+      model.language,
+      model.uri ? monaco.Uri.parse(model.uri) : undefined
+    )
+    if (which === 'original') {
+      this.diffEditor.setModel({
+        original: newModel,
+        modified:
+          this.diffEditor.getModifiedEditor().getModel() ||
+          monaco.editor.createModel('', 'text/plain')
+      })
+    } else if (which === 'modified') {
+      this.diffEditor.setModel({
+        original:
+          this.diffEditor.getOriginalEditor().getModel() ||
+          monaco.editor.createModel('', 'text/plain'),
+        modified: newModel
       })
     }
   }
