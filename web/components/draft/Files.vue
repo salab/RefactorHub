@@ -7,6 +7,7 @@
             <span
               v-if="files.length > 0 && value.before !== undefined"
               class="subtitle-1"
+              :title="files[value.before].previousName"
             >
               {{ triming(files[value.before].previousName) }}
             </span>
@@ -16,6 +17,7 @@
             <span
               v-if="files.length > 0 && value.after !== undefined"
               class="subtitle-1"
+              :title="files[value.after].name"
             >
               {{ triming(files[value.after].name) }}
             </span>
@@ -33,9 +35,12 @@
                   :disabled="file.status === 'added' || i === value.before"
                 >
                   <v-list-item-content>
-                    <v-list-item-title v-if="file.status !== 'added'">{{
-                      triming(file.previousName, 70)
-                    }}</v-list-item-title>
+                    <v-list-item-title
+                      v-if="file.status !== 'added'"
+                      :title="file.previousName"
+                    >
+                      {{ triming(file.previousName, 70) }}
+                    </v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list-item-group>
@@ -51,9 +56,12 @@
                   :disabled="file.status === 'removed' || i === value.after"
                 >
                   <v-list-item-content>
-                    <v-list-item-title v-if="file.status !== 'removed'">{{
-                      triming(file.name, 70)
-                    }}</v-list-item-title>
+                    <v-list-item-title
+                      v-if="file.status !== 'removed'"
+                      :title="file.name"
+                    >
+                      {{ triming(file.name, 70) }}
+                    </v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list-item-group>
