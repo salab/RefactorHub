@@ -64,46 +64,30 @@ export default class extends Vue {
     this.file = { before: 0, after: 0 }
   }
 
-  @Watch('file')
-  private async onChangeFile(
-    newValue: { before?: number; after?: number },
-    oldValue: { before?: number; after?: number }
-  ) {
-    if (!this.editor || !this.commit) return
-    const promises: Promise<void>[] = []
-    const owner = this.commit.owner
-    const repository = this.commit.repository
-    if (oldValue.before !== newValue.before && newValue.before !== undefined) {
-      const sha = this.commit.parent
-      const path = this.commit.files[newValue.before].previousName
-      promises.push(
-        (async () => {
-          if (this.editor) {
-            this.editor.setTextModel(
-              'original',
-              await this.editor.getTextModel(owner, repository, sha, path)
-            )
-          }
-        })()
+  @Watch('file.before')
+  private async onChangeFileBefore(value?: number, _?: number) {
+    if (this.editor && this.commit && value !== undefined) {
+      await this.editor.setTextModel(
+        'original',
+        this.commit.owner,
+        this.commit.repository,
+        this.commit.parent,
+        this.commit.files[value].previousName
       )
     }
-    if (oldValue.after !== newValue.after && newValue.after !== undefined) {
-      const sha = this.commit.sha
-      const path = this.commit.files[newValue.after].name
-      promises.push(
-        (async () => {
-          if (this.editor) {
-            this.editor.setTextModel(
-              'modified',
-              await this.editor.getTextModel(owner, repository, sha, path)
-            )
-          }
-        })()
+  }
+
+  @Watch('file.after')
+  private async onChangeFileAfter(value?: number, _?: number) {
+    if (this.editor && this.commit && value !== undefined) {
+      await this.editor.setTextModel(
+        'modified',
+        this.commit.owner,
+        this.commit.repository,
+        this.commit.sha,
+        this.commit.files[value].name
       )
     }
-    this.editor.isLoading = true
-    await Promise.all(promises)
-    this.editor.isLoading = false
   }
 
   private head() {

@@ -18,7 +18,7 @@ import { TextModel } from '~/types'
 })
 export default class MonacoEditor extends Vue {
   public diffEditor!: monaco.editor.IStandaloneDiffEditor
-  public isLoading = true
+  private pending = 0
 
   private mounted() {
     const container = document.getElementById('container')
@@ -32,6 +32,45 @@ export default class MonacoEditor extends Vue {
     }
   }
 
+  public get isLoading() {
+    return this.pending > 0
+  }
+
+  public async setTextModel(
+    which: 'original' | 'modified',
+    owner: string,
+    repository: string,
+    sha: string,
+    path: string
+  ) {
+    this.pending++
+
+    const uri = this.getUri(owner, repository, sha, path)
+    let model = monaco.editor.getModel(uri)
+    if (!model) {
+      const text = await this.getTextModel(owner, repository, sha, path)
+      model = monaco.editor.createModel(text.value, text.language, uri)
+    }
+
+    if (which === 'original') {
+      this.diffEditor.setModel({
+        original: model,
+        modified:
+          this.diffEditor.getModifiedEditor().getModel() ||
+          monaco.editor.createModel('', 'text/plain')
+      })
+    } else if (which === 'modified') {
+      this.diffEditor.setModel({
+        original:
+          this.diffEditor.getOriginalEditor().getModel() ||
+          monaco.editor.createModel('', 'text/plain'),
+        modified: model
+      })
+    }
+
+    this.pending--
+  }
+
   public async getTextModel(
     owner: string,
     repository: string,
@@ -43,27 +82,10 @@ export default class MonacoEditor extends Vue {
     })).data
   }
 
-  public setTextModel(which: 'original' | 'modified', model: TextModel) {
-    const newModel = monaco.editor.createModel(
-      model.value,
-      model.language,
-      model.uri ? monaco.Uri.parse(model.uri) : undefined
+  private getUri(owner: string, repository: string, sha: string, path: string) {
+    return monaco.Uri.parse(
+      `https://github.com/${owner}/${repository}/blob/${sha}/${path}`
     )
-    if (which === 'original') {
-      this.diffEditor.setModel({
-        original: newModel,
-        modified:
-          this.diffEditor.getModifiedEditor().getModel() ||
-          monaco.editor.createModel('', 'text/plain')
-      })
-    } else if (which === 'modified') {
-      this.diffEditor.setModel({
-        original:
-          this.diffEditor.getOriginalEditor().getModel() ||
-          monaco.editor.createModel('', 'text/plain'),
-        modified: newModel
-      })
-    }
   }
 }
 </script>
