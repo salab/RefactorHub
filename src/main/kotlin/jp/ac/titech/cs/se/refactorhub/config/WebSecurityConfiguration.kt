@@ -1,49 +1,56 @@
 package jp.ac.titech.cs.se.refactorhub.config
 
-import jp.ac.titech.cs.se.refactorhub.models.User
+import jp.ac.titech.cs.se.refactorhub.config.filter.GitHubFilter
 import jp.ac.titech.cs.se.refactorhub.services.UserService
-import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso
-import org.springframework.boot.autoconfigure.security.oauth2.resource.PrincipalExtractor
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.builders.WebSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import javax.servlet.http.HttpServletResponse
 
-@Configuration
-@EnableOAuth2Sso
-class WebSecurityConfiguration : WebSecurityConfigurerAdapter() {
+@EnableWebSecurity
+class WebSecurityConfiguration(
+    private val userService: UserService
+) : WebSecurityConfigurerAdapter() {
+
+    override fun configure(web: WebSecurity) {
+        web.ignoring().antMatchers("/_nuxt/**", "/favicon.ico")
+    }
 
     override fun configure(http: HttpSecurity) {
         http.csrf()
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
             .exceptionHandling()
-            .authenticationEntryPoint { _, response, _ ->
-                response.status = HttpServletResponse.SC_UNAUTHORIZED
+            .authenticationEntryPoint { _, response, exception ->
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.message)
             }
             .and()
+            .addFilter(
+                GitHubFilter().apply {
+                    setAuthenticationManager(authenticationManager())
+                }
+            )
             .authorizeRequests()
             .mvcMatchers(HttpMethod.POST, "/api/**/*").authenticated()
             .mvcMatchers(HttpMethod.PUT, "/api/**/*").authenticated()
             .mvcMatchers(HttpMethod.PATCH, "/api/**/*").authenticated()
             .mvcMatchers(HttpMethod.DELETE, "/api/**/*").authenticated()
-            .and()
-            .logout()
-            .logoutRequestMatcher(AntPathRequestMatcher("/logout"))
-            .logoutSuccessUrl("/")
-            .deleteCookies("JSESSIONID")
-            .permitAll()
     }
 
-    @Bean
-    fun principalExtractor(userService: UserService) = PrincipalExtractor {
-        User.Principal(it).apply {
-            userService.create(id, name)
-        }
+    override fun configure(auth: AuthenticationManagerBuilder) {
+        auth.authenticationProvider(
+            PreAuthenticatedAuthenticationProvider().apply {
+                setPreAuthenticatedUserDetailsService(userService)
+            }
+        )
     }
 
 }

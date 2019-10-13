@@ -1,7 +1,8 @@
 package jp.ac.titech.cs.se.refactorhub.models
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.springframework.security.core.AuthenticatedPrincipal
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 import javax.persistence.*
 
 @Entity
@@ -13,7 +14,7 @@ data class User(
 
     @Column(name = "name", nullable = false, unique = true)
     var name: String = ""
-) {
+) : UserDetails {
     @JsonIgnore
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.REMOVE])
     @Column(name = "annotations", nullable = false)
@@ -24,10 +25,24 @@ data class User(
     @Column(name = "drafts", nullable = false)
     val drafts: MutableSet<Draft> = mutableSetOf()
 
-    data class Principal(
-        val attributes: Map<String, Any>
-    ) : AuthenticatedPrincipal {
-        val id: Int get() = attributes["id"] as Int
-        override fun getName(): String = attributes["login"] as String
-    }
+    @JsonIgnore
+    override fun getUsername() = name
+
+    @JsonIgnore
+    override fun getPassword() = "N/A"
+
+    @JsonIgnore
+    override fun getAuthorities() = emptySet<GrantedAuthority>()
+
+    @JsonIgnore
+    override fun isEnabled() = true
+
+    @JsonIgnore
+    override fun isAccountNonExpired() = true
+
+    @JsonIgnore
+    override fun isAccountNonLocked() = true
+
+    @JsonIgnore
+    override fun isCredentialsNonExpired() = true
 }

@@ -52,6 +52,7 @@ const config: Configuration = {
     '@nuxtjs/vuetify',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
+    '@nuxtjs/auth',
     '@nuxtjs/proxy',
     '@nuxtjs/eslint-module'
   ],
@@ -98,9 +99,21 @@ const config: Configuration = {
   },
   buildModules: ['@nuxt/typescript-build', '@nuxtjs/eslint-module'],
   proxy: {
-    '/api': 'http://localhost:8080',
-    '/login': 'http://localhost:8080',
-    '/logout': 'http://localhost:8080'
+    '/api': 'http://localhost:8080'
+  },
+  auth: {
+    redirect: {
+      login: '/login',
+      logout: '/',
+      callback: '/callback'
+    },
+    strategies: {
+      github: {
+        client_id: process.env.CLIENT_ID,
+        client_secret: process.env.CLIENT_SECRET,
+        userinfo_endpoint: '/api/user/me'
+      }
+    }
   }
 }
 

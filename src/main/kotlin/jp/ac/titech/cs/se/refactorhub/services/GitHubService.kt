@@ -2,22 +2,22 @@ package jp.ac.titech.cs.se.refactorhub.services
 
 import jp.ac.titech.cs.se.refactorhub.models.Commit
 import org.kohsuke.github.*
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.security.oauth2.client.OAuth2ClientContext
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 
 @Service
 class GitHubService(
     private val userService: UserService,
     @Value("\${github.access.token}")
-    private val accessToken: String,
-    @Qualifier("oauth2ClientContext")
-    private val oauth2ClientContext: OAuth2ClientContext
+    private val accessToken: String
 ) {
 
     val github: GitHub
-        get() = GitHub.connectUsingOAuth(oauth2ClientContext.accessToken?.value ?: accessToken)
+        get() {
+            val credentials = SecurityContextHolder.getContext().authentication.credentials
+            return GitHub.connectUsingOAuth(if (credentials is String) credentials else accessToken)
+        }
 
     fun getUser(id: Int): GHUser = github.getUser(userService.get(id).name)
 

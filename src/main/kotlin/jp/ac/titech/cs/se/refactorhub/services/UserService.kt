@@ -4,13 +4,24 @@ import jp.ac.titech.cs.se.refactorhub.exceptions.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.exceptions.UnauthorizedException
 import jp.ac.titech.cs.se.refactorhub.models.User
 import jp.ac.titech.cs.se.refactorhub.repositories.UserRepository
+import org.kohsuke.github.GHUser
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.AuthenticationUserDetailsService
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 import org.springframework.stereotype.Service
 
 @Service
 class UserService(
     private val userRepository: UserRepository
-) {
+) : AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> {
+
+    override fun loadUserDetails(token: PreAuthenticatedAuthenticationToken): User? {
+        val principal = token.principal
+        return if (principal is GHUser) {
+            if (!userRepository.existsById(principal.id.toInt())) create(principal.id.toInt(), principal.login)
+            else get(principal.id.toInt())
+        } else null
+    }
 
     fun get(id: Int): User {
         val user = userRepository.findById(id)
@@ -37,7 +48,7 @@ class UserService(
 
     fun me(): User {
         val principal = SecurityContextHolder.getContext().authentication.principal
-        return if (principal is User.Principal) get(principal.id)
+        return if (principal is User) principal
         else throw UnauthorizedException("User is not logged in.")
     }
 
