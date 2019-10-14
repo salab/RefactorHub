@@ -3,5 +3,5 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = "refactor-hub"
-include("web")
+rootProject.name = "refactorhub"
+include("client")

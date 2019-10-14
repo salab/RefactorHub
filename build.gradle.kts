@@ -62,8 +62,8 @@ tasks {
         dependsOn("generateResources")
     }
     register<Copy>("generateResources") {
-        dependsOn(":web:generate")
-        from("web/dist") {
+        dependsOn(":client:generate")
+        from("client/dist") {
             include("**/*.*")
         }
         into("${project.buildDir}/resources/main/static")

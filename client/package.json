@@ -1,5 +1,5 @@
 {
-  "name": "refactor-hub",
+  "name": "refactorhub",
   "version": "0.0.1",
   "description": "Dataset creation support tool for empirical studies on refactoring activity.",
   "author": "Ryo Kuramoto <kuramoto@se.cs.titech.ac.jp>",
