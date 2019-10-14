@@ -2,11 +2,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
-    val kotlinVersion = "1.3.41"
+    val kotlinVersion = "1.3.50"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     kotlin("plugin.jpa") version kotlinVersion
-    id("org.springframework.boot") version "2.1.6.RELEASE"
+    id("org.springframework.boot") version "2.1.9.RELEASE"
     id("io.spring.dependency-management") version "1.0.8.RELEASE"
 }
 
@@ -17,8 +17,6 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 repositories {
     mavenCentral()
 }
-
-val swaggerVersion = "2.9.2"
 
 dependencies {
     // Kotlin
@@ -34,8 +32,8 @@ dependencies {
     }
     testImplementation("org.springframework.security:spring-security-test")
     // Swagger
-    implementation("io.springfox:springfox-swagger2:$swaggerVersion")
-    implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
+    implementation("io.springfox:springfox-swagger2:2.+")
+    implementation("io.springfox:springfox-swagger-ui:2.+")
     // Parser
     implementation("org.eclipse.jdt:org.eclipse.jdt.core:3.+")
     // Other
