@@ -14,6 +14,9 @@ class AnnotationController(
     private val userService: UserService
 ) {
 
+    @GetMapping
+    fun getAll() = ResponseEntity.ok(annotationService.getAll())
+
     @GetMapping("/{id}")
     fun get(@PathVariable("id") id: Long) = ResponseEntity.ok(annotationService.get(id))
 

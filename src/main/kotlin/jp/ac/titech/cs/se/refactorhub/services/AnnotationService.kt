@@ -11,6 +11,8 @@ class AnnotationService(
     private val annotationRepository: AnnotationRepository
 ) {
 
+    fun getAll(): List<Annotation> = annotationRepository.findAll()
+
     fun get(id: Long): Annotation {
         val annotation = annotationRepository.findById(id)
         if (annotation.isPresent) return annotation.get()

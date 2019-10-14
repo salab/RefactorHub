@@ -1,12 +1,24 @@
 <template>
-  <v-layout column justify-center align-center>
-    <v-flex xs12 sm8 md6>
-      {{ message }}
-    </v-flex>
-    <v-btn rounded @click="getHello">get</v-btn>
-    <v-btn rounded @click="postHello">post</v-btn>
-    <v-btn rounded @click="getDraft">draft</v-btn>
-  </v-layout>
+  <v-container fluid fill-height>
+    <v-row align="center" justify="center">
+      <v-col cols="12">
+        <v-row align="center" justify="center">
+          <v-card>
+            <v-card-text>
+              {{ message }}
+            </v-card-text>
+          </v-card>
+        </v-row>
+      </v-col>
+      <v-col cols="12">
+        <v-row align="center" justify="center">
+          <v-btn class="mx-2" @click="getHello">get</v-btn>
+          <v-btn class="mx-2" @click="postHello">post</v-btn>
+          <v-btn class="mx-2" @click="getDraft">draft</v-btn>
+        </v-row>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -21,20 +33,28 @@ import { Draft } from '~/types'
 })
 export default class extends Vue {
   message: string = ''
-  private getHello(): void {
-    this.$axios.get<string>('/api/hello').then(response => {
-      this.message = response.data
-    })
+  private async getHello() {
+    try {
+      this.message = (await this.$axios.get<string>('/api/hello')).data
+    } catch (e) {
+      this.message = e.message
+    }
   }
-  private postHello(): void {
-    this.$axios.post<string>('/api/hello').then(response => {
-      this.message = response.data
-    })
+  private async postHello() {
+    try {
+      this.message = (await this.$axios.post<string>('/api/hello')).data
+    } catch (e) {
+      this.message = e.message
+    }
   }
-  private getDraft(): void {
-    this.$axios.get<Draft>('/api/draft/2').then(response => {
-      this.message = response.data.description
-    })
+  private async getDraft() {
+    try {
+      this.message = (await this.$axios.get<Draft>(
+        '/api/draft/2'
+      )).data.description
+    } catch (e) {
+      this.message = e.message
+    }
   }
   private head() {
     return { title: 'Hello' }
