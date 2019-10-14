@@ -10,7 +10,7 @@ import javax.persistence.*
 data class User(
     @Id
     @Column(name = "id", nullable = false)
-    val id: Int = 0,
+    val id: Long = 0,
 
     @Column(name = "name", nullable = false, unique = true)
     var name: String = ""

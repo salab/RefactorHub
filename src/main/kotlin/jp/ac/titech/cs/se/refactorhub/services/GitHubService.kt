@@ -19,7 +19,7 @@ class GitHubService(
             return GitHub.connectUsingOAuth(if (credentials is String) credentials else accessToken)
         }
 
-    fun getUser(id: Int): GHUser = github.getUser(userService.get(id).name)
+    fun getUser(id: Long): GHUser = github.getUser(userService.get(id).name)
 
     fun getRepository(owner: String, repository: String): GHRepository = github.getRepository("$owner/$repository")
 

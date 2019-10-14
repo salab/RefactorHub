@@ -18,12 +18,12 @@ class UserService(
     override fun loadUserDetails(token: PreAuthenticatedAuthenticationToken): User? {
         val principal = token.principal
         return if (principal is GHUser) {
-            if (!userRepository.existsById(principal.id.toInt())) create(principal.id.toInt(), principal.login)
-            else get(principal.id.toInt())
+            if (!userRepository.existsById(principal.id)) create(principal.id, principal.login)
+            else get(principal.id)
         } else null
     }
 
-    fun get(id: Int): User {
+    fun get(id: Long): User {
         val user = userRepository.findById(id)
         if (user.isPresent) return user.get()
         throw NotFoundException("User(id=$id) is not found.")
@@ -35,7 +35,7 @@ class UserService(
         throw NotFoundException("User(name=$name) is not found.")
     }
 
-    fun create(id: Int, name: String): User {
+    fun create(id: Long, name: String): User {
         val user = userRepository.findById(id)
         return if (user.isPresent) {
             val u = user.get()

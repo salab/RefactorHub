@@ -14,7 +14,7 @@ class UserController(
 ) {
 
     @GetMapping("/{id}")
-    fun get(@PathVariable("id") id: Int) = ResponseEntity.ok(userService.get(id))
+    fun get(@PathVariable("id") id: Long) = ResponseEntity.ok(userService.get(id))
 
     @GetMapping("/me")
     fun me() = ResponseEntity.ok(userService.me())
