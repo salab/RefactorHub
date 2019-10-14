@@ -28,6 +28,8 @@ class WebSecurityConfiguration(
             .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
+            .logout().disable()
+            .anonymous().disable()
             .exceptionHandling()
             .authenticationEntryPoint { _, response, exception ->
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.message)

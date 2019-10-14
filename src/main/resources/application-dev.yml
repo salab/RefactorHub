@@ -1,3 +1,14 @@
 logging:
   level:
-    root: DEBUG
+    root: INFO
+    org:
+      apache:
+        coyote: DEBUG
+      springframework:
+        web: DEBUG
+        security:
+          web: DEBUG
+      hibernate:
+        internal:
+          util: DEBUG
+        SQL: DEBUG
