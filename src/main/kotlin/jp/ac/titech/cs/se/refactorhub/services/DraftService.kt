@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class DraftService(
-    private val draftRepository: DraftRepository
+    private val draftRepository: DraftRepository,
+    private val userService: UserService
 ) {
 
     fun get(id: Long): Draft {
@@ -19,8 +20,9 @@ class DraftService(
         throw NotFoundException("Draft(id=$id) is not found.")
     }
 
-    fun getByOwner(id: Long, owner: User): Draft {
+    fun getByOwner(id: Long): Draft {
         val draft = draftRepository.findById(id)
+        val owner = userService.me()
         if (draft.isPresent) {
             return draft.get().also {
                 if (it.owner != owner) throw ForbiddenException("User(id=${owner.id}) is not Draft(id=$id)'s owner.")
