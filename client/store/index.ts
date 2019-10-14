@@ -11,6 +11,7 @@ export interface DraftMutations {
   setDraft: { draft: Draft }
   setCommit: { commit: CommitInfo }
   setRefactoringTypes: { types: string[] }
+  updateDraft: { description?: string }
 }
 export interface DraftActions {
   fetchDraft: { id: string }
@@ -33,6 +34,10 @@ export const mutations: DefineMutations<DraftMutations, DraftState> = {
   },
   setRefactoringTypes: (state, { types }) => {
     state.refactoringTypes = types
+  },
+  updateDraft: (state, { description }) => {
+    if (!state.draft) return
+    if (description) state.draft.description = description
   }
 }
 export const actions: DefineActions<

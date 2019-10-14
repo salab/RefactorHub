@@ -25,6 +25,7 @@
                 :value="draft.description"
                 rows="2"
                 label="Description"
+                @input="onInputDescription"
               />
             </form>
           </v-flex>
@@ -77,7 +78,10 @@
 
 <script lang="ts">
 import { Component, Vue, State } from 'nuxt-property-decorator'
+import { Debounce } from 'vue-debounce-decorator'
+import { Committer } from 'vuex-type-helper'
 import { Draft, CommitInfo } from '~/types'
+import { DraftMutations } from '~/store'
 
 @Component
 export default class Info extends Vue {
@@ -88,6 +92,21 @@ export default class Info extends Vue {
   private get messageLines(): string[] {
     if (!this.commit) return []
     return this.commit.message.split('\n')
+  }
+
+  @Debounce(500)
+  private async onInputDescription(value: string) {
+    if (!this.draft) return
+    const params = new URLSearchParams()
+    params.append('description', value)
+    const { data } = await this.$axios.patch<Draft>(
+      `/api/draft/${this.draft.id}`,
+      params
+    )
+    this.$store.commit<Committer<DraftMutations>>({
+      type: 'updateDraft',
+      description: data.description
+    })
   }
 }
 </script>
