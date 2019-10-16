@@ -59,4 +59,13 @@ class DraftService(
 
     fun delete(id: Long) = draftRepository.deleteById(id)
 
+    fun update(
+        id: Long,
+        description: String? = null
+    ): Draft {
+        val draft = getByOwner(id)
+        if (description != null) draft.description = description
+        return save(draft)
+    }
+
 }

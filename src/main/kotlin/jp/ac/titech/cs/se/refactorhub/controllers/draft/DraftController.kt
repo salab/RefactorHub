@@ -25,10 +25,6 @@ class DraftController(
     fun update(
         @PathVariable("id") id: Long,
         @RequestParam description: String?
-    ): ResponseEntity<Draft> {
-        val draft = draftService.getByOwner(id)
-        if (description != null) draft.description = description
-        return ResponseEntity.ok(draftService.save(draft))
-    }
+    ) = ResponseEntity.ok(draftService.update(id, description))
 
 }
