@@ -1,7 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.models
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.kohsuke.github.GHCommit
 import java.util.*
 import javax.persistence.*
 
@@ -21,7 +20,7 @@ data class Commit(
     @JsonIgnore
     @OneToMany(mappedBy = "commit")
     @Column(name = "annotations", nullable = false)
-    val annotations: MutableSet<Annotation> = mutableSetOf()
+    val refactorings: MutableSet<Refactoring> = mutableSetOf()
 
     @JsonIgnore
     @OneToMany(mappedBy = "commit")

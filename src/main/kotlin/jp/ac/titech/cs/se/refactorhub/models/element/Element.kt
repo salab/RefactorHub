@@ -38,5 +38,4 @@ interface Element : Serializable {
         Statements(jp.ac.titech.cs.se.refactorhub.models.element.impl.Statements::class),
         VariableDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.VariableDeclaration::class)
     }
-
 }

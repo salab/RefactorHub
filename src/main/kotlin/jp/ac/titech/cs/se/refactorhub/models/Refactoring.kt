@@ -1,14 +1,15 @@
 package jp.ac.titech.cs.se.refactorhub.models
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import jp.ac.titech.cs.se.refactorhub.models.refactoring.Refactoring
-import jp.ac.titech.cs.se.refactorhub.models.refactoring.impl.Custom
+import jp.ac.titech.cs.se.refactorhub.models.element.Element
+import java.io.Serializable
 import java.util.*
 import javax.persistence.*
+import kotlin.reflect.full.createInstance
 
 @Entity
-@Table(name = "annotation")
-data class Annotation(
+@Table(name = "refactoring")
+data class Refactoring(
     @ManyToOne
     @JoinColumn(name = "owner", nullable = false)
     val owner: User,
@@ -19,15 +20,14 @@ data class Annotation(
 
     @ManyToOne
     @JoinColumn(name = "parent", nullable = true)
-    var parent: Annotation? = null,
+    var parent: Refactoring? = null,
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    var type: Refactoring.Type = Refactoring.Type.Custom,
+    @ManyToOne
+    @JoinColumn(name = "type", nullable = false)
+    var type: RefactoringType = RefactoringType(),
 
-    @Convert(converter = Refactoring.Converter::class)
-    @Column(name = "refactoring", nullable = false, columnDefinition = "text")
-    var refactoring: Refactoring = Custom(),
+    @Column(name = "data", nullable = false, columnDefinition = "text")
+    var data: Data = Data(type),
 
     @Column(name = "description", nullable = false, columnDefinition = "text")
     var description: String = "",
@@ -46,7 +46,7 @@ data class Annotation(
     @JsonIgnore
     @OneToMany(mappedBy = "parent")
     @Column(name = "children", nullable = false)
-    val children: MutableSet<Annotation> = mutableSetOf()
+    val children: MutableSet<Refactoring> = mutableSetOf()
 
     @JsonIgnore
     @OneToMany(mappedBy = "parent", cascade = [CascadeType.REMOVE])
@@ -68,5 +68,15 @@ data class Annotation(
         children.forEach { it.parent = null }
         draftChildren.forEach { it.parent = null }
         drafts.forEach { it.origin = null }
+    }
+
+    data class Data(
+        val before: MutableMap<String, Element> = mutableMapOf(),
+        val after: MutableMap<String, Element> = mutableMapOf()
+    ) : Serializable {
+        constructor(type: RefactoringType) : this(
+            type.before.entries.associateBy({ it.key }) { it.value.dataClass.createInstance() }.toMutableMap(),
+            type.after.entries.associateBy({ it.key }) { it.value.dataClass.createInstance() }.toMutableMap()
+        )
     }
 }

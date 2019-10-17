@@ -2,7 +2,7 @@ package jp.ac.titech.cs.se.refactorhub.services
 
 import jp.ac.titech.cs.se.refactorhub.exceptions.ForbiddenException
 import jp.ac.titech.cs.se.refactorhub.exceptions.NotFoundException
-import jp.ac.titech.cs.se.refactorhub.models.Annotation
+import jp.ac.titech.cs.se.refactorhub.models.Refactoring
 import jp.ac.titech.cs.se.refactorhub.models.Draft
 import jp.ac.titech.cs.se.refactorhub.models.User
 import jp.ac.titech.cs.se.refactorhub.repositories.DraftRepository
@@ -31,26 +31,26 @@ class DraftService(
         throw NotFoundException("Draft(id=$id) is not found.")
     }
 
-    fun create(origin: Annotation) = draftRepository.save(
+    fun create(origin: Refactoring) = draftRepository.save(
         Draft(
             origin.owner,
             origin.commit,
             origin.parent,
             origin,
             origin.type,
-            origin.refactoring,
+            origin.data,
             origin.description
         )
     )
 
-    fun fork(owner: User, parent: Annotation) = draftRepository.save(
+    fun fork(owner: User, parent: Refactoring) = draftRepository.save(
         Draft(
             owner,
             parent.commit,
             parent,
             null,
             parent.type,
-            parent.refactoring,
+            parent.data,
             parent.description
         )
     )

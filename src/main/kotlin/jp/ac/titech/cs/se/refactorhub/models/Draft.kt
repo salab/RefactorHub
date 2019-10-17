@@ -1,7 +1,5 @@
 package jp.ac.titech.cs.se.refactorhub.models
 
-import jp.ac.titech.cs.se.refactorhub.models.refactoring.Refactoring
-import jp.ac.titech.cs.se.refactorhub.models.refactoring.impl.Custom
 import javax.persistence.*
 
 @Entity
@@ -17,19 +15,18 @@ data class Draft(
 
     @ManyToOne
     @JoinColumn(name = "parent", nullable = true)
-    var parent: Annotation? = null,
+    var parent: Refactoring? = null,
 
     @ManyToOne
     @JoinColumn(name = "origin", nullable = true)
-    var origin: Annotation? = null,
+    var origin: Refactoring? = null,
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    var type: Refactoring.Type = Refactoring.Type.Custom,
+    @ManyToOne
+    @JoinColumn(name = "type", nullable = false)
+    var type: RefactoringType = RefactoringType(),
 
-    @Convert(converter = Refactoring.Converter::class)
-    @Column(name = "refactoring", nullable = false, columnDefinition = "text")
-    var refactoring: Refactoring = Custom(),
+    @Column(name = "data", nullable = false, columnDefinition = "text")
+    var data: Refactoring.Data = Refactoring.Data(type),
 
     @Column(name = "description", nullable = false, columnDefinition = "text")
     var description: String = "",

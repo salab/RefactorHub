@@ -17,8 +17,8 @@ data class User(
 ) : UserDetails {
     @JsonIgnore
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.REMOVE])
-    @Column(name = "annotations", nullable = false)
-    val annotations: MutableSet<Annotation> = mutableSetOf()
+    @Column(name = "refactorings", nullable = false)
+    val refactorings: MutableSet<Refactoring> = mutableSetOf()
 
     @JsonIgnore
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.REMOVE])
