@@ -47,7 +47,7 @@ class UserService(
     }
 
     fun me(): User {
-        val principal = SecurityContextHolder.getContext().authentication.principal
+        val principal = SecurityContextHolder.getContext().authentication?.principal
         return if (principal is User) principal
         else throw UnauthorizedException("User is not logged in.")
     }
