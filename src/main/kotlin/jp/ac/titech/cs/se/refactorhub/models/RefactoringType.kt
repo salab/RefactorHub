@@ -2,6 +2,8 @@ package jp.ac.titech.cs.se.refactorhub.models
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jp.ac.titech.cs.se.refactorhub.models.element.Element
+import org.hibernate.annotations.Fetch
+import org.hibernate.annotations.FetchMode
 import javax.persistence.*
 
 @Entity
@@ -11,10 +13,12 @@ data class RefactoringType(
     var name: String = "",
 
     @ElementCollection
+    @Fetch(FetchMode.JOIN)
     @Column(name = "before", nullable = false, columnDefinition = "text")
     val before: Map<String, Element.Type> = mapOf(),
 
     @ElementCollection
+    @Fetch(FetchMode.JOIN)
     @Column(name = "after", nullable = false, columnDefinition = "text")
     val after: Map<String, Element.Type> = mapOf(),
 

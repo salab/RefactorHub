@@ -1,16 +1,16 @@
 import { DefineGetters, DefineMutations, DefineActions } from 'vuex-type-helper'
-import { Draft, CommitInfo } from 'refactorhub'
+import { Draft, CommitInfo, RefactoringType } from 'refactorhub'
 
 export interface DraftState {
   draft?: Draft
   commit?: CommitInfo
-  refactoringTypes: string[]
+  refactoringTypes: RefactoringType[]
 }
 export interface DraftGetters {}
 export interface DraftMutations {
   setDraft: { draft: Draft }
   setCommit: { commit: CommitInfo }
-  setRefactoringTypes: { types: string[] }
+  setRefactoringTypes: { types: RefactoringType[] }
   updateDraft: { description?: string }
 }
 export interface DraftActions {
@@ -58,7 +58,9 @@ export const actions: DefineActions<
     await ctx.commit({ type: 'setCommit', commit: data })
   },
   async fetchRefactoringTypes(ctx) {
-    const { data } = await this.$axios.get<string[]>('/api/refactoring/types')
+    const { data } = await this.$axios.get<RefactoringType[]>(
+      '/api/refactoring/types'
+    )
     ctx.commit({ type: 'setRefactoringTypes', types: data })
   }
 }
