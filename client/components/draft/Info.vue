@@ -80,7 +80,7 @@
 import { Component, Vue, State } from 'nuxt-property-decorator'
 import { Debounce } from 'vue-debounce-decorator'
 import { Committer } from 'vuex-type-helper'
-import { Draft, CommitInfo } from '~/types'
+import { Draft, CommitInfo } from 'refactorhub'
 import { DraftMutations } from '~/store'
 
 @Component

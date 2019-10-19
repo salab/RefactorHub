@@ -1,99 +1,98 @@
-export interface Annotation {
-  owner: User
-  commit: Commit
-  parent: Annotation | null
-  type: RefactoringType
-  refactoring: Refactoring
-  description: string
-  created: string
-  lastModified: string
-  id: number
-}
+declare module 'refactorhub' {
+  interface Refactoring {
+    owner: User
+    commit: Commit
+    parent: Refactoring | null
+    type: RefactoringType
+    data: RefactoringData
+    description: string
+    created: string
+    lastModified: string
+    id: number
+  }
 
-export interface Draft {
-  owner: User
-  commit: Commit
-  parent: Annotation | null
-  origin: Annotation | null
-  type: RefactoringType
-  refactoring: Refactoring
-  description: string
-  id: number
-}
+  interface RefactoringData {
+    before: { [key: string]: Element }
+    after: { [key: string]: Element }
+  }
 
-export interface Refactoring {
-  type: RefactoringType
-  before: ElementSet
-  after: ElementSet
-}
+  interface RefactoringType {
+    name: string
+    before: { [key: string]: string }
+    after: { [key: string]: string }
+    description: string
+    id: number
+  }
 
-export enum RefactoringType {
-  CUSTOM = 'Custom'
-}
+  interface Draft {
+    owner: User
+    commit: Commit
+    parent: Refactoring | null
+    origin: Refactoring | null
+    type: RefactoringType
+    data: RefactoringData
+    description: string
+    id: number
+  }
 
-export interface ElementSet {
-  custom: { [key: string]: Element }
-}
+  interface Element {
+    type: string
+    location: Location
+  }
 
-export interface Element {
-  type: ElementType
-  location: Location
-}
+  interface Location {
+    path: string
+    range: Range
+  }
 
-export enum ElementType {}
+  interface Range {
+    startLine: number
+    startColumn: number
+    endLine: number
+    endColumn: number
+  }
 
-export interface Location {
-  path: string
-  range: Range
-}
+  interface Commit {
+    sha: string
+    owner: string
+    repository: string
+  }
 
-export interface Range {
-  startLine: number
-  startColumn: number
-  endLine: number
-  endColumn: number
-}
+  interface CommitInfo {
+    sha: string
+    owner: string
+    repository: string
+    url: string
+    message: string
+    author: string
+    authorDate: string
+    files: CommitFile[]
+    parent: string
+  }
 
-export interface Commit {
-  sha: string
-  owner: string
-  repository: string
-}
+  export interface CommitFile {
+    sha: string
+    status: CommitFileStatus
+    name: string
+    previousName: string
+  }
 
-export interface CommitInfo {
-  sha: string
-  owner: string
-  repository: string
-  url: string
-  message: string
-  author: string
-  authorDate: string
-  files: CommitFile[]
-  parent: string
-}
+  export enum CommitFileStatus {
+    MODIFIED = 'modified',
+    ADDED = 'added',
+    REMOVED = 'removed',
+    RENAMED = 'renamed'
+  }
 
-export interface CommitFile {
-  sha: string
-  status: CommitFileStatus
-  name: string
-  previousName: string
-}
+  export interface User {
+    id: number
+    name: string
+  }
 
-export enum CommitFileStatus {
-  MODIFIED = 'modified',
-  ADDED = 'added',
-  REMOVED = 'removed',
-  RENAMED = 'renamed'
-}
-
-export interface User {
-  id: number
-  name: string
-}
-
-export interface TextModel {
-  value: string
-  language?: string
-  uri?: string
-  elements: Element[]
+  export interface TextModel {
+    value: string
+    language?: string
+    uri?: string
+    elements: Element[]
+  }
 }

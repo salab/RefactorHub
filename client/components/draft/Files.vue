@@ -75,7 +75,7 @@
 
 <script lang="ts">
 import { Component, Vue, State, Prop } from 'nuxt-property-decorator'
-import { CommitInfo } from '~/types'
+import { CommitInfo } from 'refactorhub'
 
 @Component
 export default class Files extends Vue {

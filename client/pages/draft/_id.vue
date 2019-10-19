@@ -29,11 +29,11 @@
 <script lang="ts">
 import { Component, Vue, State, Watch } from 'nuxt-property-decorator'
 import { Dispatcher } from 'vuex-type-helper'
+import { Draft, CommitInfo } from 'refactorhub'
 import Elements from '~/components/draft/Elements.vue'
 import Files from '~/components/draft/Files.vue'
 import Info from '~/components/draft/Info.vue'
 import MonacoEditor from '~/components/draft/MonacoEditor.vue'
-import { Draft, CommitInfo } from '~/types'
 import { DraftActions } from '~/store'
 
 @Component({

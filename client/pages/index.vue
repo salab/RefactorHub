@@ -11,12 +11,12 @@
       <v-col cols="12">
         <v-row align="center" justify="center">
           <v-btn
-            v-for="annot in annotations"
-            :key="annot.id"
+            v-for="refactoring in refactorings"
+            :key="refactoring.id"
             class="mx-2"
-            @click="fork(annot.id)"
+            @click="fork(refactoring.id)"
           >
-            Fork ({{ annot.id }})
+            Fork ({{ refactoring.id }})
           </v-btn>
         </v-row>
       </v-col>
@@ -26,19 +26,19 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
-import { Annotation, Draft } from '~/types'
+import { Refactoring, Draft } from 'refactorhub'
 
 @Component
 export default class extends Vue {
-  annotations: Annotation[] = []
+  refactorings: Refactoring[] = []
 
   async mounted() {
-    const { data } = await this.$axios.get<Annotation[]>('/api/annotation')
-    return (this.annotations = data)
+    const { data } = await this.$axios.get<Refactoring[]>('/api/refactoring')
+    return (this.refactorings = data)
   }
 
   async fork(id: number) {
-    const draft = (await this.$axios.post<Draft>(`/api/annotation/${id}/fork`))
+    const draft = (await this.$axios.post<Draft>(`/api/refactoring/${id}/fork`))
       .data
     this.$router.push(`/draft/${draft.id}`)
   }

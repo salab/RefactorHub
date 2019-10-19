@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
-import { Draft } from '~/types'
+import { Draft } from 'refactorhub'
 
 @Component({
   async asyncData({ $axios }) {

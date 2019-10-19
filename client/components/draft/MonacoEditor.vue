@@ -9,7 +9,7 @@ import { Vue, Component } from 'nuxt-property-decorator'
 import * as monaco from 'monaco-editor'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
-import { TextModel } from '~/types'
+import { TextModel } from 'refactorhub'
 
 @Component({
   components: {

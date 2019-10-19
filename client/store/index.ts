@@ -1,5 +1,5 @@
 import { DefineGetters, DefineMutations, DefineActions } from 'vuex-type-helper'
-import { Draft, CommitInfo } from '~/types'
+import { Draft, CommitInfo } from 'refactorhub'
 
 export interface DraftState {
   draft?: Draft
