@@ -18,6 +18,12 @@ class RefactoringTypeService(
         throw NotFoundException("RefactoringType(id=$id) is not found.")
     }
 
+    fun getByName(name: String): RefactoringType {
+        val optional = refactoringTypeRepository.findByName(name)
+        if (optional.isPresent) return optional.get()
+        throw NotFoundException("RefactoringType(name=$name) is not found.")
+    }
+
     fun save(type: RefactoringType): RefactoringType = refactoringTypeRepository.save(type)
 
     fun delete(id: Long) = refactoringTypeRepository.deleteById(id)

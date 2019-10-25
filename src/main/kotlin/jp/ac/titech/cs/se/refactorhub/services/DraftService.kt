@@ -5,13 +5,16 @@ import jp.ac.titech.cs.se.refactorhub.exceptions.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.models.Refactoring
 import jp.ac.titech.cs.se.refactorhub.models.Draft
 import jp.ac.titech.cs.se.refactorhub.models.User
+import jp.ac.titech.cs.se.refactorhub.models.element.Element
 import jp.ac.titech.cs.se.refactorhub.repositories.DraftRepository
 import org.springframework.stereotype.Service
+import kotlin.reflect.full.createInstance
 
 @Service
 class DraftService(
     private val draftRepository: DraftRepository,
-    private val userService: UserService
+    private val userService: UserService,
+    private val refactoringTypeService: RefactoringTypeService
 ) {
 
     fun get(id: Long): Draft {
@@ -61,11 +64,33 @@ class DraftService(
 
     fun update(
         id: Long,
-        description: String? = null
+        description: String? = null,
+        typeName: String? = null
     ): Draft {
         val draft = getByOwner(id)
         if (description != null) draft.description = description
+        if (typeName != null) {
+            val type = refactoringTypeService.getByName(typeName)
+            if (draft.type != type) {
+                removeEmptyElements(draft.type.before, draft.data.before)
+                removeEmptyElements(draft.type.after, draft.data.after)
+                updateElements(type.before, draft.data.before)
+                updateElements(type.after, draft.data.after)
+            }
+        }
         return save(draft)
+    }
+
+    private fun removeEmptyElements(types: Map<String, Element.Type>, elements: MutableMap<String, Element>) {
+        types.entries.forEach {
+            if (elements[it.key] == it.value.dataClass.createInstance()) elements.remove(it.key)
+        }
+    }
+
+    private fun updateElements(types: Map<String, Element.Type>, elements: MutableMap<String, Element>) {
+        types.entries.forEach {
+            if (elements[it.key]?.type?.name != it.value.name) elements[it.key] = it.value.dataClass.createInstance()
+        }
     }
 
 }

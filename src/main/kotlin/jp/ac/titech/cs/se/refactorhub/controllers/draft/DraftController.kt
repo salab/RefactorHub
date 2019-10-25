@@ -23,7 +23,8 @@ class DraftController(
     @PatchMapping("/{id}")
     fun update(
         @PathVariable("id") id: Long,
-        @RequestParam description: String?
-    ) = ResponseEntity.ok(draftService.update(id, description))
+        @RequestParam description: String?,
+        @RequestParam type: String?
+    ) = ResponseEntity.ok(draftService.update(id, description, type))
 
 }
