@@ -1,9 +1,10 @@
 package jp.ac.titech.cs.se.refactorhub.services
 
+import jp.ac.titech.cs.se.refactorhub.exceptions.BadRequestException
 import jp.ac.titech.cs.se.refactorhub.exceptions.ForbiddenException
 import jp.ac.titech.cs.se.refactorhub.exceptions.NotFoundException
-import jp.ac.titech.cs.se.refactorhub.models.Refactoring
 import jp.ac.titech.cs.se.refactorhub.models.Draft
+import jp.ac.titech.cs.se.refactorhub.models.Refactoring
 import jp.ac.titech.cs.se.refactorhub.models.User
 import jp.ac.titech.cs.se.refactorhub.models.element.Element
 import jp.ac.titech.cs.se.refactorhub.repositories.DraftRepository
@@ -91,6 +92,38 @@ class DraftService(
         types.entries.forEach {
             if (elements[it.key]?.type?.name != it.value.name) elements[it.key] = it.value.dataClass.createInstance()
         }
+    }
+
+    fun updateBeforeElement(
+        id: Long,
+        key: String,
+        element: Element
+    ) = updateElement(id, key, "before", element)
+
+    fun updateAfterElement(
+        id: Long,
+        key: String,
+        element: Element
+    ) = updateElement(id, key, "after", element)
+
+    private fun updateElement(
+        id: Long,
+        key: String,
+        which: String,
+        element: Element
+    ): Draft {
+        val draft = getByOwner(id)
+        val map = when (which) {
+            "before" -> draft.data.before
+            "after" -> draft.data.after
+            else -> throw BadRequestException("need to be either 'before' or 'after'")
+        }
+        if (map.containsKey(key)) {
+            map[key] = element
+        } else {
+            throw BadRequestException("Draft(id=$id).data.$which doesn't have key=$key")
+        }
+        return save(draft)
     }
 
 }
