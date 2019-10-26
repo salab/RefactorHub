@@ -97,11 +97,9 @@ export default class Info extends Vue {
   @Debounce(500)
   private async onInputDescription(value: string) {
     if (!this.draft) return
-    const params = new URLSearchParams()
-    params.append('description', value)
     const { data } = await this.$axios.patch<Draft>(
       `/api/draft/${this.draft.id}`,
-      params
+      { description: value }
     )
     this.$store.commit<Committer<DraftMutations>>({
       type: 'updateDraft',

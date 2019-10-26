@@ -1,5 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.controllers.draft
 
+import jp.ac.titech.cs.se.refactorhub.controllers.draft.requests.UpdateRequest
 import jp.ac.titech.cs.se.refactorhub.models.Refactoring
 import jp.ac.titech.cs.se.refactorhub.services.RefactoringService
 import jp.ac.titech.cs.se.refactorhub.services.DraftService
@@ -23,8 +24,7 @@ class DraftController(
     @PatchMapping("/{id}")
     fun update(
         @PathVariable("id") id: Long,
-        @RequestParam description: String?,
-        @RequestParam type: String?
-    ) = ResponseEntity.ok(draftService.update(id, description, type))
+        @RequestBody request: UpdateRequest?
+    ) = ResponseEntity.ok(draftService.update(id, request?.description, request?.type))
 
 }
