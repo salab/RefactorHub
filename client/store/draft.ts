@@ -25,29 +25,27 @@ export const mutations = mutationTree(state, {
   },
   setElementTypes: (state, types: string[]) => {
     state.elementTypes = types
-  },
-  updateDraft: (state, description?: string) => {
-    if (!state.draft) return
-    if (description) state.draft.description = description
   }
 })
 export const actions = actionTree(
   { state, getters, mutations },
   {
     async fetchDraft({ commit }, id: number) {
-      await commit('setDraft', await this.$client.getDraft(id))
+      const draft = await this.$client.getDraft(id)
+      await commit('setDraft', draft)
+      return draft
     },
-    async fetchCommit(ctx, sha: string) {
-      await ctx.commit('setCommit', await this.$client.getCommitInfo(sha))
+    async fetchCommit({ commit }, sha: string) {
+      await commit('setCommit', await this.$client.getCommitInfo(sha))
     },
-    async fetchRefactoringTypes(ctx) {
-      await ctx.commit(
+    async fetchRefactoringTypes({ commit }) {
+      await commit(
         'setRefactoringTypes',
         await this.$client.getRefactoringTypes()
       )
     },
-    async fetchElementTypes(ctx) {
-      await ctx.commit('setElementTypes', await this.$client.getElementTypes())
+    async fetchElementTypes({ commit }) {
+      await commit('setElementTypes', await this.$client.getElementTypes())
     }
   }
 )
