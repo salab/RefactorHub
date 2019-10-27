@@ -71,12 +71,17 @@ class DraftService(
         val draft = getByOwner(id)
         if (description != null) draft.description = description
         if (typeName != null) {
-            val type = refactoringTypeService.getByName(typeName)
+            val type = try {
+                refactoringTypeService.getByName(typeName)
+            } catch (e: NotFoundException) {
+                throw BadRequestException(e.message!!)
+            }
             if (draft.type != type) {
                 removeEmptyElements(draft.type.before, draft.data.before)
                 removeEmptyElements(draft.type.after, draft.data.after)
                 updateElements(type.before, draft.data.before)
                 updateElements(type.after, draft.data.after)
+                draft.type = type
             }
         }
         return save(draft)

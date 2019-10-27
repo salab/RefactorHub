@@ -20,6 +20,7 @@
                 :value="draft.type.name"
                 :items="refactoringTypes.map(it => it.name)"
                 label="Refactoring Type"
+                @input="onInputType"
               />
               <v-textarea
                 :value="draft.description"
@@ -102,6 +103,14 @@ export default class Info extends Vue {
     if (!this.draft) return
     this.$accessor.draft.setDraft(
       await this.$client.patchDraft(this.draft.id, value)
+    )
+  }
+
+  @Debounce(100)
+  private async onInputType(value: string) {
+    if (!this.draft) return
+    this.$accessor.draft.setDraft(
+      await this.$client.patchDraft(this.draft.id, undefined, value)
     )
   }
 }
