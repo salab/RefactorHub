@@ -58,6 +58,9 @@ export default class extends Vue {
       }),
       this.$store.dispatch<Dispatcher<DraftActions>>({
         type: 'fetchRefactoringTypes'
+      }),
+      this.$store.dispatch<Dispatcher<DraftActions>>({
+        type: 'fetchElementTypes'
       })
     ])
     this.editor = this.$refs.editor as MonacoEditor

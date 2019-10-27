@@ -5,24 +5,28 @@ export interface DraftState {
   draft?: Draft
   commit?: CommitInfo
   refactoringTypes: RefactoringType[]
+  elementTypes: string[]
 }
 export interface DraftGetters {}
 export interface DraftMutations {
   setDraft: { draft: Draft }
   setCommit: { commit: CommitInfo }
   setRefactoringTypes: { types: RefactoringType[] }
+  setElementTypes: { types: string[] }
   updateDraft: { description?: string }
 }
 export interface DraftActions {
   fetchDraft: { id: string }
   fetchCommit: { sha: string }
   fetchRefactoringTypes: {}
+  fetchElementTypes: {}
 }
 
 export const state = (): DraftState => ({
   draft: undefined,
   commit: undefined,
-  refactoringTypes: []
+  refactoringTypes: [],
+  elementTypes: []
 })
 export const getters: DefineGetters<DraftGetters, DraftState> = {}
 export const mutations: DefineMutations<DraftMutations, DraftState> = {
@@ -34,6 +38,9 @@ export const mutations: DefineMutations<DraftMutations, DraftState> = {
   },
   setRefactoringTypes: (state, { types }) => {
     state.refactoringTypes = types
+  },
+  setElementTypes: (state, { types }) => {
+    state.elementTypes = types
   },
   updateDraft: (state, { description }) => {
     if (!state.draft) return
@@ -62,5 +69,9 @@ export const actions: DefineActions<
       '/api/refactoring/types'
     )
     ctx.commit({ type: 'setRefactoringTypes', types: data })
+  },
+  async fetchElementTypes(ctx) {
+    const { data } = await this.$axios.get<string[]>('/api/element/types')
+    ctx.commit({ type: 'setElementTypes', types: data })
   }
 }
