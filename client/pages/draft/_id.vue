@@ -27,14 +27,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, State, Watch } from 'nuxt-property-decorator'
-import { Dispatcher } from 'vuex-type-helper'
-import { Draft, CommitInfo } from 'refactorhub'
+import { Component, Vue, Watch } from 'nuxt-property-decorator'
 import Elements from '~/components/draft/Elements.vue'
 import Files from '~/components/draft/Files.vue'
 import Info from '~/components/draft/Info.vue'
 import MonacoEditor from '~/components/draft/MonacoEditor.vue'
-import { DraftActions } from '~/store'
 
 @Component({
   components: {
@@ -45,23 +42,21 @@ import { DraftActions } from '~/store'
   }
 })
 export default class extends Vue {
-  @State('draft') private draft?: Draft
-  @State('commit') private commit?: CommitInfo
   private file: { before?: number; after?: number } = {}
   private editor?: MonacoEditor
 
+  private get draft() {
+    return this.$accessor.draft.draft
+  }
+  private get commit() {
+    return this.$accessor.draft.commit
+  }
+
   private async mounted() {
     await Promise.all([
-      this.$store.dispatch<Dispatcher<DraftActions>>({
-        type: 'fetchDraft',
-        id: this.$route.params.id
-      }),
-      this.$store.dispatch<Dispatcher<DraftActions>>({
-        type: 'fetchRefactoringTypes'
-      }),
-      this.$store.dispatch<Dispatcher<DraftActions>>({
-        type: 'fetchElementTypes'
-      })
+      this.$accessor.draft.fetchDraft(parseInt(this.$route.params.id)),
+      this.$accessor.draft.fetchRefactoringTypes(),
+      this.$accessor.draft.fetchElementTypes()
     ])
     this.editor = this.$refs.editor as MonacoEditor
     this.file = { before: 0, after: 0 }

@@ -43,7 +43,7 @@ const config: Configuration = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/axios'],
+  plugins: ['~/plugins/axios', '~/plugins/client'],
   /*
    ** Nuxt.js modules
    */
@@ -79,6 +79,7 @@ const config: Configuration = {
    ** Build configuration
    */
   build: {
+    transpile: [/nuxt-typed-vuex/],
     /*
      ** You can extend webpack config here
      */
@@ -96,7 +97,11 @@ const config: Configuration = {
       }
     }
   },
-  buildModules: ['@nuxt/typescript-build', '@nuxtjs/eslint-module'],
+  buildModules: [
+    '@nuxt/typescript-build',
+    '@nuxtjs/eslint-module',
+    'nuxt-typed-vuex'
+  ],
   proxy: {
     '/api': 'http://localhost:8080'
   },

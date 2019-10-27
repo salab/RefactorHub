@@ -26,20 +26,18 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
-import { Refactoring, Draft } from 'refactorhub'
+import { Refactoring } from 'refactorhub'
 
 @Component
 export default class extends Vue {
   refactorings: Refactoring[] = []
 
   async mounted() {
-    const { data } = await this.$axios.get<Refactoring[]>('/api/refactoring')
-    return (this.refactorings = data)
+    this.refactorings = await this.$client.getRefactorings()
   }
 
   async fork(id: number) {
-    const draft = (await this.$axios.post<Draft>(`/api/refactoring/${id}/fork`))
-      .data
+    const draft = await this.$client.forkRefactoring(id)
     this.$router.push(`/draft/${draft.id}`)
   }
 }

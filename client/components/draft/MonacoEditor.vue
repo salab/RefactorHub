@@ -9,7 +9,6 @@ import { Vue, Component } from 'nuxt-property-decorator'
 import * as monaco from 'monaco-editor'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
-import { TextModel } from 'refactorhub'
 
 @Component({
   components: {
@@ -48,7 +47,7 @@ export default class MonacoEditor extends Vue {
     const uri = this.getUri(owner, repository, sha, path)
     let model = monaco.editor.getModel(uri)
     if (!model) {
-      const text = await this.getTextModel(owner, repository, sha, path)
+      const text = await this.$client.getTextModel(owner, repository, sha, path)
       model = monaco.editor.createModel(text.value, text.language, uri)
     }
 
@@ -69,17 +68,6 @@ export default class MonacoEditor extends Vue {
     }
 
     this.pending--
-  }
-
-  public async getTextModel(
-    owner: string,
-    repository: string,
-    sha: string,
-    path: string
-  ) {
-    return (await this.$axios.get<TextModel>(`/api/editor/text_model`, {
-      params: { owner, repository, sha, path }
-    })).data
   }
 
   private getUri(owner: string, repository: string, sha: string, path: string) {

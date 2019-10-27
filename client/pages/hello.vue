@@ -23,37 +23,34 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
-import { Draft } from 'refactorhub'
 
 @Component({
-  async asyncData({ $axios }) {
-    const { data } = await $axios.get<string>('/api/hello')
-    return { message: data }
+  async asyncData({ app }) {
+    const message = await app.$client.getHello()
+    return { message }
   }
 })
 export default class extends Vue {
   message: string = ''
   private async getHello() {
     try {
-      this.message = (await this.$axios.get<string>('/api/hello')).data
+      this.message = await this.$client.getHello()
     } catch (e) {
-      this.message = e.message
+      if (e instanceof Error) this.message = e.message
     }
   }
   private async postHello() {
     try {
-      this.message = (await this.$axios.post<string>('/api/hello')).data
+      this.message = await this.$client.postHello()
     } catch (e) {
-      this.message = e.message
+      if (e instanceof Error) this.message = e.message
     }
   }
   private async getDraft() {
     try {
-      this.message = (await this.$axios.get<Draft>(
-        '/api/draft/2'
-      )).data.description
+      this.message = (await this.$client.getDraft(1)).description
     } catch (e) {
-      this.message = e.message
+      if (e instanceof Error) this.message = e.message
     }
   }
   private head() {

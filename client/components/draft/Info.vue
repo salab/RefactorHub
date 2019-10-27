@@ -77,17 +77,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, State } from 'nuxt-property-decorator'
+import { Component, Vue } from 'nuxt-property-decorator'
 import { Debounce } from 'vue-debounce-decorator'
-import { Committer } from 'vuex-type-helper'
-import { Draft, CommitInfo, RefactoringType } from 'refactorhub'
-import { DraftMutations } from '~/store'
 
 @Component
 export default class Info extends Vue {
-  @State('draft') private draft?: Draft
-  @State('commit') private commit?: CommitInfo
-  @State('refactoringTypes') private refactoringTypes?: RefactoringType[]
+  private get draft() {
+    return this.$accessor.draft.draft
+  }
+  private get commit() {
+    return this.$accessor.draft.commit
+  }
+  private get refactoringTypes() {
+    return this.$accessor.draft.refactoringTypes
+  }
 
   private get messageLines(): string[] {
     if (!this.commit) return []
@@ -97,14 +100,9 @@ export default class Info extends Vue {
   @Debounce(500)
   private async onInputDescription(value: string) {
     if (!this.draft) return
-    const { data } = await this.$axios.patch<Draft>(
-      `/api/draft/${this.draft.id}`,
-      { description: value }
+    this.$accessor.draft.setDraft(
+      await this.$client.patchDraft(this.draft.id, value)
     )
-    this.$store.commit<Committer<DraftMutations>>({
-      type: 'updateDraft',
-      description: data.description
-    })
   }
 }
 </script>

@@ -74,14 +74,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, State, Prop } from 'nuxt-property-decorator'
-import { CommitInfo } from 'refactorhub'
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
 export default class Files extends Vue {
-  @State('commit') private commit?: CommitInfo
   @Prop({ required: true })
   private value!: { before?: number; after?: number }
+
+  private get commit() {
+    return this.$accessor.draft.commit
+  }
 
   private get files() {
     return this.commit ? this.commit.files : []

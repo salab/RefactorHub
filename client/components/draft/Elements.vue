@@ -37,8 +37,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, State } from 'nuxt-property-decorator'
-import { Draft } from 'refactorhub'
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
 export default class Elements extends Vue {
@@ -46,14 +45,17 @@ export default class Elements extends Vue {
   private right!: boolean
   @Prop()
   private title!: string
-  @State('draft')
-  private draft?: Draft
-  @State('elementTypes')
-  private elementTypes?: string[]
 
   private drawer = true
   private mini = false
   private selection?: number | null = null
+
+  private get draft() {
+    return this.$accessor.draft.draft
+  }
+  private get elementTypes() {
+    return this.$accessor.draft.elementTypes
+  }
 
   private get elements() {
     if (this.draft) {
