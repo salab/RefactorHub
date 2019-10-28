@@ -111,6 +111,11 @@ export default class MonacoEditor extends Vue {
 
 <style lang="scss">
 .element-widget {
+  cursor: pointer;
   border: 2px solid;
+  opacity: 0.6;
+  &:hover {
+    opacity: 1;
+  }
 }
 </style>

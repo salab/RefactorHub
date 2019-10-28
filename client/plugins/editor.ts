@@ -28,7 +28,7 @@ export class Editor {
     editor: monaco.editor.ICodeEditor,
     element: Element,
     index: number,
-    prefix: 'original' | 'modified'
+    which: 'original' | 'modified'
   ): monaco.editor.IContentWidget & { type: string } {
     const range = new monaco.Range(
       element.location.range.startLine,
@@ -41,15 +41,14 @@ export class Editor {
     div.style.width = `${this.getWidth(editor, range)}px`
     div.style.height = `${this.getHeight(editor, range)}px`
     div.style.minWidth = div.style.width
-    div.style.backgroundColor = this.getColor(element.type, 0.1)
-    div.style.borderColor = this.getColor(element.type, 0.6)
-    div.style.cursor = 'pointer'
+    div.style.backgroundColor = this.getColor(element.type, 0.2)
+    div.style.borderColor = this.getColor(element.type, 0.9)
     div.addEventListener('click', () => {
       console.log(element.type)
     })
     return {
       type: `${element.type}`,
-      getId: () => `${prefix}-widget-${index}`,
+      getId: () => `widget-${which}-${index}`,
       getDomNode: () => div,
       getPosition: () => ({
         position: {
