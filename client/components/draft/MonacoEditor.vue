@@ -9,6 +9,7 @@ import { Vue, Component } from 'nuxt-property-decorator'
 import * as monaco from 'monaco-editor'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
+import { Diff } from 'refactorhub'
 
 @Component({
   components: {
@@ -43,7 +44,7 @@ export default class MonacoEditor extends Vue {
   }
 
   public async setTextModel(
-    which: 'original' | 'modified',
+    diff: Diff,
     owner: string,
     repository: string,
     sha: string,
@@ -64,41 +65,42 @@ export default class MonacoEditor extends Vue {
       model = monaco.editor.createModel(text.value, text.language, uri)
     }
 
-    if (which === 'original') {
+    if (diff === 'original') {
       this.diffEditor.setModel({
         original: model,
         modified:
           this.diffEditor.getModifiedEditor().getModel() ||
           monaco.editor.createModel('', 'text/plain')
       })
-      const editor = this.diffEditor.getOriginalEditor()
-      this.widgets.original.forEach(widget => {
-        editor.removeContentWidget(widget)
-      })
-      text.elements.forEach((element, i) => {
-        const widget = this.$editor.createWidget(editor, element, i, 'original')
-        editor.addContentWidget(widget)
-        this.widgets.original.push(widget)
-      })
-    } else if (which === 'modified') {
+    } else if (diff === 'modified') {
       this.diffEditor.setModel({
         original:
           this.diffEditor.getOriginalEditor().getModel() ||
           monaco.editor.createModel('', 'text/plain'),
         modified: model
       })
-      const editor = this.diffEditor.getModifiedEditor()
-      this.widgets.modified.forEach(widget => {
-        editor.removeContentWidget(widget)
-      })
-      text.elements.forEach((element, i) => {
-        const widget = this.$editor.createWidget(editor, element, i, 'modified')
-        editor.addContentWidget(widget)
-        this.widgets.modified.push(widget)
-      })
     }
+    const editor =
+      diff === 'original'
+        ? this.diffEditor.getOriginalEditor()
+        : this.diffEditor.getModifiedEditor()
+    this.widgets[diff].forEach(widget => {
+      editor.removeContentWidget(widget)
+    })
+    text.elements.forEach((element, i) => {
+      const widget = this.$editor.createWidget(editor, element, i, diff)
+      editor.addContentWidget(widget)
+      this.widgets[diff].push(widget)
+    })
 
     this.pending--
+  }
+
+  public showWidgets(diff: Diff, type: string) {
+    this.widgets[diff].forEach(widget => {
+      if (widget.type === type) widget.getDomNode().style.display = 'block'
+      else widget.getDomNode().style.display = 'none'
+    })
   }
 }
 </script>

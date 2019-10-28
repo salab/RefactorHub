@@ -2,7 +2,7 @@
   <v-navigation-drawer
     v-model="drawer"
     :mini-variant.sync="mini"
-    :right="right"
+    :right="diff === 'modified'"
     permanent
     width="180"
   >
@@ -37,18 +37,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
+import { Diff } from 'refactorhub'
 
 @Component
 export default class Elements extends Vue {
-  @Prop({ default: false })
-  private right!: boolean
-  @Prop()
-  private title!: string
+  @Prop({ default: 'original' })
+  private diff!: Diff
+  @Prop({ required: true })
+  private value!: { before?: number; after?: number }
 
   private drawer = true
   private mini = false
-  private selection?: number | null = null
+  private selection?: number = -1
 
   private get draft() {
     return this.$accessor.draft.draft
@@ -59,9 +60,21 @@ export default class Elements extends Vue {
 
   private get elements() {
     if (this.draft) {
-      return !this.right ? this.draft.data.before : this.draft.data.after
+      return this.diff === 'original'
+        ? this.draft.data.before
+        : this.draft.data.after
     }
     return {}
+  }
+
+  private get title() {
+    return this.diff === 'original' ? 'Before' : 'After'
+  }
+
+  @Watch('selection')
+  private onChangeSelection(selection?: number) {
+    if (this.diff === 'original') this.value.before = selection
+    else if (this.diff === 'modified') this.value.after = selection
   }
 
   private color(type: string) {

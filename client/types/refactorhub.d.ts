@@ -95,4 +95,6 @@ declare module 'refactorhub' {
     uri?: string
     elements: Element[]
   }
+
+  type Diff = 'original' | 'modified'
 }

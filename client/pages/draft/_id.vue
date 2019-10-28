@@ -6,7 +6,7 @@
     <v-flex xs12>
       <v-layout fill-height>
         <v-flex>
-          <elements title="Before" />
+          <elements v-model="element" />
         </v-flex>
         <v-flex xs12>
           <v-layout column fill-height>
@@ -19,7 +19,7 @@
           </v-layout>
         </v-flex>
         <v-flex>
-          <elements title="After" :right="true" />
+          <elements v-model="element" :diff="'modified'" />
         </v-flex>
       </v-layout>
     </v-flex>
@@ -43,6 +43,10 @@ import MonacoEditor from '~/components/draft/MonacoEditor.vue'
 })
 export default class extends Vue {
   private file: { before?: number; after?: number } = {}
+  private element: { before?: number; after?: number } = {
+    before: undefined,
+    after: undefined
+  }
   private editor?: MonacoEditor
 
   private get draft() {
@@ -90,6 +94,32 @@ export default class extends Vue {
         this.commit.sha,
         this.commit.files[value].name
       )
+    }
+  }
+
+  @Watch('element.before')
+  private onChangeElementBefore(value?: number) {
+    if (!this.draft || !this.editor) return
+    if (typeof value === 'number') {
+      this.editor.showWidgets(
+        'original',
+        Object.values(this.draft.data.before)[value].type
+      )
+    } else {
+      this.editor.showWidgets('original', '')
+    }
+  }
+
+  @Watch('element.after')
+  private onChangeElementAfter(value?: number) {
+    if (!this.draft || !this.editor) return
+    if (typeof value === 'number') {
+      this.editor.showWidgets(
+        'modified',
+        Object.values(this.draft.data.after)[value].type
+      )
+    } else {
+      this.editor.showWidgets('modified', '')
     }
   }
 

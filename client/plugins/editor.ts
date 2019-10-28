@@ -1,5 +1,5 @@
 import * as monaco from 'monaco-editor'
-import { Element } from 'refactorhub'
+import { Element, Diff } from 'refactorhub'
 import { Context } from '@nuxt/types'
 import { accessorType } from '~/store'
 
@@ -28,7 +28,7 @@ export class Editor {
     editor: monaco.editor.ICodeEditor,
     element: Element,
     index: number,
-    which: 'original' | 'modified'
+    diff: Diff
   ): monaco.editor.IContentWidget & { type: string } {
     const range = new monaco.Range(
       element.location.range.startLine,
@@ -43,12 +43,13 @@ export class Editor {
     div.style.minWidth = div.style.width
     div.style.backgroundColor = this.getColor(element.type, 0.2)
     div.style.borderColor = this.getColor(element.type, 0.9)
+    div.style.display = 'none'
     div.addEventListener('click', () => {
       console.log(element.type)
     })
     return {
       type: `${element.type}`,
-      getId: () => `widget-${which}-${index}`,
+      getId: () => `widget-${diff}-${index}`,
       getDomNode: () => div,
       getPosition: () => ({
         position: {
