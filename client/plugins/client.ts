@@ -68,10 +68,8 @@ export class Client {
 }
 
 export default (
-  { app, $axios }: Context,
+  { $axios }: Context,
   inject: (name: string, client: Client) => void
 ) => {
-  const client = new Client($axios)
-  app.$client = client
-  inject('client', client)
+  inject('client', new Client($axios))
 }

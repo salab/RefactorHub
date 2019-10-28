@@ -65,12 +65,7 @@ export default class Elements extends Vue {
   }
 
   private color(type: string) {
-    if (this.elementTypes) {
-      const length = this.elementTypes.length
-      const index = this.elementTypes.indexOf(type)
-      return `hsl(${(index * 360) / length}, 100%, 40%)`
-    }
-    return '#fff'
+    return this.$editor.getColor(type)
   }
 }
 </script>

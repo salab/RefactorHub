@@ -43,7 +43,7 @@ const config: Configuration = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/axios', '~/plugins/client'],
+  plugins: ['~/plugins/axios', '~/plugins/client', '~/plugins/editor'],
   /*
    ** Nuxt.js modules
    */
