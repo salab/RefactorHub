@@ -17,6 +17,8 @@ interface Element : Serializable {
     val type: Type
     val location: Location
 
+    val isEmpty get() = location === Location()
+
     class Deserializer : JsonDeserializer<Element>() {
         override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Element {
             val mapper = p.codec as ObjectMapper

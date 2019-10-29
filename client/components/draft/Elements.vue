@@ -22,7 +22,7 @@
             :key="name"
             link
             class="left-border"
-            :style="`border-color: ${color(element.type)};`"
+            :style="`border-color: ${$editor.getColor(element.type)};`"
           >
             <v-list-item-content>
               <v-list-item-title>{{ name }}</v-list-item-title>
@@ -75,10 +75,6 @@ export default class Elements extends Vue {
   private onChangeSelection(selection?: number) {
     if (this.diff === 'original') this.value.before = selection
     else if (this.diff === 'modified') this.value.after = selection
-  }
-
-  private color(type: string) {
-    return this.$editor.getColor(type)
   }
 }
 </script>

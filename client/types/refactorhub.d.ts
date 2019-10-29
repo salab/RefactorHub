@@ -38,6 +38,7 @@ declare module 'refactorhub' {
   interface Element {
     type: string
     location: Location
+    isEmpty: boolean
   }
 
   interface Location {
@@ -77,12 +78,7 @@ declare module 'refactorhub' {
     previousName: string
   }
 
-  enum CommitFileStatus {
-    MODIFIED = 'modified',
-    ADDED = 'added',
-    REMOVED = 'removed',
-    RENAMED = 'renamed'
-  }
+  type CommitFileStatus = 'modified' | 'added' | 'removed' | 'renamed'
 
   interface User {
     id: number

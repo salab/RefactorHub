@@ -89,7 +89,7 @@ class DraftService(
 
     private fun removeEmptyElements(types: Map<String, Element.Type>, elements: MutableMap<String, Element>) {
         types.entries.forEach {
-            if (elements[it.key] == it.value.dataClass.createInstance()) elements.remove(it.key)
+            if (elements[it.key]?.isEmpty == false) elements.remove(it.key)
         }
     }
 
