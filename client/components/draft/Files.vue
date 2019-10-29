@@ -25,45 +25,83 @@
         </v-layout>
       </v-expansion-panel-header>
       <v-expansion-panel-content>
-        <v-layout>
+        <v-layout class="file-list">
           <v-flex xs6>
-            <v-list dense class="file-list">
+            <v-list dense>
               <v-list-item-group v-model="value.before">
-                <v-list-item
-                  v-for="(file, i) in files"
-                  :key="i"
-                  :disabled="file.status === 'added' || i === value.before"
-                >
-                  <v-list-item-content>
-                    <v-list-item-title
-                      v-if="file.status !== 'added'"
-                      :title="file.previousName"
-                    >
-                      {{ triming(file.previousName, 70) }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
+                <v-divider />
+                <template v-for="(file, i) in files">
+                  <v-list-item
+                    :key="i"
+                    :disabled="file.status === 'added' || i === value.before"
+                  >
+                    <v-list-item-content>
+                      <v-list-item-title
+                        v-if="file.status !== 'added'"
+                        :title="file.previousName"
+                      >
+                        {{ triming(file.previousName, 70) }}
+                      </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-divider :key="`b-div-${i}`" />
+                </template>
               </v-list-item-group>
             </v-list>
           </v-flex>
-          <v-divider vertical />
-          <v-flex xs6>
-            <v-list dense class="file-list">
-              <v-list-item-group v-model="value.after">
-                <v-list-item
-                  v-for="(file, i) in files"
-                  :key="i"
-                  :disabled="file.status === 'removed' || i === value.after"
-                >
-                  <v-list-item-content>
-                    <v-list-item-title
-                      v-if="file.status !== 'removed'"
-                      :title="file.name"
+          <v-flex>
+            <v-list dense>
+              <v-list-item-group v-model="common">
+                <v-divider />
+                <template v-for="(file, i) in files">
+                  <v-list-item :key="i">
+                    <v-icon
+                      v-if="file.status === 'modified'"
+                      small
+                      color="amber"
                     >
-                      {{ triming(file.name, 70) }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
+                      fa-edit
+                    </v-icon>
+                    <v-icon v-if="file.status === 'added'" small color="green">
+                      fa-plus
+                    </v-icon>
+                    <v-icon v-if="file.status === 'removed'" small color="red">
+                      fa-minus
+                    </v-icon>
+                    <v-icon
+                      v-if="file.status === 'renamed'"
+                      small
+                      color="purple"
+                    >
+                      fa-arrow-right
+                    </v-icon>
+                  </v-list-item>
+                  <v-divider :key="`c-div-${i}`" />
+                </template>
+              </v-list-item-group>
+            </v-list>
+          </v-flex>
+          <v-flex xs6>
+            <v-list dense>
+              <v-list-item-group v-model="value.after">
+                <v-divider />
+                <template v-for="(file, i) in files">
+                  <v-list-item
+                    :key="i"
+                    :selectable="false"
+                    :disabled="file.status === 'removed' || i === value.after"
+                  >
+                    <v-list-item-content>
+                      <v-list-item-title
+                        v-if="file.status !== 'removed'"
+                        :title="file.name"
+                      >
+                        {{ triming(file.name, 70) }}
+                      </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-divider :key="`a-div-${i}`" />
+                </template>
               </v-list-item-group>
             </v-list>
           </v-flex>
@@ -74,12 +112,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
 
 @Component
 export default class Files extends Vue {
   @Prop({ required: true })
   private value!: { before?: number; after?: number }
+  private common?: number = 0
+
+  @Watch('common')
+  private onChangeCommon(value: number) {
+    this.value.before = value
+    this.value.after = value
+  }
 
   private get commit() {
     return this.$accessor.draft.commit
