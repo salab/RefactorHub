@@ -38,7 +38,7 @@ export const actions = actionTree(
     async fetchDraft({ commit }, id: number) {
       const draft = await this.$client.getDraft(id)
       await commit('setDraft', draft)
-      return draft
+      await this.app.$accessor.draft.fetchCommit(draft.commit.sha)
     },
     async fetchCommit({ commit }, sha: string) {
       await commit('setCommit', await this.$client.getCommitInfo(sha))

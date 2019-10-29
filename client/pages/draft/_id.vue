@@ -58,12 +58,7 @@ export default class extends Vue {
 
   private async mounted() {
     await Promise.all([
-      (async () => {
-        const draft = await this.$accessor.draft.fetchDraft(
-          parseInt(this.$route.params.id)
-        )
-        await this.$accessor.draft.fetchCommit(draft.commit.sha)
-      })(),
+      this.$accessor.draft.fetchDraft(parseInt(this.$route.params.id)),
       this.$accessor.draft.fetchRefactoringTypes(),
       this.$accessor.draft.fetchElementTypes()
     ])
