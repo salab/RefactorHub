@@ -17,7 +17,7 @@ interface Element : Serializable {
     val type: Type
     val location: Location
 
-    val isEmpty get() = location === Location()
+    val incomplete get() = location.path.isEmpty() && location.range.isEmpty()
 
     class Deserializer : JsonDeserializer<Element>() {
         override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Element {

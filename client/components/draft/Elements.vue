@@ -21,13 +21,25 @@
           <v-list-item
             :key="name"
             link
-            class="left-border"
+            class="element-item"
             :style="`border-color: ${$editor.getColor(element.type)};`"
           >
             <v-list-item-content>
               <v-list-item-title>{{ name }}</v-list-item-title>
               <v-list-item-subtitle>{{ element.type }}</v-list-item-subtitle>
             </v-list-item-content>
+            <v-list-item-action class="ml-0">
+              <v-icon
+                v-if="!element.incomplete"
+                small
+                color="success"
+                title="Completed"
+                >fa-check</v-icon
+              >
+              <v-icon v-else small color="error" title="This is not completed"
+                >fa-question</v-icon
+              >
+            </v-list-item-action>
           </v-list-item>
           <v-divider :key="`${name}-divider`" />
         </template>
@@ -80,7 +92,8 @@ export default class Elements extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.left-border {
+.element-item {
   border-left: solid 12px;
+  padding: 0 8px;
 }
 </style>

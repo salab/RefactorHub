@@ -38,7 +38,7 @@ declare module 'refactorhub' {
   interface Element {
     type: string
     location: Location
-    isEmpty: boolean
+    incomplete: boolean
   }
 
   interface Location {
