@@ -67,7 +67,7 @@ export default class extends Vue {
   }
 
   @Watch('file.before')
-  private async onChangeFileBefore(value?: number, _?: number) {
+  private async onChangeFileBefore(value?: number) {
     if (this.editor && this.commit && value !== undefined) {
       await this.editor.setTextModel(
         'original',
@@ -80,7 +80,7 @@ export default class extends Vue {
   }
 
   @Watch('file.after')
-  private async onChangeFileAfter(value?: number, _?: number) {
+  private async onChangeFileAfter(value?: number) {
     if (this.editor && this.commit && value !== undefined) {
       await this.editor.setTextModel(
         'modified',
@@ -95,7 +95,7 @@ export default class extends Vue {
   @Watch('element.before')
   private onChangeElementBefore(value?: number) {
     if (!this.draft || !this.editor) return
-    if (typeof value === 'number') {
+    if (value !== undefined) {
       this.editor.showWidgets(
         'original',
         Object.values(this.draft.data.before)[value].type
@@ -108,7 +108,7 @@ export default class extends Vue {
   @Watch('element.after')
   private onChangeElementAfter(value?: number) {
     if (!this.draft || !this.editor) return
-    if (typeof value === 'number') {
+    if (value !== undefined) {
       this.editor.showWidgets(
         'modified',
         Object.values(this.draft.data.after)[value].type
@@ -119,7 +119,7 @@ export default class extends Vue {
   }
 
   private head() {
-    return { title: 'Draft' }
+    return { title: this.draft ? this.draft.type.name : 'Draft' }
   }
 }
 </script>
