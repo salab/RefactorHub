@@ -44,6 +44,12 @@ export class Editor {
     div.style.backgroundColor = this.getColor(element.type, 0.2)
     div.style.borderColor = this.getColor(element.type, 0.9)
     div.style.display = 'none'
+    setTimeout(() => {
+      try {
+        // Fix diff lines
+        div.style.height = `${this.getHeight(editor, range)}px`
+      } catch (e) {}
+    }, 1000)
     div.addEventListener('click', () => {
       console.log(element.type)
     })
