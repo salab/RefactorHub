@@ -19,7 +19,7 @@
           </v-layout>
         </v-flex>
         <v-flex>
-          <elements v-model="element" :diff="'modified'" />
+          <elements v-model="element" :diff="'after'" />
         </v-flex>
       </v-layout>
     </v-flex>
@@ -70,7 +70,7 @@ export default class extends Vue {
   private async onChangeFileBefore(value?: number) {
     if (this.editor && this.commit && value !== undefined) {
       await this.editor.setTextModel(
-        'original',
+        'before',
         this.commit.owner,
         this.commit.repository,
         this.commit.parent,
@@ -83,7 +83,7 @@ export default class extends Vue {
   private async onChangeFileAfter(value?: number) {
     if (this.editor && this.commit && value !== undefined) {
       await this.editor.setTextModel(
-        'modified',
+        'after',
         this.commit.owner,
         this.commit.repository,
         this.commit.sha,
@@ -97,11 +97,11 @@ export default class extends Vue {
     if (!this.draft || !this.editor) return
     if (value !== undefined) {
       this.editor.showWidgets(
-        'original',
+        'before',
         Object.values(this.draft.data.before)[value].type
       )
     } else {
-      this.editor.showWidgets('original', '')
+      this.editor.showWidgets('before', '')
     }
   }
 
@@ -110,11 +110,11 @@ export default class extends Vue {
     if (!this.draft || !this.editor) return
     if (value !== undefined) {
       this.editor.showWidgets(
-        'modified',
+        'after',
         Object.values(this.draft.data.after)[value].type
       )
     } else {
-      this.editor.showWidgets('modified', '')
+      this.editor.showWidgets('after', '')
     }
   }
 

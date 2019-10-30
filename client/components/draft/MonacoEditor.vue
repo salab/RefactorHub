@@ -20,11 +20,11 @@ export default class MonacoEditor extends Vue {
   public diffEditor!: monaco.editor.IStandaloneDiffEditor
   private pending = 0
   private widgets: {
-    original: (monaco.editor.IContentWidget & { type: string })[]
-    modified: (monaco.editor.IContentWidget & { type: string })[]
+    before: (monaco.editor.IContentWidget & { type: string })[]
+    after: (monaco.editor.IContentWidget & { type: string })[]
   } = {
-    original: [],
-    modified: []
+    before: [],
+    after: []
   }
 
   private mounted() {
@@ -65,14 +65,14 @@ export default class MonacoEditor extends Vue {
       model = monaco.editor.createModel(text.value, text.language, uri)
     }
 
-    if (diff === 'original') {
+    if (diff === 'before') {
       this.diffEditor.setModel({
         original: model,
         modified:
           this.diffEditor.getModifiedEditor().getModel() ||
           monaco.editor.createModel('', 'text/plain')
       })
-    } else if (diff === 'modified') {
+    } else if (diff === 'after') {
       this.diffEditor.setModel({
         original:
           this.diffEditor.getOriginalEditor().getModel() ||
@@ -81,7 +81,7 @@ export default class MonacoEditor extends Vue {
       })
     }
     const editor =
-      diff === 'original'
+      diff === 'before'
         ? this.diffEditor.getOriginalEditor()
         : this.diffEditor.getModifiedEditor()
     this.widgets[diff].forEach(widget => {

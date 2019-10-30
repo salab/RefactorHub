@@ -92,5 +92,5 @@ declare module 'refactorhub' {
     elements: Element[]
   }
 
-  type Diff = 'original' | 'modified'
+  type Diff = 'before' | 'after'
 }

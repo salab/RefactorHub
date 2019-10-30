@@ -2,7 +2,7 @@
   <v-navigation-drawer
     v-model="drawer"
     :mini-variant.sync="mini"
-    :right="diff === 'modified'"
+    :right="diff === 'after'"
     permanent
     width="180"
   >
@@ -54,7 +54,7 @@ import { Diff } from 'refactorhub'
 
 @Component
 export default class Elements extends Vue {
-  @Prop({ default: 'original' })
+  @Prop({ default: 'before' })
   private diff!: Diff
   @Prop({ required: true })
   private value!: { before?: number; after?: number }
@@ -72,7 +72,7 @@ export default class Elements extends Vue {
 
   private get elements() {
     if (this.draft) {
-      return this.diff === 'original'
+      return this.diff === 'before'
         ? this.draft.data.before
         : this.draft.data.after
     }
@@ -80,13 +80,13 @@ export default class Elements extends Vue {
   }
 
   private get title() {
-    return this.diff === 'original' ? 'Before' : 'After'
+    return this.diff === 'before' ? 'Before' : 'After'
   }
 
   @Watch('selection')
   private onChangeSelection(selection?: number) {
-    if (this.diff === 'original') this.value.before = selection
-    else if (this.diff === 'modified') this.value.after = selection
+    if (this.diff === 'before') this.value.before = selection
+    else if (this.diff === 'after') this.value.after = selection
   }
 }
 </script>

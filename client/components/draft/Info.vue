@@ -102,7 +102,7 @@ export default class Info extends Vue {
   private async onInputDescription(value: string) {
     if (!this.draft) return
     this.$accessor.draft.setDraft(
-      await this.$client.patchDraft(this.draft.id, value)
+      await this.$client.updateDraft(this.draft.id, value)
     )
   }
 
@@ -110,7 +110,7 @@ export default class Info extends Vue {
   private async onInputType(value: string) {
     if (!this.draft) return
     this.$accessor.draft.setDraft(
-      await this.$client.patchDraft(this.draft.id, undefined, value)
+      await this.$client.updateDraft(this.draft.id, undefined, value)
     )
   }
 }
