@@ -1,6 +1,8 @@
 import { Context } from '@nuxt/types'
 import { NuxtAxiosInstance } from '@nuxtjs/axios'
 import {
+  Diff,
+  Element,
   Draft,
   Refactoring,
   CommitInfo,
@@ -31,6 +33,12 @@ export class Client {
     return (await this.$axios.patch<Draft>(`/api/draft/${id}`, {
       description,
       type
+    })).data
+  }
+
+  async updateElement(id: number, diff: Diff, key: string, element: Element) {
+    return (await this.$axios.patch<Draft>(`/api/draft/${id}/${diff}/${key}`, {
+      element
     })).data
   }
 
