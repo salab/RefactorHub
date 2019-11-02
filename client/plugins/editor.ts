@@ -28,7 +28,8 @@ export class Editor {
     editor: monaco.editor.ICodeEditor,
     element: Element,
     index: number,
-    diff: Diff
+    diff: Diff,
+    onClick: (e: Event) => void
   ): monaco.editor.IContentWidget & { type: string } {
     const range = new monaco.Range(
       element.location.range.startLine,
@@ -50,9 +51,7 @@ export class Editor {
         div.style.height = `${this.getHeight(editor, range)}px`
       } catch (e) {}
     }, 1000)
-    div.addEventListener('click', () => {
-      console.log(element.type)
-    })
+    div.addEventListener('click', onClick)
     return {
       type: `${element.type}`,
       getId: () => `widget-${diff}-${index}`,

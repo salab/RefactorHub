@@ -56,12 +56,19 @@ import { Diff } from 'refactorhub'
 export default class Elements extends Vue {
   @Prop({ default: 'before' })
   private diff!: Diff
-  @Prop({ required: true })
-  private value!: { before?: number; after?: number }
 
   private drawer = true
   private mini = false
   private selection?: number = -1
+
+  @Watch('selection')
+  private onChangeSelection(value?: number) {
+    this.$accessor.draft.setElement({
+      diff: this.diff,
+      element:
+        value !== undefined ? Object.entries(this.elements)[value] : undefined
+    })
+  }
 
   private get draft() {
     return this.$accessor.draft.draft
@@ -81,12 +88,6 @@ export default class Elements extends Vue {
 
   private get title() {
     return this.diff === 'before' ? 'Before' : 'After'
-  }
-
-  @Watch('selection')
-  private onChangeSelection(selection?: number) {
-    if (this.diff === 'before') this.value.before = selection
-    else if (this.diff === 'after') this.value.after = selection
   }
 }
 </script>

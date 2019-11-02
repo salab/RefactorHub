@@ -1,5 +1,12 @@
 import { getterTree, mutationTree, actionTree } from 'nuxt-typed-vuex'
-import { Draft, CommitInfo, RefactoringType, TextModel } from 'refactorhub'
+import {
+  Draft,
+  CommitInfo,
+  RefactoringType,
+  TextModel,
+  Diff,
+  Element
+} from 'refactorhub'
 
 export const state = (): {
   draft?: Draft
@@ -7,12 +14,22 @@ export const state = (): {
   refactoringTypes: RefactoringType[]
   elementTypes: string[]
   textModels: Map<string, TextModel>
+  file: { [key in Diff]?: number }
+  element: { [key in Diff]?: [string, Element] }
 } => ({
   draft: undefined,
   commit: undefined,
   refactoringTypes: [],
   elementTypes: [],
-  textModels: new Map()
+  textModels: new Map(),
+  file: {
+    before: undefined,
+    after: undefined
+  },
+  element: {
+    before: undefined,
+    after: undefined
+  }
 })
 export const getters = getterTree(state, {})
 export const mutations = mutationTree(state, {
@@ -30,6 +47,15 @@ export const mutations = mutationTree(state, {
   },
   setTextModel: (state, { uri, model }: { uri: string; model: TextModel }) => {
     state.textModels.set(uri, model)
+  },
+  setFile: (state, { diff, value }: { diff: Diff; value?: number }) => {
+    state.file[diff] = value
+  },
+  setElement: (
+    state,
+    { diff, element }: { diff: Diff; element?: [string, Element] }
+  ) => {
+    state.element[diff] = element
   }
 })
 export const actions = actionTree(

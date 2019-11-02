@@ -88,7 +88,22 @@ export default class MonacoEditor extends Vue {
       editor.removeContentWidget(widget)
     })
     text.elements.forEach((element, i) => {
-      const widget = this.$editor.createWidget(editor, element, i, diff)
+      const widget = this.$editor.createWidget(
+        editor,
+        element,
+        i,
+        diff,
+        async () => {
+          const draft = this.$accessor.draft.draft
+          const elem = this.$accessor.draft.element[diff]
+          if (draft && elem) {
+            this.$accessor.draft.setDraft(
+              await this.$client.updateElement(draft.id, diff, elem[0], element)
+            )
+            this.hideWidgets(diff)
+          }
+        }
+      )
       editor.addContentWidget(widget)
       this.widgets[diff].push(widget)
     })
@@ -100,6 +115,12 @@ export default class MonacoEditor extends Vue {
     this.widgets[diff].forEach(widget => {
       if (widget.type === type) widget.getDomNode().style.display = 'block'
       else widget.getDomNode().style.display = 'none'
+    })
+  }
+
+  public hideWidgets(diff: Diff) {
+    this.widgets[diff].forEach(widget => {
+      widget.getDomNode().style.display = 'none'
     })
   }
 }

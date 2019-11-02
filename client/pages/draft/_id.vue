@@ -6,7 +6,7 @@
     <v-flex xs12>
       <v-layout fill-height>
         <v-flex>
-          <elements v-model="element" />
+          <elements />
         </v-flex>
         <v-flex xs12>
           <v-layout column fill-height>
@@ -14,12 +14,12 @@
               <monaco-editor ref="editor" />
             </v-flex>
             <v-flex>
-              <files v-model="file" />
+              <files />
             </v-flex>
           </v-layout>
         </v-flex>
         <v-flex>
-          <elements v-model="element" :diff="'after'" />
+          <elements :diff="'after'" />
         </v-flex>
       </v-layout>
     </v-flex>
@@ -28,6 +28,7 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'nuxt-property-decorator'
+import { Diff, Element } from 'refactorhub'
 import Elements from '~/components/draft/Elements.vue'
 import Files from '~/components/draft/Files.vue'
 import Info from '~/components/draft/Info.vue'
@@ -42,18 +43,21 @@ import MonacoEditor from '~/components/draft/MonacoEditor.vue'
   }
 })
 export default class extends Vue {
-  private file: { before?: number; after?: number } = {}
-  private element: { before?: number; after?: number } = {
-    before: undefined,
-    after: undefined
+  $refs!: {
+    editor: MonacoEditor
   }
-  private editor?: MonacoEditor
 
   private get draft() {
     return this.$accessor.draft.draft
   }
   private get commit() {
     return this.$accessor.draft.commit
+  }
+  private get file() {
+    return this.$accessor.draft.file
+  }
+  private get element() {
+    return this.$accessor.draft.element
   }
 
   private async mounted() {
@@ -62,59 +66,50 @@ export default class extends Vue {
       this.$accessor.draft.fetchRefactoringTypes(),
       this.$accessor.draft.fetchElementTypes()
     ])
-    this.editor = this.$refs.editor as MonacoEditor
-    this.file = { before: 0, after: 0 }
+    this.$accessor.draft.setFile({ diff: 'before', value: 0 })
+    this.$accessor.draft.setFile({ diff: 'after', value: 0 })
   }
 
   @Watch('file.before')
   private async onChangeFileBefore(value?: number) {
-    if (this.editor && this.commit && value !== undefined) {
-      await this.editor.setTextModel(
-        'before',
-        this.commit.owner,
-        this.commit.repository,
-        this.commit.parent,
-        this.commit.files[value].previousName
-      )
-    }
+    await this.onChangeFile('before', value)
   }
 
   @Watch('file.after')
   private async onChangeFileAfter(value?: number) {
-    if (this.editor && this.commit && value !== undefined) {
-      await this.editor.setTextModel(
-        'after',
+    await this.onChangeFile('after', value)
+  }
+
+  private async onChangeFile(diff: Diff, value?: number) {
+    if (this.commit && value !== undefined) {
+      await this.$refs.editor.setTextModel(
+        diff,
         this.commit.owner,
         this.commit.repository,
-        this.commit.sha,
-        this.commit.files[value].name
+        diff === 'before' ? this.commit.parent : this.commit.sha,
+        diff === 'before'
+          ? this.commit.files[value].previousName
+          : this.commit.files[value].name
       )
     }
   }
 
   @Watch('element.before')
-  private onChangeElementBefore(value?: number) {
-    if (!this.draft || !this.editor) return
-    if (value !== undefined) {
-      this.editor.showWidgets(
-        'before',
-        Object.values(this.draft.data.before)[value].type
-      )
-    } else {
-      this.editor.showWidgets('before', '')
-    }
+  private onChangeElementBefore(value?: [string, Element]) {
+    this.onChangeElement('before', value)
   }
 
   @Watch('element.after')
-  private onChangeElementAfter(value?: number) {
-    if (!this.draft || !this.editor) return
+  private onChangeElementAfter(value?: [string, Element]) {
+    this.onChangeElement('after', value)
+  }
+
+  private onChangeElement(diff: Diff, value?: [string, Element]) {
+    if (!this.draft) return
     if (value !== undefined) {
-      this.editor.showWidgets(
-        'after',
-        Object.values(this.draft.data.after)[value].type
-      )
+      this.$refs.editor.showWidgets(diff, value[1].type)
     } else {
-      this.editor.showWidgets('after', '')
+      this.$refs.editor.hideWidgets(diff)
     }
   }
 
