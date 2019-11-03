@@ -101,15 +101,25 @@ export default class extends Vue {
 
   private async onChangeFile(diff: Diff, value?: number) {
     if (this.commit && value !== undefined) {
+      const path =
+        diff === 'before'
+          ? this.commit.files[value].previousName
+          : this.commit.files[value].name
       await this.$refs.editor.setTextModel(
         diff,
         this.commit.owner,
         this.commit.repository,
         diff === 'before' ? this.commit.parent : this.commit.sha,
-        diff === 'before'
-          ? this.commit.files[value].previousName
-          : this.commit.files[value].name
+        path
       )
+      const draft = this.$accessor.draft.draft
+      if (draft) {
+        Object.entries(draft.data[diff]).forEach(([key, element]) => {
+          if (path === element.location.path) {
+            this.$refs.editor.setDecoration(diff, key, element)
+          }
+        })
+      }
     }
   }
 

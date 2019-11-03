@@ -9,7 +9,7 @@ import { Vue, Component } from 'nuxt-property-decorator'
 import * as monaco from 'monaco-editor'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
-import { Diff } from 'refactorhub'
+import { Diff, Element } from 'refactorhub'
 
 @Component({
   components: {
@@ -95,9 +95,9 @@ export default class MonacoEditor extends Vue {
         diff,
         async () => {
           const draft = this.$accessor.draft.draft
-          const elem = this.$accessor.draft.element[diff]
-          if (draft && elem) {
-            const key = elem[0]
+          const item = this.$accessor.draft.element[diff]
+          if (draft && item) {
+            const key = item[0]
             this.$accessor.draft.setDraft(
               await this.$client.updateElement(draft.id, diff, key, element)
             )
@@ -128,6 +128,24 @@ export default class MonacoEditor extends Vue {
     this.widgets[diff].forEach(widget => {
       widget.getDomNode().style.display = 'none'
     })
+  }
+
+  public setDecoration(diff: Diff, key: string, element: Element) {
+    const editor =
+      diff === 'before'
+        ? this.diffEditor.getOriginalEditor()
+        : this.diffEditor.getModifiedEditor()
+    const model = editor.getModel()
+    if (model) {
+      const [id] = editor.deltaDecorations(
+        [],
+        [this.$editor.createDecoration(key, element)]
+      )
+      this.$accessor.draft.decorations[diff].set(key, {
+        id,
+        uri: model.uri
+      })
+    }
   }
 
   public deleteDecoration(diff: Diff, key: string) {
