@@ -23,6 +23,22 @@
         </v-flex>
       </v-layout>
     </v-flex>
+    <component :is="'style'">
+      <!-- prettier-ignore -->
+      <template v-for="type in elementTypes">
+        .element-widget-{{ type }} {
+          background-color: {{ $editor.getColor(type, 0.2) }};
+          color: {{ $editor.getColor(type, 0.9) }};
+        }
+        .element-item-{{ type }} {
+          border-color: {{ $editor.getColor(type) }} !important;
+        }
+        .element-decoration-{{ type }} {
+          background-color: {{ $editor.getColor(type, 0.2) }};
+          border-color: {{ $editor.getColor(type, 0.9) }} !important;
+        }
+      </template>
+    </component>
   </v-layout>
 </template>
 
@@ -58,6 +74,9 @@ export default class extends Vue {
   }
   private get element() {
     return this.$accessor.draft.element
+  }
+  private get elementTypes() {
+    return this.$accessor.draft.elementTypes
   }
 
   private async mounted() {

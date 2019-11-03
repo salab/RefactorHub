@@ -1,4 +1,5 @@
 import { getterTree, mutationTree, actionTree } from 'nuxt-typed-vuex'
+import * as monaco from 'monaco-editor'
 import {
   Draft,
   CommitInfo,
@@ -16,6 +17,7 @@ export const state = (): {
   textModels: Map<string, TextModel>
   file: { [key in Diff]?: number }
   element: { [key in Diff]?: [string, Element] }
+  decorations: { [key in Diff]: Map<string, { id: string; uri: monaco.Uri }> }
 } => ({
   draft: undefined,
   commit: undefined,
@@ -29,6 +31,10 @@ export const state = (): {
   element: {
     before: undefined,
     after: undefined
+  },
+  decorations: {
+    before: new Map(),
+    after: new Map()
   }
 })
 export const getters = getterTree(state, {})
@@ -56,6 +62,20 @@ export const mutations = mutationTree(state, {
     { diff, element }: { diff: Diff; element?: [string, Element] }
   ) => {
     state.element[diff] = element
+  },
+  setDecoration: (
+    state,
+    {
+      diff,
+      key,
+      id,
+      uri
+    }: { diff: Diff; key: string; id: string; uri: monaco.Uri }
+  ) => {
+    state.decorations[diff].set(key, { id, uri })
+  },
+  deleteDecoration: (state, { diff, key }: { diff: Diff; key: string }) => {
+    state.decorations[diff].delete(key)
   }
 })
 export const actions = actionTree(

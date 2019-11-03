@@ -97,8 +97,14 @@ export default class MonacoEditor extends Vue {
           const draft = this.$accessor.draft.draft
           const elem = this.$accessor.draft.element[diff]
           if (draft && elem) {
+            const key = elem[0]
             this.$accessor.draft.setDraft(
-              await this.$client.updateElement(draft.id, diff, elem[0], element)
+              await this.$client.updateElement(draft.id, diff, key, element)
+            )
+            this.deleteDecoration(diff, key)
+            editor.deltaDecorations(
+              [],
+              [this.$editor.createDecoration(key, element)]
             )
             this.hideWidgets(diff)
           }
@@ -123,6 +129,15 @@ export default class MonacoEditor extends Vue {
       widget.getDomNode().style.display = 'none'
     })
   }
+
+  public deleteDecoration(diff: Diff, key: string) {
+    const info = this.$accessor.draft.decorations[diff].get(key)
+    if (info !== undefined) {
+      const model = monaco.editor.getModel(info.uri)
+      if (model !== null) model.deltaDecorations([info.id], [])
+      this.$accessor.draft.deleteDecoration({ diff, key })
+    }
+  }
 }
 </script>
 
@@ -140,5 +155,8 @@ export default class MonacoEditor extends Vue {
   &:hover {
     opacity: 1;
   }
+}
+.element-decoration {
+  border: 1px solid;
 }
 </style>

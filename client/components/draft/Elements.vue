@@ -22,7 +22,7 @@
             :key="name"
             link
             class="element-item"
-            :style="`border-color: ${$editor.getColor(element.type)};`"
+            :class="`element-item-${element.type}`"
           >
             <v-list-item-content>
               <v-list-item-title>{{ name }}</v-list-item-title>

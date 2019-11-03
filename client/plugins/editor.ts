@@ -1,5 +1,5 @@
 import * as monaco from 'monaco-editor'
-import { Element, Diff } from 'refactorhub'
+import { Element, Diff, Range } from 'refactorhub'
 import { Context } from '@nuxt/types'
 import { accessorType } from '~/store'
 
@@ -12,13 +12,12 @@ export class Editor {
 
   createDecoration(
     key: string,
-    type: string,
-    range: monaco.Range
+    element: Element
   ): monaco.editor.IModelDeltaDecoration {
     return {
-      range,
+      range: this.toMonacoRange(element.location.range),
       options: {
-        className: `highlight-${type}`,
+        className: `element-decoration element-decoration-${element.type}`,
         hoverMessage: { value: key }
       }
     }
@@ -31,19 +30,13 @@ export class Editor {
     diff: Diff,
     onClick: (e: Event) => void
   ): monaco.editor.IContentWidget & { type: string } {
-    const range = new monaco.Range(
-      element.location.range.startLine,
-      element.location.range.startColumn,
-      element.location.range.endLine,
-      element.location.range.endColumn + 1
-    )
+    const range = this.toMonacoRange(element.location.range)
     const div = document.createElement('div')
-    div.className = 'element-widget'
+    div.classList.add('element-widget')
+    div.classList.add(`element-widget-${element.type}`)
     div.style.width = `${this.getWidth(editor, range)}px`
     div.style.height = `${this.getHeight(editor, range)}px`
     div.style.minWidth = div.style.width
-    div.style.backgroundColor = this.getColor(element.type, 0.2)
-    div.style.borderColor = this.getColor(element.type, 0.9)
     div.style.display = 'none'
     setTimeout(() => {
       try {
@@ -111,7 +104,16 @@ export class Editor {
     const types = this.$accessor.draft.elementTypes
     const length = types.length
     const index = types.indexOf(type)
-    return `hsla(${(index * 360) / length}, 100%, 40%, ${alpha})`
+    return `hsla(${(index * 360) / length}, 100%, 60%, ${alpha})`
+  }
+
+  toMonacoRange(range: Range) {
+    return new monaco.Range(
+      range.startLine,
+      range.startColumn,
+      range.endLine,
+      range.endColumn + 1
+    )
   }
 }
 
