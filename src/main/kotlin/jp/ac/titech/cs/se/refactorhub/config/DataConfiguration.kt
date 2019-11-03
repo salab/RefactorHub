@@ -12,6 +12,7 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
+import java.util.*
 
 @Configuration
 class DataConfiguration(
@@ -28,15 +29,15 @@ class DataConfiguration(
         val type = refactoringTypeService.save(
             RefactoringType(
                 "ExtractMethod",
-                mutableMapOf(
-                    "sourceClass" to Element.Type.ClassDeclaration,
-                    "source" to Element.Type.Statements
-                ),
-                mutableMapOf(
-                    "targetClass" to Element.Type.ClassDeclaration,
-                    "extractedMethod" to Element.Type.MethodDeclaration,
-                    "invocation" to Element.Type.MethodInvocation
-                )
+                TreeMap<String, Element.Type>().apply {
+                    put("sourceClass", Element.Type.ClassDeclaration)
+                    put("source", Element.Type.Statements)
+                },
+                TreeMap<String, Element.Type>().apply {
+                    put("targetClass", Element.Type.ClassDeclaration)
+                    put("extractedMethod", Element.Type.MethodDeclaration)
+                    put("invocation", Element.Type.MethodInvocation)
+                }
             )
         )
         refactoringService.save(
