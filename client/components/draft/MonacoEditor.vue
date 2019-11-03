@@ -102,11 +102,8 @@ export default class MonacoEditor extends Vue {
               await this.$client.updateElement(draft.id, diff, key, element)
             )
             this.deleteDecoration(diff, key)
-            editor.deltaDecorations(
-              [],
-              [this.$editor.createDecoration(key, element)]
-            )
-            this.hideWidgets(diff)
+            this.setDecoration(diff, key, element)
+            this.$accessor.draft.setElement({ diff })
           }
         }
       )
