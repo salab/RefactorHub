@@ -1,14 +1,7 @@
 <template>
   <v-container fluid fill-height>
-    <v-row align="center" justify="center">
-      <v-col cols="12">
-        <v-row align="center" justify="center">
-          <v-btn to="hello" class="mx-2">
-            Hello
-          </v-btn>
-        </v-row>
-      </v-col>
-      <v-col cols="12">
+    <v-row>
+      <v-col>
         <v-row align="center" justify="center">
           <v-btn
             v-for="refactoring in refactorings"
@@ -17,6 +10,12 @@
             @click="fork(refactoring.id)"
           >
             Fork ({{ refactoring.id }})
+          </v-btn>
+        </v-row>
+        <v-divider class="my-4" />
+        <v-row align="center" justify="center">
+          <v-btn @click="$auth.loginWith('github')">
+            <v-icon left>fab fa-github</v-icon> Login
           </v-btn>
         </v-row>
       </v-col>
