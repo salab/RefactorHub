@@ -8,13 +8,13 @@ import javax.persistence.*
 @Table(name = "commit")
 data class Commit(
     @Id
-    @Column(name = "sha", nullable = false)
+    @Column(name = "sha", nullable = false, length = 40)
     val sha: String = "",
 
-    @Column(name = "owner", nullable = false)
+    @Column(name = "owner", nullable = false, length = 100)
     var owner: String = "",
 
-    @Column(name = "repository", nullable = false)
+    @Column(name = "repository", nullable = false, length = 100)
     var repository: String = ""
 ) {
     @JsonIgnore

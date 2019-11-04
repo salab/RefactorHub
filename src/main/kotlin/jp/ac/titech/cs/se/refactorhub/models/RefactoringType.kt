@@ -9,20 +9,22 @@ import javax.persistence.*
 @Entity
 @Table(name = "refactoring_type")
 data class RefactoringType(
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true, length = 100)
     var name: String = "",
 
     @ElementCollection
     @Fetch(FetchMode.JOIN)
-    @Column(name = "before", nullable = false, columnDefinition = "text")
+    @MapKeyColumn(name = "before_key", length = 100)
+    @Column(name = "before_element", nullable = false, columnDefinition = "text")
     val before: Map<String, Element.Type> = mapOf(),
 
     @ElementCollection
     @Fetch(FetchMode.JOIN)
-    @Column(name = "after", nullable = false, columnDefinition = "text")
+    @MapKeyColumn(name = "after_key", length = 100)
+    @Column(name = "after_element", nullable = false, columnDefinition = "text")
     val after: Map<String, Element.Type> = mapOf(),
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "text")
     var description: String = "",
 
     @Id

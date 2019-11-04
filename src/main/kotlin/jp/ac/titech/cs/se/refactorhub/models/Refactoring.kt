@@ -26,7 +26,8 @@ data class Refactoring(
     @JoinColumn(name = "type", nullable = false)
     var type: RefactoringType = RefactoringType(),
 
-    @Column(name = "data", nullable = false, columnDefinition = "text")
+    @Lob
+    @Column(name = "data", nullable = false)
     var data: Data = Data(type),
 
     @Column(name = "description", nullable = false, columnDefinition = "text")
