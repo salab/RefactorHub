@@ -103,7 +103,7 @@ const config: Configuration = {
     'nuxt-typed-vuex'
   ],
   proxy: {
-    '/api': 'http://localhost:8080'
+    '/api': process.env.API_URL || 'http://localhost:8080'
   },
   auth: {
     redirect: {
