@@ -1,7 +1,10 @@
 package jp.ac.titech.cs.se.refactorhub.services
 
+import jp.ac.titech.cs.se.refactorhub.exceptions.ForbiddenException
 import jp.ac.titech.cs.se.refactorhub.exceptions.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.exceptions.UnauthorizedException
+import jp.ac.titech.cs.se.refactorhub.models.Draft
+import jp.ac.titech.cs.se.refactorhub.models.Refactoring
 import jp.ac.titech.cs.se.refactorhub.models.User
 import jp.ac.titech.cs.se.refactorhub.repositories.UserRepository
 import org.kohsuke.github.GHUser
@@ -33,6 +36,23 @@ class UserService(
         val user = userRepository.findByName(name)
         if (user.isPresent) return user.get()
         throw NotFoundException("User(name=$name) is not found.")
+    }
+
+    fun getDrafts(id: Long): List<Draft> {
+        val optional = userRepository.findByIdAndFetchDraftsEagerly(id)
+        if (optional.isPresent) {
+            val owner = me()
+            return optional.get().also {
+                if (it != owner) throw ForbiddenException("User(id=${owner.id}) is not an owner.")
+            }.drafts.toList()
+        }
+        throw NotFoundException("User(id=$id) is not found.")
+    }
+
+    fun getRefactorings(id: Long): List<Refactoring> {
+        val optional = userRepository.findByIdAndFetchRefactoringsEagerly(id)
+        if (optional.isPresent) return optional.get().refactorings.toList()
+        throw NotFoundException("User(id=$id) is not found.")
     }
 
     fun create(id: Long, name: String): User {

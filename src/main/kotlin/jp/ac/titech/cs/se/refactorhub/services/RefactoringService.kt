@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class RefactoringService(
-    private val refactoringRepository: RefactoringRepository,
-    private val refactoringTypeRepository: RefactoringTypeRepository
+    private val refactoringRepository: RefactoringRepository
 ) {
 
     fun getAll(): List<Refactoring> = refactoringRepository.findAll()
@@ -19,19 +18,19 @@ class RefactoringService(
     fun get(id: Long): Refactoring {
         val optional = refactoringRepository.findById(id)
         if (optional.isPresent) return optional.get()
-        throw NotFoundException("Annotation(id=$id) is not found.")
+        throw NotFoundException("Refactoring(id=$id) is not found.")
     }
 
     fun getChildren(id: Long): List<Refactoring> {
         val optional = refactoringRepository.findByIdAndFetchChildrenEagerly(id)
         if (optional.isPresent) return optional.get().children.toList()
-        throw NotFoundException("Annotation(id=$id) is not found.")
+        throw NotFoundException("Refactoring(id=$id) is not found.")
     }
 
     fun getDrafts(id: Long): List<Draft> {
         val optional = refactoringRepository.findByIdAndFetchDraftsEagerly(id)
         if (optional.isPresent) return optional.get().drafts.toList()
-        throw NotFoundException("Annotation(id=$id) is not found.")
+        throw NotFoundException("Refactoring(id=$id) is not found.")
     }
 
     fun save(draft: Draft): Refactoring {

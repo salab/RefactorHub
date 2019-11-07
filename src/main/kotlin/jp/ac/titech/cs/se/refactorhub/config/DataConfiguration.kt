@@ -43,18 +43,20 @@ class DataConfiguration(
         val custom = refactoringTypeService.create("Custom")
 
         // refactorings
-        refactoringService.save(
+        val refactorings = listOf(
+            // https://github.com/danilofes/refactoring-toy-example/commit/f35b2c8eb8c320f173237e44d04eefb4634649a2
             Refactoring(
                 admin,
-                commitService.create("f35b2c8eb8c320f173237e44d04eefb4634649a2", "danilofes", "refactoring-toy-example"),
+                commitService.create(
+                    "f35b2c8eb8c320f173237e44d04eefb4634649a2",
+                    "danilofes",
+                    "refactoring-toy-example"
+                ),
                 type = extractMethod,
-                data = Refactoring.Data(extractMethod).apply {
-                    before["sourceClass"] = ClassDeclaration()
-                },
+                data = Refactoring.Data(extractMethod),
                 description = "This is a sample of ExtractMethod."
-            )
-        )
-        refactoringService.save(
+            ),
+            // http://refactoring.encs.concordia.ca/oracle/commit-refactorings/1100868
             Refactoring(
                 admin,
                 commitService.create("7655200f58293e5a30bf8b3cbb29ebadae374564", "JetBrains", "intellij-community"),
@@ -62,6 +64,13 @@ class DataConfiguration(
                 description = "This is a sample of Custom."
             )
         )
+        val all = userService.getRefactorings(admin.id)
+        if (refactorings.size != all.size) {
+            all.forEach { refactoringService.delete(it.id) }
+            refactorings.forEach {
+                refactoringService.save(it)
+            }
+        }
     }
 
 }
