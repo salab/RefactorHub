@@ -25,7 +25,8 @@ data class Draft(
     @JoinColumn(name = "type", nullable = false)
     var type: RefactoringType = RefactoringType(),
 
-    @Column(name = "data", nullable = false, columnDefinition = "text")
+    @Lob
+    @Column(name = "data", nullable = false)
     var data: Refactoring.Data = Refactoring.Data(type),
 
     @Column(name = "description", nullable = false, columnDefinition = "text")
