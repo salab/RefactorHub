@@ -33,8 +33,7 @@ export default class MonacoEditor extends Vue {
       this.diffEditor = monaco.editor.createDiffEditor(container, {
         enableSplitViewResizing: false,
         automaticLayout: true,
-        readOnly: true,
-        theme: 'vs-dark'
+        readOnly: true
       })
     }
   }

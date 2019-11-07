@@ -67,9 +67,7 @@ const config: Configuration = {
    ** https://github.com/nuxt-community/vuetify-module
    */
   vuetify: {
-    theme: {
-      dark: true
-    },
+    theme: {},
     icons: {
       iconfont: 'fa'
     },
