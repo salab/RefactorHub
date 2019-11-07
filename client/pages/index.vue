@@ -6,10 +6,10 @@
           <v-btn
             v-for="refactoring in refactorings"
             :key="refactoring.id"
-            class="mx-2"
+            class="text-capitalize mx-2"
             @click="fork(refactoring.id)"
           >
-            Fork ({{ refactoring.id }})
+            {{ refactoring.type.name }} ({{ refactoring.id }})
           </v-btn>
         </v-row>
         <v-divider class="my-4" />
