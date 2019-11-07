@@ -12,3 +12,6 @@ logging:
         internal:
           util: DEBUG
         SQL: DEBUG
+spring:
+  jpa:
+    show-sql: true
