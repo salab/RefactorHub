@@ -2,6 +2,7 @@ package jp.ac.titech.cs.se.refactorhub.services
 
 import jp.ac.titech.cs.se.refactorhub.exceptions.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.models.RefactoringType
+import jp.ac.titech.cs.se.refactorhub.models.element.Element
 import jp.ac.titech.cs.se.refactorhub.repositories.RefactoringTypeRepository
 import org.springframework.stereotype.Service
 
@@ -22,6 +23,19 @@ class RefactoringTypeService(
         val optional = refactoringTypeRepository.findByName(name)
         if (optional.isPresent) return optional.get()
         throw NotFoundException("RefactoringType(name=$name) is not found.")
+    }
+
+    fun create(
+        name: String,
+        before: Map<String, Element.Type> = mapOf(),
+        after: Map<String, Element.Type> = mapOf()
+    ): RefactoringType {
+        val type = refactoringTypeRepository.findByName(name)
+        return if (type.isPresent) {
+            type.get()
+        } else {
+            refactoringTypeRepository.save(RefactoringType(name, before, after))
+        }
     }
 
     fun save(type: RefactoringType): RefactoringType = refactoringTypeRepository.save(type)
