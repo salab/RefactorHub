@@ -9,9 +9,9 @@ import java.util.*
 
 @Repository
 interface RefactoringRepository : JpaRepository<Refactoring, Long> {
-    @Query("SELECT r FROM Refactoring r JOIN FETCH r.children WHERE r.id = (:id)")
+    @Query("SELECT r FROM Refactoring r LEFT JOIN FETCH r.children WHERE r.id = (:id)")
     fun findByIdAndFetchChildrenEagerly(@Param("id") id: Long): Optional<Refactoring>
 
-    @Query("SELECT r FROM Refactoring r JOIN FETCH r.drafts WHERE r.id = (:id)")
+    @Query("SELECT r FROM Refactoring r LEFT JOIN FETCH r.drafts WHERE r.id = (:id)")
     fun findByIdAndFetchDraftsEagerly(@Param("id") id: Long): Optional<Refactoring>
 }

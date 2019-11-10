@@ -11,9 +11,9 @@ import java.util.*
 interface UserRepository : JpaRepository<User, Long> {
     fun findByName(name: String): Optional<User>
 
-    @Query("SELECT u FROM User u JOIN FETCH u.drafts WHERE u.id = (:id)")
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.drafts WHERE u.id = (:id)")
     fun findByIdAndFetchDraftsEagerly(@Param("id") id: Long): Optional<User>
 
-    @Query("SELECT u FROM User u JOIN FETCH u.refactorings WHERE u.id = (:id)")
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.refactorings WHERE u.id = (:id)")
     fun findByIdAndFetchRefactoringsEagerly(@Param("id") id: Long): Optional<User>
 }
