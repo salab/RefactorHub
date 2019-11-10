@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 @Service
 class GitHubService(
     private val userService: UserService,
-    @Value("\${github.access.token}")
+    @Value("\${github.access.token:}")
     private val accessToken: String
 ) {
 
