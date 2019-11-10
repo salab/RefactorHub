@@ -113,7 +113,8 @@ const config: Configuration = {
       github: {
         client_id: process.env.CLIENT_ID,
         client_secret: process.env.CLIENT_SECRET,
-        userinfo_endpoint: '/api/user/me'
+        userinfo_endpoint: '/api/user/me',
+        scope: ['read:user']
       }
     }
   }
