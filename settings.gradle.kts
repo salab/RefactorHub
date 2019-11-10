@@ -4,4 +4,3 @@ pluginManagement {
     }
 }
 rootProject.name = "refactorhub"
-include("client")

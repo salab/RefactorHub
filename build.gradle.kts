@@ -56,14 +56,4 @@ tasks {
     withType<Test> {
         useJUnitPlatform()
     }
-    withType<BootJar> {
-        dependsOn("generateResources")
-    }
-    register<Copy>("generateResources") {
-        dependsOn(":client:generate")
-        from("client/dist") {
-            include("**/*.*")
-        }
-        into("${project.buildDir}/resources/main/static")
-    }
 }
