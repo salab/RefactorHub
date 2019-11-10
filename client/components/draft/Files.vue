@@ -160,8 +160,7 @@ export default class Files extends Vue {
 <style lang="scss" scope>
 .files-panel-header {
   min-height: 36px !important;
-  padding: 0;
-  padding-right: 8px;
+  padding: 0 8px 0 0 !important;
 }
 .file-list {
   max-height: 200px;
