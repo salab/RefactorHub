@@ -115,6 +115,15 @@ export class Editor {
       range.endColumn + 1
     )
   }
+
+  toRange(range: monaco.Range): Range {
+    return {
+      startLine: range.startLineNumber,
+      startColumn: range.startColumn,
+      endLine: range.endLineNumber,
+      endColumn: range.endColumn - 1
+    }
+  }
 }
 
 export default (

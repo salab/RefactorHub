@@ -136,9 +136,17 @@ export default class extends Vue {
   private onChangeElement(diff: Diff, value?: [string, Element]) {
     if (!this.draft) return
     if (value !== undefined) {
-      this.$refs.editor.showWidgets(diff, value[1].type)
+      const type = value[1].type
+      if (type === 'Statements') {
+        this.$refs.editor.setupStatementsCursor(diff)
+        this.$refs.editor.hideWidgets(diff)
+      } else {
+        this.$refs.editor.showWidgets(diff, type)
+        this.$refs.editor.disposeStatementsCursor(diff)
+      }
     } else {
       this.$refs.editor.hideWidgets(diff)
+      this.$refs.editor.disposeStatementsCursor(diff)
     }
   }
 
