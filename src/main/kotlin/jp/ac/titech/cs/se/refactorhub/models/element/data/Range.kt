@@ -1,5 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.models.element.data
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.io.Serializable
 
 data class Range(
@@ -8,5 +9,6 @@ data class Range(
     var endLine: Int = 0,
     var endColumn: Int = 0
 ) : Serializable {
+    @JsonIgnore
     fun isEmpty() = startLine == 0 && startColumn == 0 && endLine == 0 && endColumn == 0
 }
