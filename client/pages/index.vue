@@ -14,7 +14,8 @@
         </v-row>
         <v-divider class="my-4" />
         <v-row align="center" justify="center">
-          <v-btn @click="$auth.loginWith('github')">
+          <div v-if="$auth.loggedIn">Welcome, {{ $auth.user.name }}</div>
+          <v-btn v-else @click="$auth.loginWith('github')">
             <v-icon left>fab fa-github</v-icon> Login
           </v-btn>
         </v-row>
