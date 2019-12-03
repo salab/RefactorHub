@@ -10,8 +10,8 @@ import * as monaco from 'monaco-editor'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import { Diff, Element } from 'refactorhub'
-import { Debounce } from 'vue-debounce-decorator'
 import { cloneDeep } from 'lodash'
+import { Debounce } from 'lodash-decorators'
 
 @Component({
   components: {

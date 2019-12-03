@@ -79,7 +79,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
-import { Debounce } from 'vue-debounce-decorator'
+import { Debounce } from 'lodash-decorators'
 
 @Component
 export default class Info extends Vue {
