@@ -32,6 +32,7 @@ import { Component, Vue } from 'nuxt-property-decorator'
 })
 export default class extends Vue {
   message: string = ''
+
   private async getHello() {
     try {
       this.message = await this.$client.getHello()
@@ -39,6 +40,7 @@ export default class extends Vue {
       if (e instanceof Error) this.message = e.message
     }
   }
+
   private async postHello() {
     try {
       this.message = await this.$client.postHello()
@@ -46,6 +48,7 @@ export default class extends Vue {
       if (e instanceof Error) this.message = e.message
     }
   }
+
   private async getDraft() {
     try {
       this.message = (await this.$client.getDraft(1)).description
@@ -53,6 +56,7 @@ export default class extends Vue {
       if (e instanceof Error) this.message = e.message
     }
   }
+
   private head() {
     return { title: 'Hello' }
   }

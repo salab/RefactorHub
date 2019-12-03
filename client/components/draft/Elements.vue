@@ -73,6 +73,7 @@ export default class Elements extends Vue {
   private get draft() {
     return this.$accessor.draft.draft
   }
+
   private get elementTypes() {
     return this.$accessor.draft.elementTypes
   }

@@ -66,15 +66,19 @@ export default class extends Vue {
   private get draft() {
     return this.$accessor.draft.draft
   }
+
   private get commit() {
     return this.$accessor.draft.commit
   }
+
   private get file() {
     return this.$accessor.draft.file
   }
+
   private get element() {
     return this.$accessor.draft.element
   }
+
   private get elementTypes() {
     return this.$accessor.draft.elementTypes
   }

@@ -27,12 +27,14 @@ export default class MonacoEditor extends Vue {
     before: [],
     after: []
   }
+
   private statements: {
     [key in Diff]: Element[]
   } = {
     before: [],
     after: []
   }
+
   private listeners: {
     [key in Diff]: monaco.IDisposable[]
   } = {

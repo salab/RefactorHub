@@ -86,9 +86,11 @@ export default class Info extends Vue {
   private get draft() {
     return this.$accessor.draft.draft
   }
+
   private get commit() {
     return this.$accessor.draft.commit
   }
+
   private get refactoringTypes() {
     return this.$accessor.draft.refactoringTypes
   }
