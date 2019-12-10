@@ -15,7 +15,7 @@ class GitHubService(
 
     val github: GitHub
         get() {
-            val credentials = SecurityContextHolder.getContext().authentication.credentials
+            val credentials = SecurityContextHolder.getContext().authentication?.credentials
             return GitHub.connectUsingOAuth(if (credentials is String) credentials else accessToken)
         }
 
