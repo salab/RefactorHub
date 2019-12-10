@@ -30,16 +30,20 @@ export class Client {
   }
 
   async updateDraft(id: number, description?: string, type?: string) {
-    return (await this.$axios.patch<Draft>(`/api/draft/${id}`, {
-      description,
-      type
-    })).data
+    return (
+      await this.$axios.patch<Draft>(`/api/draft/${id}`, {
+        description,
+        type
+      })
+    ).data
   }
 
   async updateElement(id: number, diff: Diff, key: string, element: Element) {
-    return (await this.$axios.patch<Draft>(`/api/draft/${id}/${diff}/${key}`, {
-      element
-    })).data
+    return (
+      await this.$axios.patch<Draft>(`/api/draft/${id}/${diff}/${key}`, {
+        element
+      })
+    ).data
   }
 
   async getCommitInfo(sha: string) {
@@ -52,9 +56,11 @@ export class Client {
     sha: string,
     path: string
   ) {
-    return (await this.$axios.get<TextModel>(`/api/editor/text_model`, {
-      params: { owner, repository, sha, path }
-    })).data
+    return (
+      await this.$axios.get<TextModel>(`/api/editor/text_model`, {
+        params: { owner, repository, sha, path }
+      })
+    ).data
   }
 
   async getRefactorings() {
@@ -72,6 +78,12 @@ export class Client {
 
   async getElementTypes() {
     return (await this.$axios.get<string[]>('/api/element/types')).data
+  }
+
+  async getUserRefactorings(id: number) {
+    return (
+      await this.$axios.get<Refactoring[]>(`/api/user/${id}/refactorings`)
+    ).data
   }
 }
 
