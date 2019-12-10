@@ -44,14 +44,14 @@ class UserService(
             val owner = me()
             return optional.get().also {
                 if (it != owner) throw ForbiddenException("User(id=${owner.id}) is not an owner.")
-            }.drafts.toList()
+            }.drafts
         }
         throw NotFoundException("User(id=$id) is not found.")
     }
 
     fun getRefactorings(id: Long): List<Refactoring> {
         val optional = userRepository.findByIdAndFetchRefactoringsEagerly(id)
-        if (optional.isPresent) return optional.get().refactorings.toList()
+        if (optional.isPresent) return optional.get().refactorings
         throw NotFoundException("User(id=$id) is not found.")
     }
 

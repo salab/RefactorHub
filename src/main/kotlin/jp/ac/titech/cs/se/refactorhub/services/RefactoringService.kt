@@ -23,13 +23,13 @@ class RefactoringService(
 
     fun getChildren(id: Long): List<Refactoring> {
         val optional = refactoringRepository.findByIdAndFetchChildrenEagerly(id)
-        if (optional.isPresent) return optional.get().children.toList()
+        if (optional.isPresent) return optional.get().children
         throw NotFoundException("Refactoring(id=$id) is not found.")
     }
 
     fun getDrafts(id: Long): List<Draft> {
         val optional = refactoringRepository.findByIdAndFetchDraftsEagerly(id)
-        if (optional.isPresent) return optional.get().drafts.toList()
+        if (optional.isPresent) return optional.get().drafts
         throw NotFoundException("Refactoring(id=$id) is not found.")
     }
 

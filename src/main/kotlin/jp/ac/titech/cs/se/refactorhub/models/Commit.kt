@@ -20,12 +20,12 @@ data class Commit(
     @JsonIgnore
     @OneToMany(mappedBy = "commit")
     @Column(name = "annotations", nullable = false)
-    val refactorings: MutableSet<Refactoring> = mutableSetOf()
+    val refactorings: MutableList<Refactoring> = ArrayList()
 
     @JsonIgnore
     @OneToMany(mappedBy = "commit")
     @Column(name = "drafts", nullable = false)
-    val drafts: MutableSet<Draft> = mutableSetOf()
+    val drafts: MutableList<Draft> = ArrayList()
 
     data class Info(
         val sha: String,

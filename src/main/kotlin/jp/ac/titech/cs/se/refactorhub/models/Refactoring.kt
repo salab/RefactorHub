@@ -47,17 +47,17 @@ data class Refactoring(
     @JsonIgnore
     @OneToMany(mappedBy = "parent")
     @Column(name = "children", nullable = false)
-    val children: MutableSet<Refactoring> = mutableSetOf()
+    val children: MutableList<Refactoring> = ArrayList()
 
     @JsonIgnore
     @OneToMany(mappedBy = "parent", cascade = [CascadeType.REMOVE])
     @Column(name = "draft_children", nullable = false)
-    val draftChildren: MutableSet<Draft> = mutableSetOf()
+    val draftChildren: MutableList<Draft> = ArrayList()
 
     @JsonIgnore
     @OneToMany(mappedBy = "origin", cascade = [CascadeType.REMOVE])
     @Column(name = "drafts", nullable = false)
-    val drafts: MutableSet<Draft> = mutableSetOf()
+    val drafts: MutableList<Draft> = ArrayList()
 
     @PostUpdate
     private fun onPostUpdate() {

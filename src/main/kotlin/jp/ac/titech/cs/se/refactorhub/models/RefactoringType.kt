@@ -35,10 +35,10 @@ data class RefactoringType(
     @JsonIgnore
     @OneToMany(mappedBy = "type")
     @Column(name = "refactorings", nullable = false)
-    val refactorings: MutableSet<Refactoring> = mutableSetOf()
+    val refactorings: MutableList<Refactoring> = ArrayList()
 
     @JsonIgnore
     @OneToMany(mappedBy = "type")
     @Column(name = "drafts", nullable = false)
-    val drafts: MutableSet<Draft> = mutableSetOf()
+    val drafts: MutableList<Draft> = ArrayList()
 }

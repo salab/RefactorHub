@@ -18,12 +18,12 @@ data class User(
     @JsonIgnore
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.REMOVE])
     @Column(name = "refactorings", nullable = false)
-    val refactorings: MutableSet<Refactoring> = mutableSetOf()
+    val refactorings: MutableList<Refactoring> = ArrayList()
 
     @JsonIgnore
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.REMOVE])
     @Column(name = "drafts", nullable = false)
-    val drafts: MutableSet<Draft> = mutableSetOf()
+    val drafts: MutableList<Draft> = ArrayList()
 
     @JsonIgnore
     override fun getUsername() = name
