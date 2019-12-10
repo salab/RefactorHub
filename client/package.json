@@ -5,18 +5,19 @@
   "author": "Ryo Kuramoto <kuramoto@se.cs.titech.ac.jp>",
   "private": true,
   "scripts": {
-    "lint": "eslint --ext .js,.ts,.vue --ignore-path .gitignore .",
+    "lint": "eslint --ext .js,.ts,.html,.vue --ignore-path .gitignore .",
+    "format": "prettier --write --ignore-path .gitignore **/*.{js,ts,html,vue}",
     "dev": "nuxt-ts",
     "build": "nuxt-ts build",
     "start": "nuxt-ts start",
     "generate": "nuxt-ts generate"
   },
   "dependencies": {
-    "@nuxt/typescript-runtime": "^0.2.10",
+    "@nuxt/typescript-runtime": "^0.3.1",
     "@nuxtjs/auth": "^4.8.4",
     "@nuxtjs/axios": "^5.8.0",
-    "@nuxtjs/vuetify": "^1.9.0",
-    "change-case": "^4.0.0",
+    "@nuxtjs/vuetify": "^1.9.1",
+    "change-case": "^4.1.0",
     "lodash": "^4.17.15",
     "lodash-decorators": "^6.0.1",
     "monaco-editor": "^0.17.0",
@@ -28,14 +29,12 @@
     "vuex": "^3.1.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.4",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.7.4",
-    "@babel/plugin-proposal-optional-chaining": "^7.7.4",
-    "@nuxt/typescript-build": "^0.3.10",
+    "@babel/core": "^7.7.5",
+    "@nuxt/typescript-build": "^0.5.0",
     "@nuxtjs/eslint-config-typescript": "^1.0.0",
     "@nuxtjs/eslint-module": "^1.1.0",
     "@types/lodash": "^4.14.149",
-    "@types/nuxtjs__auth": "^4.8.1",
+    "@types/nuxtjs__auth": "^4.8.3",
     "deepmerge": "^4.2.2",
     "eslint": "^6.7.2",
     "eslint-config-prettier": "^6.7.0",
@@ -47,7 +46,7 @@
     "sass-loader": "^8.0.0",
     "ts-loader": "^6.2.1",
     "ts-node": "^8.5.4",
-    "typescript": "^3.7.2",
+    "typescript": "^3.7.3",
     "vue-template-compiler": "^2.6.10",
     "webpack": "^4.41.2"
   }
