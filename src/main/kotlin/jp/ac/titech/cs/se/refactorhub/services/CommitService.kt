@@ -2,9 +2,11 @@ package jp.ac.titech.cs.se.refactorhub.services
 
 import jp.ac.titech.cs.se.refactorhub.exceptions.BadRequestException
 import jp.ac.titech.cs.se.refactorhub.exceptions.NotFoundException
+import jp.ac.titech.cs.se.refactorhub.exceptions.UnprocessableEntityException
 import jp.ac.titech.cs.se.refactorhub.models.Commit
 import jp.ac.titech.cs.se.refactorhub.repositories.CommitRepository
 import org.springframework.stereotype.Service
+import java.io.IOException
 
 @Service
 class CommitService(
@@ -44,6 +46,27 @@ class CommitService(
         val commit = commitRepository.findBySha(sha)
         return if (commit.isPresent) commit.get()
         else commitRepository.save(Commit(sha, owner, repository))
+    }
+
+    fun createByUrl(url: String): Commit {
+        val commit = tryCreate(url)
+        return create(commit.sha, commit.owner, commit.repository)
+    }
+
+    fun tryCreate(url: String): Commit {
+        val result = GITHUB_COMMIT_URL.matchEntire(url)
+            ?: throw UnprocessableEntityException("url doesn't match GitHub commit URL.")
+        val (owner, repository, sha) = result.destructured
+        val commit = try {
+            gitHubService.getCommit(sha, owner, repository)
+        } catch (e: IOException) {
+            throw UnprocessableEntityException("repository or commit doesn't exist on GitHub.", e)
+        }
+        return Commit(commit.shA1, owner, repository)
+    }
+
+    companion object {
+        val GITHUB_COMMIT_URL = """https://github.com/([a-zA-Z0-9\-]+)/([\w\-]+)/commit/([a-fA-F0-9]+)/?""".toRegex()
     }
 
 }
