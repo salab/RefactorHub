@@ -82,7 +82,7 @@ import { Component, Vue } from 'nuxt-property-decorator'
 import { Debounce } from 'lodash-decorators'
 
 @Component
-export default class Info extends Vue {
+export default class CommitInfo extends Vue {
   private get draft() {
     return this.$accessor.draft.draft
   }

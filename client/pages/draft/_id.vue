@@ -1,12 +1,12 @@
 <template>
   <v-layout column fill-height>
     <v-flex>
-      <info />
+      <commit-info />
     </v-flex>
     <v-flex xs12>
       <v-layout fill-height>
         <v-flex>
-          <elements />
+          <element-items />
         </v-flex>
         <v-flex xs12>
           <v-layout column fill-height>
@@ -14,47 +14,34 @@
               <monaco-editor ref="editor" />
             </v-flex>
             <v-flex>
-              <files />
+              <changed-files />
             </v-flex>
           </v-layout>
         </v-flex>
         <v-flex>
-          <elements :diff="'after'" />
+          <element-items :diff="'after'" />
         </v-flex>
       </v-layout>
     </v-flex>
-    <component :is="'style'">
-      <!-- prettier-ignore -->
-      <template v-for="type in elementTypes">
-        .element-widget-{{ type }} {
-          background-color: {{ $editor.getColor(type, 0.2) }};
-          color: {{ $editor.getColor(type, 0.9) }};
-        }
-        .element-item-{{ type }} {
-          border-color: {{ $editor.getColor(type) }} !important;
-        }
-        .element-decoration-{{ type }} {
-          background-color: {{ $editor.getColor(type, 0.2) }};
-          border-color: {{ $editor.getColor(type, 0.9) }} !important;
-        }
-      </template>
-    </component>
+    <element-type-colors />
   </v-layout>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'nuxt-property-decorator'
 import { Diff, Element } from 'refactorhub'
-import Elements from '~/components/draft/Elements.vue'
-import Files from '~/components/draft/Files.vue'
-import Info from '~/components/draft/Info.vue'
+import ChangedFiles from '~/components/draft/ChangedFiles.vue'
+import CommitInfo from '~/components/draft/CommitInfo.vue'
+import ElementItems from '~/components/draft/ElementItems.vue'
+import ElementTypeColors from '~/components/draft/ElementTypeColors.vue'
 import MonacoEditor from '~/components/draft/MonacoEditor.vue'
 
 @Component({
   components: {
-    Elements,
-    Files,
-    Info,
+    ChangedFiles,
+    CommitInfo,
+    ElementItems,
+    ElementTypeColors,
     MonacoEditor
   }
 })
@@ -120,7 +107,7 @@ export default class extends Vue {
       if (draft) {
         Object.entries(draft.data[diff]).forEach(([key, element]) => {
           if (path === element.location.path) {
-            this.$refs.editor.setDecoration(diff, key, element)
+            this.$refs.editor.setElementDecoration(diff, key, element)
           }
         })
       }
@@ -143,13 +130,13 @@ export default class extends Vue {
       const type = value[1].type
       if (type === 'Statements') {
         this.$refs.editor.setupStatementsCursor(diff)
-        this.$refs.editor.hideWidgets(diff)
+        this.$refs.editor.hideElementWidgets(diff)
       } else {
-        this.$refs.editor.showWidgets(diff, type)
+        this.$refs.editor.showElementWidgets(diff, type)
         this.$refs.editor.disposeStatementsCursor(diff)
       }
     } else {
-      this.$refs.editor.hideWidgets(diff)
+      this.$refs.editor.hideElementWidgets(diff)
       this.$refs.editor.disposeStatementsCursor(diff)
     }
   }

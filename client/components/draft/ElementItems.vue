@@ -53,7 +53,7 @@ import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
 import { Diff } from 'refactorhub'
 
 @Component
-export default class Elements extends Vue {
+export default class ElementItems extends Vue {
   @Prop({ default: 'before' })
   private diff!: Diff
 

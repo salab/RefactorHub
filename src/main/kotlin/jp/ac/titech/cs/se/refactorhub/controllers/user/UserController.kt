@@ -1,7 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.controllers.user
 
 import jp.ac.titech.cs.se.refactorhub.services.UserService
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -14,15 +13,15 @@ class UserController(
 ) {
 
     @GetMapping("/{id}")
-    fun get(@PathVariable("id") id: Long) = ResponseEntity.ok(userService.get(id))
+    fun get(@PathVariable("id") id: Long) = userService.get(id)
 
     @GetMapping("/{id}/drafts")
-    fun getDrafts(@PathVariable("id") id: Long) = ResponseEntity.ok(userService.getDrafts(id))
+    fun getDrafts(@PathVariable("id") id: Long) = userService.getDrafts(id)
 
     @GetMapping("/{id}/refactorings")
-    fun getRefactorings(@PathVariable("id") id: Long) = ResponseEntity.ok(userService.getRefactorings(id))
+    fun getRefactorings(@PathVariable("id") id: Long) = userService.getRefactorings(id)
 
     @GetMapping("/me")
-    fun me() = ResponseEntity.ok(userService.me())
+    fun me() = userService.me()
 
 }

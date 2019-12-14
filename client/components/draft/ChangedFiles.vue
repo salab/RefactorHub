@@ -115,7 +115,7 @@
 import { Component, Vue, Watch } from 'nuxt-property-decorator'
 
 @Component
-export default class Files extends Vue {
+export default class ChangedFiles extends Vue {
   private before?: number = 0
   private after?: number = 0
   private common?: number = 0

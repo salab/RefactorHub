@@ -20,7 +20,9 @@ import { Debounce } from 'lodash-decorators'
 })
 export default class MonacoEditor extends Vue {
   public diffEditor!: monaco.editor.IStandaloneDiffEditor
+
   private pending = 0
+
   private widgets: {
     [key in Diff]: (monaco.editor.IContentWidget & { type: string })[]
   } = {
@@ -66,7 +68,7 @@ export default class MonacoEditor extends Vue {
   ) {
     this.pending++
 
-    const uri = this.$editor.getUri(owner, repository, sha, path)
+    const uri = this.$editor.getCommitUri(owner, repository, sha, path)
     const text = await this.$accessor.draft.getTextModel({
       owner,
       repository,
@@ -74,10 +76,9 @@ export default class MonacoEditor extends Vue {
       path,
       uri: uri.toString()
     })
-    let model = monaco.editor.getModel(uri)
-    if (!model) {
-      model = monaco.editor.createModel(text.value, text.language, uri)
-    }
+    const model =
+      monaco.editor.getModel(uri) ||
+      monaco.editor.createModel(text.value, text.language, uri)
 
     if (diff === 'before') {
       this.diffEditor.setModel({
@@ -94,19 +95,23 @@ export default class MonacoEditor extends Vue {
         modified: model
       })
     }
+
     const editor = this.getEditor(diff)
+
+    // Clear element widgets
     this.widgets[diff].forEach(widget => {
       editor.removeContentWidget(widget)
     })
+
     text.elements.forEach((element, i) => {
       if (element.type === 'Statements') {
         this.statements[diff].push(element)
       } else {
-        const widget = this.$editor.createWidget(
+        const widget = this.$editor.createElementWidget(
+          diff,
           editor,
           element,
           i,
-          diff,
           async () => {
             const draft = this.$accessor.draft.draft
             const item = this.$accessor.draft.element[diff]
@@ -115,8 +120,8 @@ export default class MonacoEditor extends Vue {
               this.$accessor.draft.setDraft(
                 await this.$client.updateElement(draft.id, diff, key, element)
               )
-              this.deleteDecoration(diff, key)
-              this.setDecoration(diff, key, element)
+              this.deleteElementDecoration(diff, key)
+              this.setElementDecoration(diff, key, element)
               this.$accessor.draft.setElement({ diff })
             }
           }
@@ -129,14 +134,14 @@ export default class MonacoEditor extends Vue {
     this.pending--
   }
 
-  public showWidgets(diff: Diff, type: string) {
+  public showElementWidgets(diff: Diff, type: string) {
     this.widgets[diff].forEach(widget => {
       if (widget.type === type) widget.getDomNode().style.display = 'block'
       else widget.getDomNode().style.display = 'none'
     })
   }
 
-  public hideWidgets(diff: Diff) {
+  public hideElementWidgets(diff: Diff) {
     this.widgets[diff].forEach(widget => {
       widget.getDomNode().style.display = 'none'
     })
@@ -159,32 +164,32 @@ export default class MonacoEditor extends Vue {
   public updateStatements(diff: Diff, range: monaco.Range) {
     this.statements[diff].forEach(async element => {
       if (
-        this.$editor.toMonacoRange(element.location.range).containsRange(range)
+        this.$editor.asMonacoRange(element.location.range).containsRange(range)
       ) {
         const draft = this.$accessor.draft.draft
         const item = this.$accessor.draft.element[diff]
         if (draft && item) {
           const key = item[0]
           const newElement = cloneDeep(element)
-          newElement.location.range = this.$editor.toRange(range)
+          newElement.location.range = this.$editor.asRange(range)
           this.$accessor.draft.setDraft(
             await this.$client.updateElement(draft.id, diff, key, newElement)
           )
-          this.deleteDecoration(diff, key)
-          this.setDecoration(diff, key, newElement)
+          this.deleteElementDecoration(diff, key)
+          this.setElementDecoration(diff, key, newElement)
           this.$accessor.draft.setElement({ diff })
         }
       }
     })
   }
 
-  public setDecoration(diff: Diff, key: string, element: Element) {
+  public setElementDecoration(diff: Diff, key: string, element: Element) {
     const editor = this.getEditor(diff)
     const model = editor.getModel()
     if (model) {
       const [id] = editor.deltaDecorations(
         [],
-        [this.$editor.createDecoration(key, element)]
+        [this.$editor.createElementDecoration(key, element)]
       )
       this.$accessor.draft.decorations[diff].set(key, {
         id,
@@ -193,12 +198,12 @@ export default class MonacoEditor extends Vue {
     }
   }
 
-  public deleteDecoration(diff: Diff, key: string) {
+  public deleteElementDecoration(diff: Diff, key: string) {
     const info = this.$accessor.draft.decorations[diff].get(key)
     if (info !== undefined) {
       const model = monaco.editor.getModel(info.uri)
       if (model !== null) model.deltaDecorations([info.id], [])
-      this.$accessor.draft.deleteDecoration({ diff, key })
+      this.$accessor.draft.deleteElementDecoration({ diff, key })
     }
   }
 

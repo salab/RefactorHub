@@ -1,4 +1,4 @@
-import { Context } from '@nuxt/types'
+import { Plugin } from '@nuxt/types'
 import { NuxtAxiosInstance } from '@nuxtjs/axios'
 import {
   Diff,
@@ -11,7 +11,7 @@ import {
 } from 'refactorhub'
 
 export class Client {
-  private $axios!: NuxtAxiosInstance
+  private $axios: NuxtAxiosInstance
 
   constructor($axios: NuxtAxiosInstance) {
     this.$axios = $axios
@@ -87,9 +87,8 @@ export class Client {
   }
 }
 
-export default (
-  { $axios }: Context,
-  inject: (name: string, client: Client) => void
-) => {
+const client: Plugin = ({ $axios }, inject) => {
   inject('client', new Client($axios))
 }
+
+export default client

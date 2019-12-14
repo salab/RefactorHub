@@ -1,6 +1,5 @@
 package jp.ac.titech.cs.se.refactorhub.controllers
 
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -11,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController
 class MainController {
 
     @GetMapping("/hello")
-    fun hello(): ResponseEntity<String> = ResponseEntity.ok("Get Hello")
+    fun hello() = "Get Hello"
 
     @PostMapping("/hello")
-    fun postHello(): ResponseEntity<String> = ResponseEntity.ok("Post Hello")
+    fun postHello() = "Post Hello"
 
 }

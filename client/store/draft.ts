@@ -37,7 +37,9 @@ export const state = (): {
     after: new Map()
   }
 })
+
 export const getters = getterTree(state, {})
+
 export const mutations = mutationTree(state, {
   setDraft: (state, draft: Draft) => {
     state.draft = draft
@@ -63,7 +65,7 @@ export const mutations = mutationTree(state, {
   ) => {
     state.element[diff] = element
   },
-  setDecoration: (
+  setElementDecoration: (
     state,
     {
       diff,
@@ -74,10 +76,11 @@ export const mutations = mutationTree(state, {
   ) => {
     state.decorations[diff].set(key, { id, uri })
   },
-  deleteDecoration: (state, { diff, key }: { diff: Diff; key: string }) => {
+  deleteElementDecoration: (state, { diff, key }: { diff: Diff; key: string }) => {
     state.decorations[diff].delete(key)
   }
 })
+
 export const actions = actionTree(
   { state, getters, mutations },
   {

@@ -2,7 +2,6 @@ package jp.ac.titech.cs.se.refactorhub.controllers.editor
 
 import jp.ac.titech.cs.se.refactorhub.services.EditorService
 import jp.ac.titech.cs.se.refactorhub.services.GitHubService
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -21,7 +20,6 @@ class EditorController(
         @RequestParam owner: String,
         @RequestParam repository: String,
         @RequestParam path: String
-    ) =
-        ResponseEntity.ok(editorService.createTextModel(gitHubService.getContent(sha, owner, repository, path)))
+    ) = editorService.createTextModel(gitHubService.getContent(sha, owner, repository, path))
 
 }
