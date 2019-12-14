@@ -20,9 +20,10 @@
       "@types/node",
       "@nuxt/types",
       "@nuxtjs/axios",
+      "@nuxtjs/vuetify",
       "@types/nuxtjs__auth",
-      "vuetify",
       "./types"
     ]
-  }
+  },
+  "exclude": ["node_modules"]
 }

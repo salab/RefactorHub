@@ -17,20 +17,7 @@ const config: Configuration = {
         content: process.env.npm_package_description || ''
       }
     ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700'
-      },
-      {
-        rel: 'stylesheet',
-        href: 'https://use.fontawesome.com/releases/v5.8.2/css/all.css',
-        integrity:
-          'sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay',
-        crossorigin: 'anonymous'
-      }
-    ]
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
   /*
    ** Customize the progress-bar color
@@ -45,10 +32,19 @@ const config: Configuration = {
    */
   plugins: ['~/plugins/axios', '~/plugins/client', '~/plugins/editor'],
   /*
+   ** Nuxt.js dev-modules
+   */
+  buildModules: [
+    '@nuxt/typescript-build',
+    // Doc: https://github.com/nuxt-community/eslint-module
+    '@nuxtjs/eslint-module',
+    '@nuxtjs/vuetify',
+    'nuxt-typed-vuex'
+  ],
+  /*
    ** Nuxt.js modules
    */
   modules: [
-    '@nuxtjs/vuetify',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/auth',
@@ -67,11 +63,12 @@ const config: Configuration = {
    ** https://github.com/nuxt-community/vuetify-module
    */
   vuetify: {
-    theme: {},
-    icons: {
-      iconfont: 'fa'
+    customVariables: ['~/assets/styles/variables.scss'],
+    defaultAssets: {
+      icons: 'fa'
     },
-    customVariables: ['~/assets/styles/variables.scss']
+    theme: {},
+    treeShake: true
   },
   /*
    ** Build configuration
@@ -81,25 +78,10 @@ const config: Configuration = {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx): void {
+    extend(config) {
       if (config.plugins) config.plugins.push(new MonacoEditorWebpackPlugin())
-      // Run ESLint on save
-      if (ctx.isDev && ctx.isClient) {
-        if (!config.module) return
-        config.module.rules.push({
-          enforce: 'pre',
-          test: /\.(js|ts|vue)$/,
-          loader: 'eslint-loader',
-          exclude: /(node_modules)/
-        })
-      }
     }
   },
-  buildModules: [
-    '@nuxt/typescript-build',
-    '@nuxtjs/eslint-module',
-    'nuxt-typed-vuex'
-  ],
   proxy: {
     '/api': process.env.API_URL || 'http://localhost:8080'
   },
