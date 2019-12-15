@@ -38,6 +38,14 @@ export class Client {
     ).data
   }
 
+  async saveDraft(id: number) {
+    return (await this.$axios.post<Refactoring>(`/api/draft/${id}/save`)).data
+  }
+
+  async cancelDraft(id: number) {
+    return (await this.$axios.post<void>(`/api/draft/${id}/cancel`)).data
+  }
+
   async updateElement(id: number, diff: Diff, key: string, element: Element) {
     return (
       await this.$axios.patch<Draft>(`/api/draft/${id}/${diff}/${key}`, {

@@ -1,5 +1,6 @@
 <template>
   <v-layout column fill-height>
+    <draft-header v-if="draft" :id="draft.id" />
     <v-flex>
       <commit-info />
     </v-flex>
@@ -32,6 +33,7 @@ import { Component, Vue, Watch } from 'nuxt-property-decorator'
 import { Diff, Element } from 'refactorhub'
 import ChangedFiles from '~/components/draft/ChangedFiles.vue'
 import CommitInfo from '~/components/draft/CommitInfo.vue'
+import DraftHeader from '~/components/draft/DraftHeader.vue'
 import ElementItems from '~/components/draft/ElementItems.vue'
 import ElementTypeColors from '~/components/draft/ElementTypeColors.vue'
 import MonacoEditor from '~/components/draft/MonacoEditor.vue'
@@ -40,6 +42,7 @@ import MonacoEditor from '~/components/draft/MonacoEditor.vue'
   components: {
     ChangedFiles,
     CommitInfo,
+    DraftHeader,
     ElementItems,
     ElementTypeColors,
     MonacoEditor
