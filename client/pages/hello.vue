@@ -1,23 +1,20 @@
 <template>
-  <v-container fluid fill-height>
-    <v-row align="center" justify="center">
-      <v-col cols="12">
-        <v-row align="center" justify="center">
-          <v-card>
-            <v-card-text>
-              {{ message }}
-            </v-card-text>
-          </v-card>
-        </v-row>
-      </v-col>
-      <v-col cols="12">
-        <v-row align="center" justify="center">
-          <v-btn class="mx-2" @click="getHello">get</v-btn>
-          <v-btn class="mx-2" @click="postHello">post</v-btn>
-          <v-btn class="mx-2" @click="getDraft">draft</v-btn>
-        </v-row>
-      </v-col>
-    </v-row>
+  <v-container fill-height>
+    <v-col>
+      <v-row justify="center">
+        <v-card outlined>
+          <v-card-text>
+            {{ message }}
+          </v-card-text>
+        </v-card>
+      </v-row>
+      <v-divider class="my-4" />
+      <v-row justify="center">
+        <v-btn class="mx-2" @click="getHello">get</v-btn>
+        <v-btn class="mx-2" @click="postHello">post</v-btn>
+        <v-btn class="mx-2" @click="getDraft">draft</v-btn>
+      </v-row>
+    </v-col>
   </v-container>
 </template>
 

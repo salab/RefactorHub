@@ -1,12 +1,10 @@
 <template>
-  <v-container fluid fill-height>
-    <v-row>
-      <v-col>
-        <v-row align="center" justify="center">
-          Redirect ...
-        </v-row>
-      </v-col>
-    </v-row>
+  <v-container fill-height>
+    <v-col>
+      <v-row justify="center">
+        Redirect ...
+      </v-row>
+    </v-col>
   </v-container>
 </template>
 
