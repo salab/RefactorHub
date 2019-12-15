@@ -83,6 +83,13 @@ export default class extends Vue {
     this.$accessor.draft.setFile({ diff: 'after', value: 0 })
   }
 
+  private destroyed() {
+    this.$accessor.draft.setFile({ diff: 'before' })
+    this.$accessor.draft.setFile({ diff: 'after' })
+    this.$accessor.draft.setElement({ diff: 'before' })
+    this.$accessor.draft.setElement({ diff: 'after' })
+  }
+
   @Watch('file.before')
   private async onChangeFileBefore(value?: number) {
     await this.onChangeFile('before', value)
