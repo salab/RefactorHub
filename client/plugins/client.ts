@@ -97,6 +97,10 @@ export class Client {
       await this.$axios.get<Refactoring[]>(`/api/user/${id}/refactorings`)
     ).data
   }
+
+  async getUserDrafts(id: number) {
+    return (await this.$axios.get<Draft[]>(`/api/user/${id}/drafts`)).data
+  }
 }
 
 const client: Plugin = ({ $axios }, inject) => {
