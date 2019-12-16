@@ -79,6 +79,10 @@ export class Client {
     return (await this.$axios.post<Draft>(`/api/refactoring/${id}/fork`)).data
   }
 
+  async editRefactoring(id: number) {
+    return (await this.$axios.post<Draft>(`/api/refactoring/${id}/edit`)).data
+  }
+
   async getRefactoringTypes() {
     return (await this.$axios.get<RefactoringType[]>('/api/refactoring/types'))
       .data

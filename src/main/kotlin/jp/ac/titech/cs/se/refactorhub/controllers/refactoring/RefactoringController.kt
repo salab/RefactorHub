@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.*
 class RefactoringController(
     private val refactoringService: RefactoringService,
     private val refactoringTypeService: RefactoringTypeService,
-    private val draftService: DraftService,
-    private val userService: UserService
+    private val draftService: DraftService
 ) {
 
     @GetMapping
@@ -28,7 +27,10 @@ class RefactoringController(
     fun getDrafts(@PathVariable("id") id: Long) = refactoringService.getDrafts(id)
 
     @PostMapping("/{id}/fork")
-    fun fork(@PathVariable("id") id: Long) = draftService.fork(userService.me(), refactoringService.get(id))
+    fun fork(@PathVariable("id") id: Long) = draftService.fork(refactoringService.get(id))
+
+    @PostMapping("/{id}/edit")
+    fun edit(@PathVariable("id") id: Long) = draftService.edit(refactoringService.get(id))
 
     @GetMapping("/types")
     fun types() = refactoringTypeService.getAll()

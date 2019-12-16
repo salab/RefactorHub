@@ -5,7 +5,6 @@ import jp.ac.titech.cs.se.refactorhub.exceptions.ForbiddenException
 import jp.ac.titech.cs.se.refactorhub.exceptions.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.models.Draft
 import jp.ac.titech.cs.se.refactorhub.models.Refactoring
-import jp.ac.titech.cs.se.refactorhub.models.User
 import jp.ac.titech.cs.se.refactorhub.models.element.Element
 import jp.ac.titech.cs.se.refactorhub.repositories.DraftRepository
 import org.springframework.stereotype.Service
@@ -47,9 +46,9 @@ class DraftService(
         )
     )
 
-    fun fork(owner: User, parent: Refactoring) = draftRepository.save(
+    fun fork(parent: Refactoring) = draftRepository.save(
         Draft(
-            owner,
+            userService.me(),
             parent.commit,
             parent,
             null,
@@ -58,6 +57,22 @@ class DraftService(
             parent.description
         )
     )
+
+    fun edit(origin: Refactoring): Draft {
+        val me = userService.me()
+        if (origin.owner.id != me.id) throw ForbiddenException("User(id=${me.id}) is not Refactoring(id=${origin.id})'s owner.")
+        return draftRepository.save(
+            Draft(
+                origin.owner,
+                origin.commit,
+                origin.parent,
+                origin,
+                origin.type,
+                origin.data,
+                origin.description
+            )
+        )
+    }
 
     fun save(draft: Draft) = draftRepository.save(draft)
 
