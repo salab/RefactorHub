@@ -76,7 +76,10 @@ export const mutations = mutationTree(state, {
   ) => {
     state.decorations[diff].set(key, { id, uri })
   },
-  deleteElementDecoration: (state, { diff, key }: { diff: Diff; key: string }) => {
+  deleteElementDecoration: (
+    state,
+    { diff, key }: { diff: Diff; key: string }
+  ) => {
     state.decorations[diff].delete(key)
   }
 })
