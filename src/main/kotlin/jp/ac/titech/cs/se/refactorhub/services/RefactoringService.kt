@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class RefactoringService(
-    private val refactoringRepository: RefactoringRepository
+    private val refactoringRepository: RefactoringRepository,
+    private val draftService: DraftService
 ) {
 
     fun getAll(): List<Refactoring> = refactoringRepository.findAll()
@@ -35,7 +36,7 @@ class RefactoringService(
 
     fun save(draft: Draft): Refactoring {
         val origin = draft.origin
-        return if (origin != null) {
+        val refactoring = if (origin != null) {
             origin.type = draft.type
             origin.data = draft.data
             origin.description = draft.description
@@ -50,6 +51,8 @@ class RefactoringService(
                 draft.description
             )
         )
+        draftService.delete(draft.id)
+        return refactoring
     }
 
     fun save(refactoring: Refactoring): Refactoring = refactoringRepository.save(refactoring)
