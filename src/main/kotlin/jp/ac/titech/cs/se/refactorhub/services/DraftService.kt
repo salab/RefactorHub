@@ -148,4 +148,41 @@ class DraftService(
         return save(draft)
     }
 
+    fun addBeforeElement(
+        id: Long,
+        key: String,
+        typeName: String
+    ) = addElement(id, key, "before", typeName)
+
+    fun addAfterElement(
+        id: Long,
+        key: String,
+        typeName: String
+    ) = addElement(id, key, "after", typeName)
+
+    private fun addElement(
+        id: Long,
+        key: String,
+        which: String,
+        typeName: String
+    ): Draft {
+        val draft = getByOwner(id)
+        val map = when (which) {
+            "before" -> draft.data.before
+            "after" -> draft.data.after
+            else -> throw BadRequestException("need to be either 'before' or 'after'")
+        }
+        val type = try {
+            Element.Type.valueOf(typeName)
+        } catch (e: IllegalArgumentException) {
+            throw BadRequestException("type=$typeName is unsupported")
+        }
+        if (!map.containsKey(key)) {
+            map[key] = type.dataClass.createInstance()
+        } else {
+            throw BadRequestException("Draft(id=$id).data.$which already has key=$key")
+        }
+        return save(draft)
+    }
+
 }

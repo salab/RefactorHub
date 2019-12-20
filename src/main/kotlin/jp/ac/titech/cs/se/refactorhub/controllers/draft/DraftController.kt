@@ -1,5 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.controllers.draft
 
+import jp.ac.titech.cs.se.refactorhub.controllers.draft.requests.AddElementRequest
 import jp.ac.titech.cs.se.refactorhub.controllers.draft.requests.UpdateElementRequest
 import jp.ac.titech.cs.se.refactorhub.controllers.draft.requests.UpdateRequest
 import jp.ac.titech.cs.se.refactorhub.services.DraftService
@@ -41,5 +42,17 @@ class DraftController(
         @PathVariable("key") key: String,
         @RequestBody request: UpdateElementRequest
     ) = draftService.updateAfterElement(id, key, request.element)
+
+    @PutMapping("/{id}/before")
+    fun addBeforeElement(
+        @PathVariable("id") id: Long,
+        @RequestBody request: AddElementRequest
+    ) = draftService.addBeforeElement(id, request.key, request.type)
+
+    @PutMapping("/{id}/after")
+    fun addAfterElement(
+        @PathVariable("id") id: Long,
+        @RequestBody request: AddElementRequest
+    ) = draftService.addAfterElement(id, request.key, request.type)
 
 }
