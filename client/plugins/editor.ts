@@ -63,8 +63,8 @@ export class Editor {
     editor: monaco.editor.ICodeEditor,
     range: monaco.Range
   ) {
-    const width = editor.getConfiguration().fontInfo
-      .typicalHalfwidthCharacterWidth
+    const width = editor.getOption(monaco.editor.EditorOptions.fontInfo.id)
+      .typicalFullwidthCharacterWidth
     if (range.startLineNumber === range.endLineNumber) {
       return width * (range.endColumn - range.startColumn)
     }
@@ -94,7 +94,7 @@ export class Editor {
     range: monaco.Range
   ) {
     return (
-      editor.getConfiguration().fontInfo.lineHeight +
+      editor.getOption(monaco.editor.EditorOptions.fontInfo.id).lineHeight +
       editor.getTopForLineNumber(range.endLineNumber) -
       editor.getTopForLineNumber(range.startLineNumber)
     )
