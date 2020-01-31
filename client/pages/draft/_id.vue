@@ -1,31 +1,19 @@
 <template>
-  <v-layout column fill-height>
-    <draft-header v-if="draft" :id="draft.id" />
-    <v-flex>
-      <commit-info />
-    </v-flex>
-    <v-flex xs12>
-      <v-layout fill-height>
-        <v-flex>
-          <element-items />
-        </v-flex>
-        <v-flex xs12>
-          <v-layout column fill-height>
-            <v-flex xs12>
-              <monaco-editor ref="editor" />
-            </v-flex>
-            <v-flex>
-              <changed-files />
-            </v-flex>
-          </v-layout>
-        </v-flex>
-        <v-flex>
-          <element-items :diff="'after'" />
-        </v-flex>
-      </v-layout>
-    </v-flex>
+  <div class="d-flex flex-column fill-height">
+    <div><draft-header v-if="draft" :id="draft.id" /></div>
+    <div><commit-info /></div>
+    <div class="flex-grow-1 d-flex">
+      <div><element-items /></div>
+      <div class="flex-grow-1 d-flex flex-column">
+        <div class="flex-grow-1">
+          <monaco-editor ref="editor" />
+        </div>
+        <div><changed-files /></div>
+      </div>
+      <div><element-items :diff="'after'" /></div>
+    </div>
     <element-type-colors />
-  </v-layout>
+  </div>
 </template>
 
 <script lang="ts">
@@ -158,12 +146,6 @@ export default class extends Vue {
 </script>
 
 <style lang="scss" scope>
-.v-expansion-panels {
-  border-radius: 0;
-}
-.v-expansion-panel.v-expansion-panel--active.v-item--active {
-  border-radius: 0;
-}
 .v-expansion-panel-content__wrap {
   padding: 0;
 }

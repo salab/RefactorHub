@@ -1,10 +1,10 @@
 <template>
   <v-app-bar dense>
     <v-spacer />
-    <v-btn depressed small color="primary" class="ml-2" @click="save">
+    <v-btn small color="primary" class="ml-2" @click="save">
       Save
     </v-btn>
-    <v-btn depressed small class="ml-2" @click="cancel">
+    <v-btn small class="ml-2" @click="cancel">
       Cancel
     </v-btn>
   </v-app-bar>

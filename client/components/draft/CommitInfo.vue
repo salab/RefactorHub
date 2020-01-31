@@ -1,77 +1,70 @@
 <template>
-  <v-expansion-panels focusable>
+  <v-expansion-panels focusable tile>
     <v-expansion-panel>
       <v-expansion-panel-header v-slot="{ open }" class="info-panel-header">
         <v-fade-transition>
-          <v-flex v-if="draft && !open" d-flex flex-row>
-            <v-flex flex-grow-0 d-flex align-center pr-3 title>
+          <div v-if="draft && !open" class="d-flex">
+            <div class="flex-grow-0 d-flex align-center pr-3 title">
               {{ draft.type.name }}
-            </v-flex>
-            <v-flex d-flex align-center>{{ draft.description }}</v-flex>
-          </v-flex>
+            </div>
+            <div class="d-flex align-center">{{ draft.description }}</div>
+          </div>
         </v-fade-transition>
       </v-expansion-panel-header>
       <v-expansion-panel-content>
-        <v-layout>
-          <v-flex v-if="draft" xs6 px-3 pt-2>
-            <form @submit.prevent="">
-              <v-select
-                v-if="refactoringTypes"
-                :value="draft.type.name"
-                :items="refactoringTypes.map(it => it.name)"
-                label="Refactoring Type"
-                @input="onInputType"
-              />
-              <v-textarea
-                :value="draft.description"
-                rows="2"
-                label="Description"
-                @input="onInputDescription"
-              />
-            </form>
-          </v-flex>
-          <v-divider vertical />
-          <v-flex v-if="commit" xs6 px-3 py-1>
-            <v-flex py-1>
-              <span class="subtitle-1 font-weight-medium">{{
-                commit.owner
-              }}</span>
-              /
-              <span class="subtitle-1 font-weight-medium">{{
-                commit.repository
-              }}</span>
-              /
-              <a
-                :href="commit.url"
-                class="subtitle-1 font-weight-medium"
-                target="_blank"
-                rel="noopener"
-                >{{ commit.sha.substring(0, 7) }}</a
-              >
-            </v-flex>
-            <v-divider />
-            <v-flex py-1>
-              <v-flex
-                v-for="(line, index) in messageLines"
-                :key="index"
-                :class="{
-                  'body-1 font-weight-medium': index === 0,
-                  'body-2': index > 0
-                }"
-              >
-                {{ line }}
-              </v-flex>
-            </v-flex>
-            <v-divider />
-            <v-flex py-1>
-              <span class="subtitle-2">{{ commit.author }}</span>
-              <span class="body-2">committed on</span>
-              <span class="body-2">{{
-                new Date(commit.authorDate).toLocaleString()
-              }}</span>
-            </v-flex>
-          </v-flex>
-        </v-layout>
+        <v-container fluid class="py-0">
+          <v-row>
+            <v-col v-if="draft" cols="6">
+              <form @submit.prevent="">
+                <v-select
+                  v-if="refactoringTypes"
+                  :value="draft.type.name"
+                  :items="refactoringTypes.map(it => it.name)"
+                  label="Refactoring Type"
+                  @input="onInputType"
+                />
+                <v-textarea
+                  :value="draft.description"
+                  rows="2"
+                  label="Description"
+                  @input="onInputDescription"
+                />
+              </form>
+            </v-col>
+            <v-col v-if="commit" cols="6">
+              <div class="subtitle-1 font-weight-medium">
+                <span>{{ commit.owner }}</span>
+                /
+                <span>{{ commit.repository }}</span>
+                /
+                <a :href="commit.url" target="_blank" rel="noopener">{{
+                  commit.sha.substring(0, 7)
+                }}</a>
+              </div>
+              <v-divider class="my-1" />
+              <div>
+                <div
+                  v-for="(line, index) in messageLines"
+                  :key="index"
+                  :class="{
+                    'body-1 font-weight-medium': index === 0,
+                    'body-2': index > 0
+                  }"
+                >
+                  {{ line }}
+                </div>
+              </div>
+              <v-divider class="my-1" />
+              <div>
+                <span class="subtitle-2">{{ commit.author }}</span>
+                <span class="body-2">committed on</span>
+                <span class="body-2">{{
+                  new Date(commit.authorDate).toLocaleString()
+                }}</span>
+              </div>
+            </v-col>
+          </v-row>
+        </v-container>
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-expansion-panels>

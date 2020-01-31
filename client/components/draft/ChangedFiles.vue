@@ -1,32 +1,30 @@
 <template>
-  <v-expansion-panels focusable>
+  <v-expansion-panels focusable tile :value="0">
     <v-expansion-panel>
-      <v-expansion-panel-header class="files-panel-header">
-        <v-layout>
-          <v-flex xs6 pl-3 py-1 mr-8>
-            <span
-              v-if="files.length > 0 && before !== undefined"
-              class="subtitle-1"
-              :title="files[before].previousName"
-            >
-              {{ triming(files[before].previousName) }}
-            </span>
-          </v-flex>
-          <v-divider vertical />
-          <v-flex xs6 pl-3 py-1>
-            <span
-              v-if="files.length > 0 && after !== undefined"
-              class="subtitle-1"
-              :title="files[after].name"
-            >
-              {{ triming(files[after].name) }}
-            </span>
-          </v-flex>
-        </v-layout>
+      <v-expansion-panel-header class="files-panel-header d-flex pa-0 pr-2">
+        <div class="pl-3 mr-6">
+          <span
+            v-if="files.length > 0 && before !== undefined"
+            class="subtitle-1"
+            :title="files[before].previousName"
+          >
+            {{ triming(files[before].previousName) }}
+          </span>
+        </div>
+        <v-divider vertical />
+        <div class="pl-3">
+          <span
+            v-if="files.length > 0 && after !== undefined"
+            class="subtitle-1"
+            :title="files[after].name"
+          >
+            {{ triming(files[after].name) }}
+          </span>
+        </div>
       </v-expansion-panel-header>
       <v-expansion-panel-content>
-        <v-layout class="file-list">
-          <v-flex xs6>
+        <div class="file-list d-flex">
+          <div class="flex-grow-1">
             <v-list dense>
               <v-list-item-group v-model="before">
                 <v-divider />
@@ -44,12 +42,12 @@
                       </v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
-                  <v-divider :key="`b-div-${i}`" />
+                  <v-divider :key="`before-divider-${i}`" />
                 </template>
               </v-list-item-group>
             </v-list>
-          </v-flex>
-          <v-flex>
+          </div>
+          <div>
             <v-list dense>
               <v-list-item-group v-model="common">
                 <v-divider />
@@ -60,28 +58,28 @@
                       small
                       color="amber"
                     >
-                      fa-edit
+                      fa-pen-square
                     </v-icon>
                     <v-icon v-if="file.status === 'added'" small color="green">
-                      fa-plus
+                      fa-plus-square
                     </v-icon>
                     <v-icon v-if="file.status === 'removed'" small color="red">
-                      fa-minus
+                      fa-minus-square
                     </v-icon>
                     <v-icon
                       v-if="file.status === 'renamed'"
                       small
                       color="purple"
                     >
-                      fa-arrow-right
+                      fa-caret-square-right
                     </v-icon>
                   </v-list-item>
-                  <v-divider :key="`c-div-${i}`" />
+                  <v-divider :key="`common-divider-${i}`" />
                 </template>
               </v-list-item-group>
             </v-list>
-          </v-flex>
-          <v-flex xs6>
+          </div>
+          <div class="flex-grow-1">
             <v-list dense>
               <v-list-item-group v-model="after">
                 <v-divider />
@@ -100,12 +98,12 @@
                       </v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
-                  <v-divider :key="`a-div-${i}`" />
+                  <v-divider :key="`after-divider-${i}`" />
                 </template>
               </v-list-item-group>
             </v-list>
-          </v-flex>
-        </v-layout>
+          </div>
+        </div>
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-expansion-panels>
@@ -160,7 +158,6 @@ export default class ChangedFiles extends Vue {
 <style lang="scss" scope>
 .files-panel-header {
   min-height: 36px !important;
-  padding: 0 8px 0 0 !important;
 }
 .file-list {
   max-height: 200px;

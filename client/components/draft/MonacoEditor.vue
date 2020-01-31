@@ -1,5 +1,5 @@
 <template>
-  <div id="container" class="fill-height">
+  <div id="container">
     <loading :active.sync="isLoading" :is-full-page="false" />
   </div>
 </template>
@@ -222,6 +222,11 @@ export default class MonacoEditor extends Vue {
 </style>
 
 <style lang="scss">
+#container {
+  width: 100%;
+  height: 100%;
+}
+
 .element-widget {
   cursor: pointer;
   border: 2px solid;
