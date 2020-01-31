@@ -3,9 +3,6 @@ import MonacoEditorWebpackPlugin from 'monaco-editor-webpack-plugin'
 
 const config: Configuration = {
   mode: 'spa',
-  /*
-   ** Headers of the page
-   */
   head: {
     title: 'RefactorHub',
     meta: [
@@ -19,68 +16,31 @@ const config: Configuration = {
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
-  /*
-   ** Customize the progress-bar color
-   */
   loading: {},
-  /*
-   ** Global CSS
-   */
-  css: [],
-  /*
-   ** Plugins to load before mounting the App
-   */
+  typescript: { typeCheck: { eslint: true } },
   plugins: ['~/plugins/axios', '~/plugins/client', '~/plugins/editor'],
-  /*
-   ** Nuxt.js dev-modules
-   */
+  build: {
+    transpile: [/typed-vuex/],
+    extend(config) {
+      if (config.plugins) config.plugins.push(new MonacoEditorWebpackPlugin())
+    }
+  },
   buildModules: [
     '@nuxt/typescript-build',
-    // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
     '@nuxtjs/vuetify',
     'nuxt-typed-vuex'
   ],
-  /*
-   ** Nuxt.js modules
-   */
-  modules: [
-    // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios',
-    '@nuxtjs/auth',
-    '@nuxtjs/proxy',
-    '@nuxtjs/eslint-module'
-  ],
-  /*
-   ** Axios module configuration
-   ** See https://axios.nuxtjs.org/options
-   */
-  axios: {
-    proxy: true
-  },
-  /*
-   ** vuetify module configuration
-   ** https://github.com/nuxt-community/vuetify-module
-   */
+  modules: ['@nuxtjs/axios', '@nuxtjs/auth', '@nuxtjs/proxy'],
   vuetify: {
     customVariables: ['~/assets/styles/variables.scss'],
     defaultAssets: {
       icons: 'fa'
     },
-    theme: {},
     treeShake: true
   },
-  /*
-   ** Build configuration
-   */
-  build: {
-    transpile: [/nuxt-typed-vuex/],
-    /*
-     ** You can extend webpack config here
-     */
-    extend(config) {
-      if (config.plugins) config.plugins.push(new MonacoEditorWebpackPlugin())
-    }
+  axios: {
+    proxy: true
   },
   proxy: {
     '/api': process.env.API_URL || 'http://localhost:8080'
