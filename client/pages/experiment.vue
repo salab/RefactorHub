@@ -89,11 +89,11 @@ export default class extends Vue {
   }
 
   private getRefactorings(id: number) {
-    return this.refactorings.filter(it => it.parent?.id === id)
+    return this.refactorings.filter((it) => it.parent?.id === id)
   }
 
   private getDrafts(id: number) {
-    return this.drafts.filter(it => it.parent?.id === id)
+    return this.drafts.filter((it) => it.parent?.id === id)
   }
 }
 </script>

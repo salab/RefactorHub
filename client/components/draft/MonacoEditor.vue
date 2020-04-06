@@ -15,8 +15,8 @@ import { Debounce } from 'lodash-decorators'
 
 @Component({
   components: {
-    Loading
-  }
+    Loading,
+  },
 })
 export default class MonacoEditor extends Vue {
   public diffEditor!: monaco.editor.IStandaloneDiffEditor
@@ -27,21 +27,21 @@ export default class MonacoEditor extends Vue {
     [key in Diff]: (monaco.editor.IContentWidget & { type: string })[]
   } = {
     before: [],
-    after: []
+    after: [],
   }
 
   private statements: {
     [key in Diff]: Element[]
   } = {
     before: [],
-    after: []
+    after: [],
   }
 
   private listeners: {
     [key in Diff]: monaco.IDisposable[]
   } = {
     before: [],
-    after: []
+    after: [],
   }
 
   private mounted() {
@@ -50,7 +50,7 @@ export default class MonacoEditor extends Vue {
       this.diffEditor = monaco.editor.createDiffEditor(container, {
         enableSplitViewResizing: false,
         automaticLayout: true,
-        readOnly: true
+        readOnly: true,
       })
     }
   }
@@ -74,7 +74,7 @@ export default class MonacoEditor extends Vue {
       repository,
       sha,
       path,
-      uri: uri.toString()
+      uri: uri.toString(),
     })
     const model =
       monaco.editor.getModel(uri) ||
@@ -85,21 +85,21 @@ export default class MonacoEditor extends Vue {
         original: model,
         modified:
           this.diffEditor.getModifiedEditor().getModel() ||
-          monaco.editor.createModel('', 'text/plain')
+          monaco.editor.createModel('', 'text/plain'),
       })
     } else if (diff === 'after') {
       this.diffEditor.setModel({
         original:
           this.diffEditor.getOriginalEditor().getModel() ||
           monaco.editor.createModel('', 'text/plain'),
-        modified: model
+        modified: model,
       })
     }
 
     const editor = this.getEditor(diff)
 
     // Clear element widgets
-    this.widgets[diff].forEach(widget => {
+    this.widgets[diff].forEach((widget) => {
       editor.removeContentWidget(widget)
     })
 
@@ -135,14 +135,14 @@ export default class MonacoEditor extends Vue {
   }
 
   public showElementWidgets(diff: Diff, type: string) {
-    this.widgets[diff].forEach(widget => {
+    this.widgets[diff].forEach((widget) => {
       if (widget.type === type) widget.getDomNode().style.display = 'block'
       else widget.getDomNode().style.display = 'none'
     })
   }
 
   public hideElementWidgets(diff: Diff) {
-    this.widgets[diff].forEach(widget => {
+    this.widgets[diff].forEach((widget) => {
       widget.getDomNode().style.display = 'none'
     })
   }
@@ -150,19 +150,19 @@ export default class MonacoEditor extends Vue {
   public setupStatementsCursor(diff: Diff) {
     const editor = this.getEditor(diff)
     this.listeners[diff].push(
-      editor.onDidChangeCursorSelection(e => {
+      editor.onDidChangeCursorSelection((e) => {
         this.updateStatements(diff, e.selection)
       })
     )
   }
 
   public disposeStatementsCursor(diff: Diff) {
-    this.listeners[diff].forEach(listener => listener.dispose())
+    this.listeners[diff].forEach((listener) => listener.dispose())
   }
 
   @Debounce(500)
   public updateStatements(diff: Diff, range: monaco.Range) {
-    this.statements[diff].forEach(async element => {
+    this.statements[diff].forEach(async (element) => {
       if (
         this.$editor.asMonacoRange(element.location.range).containsRange(range)
       ) {
@@ -193,7 +193,7 @@ export default class MonacoEditor extends Vue {
       )
       this.$accessor.draft.decorations[diff].set(key, {
         id,
-        uri: model.uri
+        uri: model.uri,
       })
     }
   }

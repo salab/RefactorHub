@@ -19,12 +19,12 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'nuxt-property-decorator'
 import { Diff, Element } from 'refactorhub'
-import ChangedFiles from '~/components/draft/ChangedFiles.vue'
-import CommitInfo from '~/components/draft/CommitInfo.vue'
-import DraftHeader from '~/components/draft/DraftHeader.vue'
-import ElementItems from '~/components/draft/ElementItems.vue'
-import ElementTypeColors from '~/components/draft/ElementTypeColors.vue'
-import MonacoEditor from '~/components/draft/MonacoEditor.vue'
+import ChangedFiles from '@/components/draft/ChangedFiles.vue'
+import CommitInfo from '@/components/draft/CommitInfo.vue'
+import DraftHeader from '@/components/draft/DraftHeader.vue'
+import ElementItems from '@/components/draft/ElementItems.vue'
+import ElementTypeColors from '@/components/draft/ElementTypeColors.vue'
+import MonacoEditor from '@/components/draft/MonacoEditor.vue'
 
 @Component({
   components: {
@@ -33,8 +33,8 @@ import MonacoEditor from '~/components/draft/MonacoEditor.vue'
     DraftHeader,
     ElementItems,
     ElementTypeColors,
-    MonacoEditor
-  }
+    MonacoEditor,
+  },
 })
 export default class extends Vue {
   $refs!: {
@@ -65,7 +65,7 @@ export default class extends Vue {
     await Promise.all([
       this.$accessor.draft.fetchDraft(parseInt(this.$route.params.id)),
       this.$accessor.draft.fetchRefactoringTypes(),
-      this.$accessor.draft.fetchElementTypes()
+      this.$accessor.draft.fetchElementTypes(),
     ])
     this.$accessor.draft.setFile({ diff: 'before', value: 0 })
     this.$accessor.draft.setFile({ diff: 'after', value: 0 })

@@ -19,12 +19,12 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
-import LinkButtons from '~/components/common/LinkButtons.vue'
+import LinkButtons from '@/components/common/LinkButtons.vue'
 
 @Component({
   components: {
-    LinkButtons
-  }
+    LinkButtons,
+  },
 })
 export default class extends Vue {}
 </script>

@@ -66,7 +66,7 @@ export default class ElementItems extends Vue {
     this.$accessor.draft.setElement({
       diff: this.diff,
       element:
-        value !== undefined ? Object.entries(this.elements)[value] : undefined
+        value !== undefined ? Object.entries(this.elements)[value] : undefined,
     })
   }
 

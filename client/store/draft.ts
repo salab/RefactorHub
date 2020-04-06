@@ -6,7 +6,7 @@ import {
   RefactoringType,
   TextModel,
   Diff,
-  Element
+  Element,
 } from 'refactorhub'
 
 export const state = (): {
@@ -26,16 +26,16 @@ export const state = (): {
   textModels: new Map(),
   file: {
     before: undefined,
-    after: undefined
+    after: undefined,
   },
   element: {
     before: undefined,
-    after: undefined
+    after: undefined,
   },
   decorations: {
     before: new Map(),
-    after: new Map()
-  }
+    after: new Map(),
+  },
 })
 
 export const getters = getterTree(state, {})
@@ -71,7 +71,7 @@ export const mutations = mutationTree(state, {
       diff,
       key,
       id,
-      uri
+      uri,
     }: { diff: Diff; key: string; id: string; uri: monaco.Uri }
   ) => {
     state.decorations[diff].set(key, { id, uri })
@@ -81,7 +81,7 @@ export const mutations = mutationTree(state, {
     { diff, key }: { diff: Diff; key: string }
   ) => {
     state.decorations[diff].delete(key)
-  }
+  },
 })
 
 export const actions = actionTree(
@@ -111,7 +111,7 @@ export const actions = actionTree(
         repository,
         sha,
         path,
-        uri
+        uri,
       }: {
         owner: string
         repository: string
@@ -131,9 +131,9 @@ export const actions = actionTree(
       )
       await commit('setTextModel', {
         uri,
-        model
+        model,
       })
       return model
-    }
+    },
   }
 )

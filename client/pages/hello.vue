@@ -25,7 +25,7 @@ import { Component, Vue } from 'nuxt-property-decorator'
   async asyncData({ app }) {
     const message = await app.$client.getHello()
     return { message }
-  }
+  },
 })
 export default class extends Vue {
   message: string = ''

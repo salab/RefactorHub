@@ -15,7 +15,7 @@ import { Component, Vue } from 'nuxt-property-decorator'
 export default class LinkButtons extends Vue {
   private links = [
     { name: 'Tutorial', to: '/tutorial' },
-    { name: 'Experiment', to: '/experiment' }
+    { name: 'Experiment', to: '/experiment' },
   ]
 }
 </script>

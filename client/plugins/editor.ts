@@ -1,7 +1,7 @@
 import * as monaco from 'monaco-editor'
 import { Element, Diff, Range } from 'refactorhub'
 import { Plugin } from '@nuxt/types'
-import { accessorType } from '~/store'
+import { accessorType } from '@/store'
 
 export class Editor {
   private $accessor: typeof accessorType
@@ -18,8 +18,8 @@ export class Editor {
       range: this.asMonacoRange(element.location.range),
       options: {
         className: `element-decoration element-decoration-${element.type}`,
-        hoverMessage: { value: key }
-      }
+        hoverMessage: { value: key },
+      },
     }
   }
 
@@ -52,10 +52,10 @@ export class Editor {
       getPosition: () => ({
         position: {
           lineNumber: range.startLineNumber,
-          column: range.startColumn
+          column: range.startColumn,
         },
-        preference: [monaco.editor.ContentWidgetPositionPreference.EXACT]
-      })
+        preference: [monaco.editor.ContentWidgetPositionPreference.EXACT],
+      }),
     }
   }
 
@@ -120,7 +120,7 @@ export class Editor {
       startLine: range.startLineNumber,
       startColumn: range.startColumn,
       endLine: range.endLineNumber,
-      endColumn: range.endColumn - 1
+      endColumn: range.endColumn - 1,
     }
   }
 }

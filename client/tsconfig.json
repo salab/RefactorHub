@@ -1,28 +1,32 @@
 {
   "compilerOptions": {
-    "target": "es2018",
+    "target": "es2020",
     "module": "esnext",
     "moduleResolution": "node",
-    "lib": ["esnext", "esnext.asynciterable", "dom"],
+    "lib": [
+      "esnext",
+      "esnext.asynciterable",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ],
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "allowJs": true,
+    "importHelpers": true,
     "sourceMap": true,
     "strict": true,
-    "noImplicitAny": false,
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./*"],
       "@/*": ["./*"]
     },
+    "typeRoots": ["node_modules/@types", "types"],
     "types": [
       "@types/node",
       "@nuxt/types",
       "@nuxtjs/axios",
       "@nuxtjs/vuetify",
-      "@types/nuxtjs__auth",
-      "./types"
+      "@types/nuxtjs__auth"
     ]
   }
 }

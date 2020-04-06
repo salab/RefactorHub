@@ -19,7 +19,7 @@
                 <v-select
                   v-if="refactoringTypes"
                   :value="draft.type.name"
-                  :items="refactoringTypes.map(it => it.name)"
+                  :items="refactoringTypes.map((it) => it.name)"
                   label="Refactoring Type"
                   @input="onInputType"
                 />
@@ -48,7 +48,7 @@
                   :key="index"
                   :class="{
                     'body-1 font-weight-medium': index === 0,
-                    'body-2': index > 0
+                    'body-2': index > 0,
                   }"
                 >
                   {{ line }}

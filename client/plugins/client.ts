@@ -7,7 +7,7 @@ import {
   Refactoring,
   CommitInfo,
   RefactoringType,
-  TextModel
+  TextModel,
 } from 'refactorhub'
 
 export class Client {
@@ -33,7 +33,7 @@ export class Client {
     return (
       await this.$axios.patch<Draft>(`/api/draft/${id}`, {
         description,
-        type
+        type,
       })
     ).data
   }
@@ -49,7 +49,7 @@ export class Client {
   async updateElement(id: number, diff: Diff, key: string, element: Element) {
     return (
       await this.$axios.patch<Draft>(`/api/draft/${id}/${diff}/${key}`, {
-        element
+        element,
       })
     ).data
   }
@@ -66,7 +66,7 @@ export class Client {
   ) {
     return (
       await this.$axios.get<TextModel>(`/api/editor/text_model`, {
-        params: { owner, repository, sha, path }
+        params: { owner, repository, sha, path },
       })
     ).data
   }

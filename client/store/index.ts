@@ -2,10 +2,10 @@ import {
   getAccessorType,
   getterTree,
   mutationTree,
-  actionTree
+  actionTree,
 } from 'nuxt-typed-vuex'
 
-import * as draft from '~/store/draft'
+import * as draft from '@/store/draft'
 
 export const state = () => ({})
 export const getters = getterTree(state, {})
@@ -18,6 +18,6 @@ export const accessorType = getAccessorType({
   mutations,
   actions,
   modules: {
-    draft
-  }
+    draft,
+  },
 })
