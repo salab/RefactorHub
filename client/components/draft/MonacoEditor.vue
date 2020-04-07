@@ -1,17 +1,16 @@
 <template>
   <div id="container">
-    <loading :active.sync="isLoading" :is-full-page="false" />
+    <loading :active="isLoading" />
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'nuxt-property-decorator'
 import * as monaco from 'monaco-editor'
-import Loading from 'vue-loading-overlay'
-import 'vue-loading-overlay/dist/vue-loading.css'
 import { Diff, Element } from 'refactorhub'
 import { cloneDeep } from 'lodash'
 import { Debounce } from 'lodash-decorators'
+import Loading from '@/components/common/Loading.vue'
 
 @Component({
   components: {
