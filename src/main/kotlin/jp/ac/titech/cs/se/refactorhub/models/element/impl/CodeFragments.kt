@@ -5,11 +5,11 @@ import jp.ac.titech.cs.se.refactorhub.models.element.Element
 import jp.ac.titech.cs.se.refactorhub.models.element.ElementInMethod
 import jp.ac.titech.cs.se.refactorhub.models.element.data.Location
 
-@JsonDeserialize(`as` = Statements::class)
-data class Statements(
+@JsonDeserialize(`as` = CodeFragments::class)
+data class CodeFragments(
     override val methodName: String = "",
     override val className: String = "",
     override val location: Location = Location()
 ) : ElementInMethod {
-    override val type: Element.Type get() = Element.Type.Statements
+    override val type: Element.Type get() = Element.Type.CodeFragments
 }

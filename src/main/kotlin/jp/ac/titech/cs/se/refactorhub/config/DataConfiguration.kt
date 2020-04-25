@@ -2,7 +2,6 @@ package jp.ac.titech.cs.se.refactorhub.config
 
 import jp.ac.titech.cs.se.refactorhub.models.Refactoring
 import jp.ac.titech.cs.se.refactorhub.models.element.Element
-import jp.ac.titech.cs.se.refactorhub.models.element.impl.ClassDeclaration
 import jp.ac.titech.cs.se.refactorhub.services.CommitService
 import jp.ac.titech.cs.se.refactorhub.services.RefactoringService
 import jp.ac.titech.cs.se.refactorhub.services.RefactoringTypeService
@@ -33,7 +32,7 @@ class DataConfiguration(
             "ExtractMethod",
             TreeMap<String, Element.Type>().apply {
                 put("sourceClass", Element.Type.ClassDeclaration)
-                put("source", Element.Type.Statements)
+                put("source", Element.Type.CodeFragments)
             },
             TreeMap<String, Element.Type>().apply {
                 put("targetClass", Element.Type.ClassDeclaration)

@@ -91,7 +91,7 @@ class Visitor(
             val first = node.body.statements().first() as Statement
             val last = node.body.statements().last() as Statement
             elements.add(
-                Statements(
+                CodeFragments(
                     methodName,
                     className,
                     Location(path, range(first.startPosition, last.endPosition))

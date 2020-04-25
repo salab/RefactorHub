@@ -37,7 +37,7 @@ interface Element : Serializable {
         MethodDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.MethodDeclaration::class),
         MethodInvocation(jp.ac.titech.cs.se.refactorhub.models.element.impl.MethodInvocation::class),
         ParameterDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.ParameterDeclaration::class),
-        Statements(jp.ac.titech.cs.se.refactorhub.models.element.impl.Statements::class),
+        CodeFragments(jp.ac.titech.cs.se.refactorhub.models.element.impl.CodeFragments::class),
         VariableDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.VariableDeclaration::class)
     }
 }
