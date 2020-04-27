@@ -16,13 +16,13 @@ data class RefactoringType(
     @Fetch(FetchMode.JOIN)
     @MapKeyColumn(name = "before_key", length = 100)
     @Column(name = "before_element", nullable = false, columnDefinition = "text")
-    val before: Map<String, Element.Type> = mapOf(),
+    val before: Map<String, Element.Info> = mapOf(),
 
     @ElementCollection
     @Fetch(FetchMode.JOIN)
     @MapKeyColumn(name = "after_key", length = 100)
     @Column(name = "after_element", nullable = false, columnDefinition = "text")
-    val after: Map<String, Element.Type> = mapOf(),
+    val after: Map<String, Element.Info> = mapOf(),
 
     @Column(name = "description", nullable = false, columnDefinition = "text")
     var description: String = "",

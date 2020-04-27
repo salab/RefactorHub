@@ -30,14 +30,14 @@ class DataConfiguration(
         // types
         val extractMethod = refactoringTypeService.create(
             "ExtractMethod",
-            TreeMap<String, Element.Type>().apply {
-                put("sourceClass", Element.Type.ClassDeclaration)
-                put("source", Element.Type.CodeFragments)
+            TreeMap<String, Element.Info>().apply {
+                put("sourceClass", Element.Info(Element.Type.ClassDeclaration, true))
+                put("source", Element.Info(Element.Type.CodeFragments, true))
             },
-            TreeMap<String, Element.Type>().apply {
-                put("targetClass", Element.Type.ClassDeclaration)
-                put("extractedMethod", Element.Type.MethodDeclaration)
-                put("invocation", Element.Type.MethodInvocation)
+            TreeMap<String, Element.Info>().apply {
+                put("targetClass", Element.Info(Element.Type.ClassDeclaration))
+                put("extractedMethod", Element.Info(Element.Type.MethodDeclaration))
+                put("invocation", Element.Info(Element.Type.MethodInvocation, true))
             }
         )
         val custom = refactoringTypeService.create("Custom")

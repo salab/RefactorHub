@@ -104,34 +104,38 @@ class DraftService(
         return save(draft)
     }
 
-    private fun removeEmptyElements(types: Map<String, Element.Type>, elements: MutableMap<String, Element>) {
+    private fun removeEmptyElements(types: Map<String, Element.Info>, elements: MutableMap<String, Element.Data>) {
         types.entries.forEach {
-            if (elements[it.key]?.incomplete == true) elements.remove(it.key)
+            if (elements[it.key]?.elements?.isEmpty() == true) elements.remove(it.key)
         }
     }
 
-    private fun updateElements(types: Map<String, Element.Type>, elements: MutableMap<String, Element>) {
+    private fun updateElements(types: Map<String, Element.Info>, elements: MutableMap<String, Element.Data>) {
         types.entries.forEach {
-            if (elements[it.key]?.type?.name != it.value.name) elements[it.key] = it.value.dataClass.createInstance()
+            if (elements[it.key]?.type != it.value.type)
+                elements[it.key] = Element.Data(it.value.type, it.value.multiple)
         }
     }
 
     fun updateBeforeElement(
         id: Long,
         key: String,
+        index: Int,
         element: Element
-    ) = updateElement(id, key, "before", element)
+    ) = updateElement(id, "before", key, index, element)
 
     fun updateAfterElement(
         id: Long,
         key: String,
+        index: Int,
         element: Element
-    ) = updateElement(id, key, "after", element)
+    ) = updateElement(id, "after", key, index, element)
 
     private fun updateElement(
         id: Long,
-        key: String,
         which: String,
+        key: String,
+        index: Int,
         element: Element
     ): Draft {
         val draft = getByOwner(id)
@@ -141,30 +145,68 @@ class DraftService(
             else -> throw BadRequestException("need to be either 'before' or 'after'")
         }
         if (map.containsKey(key)) {
-            map[key] = element
+            try {
+                map[key]!!.elements[index] = element
+            } catch (e: IndexOutOfBoundsException) {
+                throw BadRequestException("Draft(id=$id).data.$which[$key] doesn't have index=$index")
+            }
         } else {
             throw BadRequestException("Draft(id=$id).data.$which doesn't have key=$key")
         }
         return save(draft)
     }
 
-    fun addBeforeElement(
+    fun addBeforeNewElement(
+        id: Long,
+        key: String
+    ) = addNewElement(id, key, "before")
+
+    fun addAfterNewElement(
+        id: Long,
+        key: String
+    ) = addNewElement(id, key, "after")
+
+    private fun addNewElement(
         id: Long,
         key: String,
-        typeName: String
-    ) = addElement(id, key, "before", typeName)
+        which: String
+    ): Draft {
+        val draft = getByOwner(id)
+        val map = when (which) {
+            "before" -> draft.data.before
+            "after" -> draft.data.after
+            else -> throw BadRequestException("need to be either 'before' or 'after'")
+        }
+        if (!map.containsKey(key)) {
+            throw BadRequestException("Draft(id=$id).data.$which doesn't have key=$key")
+        }
+        if (!map[key]!!.multiple) {
+            throw BadRequestException("Draft(id=$id).data.$which[$key] doesn't have multiple elements")
+        }
+        map[key]!!.elements.add(map[key]!!.type.dataClass.createInstance())
+        return save(draft)
+    }
 
-    fun addAfterElement(
+    fun addBeforeElementKey(
         id: Long,
         key: String,
-        typeName: String
-    ) = addElement(id, key, "after", typeName)
+        typeName: String,
+        multiple: Boolean
+    ) = addElementKey(id, key, "before", typeName, multiple)
 
-    private fun addElement(
+    fun addAfterElementKey(
+        id: Long,
+        key: String,
+        typeName: String,
+        multiple: Boolean
+    ) = addElementKey(id, key, "after", typeName, multiple)
+
+    private fun addElementKey(
         id: Long,
         key: String,
         which: String,
-        typeName: String
+        typeName: String,
+        multiple: Boolean
     ): Draft {
         val draft = getByOwner(id)
         val map = when (which) {
@@ -178,7 +220,7 @@ class DraftService(
             throw BadRequestException("type=$typeName is unsupported")
         }
         if (!map.containsKey(key)) {
-            map[key] = type.dataClass.createInstance()
+            map[key] = Element.Data(type, multiple)
         } else {
             throw BadRequestException("Draft(id=$id).data.$which already has key=$key")
         }

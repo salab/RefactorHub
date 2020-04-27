@@ -17,8 +17,6 @@ interface Element : Serializable {
     val type: Type
     val location: Location
 
-    val incomplete get() = location.path.isEmpty() && location.range.isEmpty()
-
     class Deserializer : JsonDeserializer<Element>() {
         override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Element {
             val mapper = p.codec as ObjectMapper
@@ -40,4 +38,15 @@ interface Element : Serializable {
         CodeFragments(jp.ac.titech.cs.se.refactorhub.models.element.impl.CodeFragments::class),
         VariableDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.VariableDeclaration::class)
     }
+
+    data class Info(
+        val type: Type = Type.Empty,
+        val multiple: Boolean = false
+    ) : Serializable
+
+    data class Data(
+        val type: Type = Type.Empty,
+        val multiple: Boolean = false,
+        val elements: MutableList<Element> = mutableListOf()
+    ) : Serializable
 }

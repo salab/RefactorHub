@@ -27,8 +27,8 @@ class RefactoringTypeService(
 
     fun create(
         name: String,
-        before: Map<String, Element.Type> = mapOf(),
-        after: Map<String, Element.Type> = mapOf()
+        before: Map<String, Element.Info> = mapOf(),
+        after: Map<String, Element.Info> = mapOf()
     ): RefactoringType {
         val type = refactoringTypeRepository.findByName(name)
         return if (type.isPresent) {

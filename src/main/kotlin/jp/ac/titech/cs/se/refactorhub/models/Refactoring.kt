@@ -72,12 +72,12 @@ data class Refactoring(
     }
 
     data class Data(
-        val before: MutableMap<String, Element> = mutableMapOf(),
-        val after: MutableMap<String, Element> = mutableMapOf()
+        val before: MutableMap<String, Element.Data> = mutableMapOf(),
+        val after: MutableMap<String, Element.Data> = mutableMapOf()
     ) : Serializable {
         constructor(type: RefactoringType) : this(
-            type.before.entries.associateBy({ it.key }) { it.value.dataClass.createInstance() }.toMutableMap(),
-            type.after.entries.associateBy({ it.key }) { it.value.dataClass.createInstance() }.toMutableMap()
+            type.before.entries.associate { it.key to Element.Data(it.value.type, it.value.multiple) }.toMutableMap(),
+            type.after.entries.associate { it.key to Element.Data(it.value.type, it.value.multiple) }.toMutableMap()
         )
     }
 }

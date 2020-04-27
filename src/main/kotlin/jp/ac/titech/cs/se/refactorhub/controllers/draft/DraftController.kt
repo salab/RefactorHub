@@ -1,6 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.controllers.draft
 
-import jp.ac.titech.cs.se.refactorhub.controllers.draft.requests.AddElementRequest
+import jp.ac.titech.cs.se.refactorhub.controllers.draft.requests.AddElementKeyRequest
 import jp.ac.titech.cs.se.refactorhub.controllers.draft.requests.UpdateElementRequest
 import jp.ac.titech.cs.se.refactorhub.controllers.draft.requests.UpdateRequest
 import jp.ac.titech.cs.se.refactorhub.services.DraftService
@@ -29,30 +29,44 @@ class DraftController(
         @RequestBody request: UpdateRequest?
     ) = draftService.update(id, request?.description, request?.type)
 
-    @PatchMapping("/{id}/before/{key}")
+    @PatchMapping("/{id}/before/{key}/{index}")
     fun updateBeforeElement(
         @PathVariable("id") id: Long,
         @PathVariable("key") key: String,
+        @PathVariable("index") index: Int,
         @RequestBody request: UpdateElementRequest
-    ) = draftService.updateBeforeElement(id, key, request.element)
+    ) = draftService.updateBeforeElement(id, key, index, request.element)
 
-    @PatchMapping("/{id}/after/{key}")
+    @PatchMapping("/{id}/after/{key}/{index}")
     fun updateAfterElement(
         @PathVariable("id") id: Long,
         @PathVariable("key") key: String,
+        @PathVariable("index") index: Int,
         @RequestBody request: UpdateElementRequest
-    ) = draftService.updateAfterElement(id, key, request.element)
+    ) = draftService.updateAfterElement(id, key, index, request.element)
+
+    @PutMapping("/{id}/before/{key}")
+    fun addBeforeNewElement(
+        @PathVariable("id") id: Long,
+        @PathVariable("key") key: String
+    ) = draftService.addBeforeNewElement(id, key)
+
+    @PutMapping("/{id}/after/{key}")
+    fun addAfterNewElement(
+        @PathVariable("id") id: Long,
+        @PathVariable("key") key: String
+    ) = draftService.addAfterNewElement(id, key)
 
     @PutMapping("/{id}/before")
-    fun addBeforeElement(
+    fun addBeforeElementKey(
         @PathVariable("id") id: Long,
-        @RequestBody request: AddElementRequest
-    ) = draftService.addBeforeElement(id, request.key, request.type)
+        @RequestBody request: AddElementKeyRequest
+    ) = draftService.addBeforeElementKey(id, request.key, request.type, request.multiple)
 
     @PutMapping("/{id}/after")
-    fun addAfterElement(
+    fun addAfterElementKey(
         @PathVariable("id") id: Long,
-        @RequestBody request: AddElementRequest
-    ) = draftService.addAfterElement(id, request.key, request.type)
+        @RequestBody request: AddElementKeyRequest
+    ) = draftService.addAfterElementKey(id, request.key, request.type, request.multiple)
 
 }
