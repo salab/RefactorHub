@@ -12,14 +12,14 @@ declare module 'refactorhub' {
   }
 
   interface RefactoringData {
-    before: { [key: string]: Element }
-    after: { [key: string]: Element }
+    before: { [key: string]: ElementData }
+    after: { [key: string]: ElementData }
   }
 
   interface RefactoringType {
     name: string
-    before: { [key: string]: string }
-    after: { [key: string]: string }
+    before: { [key: string]: ElementInfo }
+    after: { [key: string]: ElementInfo }
     description: string
     id: number
   }
@@ -38,7 +38,17 @@ declare module 'refactorhub' {
   interface Element {
     type: string
     location: Location
-    incomplete: boolean
+  }
+
+  interface ElementInfo {
+    type: string
+    multiple: boolean
+  }
+
+  interface ElementData {
+    type: string
+    multiple: boolean
+    elements: Element[]
   }
 
   interface Location {
