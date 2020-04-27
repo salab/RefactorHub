@@ -46,10 +46,40 @@ export class Client {
     return (await this.$axios.post<void>(`/api/draft/${id}/cancel`)).data
   }
 
-  async updateElement(id: number, diff: Diff, key: string, element: Element) {
+  async updateElement(
+    id: number,
+    diff: Diff,
+    key: string,
+    index: number,
+    element: Element
+  ) {
     return (
-      await this.$axios.patch<Draft>(`/api/draft/${id}/${diff}/${key}`, {
-        element,
+      await this.$axios.patch<Draft>(
+        `/api/draft/${id}/${diff}/${key}/${index}`,
+        {
+          element,
+        }
+      )
+    ).data
+  }
+
+  async addNewElement(id: number, diff: Diff, key: string) {
+    return (await this.$axios.put<Draft>(`/api/draft/${id}/${diff}/${key}`))
+      .data
+  }
+
+  async addElementKey(
+    id: number,
+    diff: Diff,
+    key: string,
+    type: string,
+    multiple: boolean
+  ) {
+    return (
+      await this.$axios.put<Draft>(`/api/draft/${id}/${diff}`, {
+        key,
+        type,
+        multiple,
       })
     ).data
   }
