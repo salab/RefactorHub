@@ -1,40 +1,61 @@
 import { getterTree, mutationTree, actionTree } from 'nuxt-typed-vuex'
-import * as monaco from 'monaco-editor'
 import {
   Draft,
   CommitInfo,
   RefactoringType,
-  TextModel,
-  Diff,
-  Element,
+  FileContent,
+  DiffCategory,
 } from 'refactorhub'
 
+interface FileMetadata {
+  index: number
+  name: string
+}
+
+interface ElementMetadata {
+  key: string
+  index: number
+  type: string
+}
+
 export const state = (): {
+  /** draft of refactoring instance displayed on /draft/:id */
   draft?: Draft
-  commit?: CommitInfo
+
+  /** commit displayed on /draft/:id */
+  commitInfo?: CommitInfo
+
+  /** available refactoring types */
   refactoringTypes: RefactoringType[]
+
+  /** available element types */
   elementTypes: string[]
-  textModels: Map<string, TextModel>
-  file: { [key in Diff]?: number }
-  element: { [key in Diff]?: [string, Element] }
-  decorations: { [key in Diff]: Map<string, { id: string; uri: monaco.Uri }> }
+
+  /** cached FileContents */
+  fileContentCache: Map<string, FileContent>
+
+  /** metadata of file displayed on editor */
+  displayedFileMetadata: {
+    [category in DiffCategory]?: FileMetadata
+  }
+
+  /** metadata of element editing on editor */
+  editingElementMetadata: {
+    [category in DiffCategory]?: ElementMetadata
+  }
 } => ({
   draft: undefined,
-  commit: undefined,
+  commitInfo: undefined,
   refactoringTypes: [],
   elementTypes: [],
-  textModels: new Map(),
-  file: {
+  fileContentCache: new Map(),
+  displayedFileMetadata: {
     before: undefined,
     after: undefined,
   },
-  element: {
+  editingElementMetadata: {
     before: undefined,
     after: undefined,
-  },
-  decorations: {
-    before: new Map(),
-    after: new Map(),
   },
 })
 
@@ -44,67 +65,77 @@ export const mutations = mutationTree(state, {
   setDraft: (state, draft: Draft) => {
     state.draft = draft
   },
-  setCommit: (state, commit: CommitInfo) => {
-    state.commit = commit
+
+  setCommitInfo: (state, info: CommitInfo) => {
+    state.commitInfo = info
   },
+
   setRefactoringTypes: (state, types: RefactoringType[]) => {
     state.refactoringTypes = types
   },
+
   setElementTypes: (state, types: string[]) => {
     state.elementTypes = types
   },
-  setTextModel: (state, { uri, model }: { uri: string; model: TextModel }) => {
-    state.textModels.set(uri, model)
-  },
-  setFile: (state, { diff, value }: { diff: Diff; value?: number }) => {
-    state.file[diff] = value
-  },
-  setElement: (
-    state,
-    { diff, element }: { diff: Diff; element?: [string, Element] }
-  ) => {
-    state.element[diff] = element
-  },
-  setElementDecoration: (
+
+  cacheFileContent: (
     state,
     {
-      diff,
-      key,
-      id,
       uri,
-    }: { diff: Diff; key: string; id: string; uri: monaco.Uri }
+      content,
+    }: {
+      uri: string
+      content: FileContent
+    }
   ) => {
-    state.decorations[diff].set(key, { id, uri })
+    state.fileContentCache.set(uri, content)
   },
-  deleteElementDecoration: (
+
+  setDisplayedFileMetadata: (
     state,
-    { diff, key }: { diff: Diff; key: string }
+    {
+      category,
+      metadata,
+    }: {
+      category: DiffCategory
+      metadata?: FileMetadata
+    }
   ) => {
-    state.decorations[diff].delete(key)
+    state.displayedFileMetadata[category] = metadata
+  },
+
+  setEditingElementMetadata: (
+    state,
+    {
+      category,
+      metadata,
+    }: {
+      category: DiffCategory
+      metadata?: ElementMetadata
+    }
+  ) => {
+    state.editingElementMetadata[category] = metadata
   },
 })
 
 export const actions = actionTree(
   { state, getters, mutations },
   {
-    async fetchDraft({ commit }, id: number) {
+    async initDraftStates({ commit }, id: number) {
       const draft = await this.$client.getDraft(id)
       await commit('setDraft', draft)
-      await this.app.$accessor.draft.fetchCommit(draft.commit.sha)
-    },
-    async fetchCommit({ commit }, sha: string) {
-      await commit('setCommit', await this.$client.getCommitInfo(sha))
-    },
-    async fetchRefactoringTypes({ commit }) {
+      await commit(
+        'setCommitInfo',
+        await this.$client.getCommitInfo(draft.commit.sha)
+      )
       await commit(
         'setRefactoringTypes',
         await this.$client.getRefactoringTypes()
       )
-    },
-    async fetchElementTypes({ commit }) {
       await commit('setElementTypes', await this.$client.getElementTypes())
     },
-    async getTextModel(
+
+    async getFileContent(
       { commit, state },
       {
         owner,
@@ -120,20 +151,20 @@ export const actions = actionTree(
         uri: string
       }
     ) {
-      if (state.textModels.has(uri)) {
-        return state.textModels.get(uri)!!
+      if (state.fileContentCache.has(uri)) {
+        return state.fileContentCache.get(uri)!!
       }
-      const model = await this.$client.getTextModel(
+      const content = await this.$client.getFileContent(
         owner,
         repository,
         sha,
         path
       )
-      await commit('setTextModel', {
+      await commit('cacheFileContent', {
         uri,
-        model,
+        content,
       })
-      return model
+      return content
     },
   }
 )

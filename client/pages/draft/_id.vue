@@ -62,11 +62,7 @@ export default class extends Vue {
   }
 
   private async mounted() {
-    await Promise.all([
-      this.$accessor.draft.fetchDraft(parseInt(this.$route.params.id)),
-      this.$accessor.draft.fetchRefactoringTypes(),
-      this.$accessor.draft.fetchElementTypes(),
-    ])
+    await this.$accessor.draft.initDraftStates(parseInt(this.$route.params.id))
     this.$accessor.draft.setFile({ diff: 'before', value: 0 })
     this.$accessor.draft.setFile({ diff: 'after', value: 0 })
   }

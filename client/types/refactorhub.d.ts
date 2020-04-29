@@ -1,4 +1,8 @@
 declare module 'refactorhub' {
+  /*
+   * types for API
+   */
+
   interface Refactoring {
     owner: User
     commit: Commit
@@ -95,12 +99,16 @@ declare module 'refactorhub' {
     name: string
   }
 
-  interface TextModel {
+  interface FileContent {
     value: string
     language?: string
     uri?: string
     elements: Element[]
   }
 
-  type Diff = 'before' | 'after'
+  /*
+   * types for Clients
+   */
+
+  type DiffCategory = 'before' | 'after'
 }

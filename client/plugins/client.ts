@@ -1,13 +1,13 @@
 import { Plugin } from '@nuxt/types'
 import { NuxtAxiosInstance } from '@nuxtjs/axios'
 import {
-  Diff,
   Element,
   Draft,
   Refactoring,
   CommitInfo,
   RefactoringType,
-  TextModel,
+  FileContent,
+  DiffCategory,
 } from 'refactorhub'
 
 export class Client {
@@ -48,14 +48,14 @@ export class Client {
 
   async updateElement(
     id: number,
-    diff: Diff,
+    category: DiffCategory,
     key: string,
     index: number,
     element: Element
   ) {
     return (
       await this.$axios.patch<Draft>(
-        `/api/draft/${id}/${diff}/${key}/${index}`,
+        `/api/draft/${id}/${category}/${key}/${index}`,
         {
           element,
         }
@@ -63,20 +63,20 @@ export class Client {
     ).data
   }
 
-  async addNewElement(id: number, diff: Diff, key: string) {
-    return (await this.$axios.put<Draft>(`/api/draft/${id}/${diff}/${key}`))
+  async addNewElement(id: number, category: DiffCategory, key: string) {
+    return (await this.$axios.put<Draft>(`/api/draft/${id}/${category}/${key}`))
       .data
   }
 
   async addElementKey(
     id: number,
-    diff: Diff,
+    category: DiffCategory,
     key: string,
     type: string,
     multiple: boolean
   ) {
     return (
-      await this.$axios.put<Draft>(`/api/draft/${id}/${diff}`, {
+      await this.$axios.put<Draft>(`/api/draft/${id}/${category}`, {
         key,
         type,
         multiple,
@@ -88,14 +88,15 @@ export class Client {
     return (await this.$axios.get<CommitInfo>(`/api/commit/${sha}/info`)).data
   }
 
-  async getTextModel(
+  async getFileContent(
     owner: string,
     repository: string,
     sha: string,
     path: string
   ) {
+    // TODO: text_model -> content
     return (
-      await this.$axios.get<TextModel>(`/api/editor/text_model`, {
+      await this.$axios.get<FileContent>(`/api/editor/text_model`, {
         params: { owner, repository, sha, path },
       })
     ).data
