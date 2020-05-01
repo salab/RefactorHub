@@ -29,13 +29,8 @@ export class Client {
     return (await this.$axios.get<Draft>(`/api/draft/${id}`)).data
   }
 
-  async updateDraft(id: number, description?: string, type?: string) {
-    return (
-      await this.$axios.patch<Draft>(`/api/draft/${id}`, {
-        description,
-        type,
-      })
-    ).data
+  async updateDraft(id: number, data: { description?: string; type?: string }) {
+    return (await this.$axios.patch<Draft>(`/api/draft/${id}`, data)).data
   }
 
   async saveDraft(id: number) {

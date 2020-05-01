@@ -19,43 +19,48 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { defineComponent, ref, onBeforeMount } from '@vue/composition-api'
 
-@Component({
-  async asyncData({ app }) {
-    const message = await app.$client.getHello()
-    return { message }
+export default defineComponent({
+  name: 'hello',
+  head() {
+    return { title: 'Hello' }
+  },
+  setup(_, { root }) {
+    const message = ref('')
+
+    const getHello = async () => {
+      try {
+        message.value = await root.$client.getHello()
+      } catch (e) {
+        if (e instanceof Error) message.value = e.message
+      }
+    }
+    const postHello = async () => {
+      try {
+        message.value = await root.$client.postHello()
+      } catch (e) {
+        if (e instanceof Error) message.value = e.message
+      }
+    }
+    const getDraft = async () => {
+      try {
+        message.value = (await root.$client.getDraft(1)).description
+      } catch (e) {
+        if (e instanceof Error) message.value = e.message
+      }
+    }
+
+    onBeforeMount(async () => {
+      await getHello()
+    })
+
+    return {
+      message,
+      getHello,
+      postHello,
+      getDraft,
+    }
   },
 })
-export default class extends Vue {
-  message: string = ''
-
-  private async getHello() {
-    try {
-      this.message = await this.$client.getHello()
-    } catch (e) {
-      if (e instanceof Error) this.message = e.message
-    }
-  }
-
-  private async postHello() {
-    try {
-      this.message = await this.$client.postHello()
-    } catch (e) {
-      if (e instanceof Error) this.message = e.message
-    }
-  }
-
-  private async getDraft() {
-    try {
-      this.message = (await this.$client.getDraft(1)).description
-    } catch (e) {
-      if (e instanceof Error) this.message = e.message
-    }
-  }
-
-  private head() {
-    return { title: 'Hello' }
-  }
-}
 </script>

@@ -18,13 +18,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { defineComponent } from '@vue/composition-api'
 import LinkButtons from '@/components/common/LinkButtons.vue'
 
-@Component({
+export default defineComponent({
+  name: 'home',
   components: {
     LinkButtons,
   },
 })
-export default class extends Vue {}
 </script>

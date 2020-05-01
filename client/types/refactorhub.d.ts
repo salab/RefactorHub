@@ -111,4 +111,20 @@ declare module 'refactorhub' {
    */
 
   type DiffCategory = 'before' | 'after'
+
+  interface FileMetadata {
+    index: number
+    name: string
+  }
+
+  interface ElementMetadata {
+    key: string
+    index: number
+    type: string
+  }
+
+  interface DecorationMetadata {
+    id: string
+    uri: string
+  }
 }

@@ -1,10 +1,12 @@
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { defineComponent, onBeforeMount } from '@vue/composition-api'
 
-@Component
-export default class extends Vue {
-  private beforeCreate(): void {
-    this.$auth.logout()
-  }
-}
+export default defineComponent({
+  name: 'logout',
+  setup(_, { root }) {
+    onBeforeMount(() => {
+      root.$auth.logout()
+    })
+  },
+})
 </script>

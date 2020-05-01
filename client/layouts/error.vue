@@ -18,12 +18,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { defineComponent, PropType } from '@vue/composition-api'
 import { NuxtError } from '@nuxt/types'
 
-@Component
-export default class extends Vue {
-  @Prop({ required: true })
-  error!: NuxtError
-}
+export default defineComponent({
+  name: 'error',
+  props: {
+    error: {
+      type: Object as PropType<NuxtError>,
+      required: true,
+    },
+  },
+})
 </script>

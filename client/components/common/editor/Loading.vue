@@ -7,7 +7,7 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
 export default defineComponent({
-  name: 'loading',
+  name: 'Loading',
   props: {
     active: {
       type: Boolean,

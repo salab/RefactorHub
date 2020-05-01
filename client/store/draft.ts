@@ -5,22 +5,13 @@ import {
   RefactoringType,
   FileContent,
   DiffCategory,
+  FileMetadata,
+  ElementMetadata,
 } from 'refactorhub'
-
-interface FileMetadata {
-  index: number
-  name: string
-}
-
-interface ElementMetadata {
-  key: string
-  index: number
-  type: string
-}
 
 export const state = (): {
   /** draft of refactoring instance displayed on /draft/:id */
-  draft?: Draft
+  draft: Draft | null
 
   /** commit displayed on /draft/:id */
   commitInfo?: CommitInfo
@@ -44,7 +35,7 @@ export const state = (): {
     [category in DiffCategory]?: ElementMetadata
   }
 } => ({
-  draft: undefined,
+  draft: null,
   commitInfo: undefined,
   refactoringTypes: [],
   elementTypes: [],

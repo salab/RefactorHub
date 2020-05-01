@@ -58,42 +58,53 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { defineComponent, ref, onMounted } from '@vue/composition-api'
 import { Refactoring, Draft, User } from 'refactorhub'
 
-@Component
-export default class extends Vue {
-  private tutorials: Refactoring[] = []
-  private refactorings: Refactoring[] = []
-  private drafts: Draft[] = []
+export default defineComponent({
+  name: 'tutorial',
+  setup(_, { root }) {
+    const tutorials = ref<Refactoring[]>([])
+    const refactorings = ref<Refactoring[]>([])
+    const drafts = ref<Draft[]>([])
 
-  private async mounted() {
-    this.tutorials = await this.$client.getUserRefactorings(1)
-    const user = this.$auth.user as User
-    this.refactorings = await this.$client.getUserRefactorings(user.id)
-    this.drafts = await this.$client.getUserDrafts(user.id)
-  }
+    onMounted(async () => {
+      const user = root.$auth.user as User
+      tutorials.value = await root.$client.getUserRefactorings(1)
+      refactorings.value = await root.$client.getUserRefactorings(user.id)
+      drafts.value = await root.$client.getUserDrafts(user.id)
+    })
 
-  private async fork(id: number) {
-    const draft = await this.$client.forkRefactoring(id)
-    this.$router.push(`/draft/${draft.id}`)
-  }
+    async function fork(id: number) {
+      const draft = await root.$client.forkRefactoring(id)
+      root.$router.push(`/draft/${draft.id}`)
+    }
 
-  private async edit(id: number) {
-    const draft = await this.$client.editRefactoring(id)
-    this.$router.push(`/draft/${draft.id}`)
-  }
+    async function edit(id: number) {
+      const draft = await root.$client.editRefactoring(id)
+      root.$router.push(`/draft/${draft.id}`)
+    }
 
-  private open(id: number) {
-    this.$router.push(`/draft/${id}`)
-  }
+    function open(id: number) {
+      root.$router.push(`/draft/${id}`)
+    }
 
-  private getRefactorings(id: number) {
-    return this.refactorings.filter((it) => it.parent?.id === id)
-  }
+    function getRefactorings(id: number) {
+      return refactorings.value.filter((it) => it.parent?.id === id)
+    }
 
-  private getDrafts(id: number) {
-    return this.drafts.filter((it) => it.parent?.id === id)
-  }
-}
+    function getDrafts(id: number) {
+      return drafts.value.filter((it) => it.parent?.id === id)
+    }
+
+    return {
+      tutorials,
+      fork,
+      edit,
+      open,
+      getRefactorings,
+      getDrafts,
+    }
+  },
+})
 </script>

@@ -18,19 +18,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { defineComponent } from '@vue/composition-api'
 
-@Component
-export default class ElementTypeColors extends Vue {
-  private get elementTypes() {
-    return this.$accessor.draft.elementTypes
-  }
-
-  private getTypeColor(type: string, alpha = 1.0) {
-    const types = this.elementTypes
-    const length = types.length
-    const index = types.indexOf(type)
-    return `hsla(${(index * 360) / length}, 100%, 60%, ${alpha})`
-  }
-}
+export default defineComponent({
+  name: 'ElementTypeColors',
+  setup(_, { root }) {
+    const elementTypes = root.$accessor.draft.elementTypes
+    const getTypeColor = (type: string, alpha = 1.0) => {
+      const length = elementTypes.length
+      const index = elementTypes.indexOf(type)
+      return `hsla(${(index * 360) / length}, 100%, 60%, ${alpha})`
+    }
+    return {
+      elementTypes,
+      getTypeColor,
+    }
+  },
+})
 </script>

@@ -9,13 +9,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { defineComponent } from '@vue/composition-api'
 
-@Component
-export default class LinkButtons extends Vue {
-  private links = [
-    { name: 'Tutorial', to: '/tutorial' },
-    { name: 'Experiment', to: '/experiment' },
-  ]
-}
+const links = [
+  { name: 'Tutorial', to: '/tutorial' },
+  { name: 'Experiment', to: '/experiment' },
+]
+
+export default defineComponent({
+  name: 'LinkButtons',
+  setup() {
+    return { links }
+  },
+})
 </script>

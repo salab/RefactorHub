@@ -15,30 +15,30 @@
         <v-container fluid class="py-0">
           <v-row>
             <v-col v-if="draft" cols="6">
-              <form @submit.prevent="">
+              <div>
                 <v-select
                   v-if="refactoringTypes"
                   :value="draft.type.name"
                   :items="refactoringTypes.map((it) => it.name)"
                   label="Refactoring Type"
-                  @input="onInputType"
+                  @input="updateRefactoringType"
                 />
                 <v-textarea
                   :value="draft.description"
                   rows="2"
                   label="Description"
-                  @input="onInputDescription"
+                  @input="updateDescription"
                 />
-              </form>
+              </div>
             </v-col>
-            <v-col v-if="commit" cols="6">
+            <v-col v-if="commitInfo" cols="6">
               <div class="subtitle-1 font-weight-medium">
-                <span>{{ commit.owner }}</span>
+                <span>{{ commitInfo.owner }}</span>
                 /
-                <span>{{ commit.repository }}</span>
+                <span>{{ commitInfo.repository }}</span>
                 /
-                <a :href="commit.url" target="_blank" rel="noopener">{{
-                  commit.sha.substring(0, 7)
+                <a :href="commitInfo.url" target="_blank" rel="noopener">{{
+                  commitInfo.sha.substring(0, 7)
                 }}</a>
               </div>
               <v-divider class="my-1" />
@@ -56,10 +56,10 @@
               </div>
               <v-divider class="my-1" />
               <div>
-                <span class="subtitle-2">{{ commit.author }}</span>
+                <span class="subtitle-2">{{ commitInfo.author }}</span>
                 <span class="body-2">committed on</span>
                 <span class="body-2">{{
-                  new Date(commit.authorDate).toLocaleString()
+                  new Date(commitInfo.authorDate).toLocaleString()
                 }}</span>
               </div>
             </v-col>
@@ -71,44 +71,33 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
-import { Debounce } from 'lodash-decorators'
+import { defineComponent, computed } from '@vue/composition-api'
+import { debounce } from 'lodash'
 
-@Component
-export default class CommitInfo extends Vue {
-  private get draft() {
-    return this.$accessor.draft.draft
-  }
+export default defineComponent({
+  name: 'DraftInfoPanel',
+  setup(_, { root }) {
+    const draft = computed(() => root.$accessor.draft.draft)
+    const commitInfo = computed(() => root.$accessor.draft.commitInfo)
 
-  private get commit() {
-    return this.$accessor.draft.commit
-  }
-
-  private get refactoringTypes() {
-    return this.$accessor.draft.refactoringTypes
-  }
-
-  private get messageLines(): string[] {
-    if (!this.commit) return []
-    return this.commit.message.split('\n')
-  }
-
-  @Debounce(500)
-  private async onInputDescription(value: string) {
-    if (!this.draft) return
-    this.$accessor.draft.setDraft(
-      await this.$client.updateDraft(this.draft.id, value)
-    )
-  }
-
-  @Debounce(100)
-  private async onInputType(value: string) {
-    if (!this.draft) return
-    this.$accessor.draft.setDraft(
-      await this.$client.updateDraft(this.draft.id, undefined, value)
-    )
-  }
-}
+    return {
+      draft,
+      commitInfo,
+      updateDescription: debounce(async (value: string) => {
+        if (!draft.value) return
+        root.$accessor.draft.setDraft(
+          await root.$client.updateDraft(draft.value.id, { description: value })
+        )
+      }, 500),
+      updateRefactoringType: debounce(async (value: string) => {
+        if (!draft.value) return
+        root.$accessor.draft.setDraft(
+          await root.$client.updateDraft(draft.value.id, { type: value })
+        )
+      }, 100),
+    }
+  },
+})
 </script>
 
 <style lang="scss" scope>

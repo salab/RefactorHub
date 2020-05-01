@@ -4,41 +4,39 @@
       <v-expansion-panel-header class="files-panel-header d-flex pa-0 pr-2">
         <div class="pl-3 mr-6">
           <span
-            v-if="files.length > 0 && before !== undefined"
+            v-if="commitFiles && selected.before !== undefined"
+            :title="commitFiles[selected.before].previousName"
             class="subtitle-1"
-            :title="files[before].previousName"
+            >{{ trimFileName(commitFiles[selected.before].previousName) }}</span
           >
-            {{ triming(files[before].previousName) }}
-          </span>
         </div>
         <v-divider vertical />
         <div class="pl-3">
           <span
-            v-if="files.length > 0 && after !== undefined"
+            v-if="commitFiles && selected.after !== undefined"
+            :title="commitFiles[selected.after].name"
             class="subtitle-1"
-            :title="files[after].name"
+            >{{ trimFileName(commitFiles[selected.after].name) }}</span
           >
-            {{ triming(files[after].name) }}
-          </span>
         </div>
       </v-expansion-panel-header>
       <v-expansion-panel-content>
         <div class="file-list d-flex">
           <div class="flex-grow-1">
-            <v-list dense>
-              <v-list-item-group v-model="before">
+            <v-list v-if="commitFiles" dense>
+              <v-list-item-group v-model="selected.before">
                 <v-divider />
-                <template v-for="(file, i) in files">
+                <template v-for="(file, i) in commitFiles">
                   <v-list-item
                     :key="i"
-                    :disabled="file.status === 'added' || i === before"
+                    :disabled="file.status === 'added' || i === selected.before"
                   >
                     <v-list-item-content>
                       <v-list-item-title
                         v-if="file.status !== 'added'"
                         :title="file.previousName"
                       >
-                        {{ triming(file.previousName, 70) }}
+                        {{ trimFileName(file.previousName, 70) }}
                       </v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
@@ -48,10 +46,10 @@
             </v-list>
           </div>
           <div>
-            <v-list dense>
-              <v-list-item-group v-model="common">
+            <v-list v-if="commitFiles" dense>
+              <v-list-item-group v-model="selected.common">
                 <v-divider />
-                <template v-for="(file, i) in files">
+                <template v-for="(file, i) in commitFiles">
                   <v-list-item :key="i">
                     <v-icon
                       v-if="file.status === 'modified'"
@@ -80,10 +78,10 @@
             </v-list>
           </div>
           <div class="flex-grow-1">
-            <v-list dense>
-              <v-list-item-group v-model="after">
+            <v-list v-if="commitFiles" dense>
+              <v-list-item-group v-model="selected.after">
                 <v-divider />
-                <template v-for="(file, i) in files">
+                <template v-for="(file, i) in commitFiles">
                   <v-list-item
                     :key="i"
                     :selectable="false"
@@ -110,49 +108,47 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'nuxt-property-decorator'
+import { defineComponent, computed, reactive } from '@vue/composition-api'
+import { DiffCategory, FileMetadata } from 'refactorhub'
+import { trimFileName } from '@/components/common/editor/use/trim'
 
-@Component
-export default class ChangedFiles extends Vue {
-  private before?: number = 0
-  private after?: number = 0
-  private common?: number = 0
+export default defineComponent({
+  name: 'CommitFiles',
+  setup(_, { root }) {
+    const selected = reactive<{
+      before?: number
+      after?: number
+      common?: number
+    }>({
+      before: 0,
+      after: 0,
+      common: 0,
+    })
 
-  @Watch('before')
-  private onChangeBefore(value?: number) {
-    this.$accessor.draft.setFile({ diff: 'before', value })
-  }
+    const commitFiles = computed(() => root.$accessor.draft.commitInfo?.files)
+    const displayedFileMetadata = computed(
+      () => root.$accessor.draft.displayedFileMetadata
+    )
 
-  @Watch('after')
-  private onChangeAfter(value?: number) {
-    this.$accessor.draft.setFile({ diff: 'after', value })
-  }
-
-  @Watch('common')
-  private onChangeCommon(value?: number) {
-    this.before = value
-    this.after = value
-  }
-
-  private get commit() {
-    return this.$accessor.draft.commit
-  }
-
-  private get file() {
-    return this.$accessor.draft.file
-  }
-
-  private get files() {
-    return this.commit ? this.commit.files : []
-  }
-
-  private triming(str: string, length: number = 50): string {
-    if (str.length > length) {
-      return '...' + str.substr(str.length - length + 3)
+    const changeDisplayedFileMetadata = (
+      category: DiffCategory,
+      metadata: FileMetadata
+    ) => {
+      root.$accessor.draft.setDisplayedFileMetadata({
+        category,
+        metadata,
+      })
     }
-    return str
-  }
-}
+
+    return {
+      selected,
+      commitFiles,
+      displayedFileMetadata,
+      changeDisplayedFileMetadata,
+      trimFileName,
+    }
+  },
+})
 </script>
 
 <style lang="scss" scope>
