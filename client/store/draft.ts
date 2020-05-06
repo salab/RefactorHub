@@ -27,7 +27,7 @@ export const state = (): {
 
   /** metadata of file displayed on editor */
   displayedFileMetadata: {
-    [category in DiffCategory]?: FileMetadata
+    [category in DiffCategory]: FileMetadata
   }
 
   /** metadata of element editing on editor */
@@ -89,7 +89,7 @@ export const mutations = mutationTree(state, {
       metadata,
     }: {
       category: DiffCategory
-      metadata?: FileMetadata
+      metadata: FileMetadata
     }
   ) => {
     state.displayedFileMetadata[category] = metadata

@@ -114,7 +114,6 @@ declare module 'refactorhub' {
 
   interface FileMetadata {
     index: number
-    name: string
   }
 
   interface ElementMetadata {

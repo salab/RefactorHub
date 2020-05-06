@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, onBeforeMount } from '@vue/composition-api'
 import CommitFiles from '@/components/draft/CommitFiles/CommitFiles.vue'
 
 export default defineComponent({
@@ -13,8 +13,12 @@ export default defineComponent({
   components: {
     CommitFiles,
   },
-  setup() {
-    return {}
+  setup(_, { root }) {
+    onBeforeMount(async () => {
+      await root.$accessor.draft.initDraftStates(
+        parseInt(root.$route.params.id)
+      )
+    })
   },
 })
 </script>
