@@ -11,26 +11,24 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, computed } from '@vue/composition-api'
 
 export default defineComponent({
   name: 'DraftActionBar',
-  props: {
-    id: {
-      type: Number,
-      required: true,
-    },
-  },
-  setup(props, { root }) {
+  setup(_, { root }) {
+    const id = computed(() => root.$accessor.draft.draft?.id)
+
     const save = async () => {
-      await root.$client.saveDraft(props.id)
+      if (!id.value) return
+      await root.$client.saveDraft(id.value)
       root.$router.back()
       // TODO: jump preview page after save
       // const refactoring = await root.$client.saveDraft(props.id)
       // root.$router.push(`/refactoring/${refactoring.id}`)
     }
     const cancel = async () => {
-      await root.$client.cancelDraft(props.id)
+      if (!id.value) return
+      await root.$client.cancelDraft(id.value)
       root.$router.back()
     }
     return { save, cancel }
