@@ -1,7 +1,7 @@
 <template>
   <v-expansion-panels focusable tile>
-    <v-expansion-panel>
-      <v-expansion-panel-header v-slot="{ open }" class="info-panel-header">
+    <v-expansion-panel class="info-panel">
+      <v-expansion-panel-header v-slot="{ open }">
         <v-fade-transition>
           <div v-if="draft && !open" class="d-flex">
             <div class="flex-grow-0 d-flex align-center pr-3 title">
@@ -75,14 +75,22 @@ import { defineComponent, computed } from '@vue/composition-api'
 import { debounce } from 'lodash'
 
 export default defineComponent({
-  name: 'DraftInfoPanel',
+  name: 'DraftInfo',
   setup(_, { root }) {
     const draft = computed(() => root.$accessor.draft.draft)
     const commitInfo = computed(() => root.$accessor.draft.commitInfo)
+    const refactoringTypes = computed(
+      () => root.$accessor.draft.refactoringTypes
+    )
+    const messageLines = computed(() =>
+      commitInfo.value ? commitInfo.value.message.split('\n') : []
+    )
 
     return {
       draft,
       commitInfo,
+      refactoringTypes,
+      messageLines,
       updateDescription: debounce(async (value: string) => {
         if (!draft.value) return
         root.$accessor.draft.setDraft(
@@ -100,9 +108,13 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss" scope>
-.info-panel-header {
-  min-height: 36px !important;
+<style lang="scss" scoped>
+.info-panel ::v-deep .v-expansion-panel-content__wrap {
+  padding: 0;
+}
+
+.info-panel ::v-deep .v-expansion-panel-header {
+  min-height: 36px;
   padding: 0 12px;
 }
 </style>
