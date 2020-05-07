@@ -41,8 +41,8 @@ export const state = (): {
   elementTypes: [],
   fileContentCache: new Map(),
   displayedFileMetadata: {
-    before: undefined,
-    after: undefined,
+    before: { index: 0 },
+    after: { index: 0 },
   },
   editingElementMetadata: {
     before: undefined,

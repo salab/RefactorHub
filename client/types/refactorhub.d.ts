@@ -102,7 +102,7 @@ declare module 'refactorhub' {
   interface FileContent {
     value: string
     language?: string
-    uri?: string
+    uri: string
     elements: Element[]
   }
 
