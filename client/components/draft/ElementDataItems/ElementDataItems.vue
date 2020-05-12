@@ -1,23 +1,21 @@
 <template>
-  <v-navigation-drawer :right="category === 'after'" :width="180" permanent>
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title class="font-weight-medium">
-          {{ title }} Elements
-        </v-list-item-title>
-      </v-list-item-content>
-    </v-list-item>
-    <v-divider />
-    <v-list expand>
+  <v-card flat tile>
+    <v-navigation-drawer :right="category === 'after'" :width="200" permanent>
+      <div class="d-flex justify-center py-1">
+        <span class="font-weight-medium">{{ title }} Elements</span>
+      </div>
       <v-divider />
-      <element-data-item
-        v-for="(data, key) in elementDataMap"
-        :key="key"
-        :element-key="key"
-        :element-data="data"
-      />
-    </v-list>
-  </v-navigation-drawer>
+      <v-list expand class="py-0">
+        <element-data-item
+          v-for="(data, key) in elementDataMap"
+          :key="key"
+          :category="category"
+          :element-key="key"
+          :element-data="data"
+        />
+      </v-list>
+    </v-navigation-drawer>
+  </v-card>
 </template>
 
 <script lang="ts">

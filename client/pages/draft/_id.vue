@@ -1,16 +1,19 @@
 <template>
   <div class="d-flex flex-column fill-height">
-    <div><draft-action-bar /></div>
-    <div><draft-info /></div>
+    <draft-action-bar />
+    <v-divider />
+    <draft-info />
+    <v-divider />
     <div class="flex-grow-1 d-flex">
-      <div><element-data-items category="before" /></div>
+      <element-data-items category="before" />
       <div class="flex-grow-1 d-flex flex-column">
         <div class="flex-grow-1">
           <element-editor />
         </div>
-        <div><commit-files /></div>
+        <v-divider />
+        <commit-files />
       </div>
-      <div><element-data-items category="after" /></div>
+      <element-data-items category="after" />
     </div>
     <element-type-colors />
   </div>

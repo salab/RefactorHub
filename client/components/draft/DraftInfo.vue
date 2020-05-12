@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panels focusable tile>
+  <v-expansion-panels focusable flat tile>
     <v-expansion-panel class="info-panel">
       <v-expansion-panel-header v-slot="{ open }">
         <v-fade-transition>

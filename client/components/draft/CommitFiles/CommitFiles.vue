@@ -1,24 +1,26 @@
 <template>
-  <v-expansion-panels focusable tile :value="0">
-    <v-expansion-panel class="files-panel">
-      <v-expansion-panel-header class="pa-0 pr-2">
-        <commit-files-header />
-      </v-expansion-panel-header>
-      <v-expansion-panel-content>
-        <div class="files-content d-flex">
-          <div class="flex-grow-1">
-            <commit-files-contents category="before" />
+  <v-card flat tile>
+    <v-expansion-panels focusable flat tile :value="0">
+      <v-expansion-panel class="files-panel">
+        <v-expansion-panel-header class="pa-0 pr-2">
+          <commit-files-header />
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <div class="files-content d-flex">
+            <div class="flex-grow-1">
+              <commit-files-contents category="before" />
+            </div>
+            <div>
+              <commit-files-icons />
+            </div>
+            <div class="flex-grow-1">
+              <commit-files-contents category="after" />
+            </div>
           </div>
-          <div>
-            <commit-files-icons />
-          </div>
-          <div class="flex-grow-1">
-            <commit-files-contents category="after" />
-          </div>
-        </div>
-      </v-expansion-panel-content>
-    </v-expansion-panel>
-  </v-expansion-panels>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
+  </v-card>
 </template>
 
 <script lang="ts">
