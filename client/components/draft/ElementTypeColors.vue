@@ -6,7 +6,7 @@
         background-color: {{ getTypeColor(type, 0.2) }};
         color: {{ getTypeColor(type, 0.9) }};
       }
-      .element-item-{{ type }} {
+      .element-data-{{ type }} {
         border-color: {{ getTypeColor(type) }} !important;
       }
       .element-decoration-{{ type }} {
@@ -18,15 +18,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, computed } from '@vue/composition-api'
 
 export default defineComponent({
   name: 'ElementTypeColors',
   setup(_, { root }) {
-    const elementTypes = root.$accessor.draft.elementTypes
+    const elementTypes = computed(() => root.$accessor.draft.elementTypes)
     const getTypeColor = (type: string, alpha = 1.0) => {
-      const length = elementTypes.length
-      const index = elementTypes.indexOf(type)
+      const length = elementTypes.value.length
+      const index = elementTypes.value.indexOf(type)
       return `hsla(${(index * 360) / length}, 100%, 60%, ${alpha})`
     }
     return {
