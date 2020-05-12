@@ -156,17 +156,17 @@ class DraftService(
         return save(draft)
     }
 
-    fun addBeforeNewElement(
+    fun addBeforeElementLocation(
         id: Long,
         key: String
-    ) = addNewElement(id, key, "before")
+    ) = addElementLocation(id, key, "before")
 
-    fun addAfterNewElement(
+    fun addAfterElementLocation(
         id: Long,
         key: String
-    ) = addNewElement(id, key, "after")
+    ) = addElementLocation(id, key, "after")
 
-    private fun addNewElement(
+    private fun addElementLocation(
         id: Long,
         key: String,
         which: String

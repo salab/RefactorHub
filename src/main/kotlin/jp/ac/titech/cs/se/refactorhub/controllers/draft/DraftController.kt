@@ -46,16 +46,16 @@ class DraftController(
     ) = draftService.updateAfterElement(id, key, index, request.element)
 
     @PutMapping("/{id}/before/{key}")
-    fun addBeforeNewElement(
+    fun addBeforeElementLocation(
         @PathVariable("id") id: Long,
         @PathVariable("key") key: String
-    ) = draftService.addBeforeNewElement(id, key)
+    ) = draftService.addBeforeElementLocation(id, key)
 
     @PutMapping("/{id}/after/{key}")
-    fun addAfterNewElement(
+    fun addAfterElementLocation(
         @PathVariable("id") id: Long,
         @PathVariable("key") key: String
-    ) = draftService.addAfterNewElement(id, key)
+    ) = draftService.addAfterElementLocation(id, key)
 
     @PutMapping("/{id}/before")
     fun addBeforeElementKey(

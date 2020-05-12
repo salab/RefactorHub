@@ -58,7 +58,7 @@ export class Client {
     ).data
   }
 
-  async addNewElement(id: number, category: DiffCategory, key: string) {
+  async addElementLocation(id: number, category: DiffCategory, key: string) {
     return (await this.$axios.put<Draft>(`/api/draft/${id}/${category}/${key}`))
       .data
   }
