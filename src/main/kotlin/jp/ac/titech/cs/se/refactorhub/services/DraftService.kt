@@ -163,6 +163,28 @@ class DraftService(
         return save(draft)
     }
 
+    fun deleteElement(
+        id: Long,
+        category: String,
+        key: String,
+        index: Int
+    ): Draft {
+        val draft = getByOwner(id)
+        val map = when (category) {
+            "before" -> draft.data.before
+            "after" -> draft.data.after
+            else -> throw BadRequestException("'category' need to be either 'before' or 'after'")
+        }
+        if (!map.containsKey(key)) {
+            throw BadRequestException("Draft(id=$id).data.$category doesn't have key=$key")
+        }
+        if (map[key]!!.elements.size <= index) {
+            throw BadRequestException("Draft(id=$id).data.$category[$key] doesn't have index=$index")
+        }
+        map[key]!!.elements.removeAt(index)
+        return save(draft)
+    }
+
     fun addElementKey(
         id: Long,
         category: String,

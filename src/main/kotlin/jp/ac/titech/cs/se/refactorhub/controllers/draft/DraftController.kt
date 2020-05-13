@@ -38,6 +38,14 @@ class DraftController(
         @RequestBody request: UpdateElementRequest
     ) = draftService.updateElement(id, category, key, index, request.element)
 
+    @DeleteMapping("/{id}/{category}/{key}/{index}")
+    fun deleteElement(
+        @PathVariable("id") id: Long,
+        @PathVariable("category") category: String,
+        @PathVariable("key") key: String,
+        @PathVariable("index") index: Int
+    ) = draftService.deleteElement(id, category, key, index)
+
     @PutMapping("/{id}/{category}/{key}")
     fun addElement(
         @PathVariable("id") id: Long,
