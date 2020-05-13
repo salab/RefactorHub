@@ -29,6 +29,11 @@
         :key="i"
         :element="element"
       />
+      <add-location-button
+        v-if="elementData.multiple"
+        :category="category"
+        :element-key="elementKey"
+      />
     </v-list-group>
     <v-divider />
   </div>
@@ -36,15 +41,21 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from '@vue/composition-api'
-import { ElementData } from 'refactorhub'
-import ElementLocation from './ElementLocation.vue'
+import { ElementData, DiffCategory } from 'refactorhub'
+import ElementLocation from './ElementLocation/ElementLocation.vue'
+import AddLocationButton from './AddLocationButton.vue'
 
 export default defineComponent({
   name: 'ElementDataItem',
   components: {
     ElementLocation,
+    AddLocationButton,
   },
   props: {
+    category: {
+      type: String as PropType<DiffCategory>,
+      required: true,
+    },
     elementKey: {
       type: String,
       required: true,
