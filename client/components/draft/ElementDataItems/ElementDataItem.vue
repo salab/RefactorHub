@@ -27,6 +27,9 @@
       <element-location
         v-for="(element, i) in elementData.elements"
         :key="i"
+        :category="category"
+        :element-key="elementKey"
+        :element-index="i"
         :element="element"
       />
       <add-location-button

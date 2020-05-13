@@ -15,14 +15,37 @@
         </div>
       </div>
       <div class="px-1">
-        <v-btn block x-small depressed tile class="px-1 my-1">
-          <span class="text-none">preview</span>
+        <!-- TODO: Impl
+        <v-btn
+          block
+          x-small
+          depressed
+          tile
+          class="px-1 my-1"
+          @click="previewLocation"
+        >
+          <span class="text-none font-weight-regular">preview</span>
         </v-btn>
-        <v-btn block x-small depressed tile class="px-1 my-1">
-          <span class="text-none">edit</span>
+        -->
+        <v-btn
+          block
+          x-small
+          depressed
+          tile
+          class="px-1 my-1"
+          @click="startEditLocation"
+        >
+          <span class="text-none font-weight-regular">edit</span>
         </v-btn>
-        <v-btn block x-small depressed tile class="px-1 my-1">
-          <span class="text-none">delete</span>
+        <v-btn
+          block
+          x-small
+          depressed
+          tile
+          class="px-1 my-1"
+          @click="deleteLocation"
+        >
+          <span class="text-none font-weight-regular">delete</span>
         </v-btn>
       </div>
     </div>
@@ -31,7 +54,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, PropType } from '@vue/composition-api'
-import { Element } from 'refactorhub'
+import { Element, DiffCategory } from 'refactorhub'
 import NumberColumn from './NumberColumn.vue'
 import { trimFileName } from '@/components/common/editor/use/trim'
 
@@ -41,16 +64,43 @@ export default defineComponent({
     NumberColumn,
   },
   props: {
+    category: {
+      type: String as PropType<DiffCategory>,
+      required: true,
+    },
+    elementKey: {
+      type: String,
+      required: true,
+    },
+    elementIndex: {
+      type: Number,
+      required: true,
+    },
     element: {
       type: Object as PropType<Element>,
       required: true,
     },
   },
-  setup(props) {
+  setup(props, { root }) {
     const path = computed(
       () => trimFileName(props.element.location.path, 20) || '-'
     )
-    return { path }
+
+    const previewLocation = async () => {}
+    const deleteLocation = async () => {}
+
+    const startEditLocation = async () => {
+      await root.$accessor.draft.setEditingElementMetadata({
+        category: props.category,
+        metadata: {
+          key: props.elementKey,
+          index: props.elementIndex,
+          type: props.element.type,
+        },
+      })
+    }
+
+    return { path, previewLocation, deleteLocation, startEditLocation }
   },
 })
 </script>
