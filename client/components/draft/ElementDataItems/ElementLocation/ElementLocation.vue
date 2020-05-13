@@ -30,8 +30,9 @@
         <v-btn
           block
           x-small
-          depressed
+          outlined
           tile
+          color="primary"
           class="px-1 my-1"
           @click="startEditLocation"
         >
@@ -40,8 +41,9 @@
         <v-btn
           block
           x-small
-          depressed
+          outlined
           tile
+          color="error"
           class="px-1 my-1"
           @click="deleteLocation"
         >
@@ -86,8 +88,21 @@ export default defineComponent({
       () => trimFileName(props.element.location.path, 20) || '-'
     )
 
+    const draft = computed(() => root.$accessor.draft.draft)
+
     const previewLocation = async () => {}
-    const deleteLocation = async () => {}
+
+    const deleteLocation = async () => {
+      if (!draft.value) return
+      await root.$accessor.draft.setDraft(
+        await root.$client.deleteElement(
+          draft.value.id,
+          props.category,
+          props.elementKey,
+          props.elementIndex
+        )
+      )
+    }
 
     const startEditLocation = async () => {
       await root.$accessor.draft.setEditingElementMetadata({

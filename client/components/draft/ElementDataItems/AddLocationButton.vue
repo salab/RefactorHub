@@ -28,7 +28,7 @@ export default defineComponent({
     const addLocation = async () => {
       if (draft.value) {
         await root.$accessor.draft.setDraft(
-          await root.$client.addElementLocation(
+          await root.$client.addElement(
             draft.value.id,
             props.category,
             props.elementKey

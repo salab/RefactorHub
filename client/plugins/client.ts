@@ -58,9 +58,22 @@ export class Client {
     ).data
   }
 
-  async addElementLocation(id: number, category: DiffCategory, key: string) {
+  async addElement(id: number, category: DiffCategory, key: string) {
     return (await this.$axios.put<Draft>(`/api/draft/${id}/${category}/${key}`))
       .data
+  }
+
+  async deleteElement(
+    id: number,
+    category: DiffCategory,
+    key: string,
+    index: number
+  ) {
+    return (
+      await this.$axios.delete<Draft>(
+        `/api/draft/${id}/${category}/${key}/${index}`
+      )
+    ).data
   }
 
   async addElementKey(
