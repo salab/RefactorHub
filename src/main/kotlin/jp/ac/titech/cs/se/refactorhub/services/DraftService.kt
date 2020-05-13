@@ -117,99 +117,61 @@ class DraftService(
         }
     }
 
-    fun updateBeforeElement(
+    fun updateElement(
         id: Long,
-        key: String,
-        index: Int,
-        element: Element
-    ) = updateElement(id, "before", key, index, element)
-
-    fun updateAfterElement(
-        id: Long,
-        key: String,
-        index: Int,
-        element: Element
-    ) = updateElement(id, "after", key, index, element)
-
-    private fun updateElement(
-        id: Long,
-        which: String,
+        category: String,
         key: String,
         index: Int,
         element: Element
     ): Draft {
         val draft = getByOwner(id)
-        val map = when (which) {
+        val map = when (category) {
             "before" -> draft.data.before
             "after" -> draft.data.after
-            else -> throw BadRequestException("need to be either 'before' or 'after'")
+            else -> throw BadRequestException("'category' need to be either 'before' or 'after'")
         }
         if (map.containsKey(key)) {
             try {
                 map[key]!!.elements[index] = element
             } catch (e: IndexOutOfBoundsException) {
-                throw BadRequestException("Draft(id=$id).data.$which[$key] doesn't have index=$index")
+                throw BadRequestException("Draft(id=$id).data.$category[$key] doesn't have index=$index")
             }
         } else {
-            throw BadRequestException("Draft(id=$id).data.$which doesn't have key=$key")
+            throw BadRequestException("Draft(id=$id).data.$category doesn't have key=$key")
         }
         return save(draft)
     }
 
-    fun addBeforeElementLocation(
+    fun addElement(
         id: Long,
+        category: String,
         key: String
-    ) = addElementLocation(id, key, "before")
-
-    fun addAfterElementLocation(
-        id: Long,
-        key: String
-    ) = addElementLocation(id, key, "after")
-
-    private fun addElementLocation(
-        id: Long,
-        key: String,
-        which: String
     ): Draft {
         val draft = getByOwner(id)
-        val map = when (which) {
+        val map = when (category) {
             "before" -> draft.data.before
             "after" -> draft.data.after
-            else -> throw BadRequestException("need to be either 'before' or 'after'")
+            else -> throw BadRequestException("'category' need to be either 'before' or 'after'")
         }
         if (!map.containsKey(key)) {
-            throw BadRequestException("Draft(id=$id).data.$which doesn't have key=$key")
+            throw BadRequestException("Draft(id=$id).data.$category doesn't have key=$key")
         }
         if (!map[key]!!.multiple) {
-            throw BadRequestException("Draft(id=$id).data.$which[$key] doesn't have multiple elements")
+            throw BadRequestException("Draft(id=$id).data.$category[$key] doesn't have multiple elements")
         }
         map[key]!!.elements.add(map[key]!!.type.dataClass.createInstance())
         return save(draft)
     }
 
-    fun addBeforeElementKey(
+    fun addElementKey(
         id: Long,
+        category: String,
         key: String,
-        typeName: String,
-        multiple: Boolean
-    ) = addElementKey(id, key, "before", typeName, multiple)
-
-    fun addAfterElementKey(
-        id: Long,
-        key: String,
-        typeName: String,
-        multiple: Boolean
-    ) = addElementKey(id, key, "after", typeName, multiple)
-
-    private fun addElementKey(
-        id: Long,
-        key: String,
-        which: String,
         typeName: String,
         multiple: Boolean
     ): Draft {
         val draft = getByOwner(id)
-        val map = when (which) {
+        val map = when (category) {
             "before" -> draft.data.before
             "after" -> draft.data.after
             else -> throw BadRequestException("need to be either 'before' or 'after'")
@@ -222,7 +184,7 @@ class DraftService(
         if (!map.containsKey(key)) {
             map[key] = Element.Data(type, multiple)
         } else {
-            throw BadRequestException("Draft(id=$id).data.$which already has key=$key")
+            throw BadRequestException("Draft(id=$id).data.$category already has key=$key")
         }
         return save(draft)
     }

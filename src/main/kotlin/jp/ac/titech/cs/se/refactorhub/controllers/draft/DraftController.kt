@@ -29,44 +29,27 @@ class DraftController(
         @RequestBody request: UpdateRequest?
     ) = draftService.update(id, request?.description, request?.type)
 
-    @PatchMapping("/{id}/before/{key}/{index}")
-    fun updateBeforeElement(
+    @PatchMapping("/{id}/{category}/{key}/{index}")
+    fun updateElement(
         @PathVariable("id") id: Long,
+        @PathVariable("category") category: String,
         @PathVariable("key") key: String,
         @PathVariable("index") index: Int,
         @RequestBody request: UpdateElementRequest
-    ) = draftService.updateBeforeElement(id, key, index, request.element)
+    ) = draftService.updateElement(id, category, key, index, request.element)
 
-    @PatchMapping("/{id}/after/{key}/{index}")
-    fun updateAfterElement(
+    @PutMapping("/{id}/{category}/{key}")
+    fun addElement(
         @PathVariable("id") id: Long,
-        @PathVariable("key") key: String,
-        @PathVariable("index") index: Int,
-        @RequestBody request: UpdateElementRequest
-    ) = draftService.updateAfterElement(id, key, index, request.element)
-
-    @PutMapping("/{id}/before/{key}")
-    fun addBeforeElementLocation(
-        @PathVariable("id") id: Long,
+        @PathVariable("category") category: String,
         @PathVariable("key") key: String
-    ) = draftService.addBeforeElementLocation(id, key)
+    ) = draftService.addElement(id, category, key)
 
-    @PutMapping("/{id}/after/{key}")
-    fun addAfterElementLocation(
+    @PutMapping("/{id}/{category}")
+    fun addElementKey(
         @PathVariable("id") id: Long,
-        @PathVariable("key") key: String
-    ) = draftService.addAfterElementLocation(id, key)
-
-    @PutMapping("/{id}/before")
-    fun addBeforeElementKey(
-        @PathVariable("id") id: Long,
+        @PathVariable("category") category: String,
         @RequestBody request: AddElementKeyRequest
-    ) = draftService.addBeforeElementKey(id, request.key, request.type, request.multiple)
-
-    @PutMapping("/{id}/after")
-    fun addAfterElementKey(
-        @PathVariable("id") id: Long,
-        @RequestBody request: AddElementKeyRequest
-    ) = draftService.addAfterElementKey(id, request.key, request.type, request.multiple)
+    ) = draftService.addElementKey(id, category, request.key, request.type, request.multiple)
 
 }
