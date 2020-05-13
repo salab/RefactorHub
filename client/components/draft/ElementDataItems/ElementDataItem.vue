@@ -1,28 +1,27 @@
 <template>
   <div>
     <v-list-group
-      append-icon=""
       class="element-data"
       :class="`element-data-${elementData.type}`"
       :value="true"
     >
       <template v-slot:activator>
+        <div class="pl-2 pr-1">
+          <v-icon v-if="isCompleted" x-small color="success" title="Completed"
+            >fa-fw fa-check</v-icon
+          >
+          <v-icon
+            v-else
+            x-small
+            color="error"
+            title="This element is not completed"
+            >fa-fw fa-exclamation</v-icon
+          >
+        </div>
         <v-list-item-content>
           <v-list-item-title>{{ elementKey }}</v-list-item-title>
           <v-list-item-subtitle>{{ elementData.type }}</v-list-item-subtitle>
         </v-list-item-content>
-        <v-list-item-action class="ml-0 justify-center">
-          <v-icon
-            v-if="elementData.elements.length > 0"
-            small
-            color="success"
-            title="Completed"
-            >fa-check</v-icon
-          >
-          <v-icon v-else small color="error" title="This is not completed"
-            >fa-exclamation</v-icon
-          >
-        </v-list-item-action>
       </template>
       <element-location
         v-for="(element, i) in elementData.elements"
@@ -43,7 +42,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from '@vue/composition-api'
+import { defineComponent, PropType, computed } from '@vue/composition-api'
 import { ElementData, DiffCategory } from 'refactorhub'
 import ElementLocation from './ElementLocation/ElementLocation.vue'
 import AddLocationButton from './AddLocationButton.vue'
@@ -68,15 +67,31 @@ export default defineComponent({
       required: true,
     },
   },
+  setup(props) {
+    const isCompleted = computed(
+      () =>
+        props.elementData.elements.length > 0 &&
+        props.elementData.elements.every((e) => !!e.location.path)
+    )
+    return { isCompleted }
+  },
 })
 </script>
 
 <style lang="scss" scoped>
 .element-data {
-  border-left: solid 12px;
-}
-
-.element-data ::v-deep .v-list-group__header {
-  padding: 0 8px;
+  border-left: solid 0.5rem;
+  &::v-deep {
+    .v-list-group__header {
+      padding: 0;
+    }
+    .v-list-item__icon.v-list-group__header__append-icon {
+      min-width: 0;
+      margin: 0 0.5rem;
+      .v-icon {
+        font-size: 1rem;
+      }
+    }
+  }
 }
 </style>

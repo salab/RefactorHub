@@ -109,12 +109,20 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.info-panel ::v-deep .v-expansion-panel-content__wrap {
-  padding: 0;
-}
-
-.info-panel ::v-deep .v-expansion-panel-header {
-  min-height: 36px;
-  padding: 0 12px;
+.info-panel {
+  &::v-deep {
+    .v-expansion-panel-content__wrap {
+      padding: 0;
+    }
+    .v-expansion-panel-header {
+      min-height: 2.4rem;
+      padding: 0 0.8rem;
+      .v-expansion-panel-header__icon {
+        .v-icon {
+          font-size: 1.2rem;
+        }
+      }
+    }
+  }
 }
 </style>

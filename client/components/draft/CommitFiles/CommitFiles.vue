@@ -40,16 +40,24 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.files-panel ::v-deep .v-expansion-panel-content__wrap {
-  padding: 0;
-}
-
-.files-panel ::v-deep .v-expansion-panel-header {
-  min-height: 36px;
+.files-panel {
+  &::v-deep {
+    .v-expansion-panel-content__wrap {
+      padding: 0;
+    }
+    .v-expansion-panel-header {
+      min-height: 2.4rem;
+      .v-expansion-panel-header__icon {
+        .v-icon {
+          font-size: 1.2rem;
+        }
+      }
+    }
+  }
 }
 
 .files-content {
-  max-height: 200px;
+  max-height: 12rem;
   overflow: scroll;
 }
 </style>

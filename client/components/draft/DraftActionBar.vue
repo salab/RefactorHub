@@ -3,10 +3,10 @@
     <v-app-bar dense flat>
       <v-spacer />
       <v-btn depressed small tile color="primary" class="ml-2" @click="save">
-        Save
+        save
       </v-btn>
-      <v-btn depressed small tile class="ml-2" @click="cancel">
-        Cancel
+      <v-btn depressed small tile text class="ml-2" @click="cancel">
+        cancel
       </v-btn>
     </v-app-bar>
   </v-card>

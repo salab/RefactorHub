@@ -3,16 +3,16 @@
     <v-list-item-group v-model="index">
       <v-list-item v-for="(file, i) in commitFiles" :key="i">
         <v-icon v-if="file.status === 'modified'" small color="amber">
-          fa-pen-square
+          fa-fw fa-pen-square
         </v-icon>
         <v-icon v-if="file.status === 'added'" small color="green">
-          fa-plus-square
+          fa-fw fa-plus-square
         </v-icon>
         <v-icon v-if="file.status === 'removed'" small color="red">
-          fa-minus-square
+          fa-fw fa-minus-square
         </v-icon>
         <v-icon v-if="file.status === 'renamed'" small color="purple">
-          fa-caret-square-right
+          fa-fw fa-caret-square-right
         </v-icon>
       </v-list-item>
     </v-list-item-group>
@@ -46,17 +46,3 @@ export default defineComponent({
   },
 })
 </script>
-
-<style lang="scss" scoped>
-.files-panel ::v-deep .v-expansion-panel-content__wrap {
-  padding: 0;
-}
-.files-panel ::v-deep .v-expansion-panel-header {
-  min-height: 36px;
-}
-
-.file-list {
-  max-height: 200px;
-  overflow: scroll;
-}
-</style>
