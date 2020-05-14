@@ -2,7 +2,7 @@
   <div class="files-header">
     <div class="content d-flex align-center pl-2">
       <span
-        v-if="commitFiles && displayedFileMetadata.before.index !== undefined"
+        v-if="commitFiles && displayedFileMetadata.before !== undefined"
         :title="commitFiles[displayedFileMetadata.before.index].previousName"
         class="subtitle-1"
         >{{
@@ -15,7 +15,7 @@
     <v-divider vertical />
     <div class="content d-flex align-center pl-2">
       <span
-        v-if="commitFiles && displayedFileMetadata.after.index !== undefined"
+        v-if="commitFiles && displayedFileMetadata.after !== undefined"
         :title="commitFiles[displayedFileMetadata.after.index].name"
         class="subtitle-1"
         >{{

@@ -10,7 +10,7 @@ const decorationMetadataMap: {
   after: new Map(),
 }
 
-export function initDecorationMetadataMap() {
+export function initElementDecorations() {
   decorationMetadataMap.before.clear()
   decorationMetadataMap.after.clear()
 }
@@ -43,7 +43,7 @@ export function deleteElementDecoration(
   const metadata = decorationMetadataMap[category].get(hash({ key, index }))
   if (metadata) {
     const model = monaco.editor.getModel(monaco.Uri.parse(metadata.uri))
-    if (model !== null) model.deltaDecorations([metadata.id], [])
+    if (model) model.deltaDecorations([metadata.id], [])
     decorationMetadataMap[category].delete(hash({ key, index }))
   }
 }

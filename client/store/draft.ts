@@ -27,7 +27,7 @@ export const state = (): {
 
   /** metadata of file displayed on editor */
   displayedFileMetadata: {
-    [category in DiffCategory]: FileMetadata
+    [category in DiffCategory]?: FileMetadata
   }
 
   /** metadata of element editing on editor */
@@ -41,8 +41,8 @@ export const state = (): {
   elementTypes: [],
   fileContentCache: new Map(),
   displayedFileMetadata: {
-    before: { index: 0 },
-    after: { index: 0 },
+    before: undefined,
+    after: undefined,
   },
   editingElementMetadata: {
     before: undefined,
@@ -89,7 +89,7 @@ export const mutations = mutationTree(state, {
       metadata,
     }: {
       category: DiffCategory
-      metadata: FileMetadata
+      metadata?: FileMetadata
     }
   ) => {
     state.displayedFileMetadata[category] = metadata
@@ -124,6 +124,14 @@ export const actions = actionTree(
         await this.$client.getRefactoringTypes()
       )
       await commit('setElementTypes', await this.$client.getElementTypes())
+      await commit('setDisplayedFileMetadata', {
+        category: 'before',
+        metadata: { index: 0 },
+      })
+      await commit('setDisplayedFileMetadata', {
+        category: 'after',
+        metadata: { index: 0 },
+      })
     },
 
     async getFileContent(

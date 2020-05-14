@@ -39,17 +39,17 @@ export default defineComponent({
     },
   },
   setup(props, { root }) {
-    const index = ref(0)
+    const index = ref<number>()
     const commitFiles = computed(() => root.$accessor.draft.commitInfo?.files)
 
     watch(index, (value) => {
       root.$accessor.draft.setDisplayedFileMetadata({
         category: props.category,
-        metadata: { index: value },
+        metadata: value !== undefined ? { index: value } : undefined,
       })
     })
     watch(
-      () => root.$accessor.draft.displayedFileMetadata[props.category].index,
+      () => root.$accessor.draft.displayedFileMetadata[props.category]?.index,
       (value) => {
         index.value = value
       }
