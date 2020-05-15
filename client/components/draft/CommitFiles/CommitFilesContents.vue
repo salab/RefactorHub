@@ -5,6 +5,7 @@
         v-for="(file, i) in commitFiles"
         :key="i"
         :disabled="isDisabled(file) || i === index"
+        @click="onClickItem(i)"
       >
         <v-list-item-content>
           <v-list-item-title
@@ -42,13 +43,13 @@ export default defineComponent({
     const index = ref<number>()
     const commitFiles = computed(() => root.$accessor.draft.commitInfo?.files)
 
-    watch(index, (value) => {
-      if (value === undefined) return
+    const onClickItem = (value: number) => {
       root.$accessor.draft.setDisplayedFileMetadata({
         category: props.category,
         metadata: { index: value },
       })
-    })
+    }
+
     watch(
       () => root.$accessor.draft.displayedFileMetadata[props.category]?.index,
       (value) => {
@@ -67,6 +68,7 @@ export default defineComponent({
     return {
       index,
       commitFiles,
+      onClickItem,
       getFileName,
       isDisabled,
       trimFileName,

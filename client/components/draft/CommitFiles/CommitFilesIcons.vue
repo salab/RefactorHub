@@ -5,6 +5,7 @@
         v-for="(file, i) in commitFiles"
         :key="i"
         :disabled="i === index"
+        @click="onClickItem(i)"
       >
         <v-icon v-if="file.status === 'modified'" small color="amber">
           fa-fw fa-pen-square
@@ -32,17 +33,20 @@ export default defineComponent({
     const index = ref<number>()
     const commitFiles = computed(() => root.$accessor.draft.commitInfo?.files)
 
-    watch(index, (value) => {
-      if (value === undefined) return
-      root.$accessor.draft.setDisplayedFileMetadata({
-        category: 'before',
-        metadata: { index: value },
-      })
-      root.$accessor.draft.setDisplayedFileMetadata({
-        category: 'after',
-        metadata: { index: value },
-      })
-    })
+    const onClickItem = (value: number) => {
+      if (root.$accessor.draft.displayedFileMetadata.before?.index !== value) {
+        root.$accessor.draft.setDisplayedFileMetadata({
+          category: 'before',
+          metadata: { index: value },
+        })
+      }
+      if (root.$accessor.draft.displayedFileMetadata.after?.index !== value) {
+        root.$accessor.draft.setDisplayedFileMetadata({
+          category: 'after',
+          metadata: { index: value },
+        })
+      }
+    }
 
     watch(
       () => root.$accessor.draft.displayedFileMetadata.before,
@@ -71,6 +75,7 @@ export default defineComponent({
     return {
       index,
       commitFiles,
+      onClickItem,
     }
   },
 })
