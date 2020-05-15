@@ -24,7 +24,7 @@ export function getRangeWidthOnEditor(
   editor: monaco.editor.ICodeEditor
 ) {
   const width = editor.getOption(monaco.editor.EditorOptions.fontInfo.id)
-    .typicalFullwidthCharacterWidth
+    .typicalHalfwidthCharacterWidth
   if (range.startLineNumber === range.endLineNumber) {
     return width * (range.endColumn - range.startColumn)
   }
