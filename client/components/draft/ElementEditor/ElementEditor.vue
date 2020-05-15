@@ -1,5 +1,9 @@
 <template>
-  <monaco-editor ref="editorRef" :is-loading="isLoading" />
+  <monaco-editor
+    ref="editorRef"
+    :is-loading="isLoading"
+    class="element-editor"
+  />
 </template>
 
 <script lang="ts">
@@ -66,3 +70,19 @@ export default defineComponent({
   },
 })
 </script>
+
+<style lang="scss" scoped>
+.element-editor ::v-deep {
+  .element-widget {
+    cursor: pointer;
+    border: 2px solid;
+    opacity: 0.6;
+    &:hover {
+      opacity: 1;
+    }
+  }
+  .element-decoration {
+    border: 1px solid;
+  }
+}
+</style>
