@@ -28,6 +28,7 @@ import ElementDataItems from '@/components/draft/ElementDataItems/ElementDataIte
 import ElementEditor from '@/components/draft/ElementEditor/ElementEditor.vue'
 import ElementTypeColors from '@/components/draft/ElementTypeColors.vue'
 import { initElementDecorations } from '@/components/draft/ElementEditor/use/elementDecorations'
+import { initElementWidgets } from '@/components/draft/ElementEditor/use/elementWidgets'
 
 export default defineComponent({
   name: 'draft',
@@ -42,6 +43,7 @@ export default defineComponent({
   setup(_, { root }) {
     onBeforeMount(async () => {
       initElementDecorations()
+      initElementWidgets()
       await root.$accessor.draft.initDraftStates(
         parseInt(root.$route.params.id)
       )

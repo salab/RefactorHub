@@ -33,6 +33,13 @@ const fragments: {
   after: [],
 }
 
+export function initElementWidgets() {
+  widgets.before.length = 0
+  widgets.after.length = 0
+  fragments.before.length = 0
+  fragments.after.length = 0
+}
+
 /**
  * show element widgets with specified type & hide others
  */
@@ -59,6 +66,7 @@ export function clearElementWidgetsOnEditor(
   widgets[category].forEach((widget) => {
     editor.removeContentWidget(widget)
   })
+  widgets[category].length = 0
 }
 
 export function setElementWidgetOnEditor(
