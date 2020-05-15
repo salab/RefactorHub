@@ -27,7 +27,7 @@ import CommitFiles from '@/components/draft/CommitFiles/CommitFiles.vue'
 import ElementDataItems from '@/components/draft/ElementDataItems/ElementDataItems.vue'
 import ElementEditor from '@/components/draft/ElementEditor/ElementEditor.vue'
 import ElementTypeColors from '@/components/draft/ElementTypeColors.vue'
-import { initElementDecorations } from '@/components/draft/ElementEditor/use/decorations'
+import { initElementDecorations } from '@/components/draft/ElementEditor/use/elementDecorations'
 
 export default defineComponent({
   name: 'draft',

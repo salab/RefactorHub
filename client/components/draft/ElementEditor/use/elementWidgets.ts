@@ -5,7 +5,7 @@ import { DiffCategory, Element } from 'refactorhub'
 import {
   setElementDecorationOnEditor,
   deleteElementDecoration,
-} from './decorations'
+} from './elementDecorations'
 import {
   asMonacoRange,
   asRange,

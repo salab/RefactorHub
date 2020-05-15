@@ -1,6 +1,6 @@
 import * as monaco from 'monaco-editor'
 import { DiffCategory, FileMetadata, CommitInfo } from 'refactorhub'
-import { setElementDecorationOnEditor } from './decorations'
+import { setElementDecorationOnEditor } from './elementDecorations'
 import {
   setElementWidgetOnEditor,
   clearElementWidgetsOnEditor,
