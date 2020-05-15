@@ -1,7 +1,11 @@
 <template>
   <v-list v-if="commitFiles" dense>
     <v-list-item-group v-model="index">
-      <v-list-item v-for="(file, i) in commitFiles" :key="i">
+      <v-list-item
+        v-for="(file, i) in commitFiles"
+        :key="i"
+        :disabled="i === index"
+      >
         <v-icon v-if="file.status === 'modified'" small color="amber">
           fa-fw fa-pen-square
         </v-icon>
@@ -25,10 +29,11 @@ import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 export default defineComponent({
   name: 'CommitFilesIcons',
   setup(_, { root }) {
-    const index = ref(0)
+    const index = ref<number>()
     const commitFiles = computed(() => root.$accessor.draft.commitInfo?.files)
 
     watch(index, (value) => {
+      if (value === undefined) return
       root.$accessor.draft.setDisplayedFileMetadata({
         category: 'before',
         metadata: { index: value },
@@ -38,6 +43,30 @@ export default defineComponent({
         metadata: { index: value },
       })
     })
+
+    watch(
+      () => root.$accessor.draft.displayedFileMetadata.before,
+      (value) => {
+        if (
+          value?.index ===
+          root.$accessor.draft.displayedFileMetadata.after?.index
+        ) {
+          index.value = value?.index
+        } else index.value = undefined
+      }
+    )
+
+    watch(
+      () => root.$accessor.draft.displayedFileMetadata.after,
+      (value) => {
+        if (
+          value?.index ===
+          root.$accessor.draft.displayedFileMetadata.before?.index
+        ) {
+          index.value = value?.index
+        } else index.value = undefined
+      }
+    )
 
     return {
       index,
