@@ -8,6 +8,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch, computed } from '@vue/composition-api'
+import consola from 'consola'
 import { DiffCategory, FileMetadata } from 'refactorhub'
 import { changeDisplayedFileOnDiffEditor } from './use/displayedFile'
 import { changeEditingElement } from './use/editingElement'
@@ -30,7 +31,7 @@ export default defineComponent({
       if (!metadata) return
       const diffEditor = editorRef.value?.diffEditor
       if (!diffEditor) {
-        console.log('diffEditor is not loaded')
+        consola.log('diffEditor is not loaded')
         return
       }
 

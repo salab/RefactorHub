@@ -18,7 +18,12 @@ export default {
   },
   loading: {},
   typescript: { typeCheck: { eslint: true } },
-  plugins: ['@/plugins/composition-api', '@/plugins/axios', '@/plugins/client'],
+  plugins: [
+    '@/plugins/composition-api',
+    '@/plugins/axios',
+    '@/plugins/client',
+    '@/plugins/consola',
+  ],
   build: {
     transpile: [/typed-vuex/],
     extend(config) {

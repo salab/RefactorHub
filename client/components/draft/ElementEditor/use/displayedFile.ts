@@ -1,4 +1,5 @@
 import * as monaco from 'monaco-editor'
+import consola from 'consola'
 import { DiffCategory, FileMetadata, CommitInfo } from 'refactorhub'
 import { setElementDecorationOnEditor } from './elementDecorations'
 import {
@@ -67,7 +68,7 @@ async function getTextModelOfFile(
 ) {
   const commitInfo = $accessor.draft.commitInfo
   if (!commitInfo) {
-    console.log('commitInfo is not loaded')
+    consola.log('commitInfo is not loaded')
     return
   }
 
@@ -99,7 +100,7 @@ function setupElementDecorationsOnDiffEditor(
   const draft = $accessor.draft.draft
   const commitInfo = $accessor.draft.commitInfo
   if (!draft || !commitInfo) {
-    console.log('draft or commitInfo is not loaded')
+    consola.log('draft or commitInfo is not loaded')
     return
   }
 
@@ -123,7 +124,7 @@ async function setupElementWidgetsOnDiffEditor(
 ) {
   const commitInfo = $accessor.draft.commitInfo
   if (!commitInfo) {
-    console.log('commitInfo is not loaded')
+    consola.log('commitInfo is not loaded')
     return
   }
 
