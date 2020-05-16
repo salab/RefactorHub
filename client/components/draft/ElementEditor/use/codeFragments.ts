@@ -1,5 +1,5 @@
 import * as monaco from 'monaco-editor'
-import { cloneDeep, debounce } from 'lodash'
+import { cloneDeep, debounce } from 'lodash-es'
 import { DiffCategory, Element } from 'refactorhub'
 import {
   deleteElementDecoration,

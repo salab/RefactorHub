@@ -72,7 +72,7 @@
 
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api'
-import { debounce } from 'lodash'
+import { debounce } from 'lodash-es'
 
 export default defineComponent({
   name: 'DraftInfo',

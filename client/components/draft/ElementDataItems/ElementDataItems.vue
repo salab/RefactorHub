@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, computed } from '@vue/composition-api'
-import { capitalize } from 'lodash'
+import { capitalize } from 'lodash-es'
 import { DiffCategory } from 'refactorhub'
 import ElementDataItem from './ElementDataItem.vue'
 
