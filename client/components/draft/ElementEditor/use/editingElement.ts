@@ -3,6 +3,10 @@ import {
   showElementWidgetsWithType,
   hideElementWidgets,
 } from './elementWidgets'
+import {
+  setupCodeFragmentsCursor,
+  disposeCodeFragmentsCursor,
+} from './codeFragments'
 
 export function changeEditingElement(
   category: DiffCategory,
@@ -10,11 +14,14 @@ export function changeEditingElement(
 ) {
   if (metadata !== undefined) {
     if (metadata.type === 'CodeFragments') {
-      // TODO:
+      setupCodeFragmentsCursor(category)
+      hideElementWidgets(category)
     } else {
       showElementWidgetsWithType(category, metadata.type)
+      disposeCodeFragmentsCursor(category)
     }
   } else {
     hideElementWidgets(category)
+    disposeCodeFragmentsCursor(category)
   }
 }

@@ -5,6 +5,10 @@ import {
   setElementWidgetOnEditor,
   clearElementWidgetsOnEditor,
 } from './elementWidgets'
+import {
+  prepareCodeFragmentsCursor,
+  clearCodeFragmentsCursors,
+} from './codeFragments'
 import { accessorType } from '@/store'
 import { Client } from '@/plugins/client'
 
@@ -135,8 +139,13 @@ async function setupElementWidgetsOnDiffEditor(
   const editor = getEditor(category, diffEditor)
 
   clearElementWidgetsOnEditor(category, editor)
+  clearCodeFragmentsCursors(category)
   content.elements.forEach((element) => {
-    setElementWidgetOnEditor(category, element, editor, $accessor, $client)
+    if (element.type === 'CodeFragments') {
+      prepareCodeFragmentsCursor(category, element, editor, $accessor, $client)
+    } else {
+      setElementWidgetOnEditor(category, element, editor, $accessor, $client)
+    }
   })
 }
 

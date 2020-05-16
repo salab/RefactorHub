@@ -1,5 +1,4 @@
 import * as monaco from 'monaco-editor'
-import { cloneDeep } from 'lodash'
 import cryptoRandomString from 'crypto-random-string'
 import { DiffCategory, Element } from 'refactorhub'
 import {
@@ -8,7 +7,6 @@ import {
 } from './elementDecorations'
 import {
   asMonacoRange,
-  asRange,
   getRangeWidthOnEditor,
   getRangeHeightOnEditor,
 } from '@/components/common/editor/use/range'
@@ -26,18 +24,9 @@ const widgets: {
   after: [],
 }
 
-const fragments: {
-  [category in DiffCategory]: Element[]
-} = {
-  before: [],
-  after: [],
-}
-
 export function initElementWidgets() {
   widgets.before.length = 0
   widgets.after.length = 0
-  fragments.before.length = 0
-  fragments.after.length = 0
 }
 
 /**
@@ -76,15 +65,11 @@ export function setElementWidgetOnEditor(
   $accessor: typeof accessorType,
   $client: Client
 ) {
-  if (element.type === 'CodeFragments') {
-    fragments[category].push(element)
-  } else {
-    const widget = createElementWidget(element, editor, () =>
-      updateEditingElement(category, element, editor, $accessor, $client)
-    )
-    editor.addContentWidget(widget)
-    widgets[category].push(widget)
-  }
+  const widget = createElementWidget(element, editor, () =>
+    updateEditingElement(category, element, editor, $accessor, $client)
+  )
+  editor.addContentWidget(widget)
+  widgets[category].push(widget)
 }
 
 function createElementWidget(
@@ -150,47 +135,6 @@ async function updateEditingElement(
     metadata.key,
     metadata.index,
     element,
-    editor
-  )
-
-  $accessor.draft.setEditingElementMetadata({ category })
-}
-
-export async function updateEditingCodeFragments(
-  category: DiffCategory,
-  range: monaco.Range,
-  editor: monaco.editor.ICodeEditor,
-  $accessor: typeof accessorType,
-  $client: Client
-) {
-  const element = fragments[category].find((it) =>
-    asMonacoRange(it.location.range).containsRange(range)
-  )
-  if (!element) return
-
-  const draft = $accessor.draft.draft
-  const metadata = $accessor.draft.editingElementMetadata[category]
-  if (!draft || !metadata) return
-
-  const nextElement = cloneDeep(element)
-  nextElement.location.range = asRange(range)
-
-  $accessor.draft.setDraft(
-    await $client.updateElement(
-      draft.id,
-      category,
-      metadata.key,
-      metadata.index,
-      nextElement
-    )
-  )
-
-  deleteElementDecoration(category, metadata.key, metadata.index)
-  setElementDecorationOnEditor(
-    category,
-    metadata.key,
-    metadata.index,
-    nextElement,
     editor
   )
 
