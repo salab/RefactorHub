@@ -91,6 +91,12 @@ export async function updateEditingCodeFragments(
   $accessor: typeof accessorType,
   $client: Client
 ) {
+  if (
+    range.startLineNumber === range.endLineNumber &&
+    range.startColumn === range.endColumn
+  )
+    return
+
   const element = fragments[category].find((it) =>
     asMonacoRange(it.location.range).containsRange(range)
   )

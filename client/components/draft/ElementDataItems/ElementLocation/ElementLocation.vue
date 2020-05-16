@@ -1,7 +1,10 @@
 <template>
   <div>
     <v-divider />
-    <div class="d-flex pl-3">
+    <div
+      :class="{ [`element-location-${element.type}`]: isEditing }"
+      class="d-flex pl-3"
+    >
       <div class="flex-grow-1 d-flex flex-column justify-center">
         <span class="caption text--secondary">{{ path }}</span>
         <div class="d-flex align-center text--secondary">
@@ -115,7 +118,22 @@ export default defineComponent({
       })
     }
 
-    return { path, previewLocation, deleteLocation, startEditLocation }
+    const isEditing = computed(() => {
+      const metadata =
+        root.$accessor.draft.editingElementMetadata[props.category]
+      return (
+        metadata?.key === props.elementKey &&
+        metadata?.index === props.elementIndex
+      )
+    })
+
+    return {
+      path,
+      previewLocation,
+      deleteLocation,
+      startEditLocation,
+      isEditing,
+    }
   },
 })
 </script>
