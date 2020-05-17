@@ -17,6 +17,10 @@
             />
           </v-list>
         </div>
+        <div>
+          <v-divider />
+          <add-element-key-button :category="category" />
+        </div>
       </div>
     </v-navigation-drawer>
   </v-card>
@@ -27,11 +31,13 @@ import { defineComponent, PropType, computed } from '@vue/composition-api'
 import { capitalize } from 'lodash-es'
 import { DiffCategory } from 'refactorhub'
 import ElementDataItem from './ElementDataItem.vue'
+import AddElementKeyButton from './AddElementKeyButton.vue'
 
 export default defineComponent({
   name: 'ElementDataItems',
   components: {
     ElementDataItem,
+    AddElementKeyButton,
   },
   props: {
     category: {
