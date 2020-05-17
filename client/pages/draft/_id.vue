@@ -1,21 +1,23 @@
 <template>
-  <div class="d-flex flex-column fill-height">
-    <draft-action-bar />
-    <v-divider />
-    <draft-info />
-    <v-divider />
-    <div class="flex-grow-1 d-flex">
-      <element-data-items category="before" />
-      <div class="flex-grow-1 d-flex flex-column">
-        <div class="flex-grow-1">
-          <element-editor />
+  <div class="app">
+    <div class="d-flex flex-column fill-height">
+      <draft-action-bar />
+      <v-divider />
+      <draft-info />
+      <v-divider />
+      <div class="flex-grow-1 d-flex min-height-0">
+        <element-data-items category="before" />
+        <div class="flex-grow-1 d-flex flex-column">
+          <div class="flex-grow-1">
+            <element-editor />
+          </div>
+          <v-divider />
+          <commit-files />
         </div>
-        <v-divider />
-        <commit-files />
+        <element-data-items category="after" />
       </div>
-      <element-data-items category="after" />
+      <element-type-colors />
     </div>
-    <element-type-colors />
   </div>
 </template>
 
@@ -51,3 +53,17 @@ export default defineComponent({
   },
 })
 </script>
+
+<style lang="scss" scoped>
+.app {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.min-height-0 {
+  min-height: 0;
+}
+</style>
