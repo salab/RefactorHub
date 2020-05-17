@@ -1,58 +1,55 @@
 <template>
-  <div>
-    <v-divider />
-    <div
-      :class="{ [`element-location-${element.type}`]: isEditing }"
-      class="d-flex pl-3"
-    >
-      <div class="flex-grow-1 d-flex flex-column justify-center">
-        <span class="caption text--secondary">{{ path }}</span>
-        <div class="d-flex align-center text--secondary">
-          <number-column :number="element.location.range.startLine" />
-          <div>:</div>
-          <number-column :number="element.location.range.startColumn" />
-          <div class="px-1">~</div>
-          <number-column :number="element.location.range.endLine" />
-          <div>:</div>
-          <number-column :number="element.location.range.endColumn" />
-        </div>
+  <div
+    :class="{ [`element-location-${element.type}`]: isEditing }"
+    class="d-flex pl-3"
+  >
+    <div class="flex-grow-1 d-flex flex-column justify-center">
+      <span class="caption text--secondary">{{ path }}</span>
+      <div class="d-flex align-center text--secondary">
+        <number-column :number="element.location.range.startLine" />
+        <div>:</div>
+        <number-column :number="element.location.range.startColumn" />
+        <div class="px-1">~</div>
+        <number-column :number="element.location.range.endLine" />
+        <div>:</div>
+        <number-column :number="element.location.range.endColumn" />
       </div>
-      <div class="px-1">
-        <!-- TODO: Impl
-        <v-btn
-          block
-          x-small
-          depressed
-          tile
-          class="px-1 my-1"
-          @click="previewLocation"
-        >
-          <span class="text-none font-weight-regular">preview</span>
-        </v-btn>
-        -->
-        <v-btn
-          block
-          x-small
-          outlined
-          tile
-          color="primary"
-          class="px-1 my-1"
-          @click="startEditLocation"
-        >
-          <span class="text-none font-weight-regular">edit</span>
-        </v-btn>
-        <v-btn
-          block
-          x-small
-          outlined
-          tile
-          color="error"
-          class="px-1 my-1"
-          @click="deleteLocation"
-        >
-          <span class="text-none font-weight-regular">delete</span>
-        </v-btn>
-      </div>
+    </div>
+    <div class="px-1">
+      <!-- TODO: Impl
+      <v-btn
+        block
+        x-small
+        depressed
+        tile
+        class="px-1 my-1"
+        @click="previewLocation"
+      >
+        <span class="text-none font-weight-regular">preview</span>
+      </v-btn>
+      -->
+      <v-btn
+        block
+        x-small
+        outlined
+        tile
+        color="primary"
+        class="px-1 my-1"
+        @click="startEditLocation"
+      >
+        <span class="text-none font-weight-regular">edit</span>
+      </v-btn>
+      <v-btn
+        block
+        x-small
+        outlined
+        tile
+        color="error"
+        class="px-1 my-1"
+        @click="deleteLocation"
+      >
+        <span class="text-none font-weight-regular">delete</span>
+      </v-btn>
     </div>
   </div>
 </template>

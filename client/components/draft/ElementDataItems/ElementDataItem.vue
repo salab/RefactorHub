@@ -23,19 +23,19 @@
           <v-list-item-subtitle>{{ elementData.type }}</v-list-item-subtitle>
         </v-list-item-content>
       </template>
-      <element-location
-        v-for="(element, i) in elementData.elements"
-        :key="i"
-        :category="category"
-        :element-key="elementKey"
-        :element-index="i"
-        :element="element"
-      />
-      <add-location-button
-        v-if="elementData.multiple"
-        :category="category"
-        :element-key="elementKey"
-      />
+      <div v-for="(element, i) in elementData.elements" :key="i">
+        <v-divider />
+        <element-location
+          :category="category"
+          :element-key="elementKey"
+          :element-index="i"
+          :element="element"
+        />
+      </div>
+      <div v-if="elementData.multiple">
+        <v-divider />
+        <add-location-button :category="category" :element-key="elementKey" />
+      </div>
     </v-list-group>
     <v-divider />
   </div>

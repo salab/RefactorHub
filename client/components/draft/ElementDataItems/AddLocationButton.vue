@@ -1,10 +1,7 @@
 <template>
-  <div>
-    <v-divider />
-    <v-btn text tile block small color="secondary" @click="addLocation">
-      <span class="text-none body-2">Add Location</span>
-    </v-btn>
-  </div>
+  <v-btn text tile block small color="secondary" @click="addLocation">
+    <span class="text-none body-2">Add Location</span>
+  </v-btn>
 </template>
 
 <script lang="ts">
