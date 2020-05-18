@@ -214,4 +214,30 @@ class DraftService(
         return save(draft)
     }
 
+    fun deleteElementKey(
+        id: Long,
+        category: String,
+        key: String
+    ): Draft {
+        val draft = getByOwner(id)
+        val map = when (category) {
+            "before" -> draft.data.before
+            "after" -> draft.data.after
+            else -> throw BadRequestException("need to be either 'before' or 'after'")
+        }
+        if (!map.containsKey(key)) {
+            throw BadRequestException("Draft(id=$id).data.$category doesn't have key=$key")
+        }
+        val type = when (category) {
+            "before" -> draft.type.before
+            "after" -> draft.type.after
+            else -> throw BadRequestException("need to be either 'before' or 'after'")
+        }
+        if (type.containsKey(key)) {
+            throw BadRequestException("Draft(id=$id).type.$category should have key=$key")
+        }
+        map.remove(key)
+        return save(draft)
+    }
+
 }

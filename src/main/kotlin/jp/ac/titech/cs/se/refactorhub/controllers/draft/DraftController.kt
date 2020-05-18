@@ -60,4 +60,11 @@ class DraftController(
         @RequestBody request: AddElementKeyRequest
     ) = draftService.addElementKey(id, category, request.key, request.type, request.multiple)
 
+    @DeleteMapping("/{id}/{category}/{key}")
+    fun deleteElementKey(
+        @PathVariable("id") id: Long,
+        @PathVariable("category") category: String,
+        @PathVariable("key") key: String
+    ) = draftService.deleteElementKey(id, category, key)
+
 }
