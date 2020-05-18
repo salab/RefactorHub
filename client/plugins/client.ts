@@ -37,8 +37,8 @@ export class Client {
     return (await this.$axios.post<Refactoring>(`/api/draft/${id}/save`)).data
   }
 
-  async cancelDraft(id: number) {
-    return (await this.$axios.post<void>(`/api/draft/${id}/cancel`)).data
+  async discardDraft(id: number) {
+    return (await this.$axios.post<void>(`/api/draft/${id}/discard`)).data
   }
 
   async updateElement(
@@ -108,9 +108,8 @@ export class Client {
     sha: string,
     path: string
   ) {
-    // TODO: text_model -> content
     return (
-      await this.$axios.get<FileContent>(`/api/editor/text_model`, {
+      await this.$axios.get<FileContent>(`/api/editor/content`, {
         params: { owner, repository, sha, path },
       })
     ).data

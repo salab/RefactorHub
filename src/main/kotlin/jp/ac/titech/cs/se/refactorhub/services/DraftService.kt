@@ -76,7 +76,7 @@ class DraftService(
 
     fun save(draft: Draft) = draftRepository.save(draft)
 
-    fun cancel(id: Long) = delete(getByOwner(id).id)
+    fun discard(id: Long) = delete(getByOwner(id).id)
 
     fun delete(id: Long) = draftRepository.deleteById(id)
 

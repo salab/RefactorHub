@@ -20,8 +20,8 @@ class DraftController(
     @PostMapping("/{id}/save")
     fun save(@PathVariable("id") id: Long) = refactoringService.save(draftService.getByOwner(id))
 
-    @PostMapping("/{id}/cancel")
-    fun cancel(@PathVariable("id") id: Long) = draftService.cancel(id)
+    @PostMapping("/{id}/discard")
+    fun discard(@PathVariable("id") id: Long) = draftService.discard(id)
 
     @PatchMapping("/{id}")
     fun update(

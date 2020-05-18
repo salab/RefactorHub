@@ -1,6 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.services
 
-import jp.ac.titech.cs.se.refactorhub.models.editor.TextModel
+import jp.ac.titech.cs.se.refactorhub.models.editor.FileContent
 import jp.ac.titech.cs.se.refactorhub.services.parser.Parser
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.IOUtils
@@ -12,11 +12,11 @@ import java.net.URL
 @Service
 class EditorService {
 
-    fun createTextModel(content: GHContent): TextModel {
+    fun createFileContent(content: GHContent): FileContent {
         val text = if (content.isText) IOUtils.toString(content.read(), Charsets.UTF_8.name())
-        else return TextModel("This is a binary file.", uri = content.htmlUrl)
+        else return FileContent("This is a binary file.", uri = content.htmlUrl)
         val extension = FilenameUtils.getExtension(content.name)
-        return TextModel(
+        return FileContent(
             text,
             extension,
             content.htmlUrl,

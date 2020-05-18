@@ -5,8 +5,8 @@
       <v-btn depressed small tile color="primary" class="ml-2" @click="save">
         save
       </v-btn>
-      <v-btn depressed small tile text class="ml-2" @click="cancel">
-        cancel
+      <v-btn depressed small tile text class="ml-2" @click="discard">
+        discard
       </v-btn>
     </v-app-bar>
   </v-card>
@@ -28,12 +28,12 @@ export default defineComponent({
       // const refactoring = await root.$client.saveDraft(props.id)
       // root.$router.push(`/refactoring/${refactoring.id}`)
     }
-    const cancel = async () => {
+    const discard = async () => {
       if (!id.value) return
-      await root.$client.cancelDraft(id.value)
+      await root.$client.discardDraft(id.value)
       root.$router.back()
     }
-    return { save, cancel }
+    return { save, discard }
   },
 })
 </script>

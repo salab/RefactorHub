@@ -14,12 +14,12 @@ class EditorController(
     private val editorService: EditorService
 ) {
 
-    @GetMapping("/text_model")
-    fun getTextModel(
+    @GetMapping("/content")
+    fun getFileContent(
         @RequestParam sha: String,
         @RequestParam owner: String,
         @RequestParam repository: String,
         @RequestParam path: String
-    ) = editorService.createTextModel(gitHubService.getContent(sha, owner, repository, path))
+    ) = editorService.createFileContent(gitHubService.getContent(sha, owner, repository, path))
 
 }
