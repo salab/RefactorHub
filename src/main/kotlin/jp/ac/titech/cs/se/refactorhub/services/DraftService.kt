@@ -178,6 +178,9 @@ class DraftService(
         if (!map.containsKey(key)) {
             throw BadRequestException("Draft(id=$id).data.$category doesn't have key=$key")
         }
+        if (!map[key]!!.multiple) {
+            throw BadRequestException("Draft(id=$id).data.$category[$key] doesn't have multiple elements")
+        }
         if (map[key]!!.elements.size <= index) {
             throw BadRequestException("Draft(id=$id).data.$category[$key] doesn't have index=$index")
         }

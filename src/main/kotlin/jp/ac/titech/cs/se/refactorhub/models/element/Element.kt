@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import jp.ac.titech.cs.se.refactorhub.models.element.data.Location
 import java.io.Serializable
 import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(using = Element.Deserializer::class)
@@ -47,6 +48,6 @@ interface Element : Serializable {
     data class Data(
         val type: Type = Type.Empty,
         val multiple: Boolean = false,
-        val elements: MutableList<Element> = mutableListOf()
+        val elements: MutableList<Element> = mutableListOf(type.dataClass.createInstance())
     ) : Serializable
 }
