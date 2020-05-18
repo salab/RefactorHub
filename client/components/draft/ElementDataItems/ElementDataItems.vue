@@ -14,6 +14,7 @@
               :category="category"
               :element-key="key"
               :element-data="data"
+              :is-deletable="isDeletable(key)"
             />
           </v-list>
         </div>
@@ -58,9 +59,21 @@ export default defineComponent({
       return {}
     })
 
+    const type = computed(() => {
+      if (draft.value) {
+        return props.category === 'before'
+          ? draft.value.type.before
+          : draft.value.type.after
+      }
+      return {}
+    })
+
+    const isDeletable = (key: string) => !Object.keys(type.value).includes(key)
+
     return {
       title,
       elementDataMap,
+      isDeletable,
     }
   },
 })

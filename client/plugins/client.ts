@@ -92,6 +92,12 @@ export class Client {
     ).data
   }
 
+  async deleteElementKey(id: number, category: DiffCategory, key: string) {
+    return (
+      await this.$axios.delete<Draft>(`/api/draft/${id}/${category}/${key}`)
+    ).data
+  }
+
   async getCommitInfo(sha: string) {
     return (await this.$axios.get<CommitInfo>(`/api/commit/${sha}/info`)).data
   }

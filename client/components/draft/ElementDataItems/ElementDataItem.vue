@@ -24,6 +24,11 @@
             `${elementData.type}${elementData.multiple ? '[]' : ''}`
           }}</v-list-item-subtitle>
         </v-list-item-content>
+        <div v-if="isDeletable">
+          <v-btn icon x-small color="error" @click.stop="deleteElementKey">
+            <v-icon x-small>fa-trash</v-icon>
+          </v-btn>
+        </div>
       </template>
       <div v-for="(element, i) in elementData.elements" :key="i">
         <v-divider />
@@ -68,14 +73,30 @@ export default defineComponent({
       type: Object as PropType<ElementData>,
       required: true,
     },
+    isDeletable: {
+      type: Boolean,
+      required: true,
+    },
   },
-  setup(props) {
+  setup(props, { root }) {
     const isCompleted = computed(
       () =>
         props.elementData.elements.length > 0 &&
         props.elementData.elements.every((e) => !!e.location.path)
     )
-    return { isCompleted }
+
+    const draft = computed(() => root.$accessor.draft.draft)
+    const deleteElementKey = async () => {
+      if (!draft.value) return
+      await root.$accessor.draft.setDraft(
+        await root.$client.deleteElementKey(
+          draft.value.id,
+          props.category,
+          props.elementKey
+        )
+      )
+    }
+    return { isCompleted, deleteElementKey }
   },
 })
 </script>
