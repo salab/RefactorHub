@@ -52,8 +52,9 @@ export default defineComponent({
     const multiple = ref(false)
 
     const addElementKey = async () => {
-      if (draft.value) {
+      if (draft.value && elementKey.value && elementType.value) {
         await root.$accessor.draft.setDraft(
+          // TODO: error handling
           await root.$client.addElementKey(
             draft.value.id,
             props.category,
@@ -62,6 +63,8 @@ export default defineComponent({
             multiple.value
           )
         )
+        elementKey.value = ''
+        elementType.value = ''
       }
     }
 

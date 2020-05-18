@@ -20,7 +20,9 @@
         </div>
         <v-list-item-content>
           <v-list-item-title>{{ elementKey }}</v-list-item-title>
-          <v-list-item-subtitle>{{ elementData.type }}</v-list-item-subtitle>
+          <v-list-item-subtitle>{{
+            `${elementData.type}${elementData.multiple ? '[]' : ''}`
+          }}</v-list-item-subtitle>
         </v-list-item-content>
       </template>
       <div v-for="(element, i) in elementData.elements" :key="i">
