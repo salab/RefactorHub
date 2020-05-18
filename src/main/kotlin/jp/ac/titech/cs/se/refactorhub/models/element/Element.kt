@@ -28,7 +28,6 @@ interface Element : Serializable {
     }
 
     enum class Type(val dataClass: KClass<out Element>) {
-        Empty(jp.ac.titech.cs.se.refactorhub.models.element.impl.Empty::class),
         ClassDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.ClassDeclaration::class),
         ConstructorDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.ConstructorDeclaration::class),
         FieldDeclaration(jp.ac.titech.cs.se.refactorhub.models.element.impl.FieldDeclaration::class),
@@ -41,12 +40,12 @@ interface Element : Serializable {
     }
 
     data class Info(
-        val type: Type = Type.Empty,
+        val type: Type,
         val multiple: Boolean = false
     ) : Serializable
 
     data class Data(
-        val type: Type = Type.Empty,
+        val type: Type,
         val multiple: Boolean = false,
         val elements: MutableList<Element> = mutableListOf(type.dataClass.createInstance())
     ) : Serializable
