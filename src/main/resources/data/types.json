@@ -1,0 +1,57 @@
+[
+  {
+    "name": "Custom",
+    "description": ""
+  },
+  {
+    "name": "RenameMethod",
+    "description": "",
+    "before": {
+      "original method": {
+        "type": "MethodDeclaration"
+      }
+    },
+    "after": {
+      "renamed method": {
+        "type": "MethodDeclaration"
+      },
+      "invocation": {
+        "type": "MethodInvocation",
+        "multiple": true
+      }
+    }
+  },
+  {
+    "name": "MoveMethod",
+    "description": "",
+    "before": {
+      "original method": {
+        "type": "MethodDeclaration"
+      }
+    },
+    "after": {
+      "moved method": {
+        "type": "MethodDeclaration"
+      }
+    }
+  },
+  {
+    "name": "ExtractMethod",
+    "description": "",
+    "before": {
+      "source": {
+        "type": "CodeFragments",
+        "multiple": true
+      }
+    },
+    "after": {
+      "extracted method": {
+        "type": "MethodDeclaration"
+      },
+      "invocation": {
+        "type": "MethodInvocation",
+        "multiple": true
+      }
+    }
+  }
+]

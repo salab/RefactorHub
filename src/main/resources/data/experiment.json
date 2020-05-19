@@ -1,0 +1,27 @@
+[
+  {
+    "type": "ExtractMethod",
+    "description": "Extract Method private fetch(url String) : byte[] extracted from public fetch(feed Feed) : byte[] in class com.commafeed.backend.favicon.DefaultFaviconFetcher",
+    "url": "https://github.com/Athou/commafeed/commit/18a7bd1fd1a83b3b8d1b245e32f78c0b4443b7a7"
+  },
+  {
+    "type": "ExtractMethod",
+    "description": "Extract Method public createGogsWebhook(kubernetes KubernetesClient, log Log, gogsUser String, gogsPwd String, repoName String, webhookUrl String, webhookSecret String) : boolean extracted from public execute() : void in class io.fabric8.maven.CreateGogsWebhook",
+    "url": "https://github.com/fabric8io/fabric8/commit/9e61a71540da58c3208fd2c7737f793c3f81e5ae"
+  },
+  {
+    "type": "ExtractMethod",
+    "description": "Extract Method protected onRemoteStatusChanged(oldStatus InstanceInfo.InstanceStatus, newStatus InstanceInfo.InstanceStatus) : void extracted from private updateInstanceRemoteStatus() : void in class com.netflix.discovery.DiscoveryClient",
+    "url": "https://github.com/Netflix/eureka/commit/f6212a7e474f812f31ddbce6d4f7a7a0d498b751"
+  },
+  {
+    "type": "ExtractMethod",
+    "description": "Extract Method protected waitForCacheToStabilize(cache Cache<Object,Object>, cacheConfig Configuration) : void extracted from public perform(ctx InvocationContext) : Object in class org.infinispan.commands.CreateCacheCommand",
+    "url": "https://github.com/infinispan/infinispan/commit/e3b0d87b3ca0fd27cec39937cb3dc3a05b0cfc4e"
+  },
+  {
+    "type": "ExtractMethod",
+    "description": "Extract Method private throttle(currTimeMillis long) : void extracted from public run() : void in class com.yahoo.ycsb.ClientThread",
+    "url": "https://github.com/brianfrankcooper/YCSB/commit/0b024834549c53512ef18bce89f60ef9225d4819"
+  }
+]
