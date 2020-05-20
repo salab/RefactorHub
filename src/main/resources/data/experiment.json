@@ -1,27 +1,82 @@
 [
   {
-    "type": "ExtractMethod",
-    "description": "Extract Method private fetch(url String) : byte[] extracted from public fetch(feed Feed) : byte[] in class com.commafeed.backend.favicon.DefaultFaviconFetcher",
-    "url": "https://github.com/Athou/commafeed/commit/18a7bd1fd1a83b3b8d1b245e32f78c0b4443b7a7"
+    "type": "RenameMethod",
+    "description": "Rename Method public requiresImmediateFlushingIfNotFiring() : boolean renamed to public requiresImmediateFlushing() : boolean in class org.drools.core.phreak.PhreakTimerNode.TimerAction",
+    "url": "https://github.com/droolsjbpm/drools/commit/1bf2875e9d73e2d1cd3b58200d5300485f890ff5"
+  },
+  {
+    "type": "RenameMethod",
+    "description": "Rename Method public getAllocatedPages() : long renamed to public getExclusiveWriteCachePagesSize() : long in class com.orientechnologies.orient.core.storage.impl.memory.ODirectMemoryOnlyDiskCache",
+    "url": "https://github.com/orientechnologies/orientdb/commit/f50f234b24e6ada29c82ce57830118508bf55d51"
+  },
+  {
+    "type": "RenameMethod",
+    "description": "Rename Method protected onKeyboardShown(keyboardHeight int) : void renamed to protected onKeyboardOpen(keyboardHeight int) : void in class org.thoughtcrime.securesms.components.KeyboardAwareLinearLayout",
+    "url": "https://github.com/WhisperSystems/Signal-Android/commit/fa62b9bde224341e0c2d43c0694fc10c4df7336f"
+  },
+  {
+    "type": "RenameMethod",
+    "description": "Rename Method public getMetric_whenNullName() : void renamed to public newGauge_whenNullName() : void in class com.hazelcast.internal.metrics.impl.MetricsRegistryImplTest",
+    "url": "https://github.com/hazelcast/hazelcast/commit/30c4ae09745d6062077925a54f27205b7401d8df"
+  },
+  {
+    "type": "MoveMethod",
+    "description": "Move Method public getSplits(jobConf JobConf, numSplits int) : InputSplit[] from class org.apache.cassandra.hadoop.AbstractColumnFamilyInputFormat to public getSplits(jobConf JobConf, numSplits int) : InputSplit[] from class org.apache.cassandra.hadoop.cql3.CqlInputFormat",
+    "url": "https://github.com/apache/cassandra/commit/446e2537895c15b404a74107069a12f3fc404b15"
+  },
+  {
+    "type": "MoveMethod",
+    "description": "Move Method private isOperator(op String) : boolean from class io.undertow.predicate.PredicateParser to private isOperator(op String) : boolean from class io.undertow.server.handlers.builder.PredicatedHandlersParser",
+    "url": "https://github.com/undertow-io/undertow/commit/d5b2bb8cd1393f1c5a5bb623e3d8906cd57e53c4"
+  },
+  {
+    "type": "MoveMethod",
+    "description": "Move Method public run() : void from class com.hazelcast.internal.monitors.HealthMonitor to public run() : void from class com.hazelcast.internal.monitors.HealthMonitor.HealthMonitorThread",
+    "url": "https://github.com/hazelcast/hazelcast/commit/30c4ae09745d6062077925a54f27205b7401d8df"
+  },
+  {
+    "type": "MoveMethod",
+    "description": "Move Method private validateValueChar(state int, c char, seq CharSequence) : int from class io.netty.handler.codec.http.DefaultHttpHeaders.HttpHeadersValidationConverter to private validateValueChar(seq CharSequence, state int, character char) : int from class io.netty.handler.codec.http.DefaultHttpHeaders.HeaderValueConverterAndValidator",
+    "url": "https://github.com/netty/netty/commit/d31fa31cdcc5ea2fa96116e3b1265baa180df58a"
   },
   {
     "type": "ExtractMethod",
-    "description": "Extract Method public createGogsWebhook(kubernetes KubernetesClient, log Log, gogsUser String, gogsPwd String, repoName String, webhookUrl String, webhookSecret String) : boolean extracted from public execute() : void in class io.fabric8.maven.CreateGogsWebhook",
-    "url": "https://github.com/fabric8io/fabric8/commit/9e61a71540da58c3208fd2c7737f793c3f81e5ae"
+    "description": "Extract Method private rehashAwareIteration(complete AtomicBoolean, consumer Consumer<R>, supplier IteratorSupplier<R>, iteratorParallelDistribute boolean) : void extracted from package remoteIterator() : Iterator<R> in class org.infinispan.stream.impl.DistributedCacheStream",
+    "url": "https://github.com/infinispan/infinispan/commit/043030723632627b0908dca6b24dae91d3dfd938"
   },
   {
     "type": "ExtractMethod",
-    "description": "Extract Method protected onRemoteStatusChanged(oldStatus InstanceInfo.InstanceStatus, newStatus InstanceInfo.InstanceStatus) : void extracted from private updateInstanceRemoteStatus() : void in class com.netflix.discovery.DiscoveryClient",
-    "url": "https://github.com/Netflix/eureka/commit/f6212a7e474f812f31ddbce6d4f7a7a0d498b751"
+    "description": "Extract Method private renderConnection() : void extracted from public toString() : String in class com.hazelcast.internal.monitors.HealthMonitor.HealthMetrics",
+    "url": "https://github.com/hazelcast/hazelcast/commit/30c4ae09745d6062077925a54f27205b7401d8df"
   },
   {
     "type": "ExtractMethod",
-    "description": "Extract Method protected waitForCacheToStabilize(cache Cache<Object,Object>, cacheConfig Configuration) : void extracted from public perform(ctx InvocationContext) : Object in class org.infinispan.commands.CreateCacheCommand",
-    "url": "https://github.com/infinispan/infinispan/commit/e3b0d87b3ca0fd27cec39937cb3dc3a05b0cfc4e"
+    "description": "Extract Method private getRecipientDetailsSync(context Context, number String) : RecipientDetails extracted from private getAsynchronousRecipient(context Context, recipientId long) : Recipient in class org.thoughtcrime.securesms.recipients.RecipientProvider",
+    "url": "https://github.com/WhisperSystems/Signal-Android/commit/99528dcc3b4a82b5e52a87d3e7aed5c6479028c7"
   },
   {
     "type": "ExtractMethod",
-    "description": "Extract Method private throttle(currTimeMillis long) : void extracted from public run() : void in class com.yahoo.ycsb.ClientThread",
-    "url": "https://github.com/brianfrankcooper/YCSB/commit/0b024834549c53512ef18bce89f60ef9225d4819"
+    "description": "Extract Method private replayRemoteTransactionIfNeeded(ctx RemoteTxInvocationContext, topologyId int) : void extracted from public visitCommitCommand(ctx TxInvocationContext, command CommitCommand) : Object in class org.infinispan.interceptors.TxInterceptor",
+    "url": "https://github.com/infinispan/infinispan/commit/ce4f6292d6350a2c6b82d995352fdf6d07042c9c"
+  },
+  {
+    "type": "Custom",
+    "description": "",
+    "url": "https://github.com/spring-projects/spring-boot/commit/87dd11502a64608f59c3b540c93933cc87eba52a"
+  },
+  {
+    "type": "Custom",
+    "description": "",
+    "url": "https://github.com/spring-projects/spring-boot/commit/aa696210789b88ab30a6100ead42d77c3f2ccf4c"
+  },
+  {
+    "type": "Custom",
+    "description": "",
+    "url": "https://github.com/elastic/elasticsearch/commit/6b7916606111827e0d9843e401291afa6627d4f3"
+  },
+  {
+    "type": "Custom",
+    "description": "",
+    "url": "https://github.com/elastic/elasticsearch/commit/eb0b2c8f6996ff90becc8875f20ac34b925f5795"
   }
 ]
