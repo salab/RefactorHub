@@ -15,37 +15,27 @@
         <number-column :number="element.location.range.endColumn" />
       </div>
     </div>
-    <div class="px-1">
-      <!-- TODO: Impl
-      <v-btn
-        block
-        x-small
-        depressed
-        tile
-        class="px-1 my-1"
-        @click="previewLocation"
-      >
+    <div class="pa-1 buttons d-flex flex-column justify-center">
+      <v-btn x-small outlined tile disabled @click="previewLocation">
         <span class="text-none font-weight-regular">preview</span>
       </v-btn>
-      -->
       <v-btn
-        block
         x-small
         outlined
         tile
         color="primary"
-        class="px-1 my-1"
+        class="mt-1"
         @click="startEditLocation"
       >
         <span class="text-none font-weight-regular">edit</span>
       </v-btn>
       <v-btn
-        block
+        v-if="multiple"
         x-small
         outlined
         tile
         color="error"
-        class="px-1 my-1"
+        class="mt-1"
         @click="deleteLocation"
       >
         <span class="text-none font-weight-regular">delete</span>
@@ -80,6 +70,10 @@ export default defineComponent({
     },
     element: {
       type: Object as PropType<Element>,
+      required: true,
+    },
+    multiple: {
+      type: Boolean,
       required: true,
     },
   },
@@ -134,3 +128,9 @@ export default defineComponent({
   },
 })
 </script>
+
+<style lang="scss" scoped>
+.buttons {
+  width: 3.75rem;
+}
+</style>

@@ -37,6 +37,7 @@
           :element-key="elementKey"
           :element-index="i"
           :element="element"
+          :multiple="elementData.multiple"
         />
       </div>
       <div v-if="elementData.multiple">
