@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/editor")
 class EditorController(
-    private val gitHubService: GitHubService,
     private val editorService: EditorService
 ) {
 
@@ -20,6 +19,6 @@ class EditorController(
         @RequestParam owner: String,
         @RequestParam repository: String,
         @RequestParam path: String
-    ) = editorService.createFileContent(gitHubService.getContent(sha, owner, repository, path))
+    ) = editorService.getFileContent(sha, owner, repository, path)
 
 }

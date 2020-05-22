@@ -71,6 +71,8 @@ async function getTextModelOfFile(
     consola.log('commitInfo is not loaded')
     return
   }
+  if (!isExistFile(category, commitInfo, metadata))
+    return monaco.editor.createModel('', 'text/plain')
 
   const sha = getCommitSHA(category, commitInfo)
   const path = getCommitFileName(category, commitInfo, metadata)
@@ -103,6 +105,7 @@ function setupElementDecorationsOnDiffEditor(
     consola.log('draft or commitInfo is not loaded')
     return
   }
+  if (!isExistFile(category, commitInfo, metadata)) return
 
   const path = getCommitFileName(category, commitInfo, metadata)
   const editor = getEditor(category, diffEditor)
@@ -127,6 +130,7 @@ async function setupElementWidgetsOnDiffEditor(
     consola.log('commitInfo is not loaded')
     return
   }
+  if (!isExistFile(category, commitInfo, metadata)) return
 
   const sha = getCommitSHA(category, commitInfo)
   const path = getCommitFileName(category, commitInfo, metadata)
@@ -157,6 +161,18 @@ function getEditor(
   return category === 'before'
     ? diffEditor.getOriginalEditor()
     : diffEditor.getModifiedEditor()
+}
+
+function isExistFile(
+  category: DiffCategory,
+  commitInfo: CommitInfo,
+  metadata: FileMetadata
+) {
+  const file = commitInfo.files[metadata.index]
+  return !(
+    (category === 'before' && file.status === 'added') ||
+    (category === 'after' && file.status === 'removed')
+  )
 }
 
 function getCommitSHA(category: DiffCategory, commitInfo: CommitInfo) {
