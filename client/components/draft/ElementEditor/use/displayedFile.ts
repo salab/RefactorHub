@@ -10,6 +10,7 @@ import {
   prepareCodeFragmentsCursor,
   clearCodeFragmentsCursors,
 } from './codeFragments'
+import { setupEditingElement } from './editingElement'
 import { accessorType } from '@/store'
 import { Client } from '@/plugins/client'
 
@@ -33,6 +34,10 @@ export async function setupDisplayedFileOnDiffEditor(
     diffEditor,
     $accessor,
     $client
+  )
+  setupEditingElement(
+    category,
+    $accessor.draft.editingElementMetadata[category]
   )
 }
 
