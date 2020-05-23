@@ -8,7 +8,7 @@ import {
   disposeCodeFragmentsCursor,
 } from './codeFragments'
 
-export function changeEditingElement(
+export function setupEditingElement(
   category: DiffCategory,
   metadata?: ElementMetadata
 ) {

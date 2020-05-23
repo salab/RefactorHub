@@ -13,7 +13,7 @@ import {
 import { accessorType } from '@/store'
 import { Client } from '@/plugins/client'
 
-export async function changeDisplayedFileOnDiffEditor(
+export async function setupDisplayedFileOnDiffEditor(
   category: DiffCategory,
   metadata: FileMetadata,
   diffEditor: monaco.editor.IDiffEditor,

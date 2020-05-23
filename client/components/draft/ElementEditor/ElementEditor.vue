@@ -10,8 +10,8 @@
 import { defineComponent, ref, watch, computed } from '@vue/composition-api'
 import consola from 'consola'
 import { DiffCategory, FileMetadata } from 'refactorhub'
-import { changeDisplayedFileOnDiffEditor } from './use/displayedFile'
-import { changeEditingElement } from './use/editingElement'
+import { setupDisplayedFileOnDiffEditor } from './use/displayedFile'
+import { setupEditingElement } from './use/editingElement'
 import MonacoEditor from '@/components/common/editor/MonacoEditor.vue'
 
 export default defineComponent({
@@ -36,7 +36,7 @@ export default defineComponent({
       }
 
       pending.value++
-      await changeDisplayedFileOnDiffEditor(
+      await setupDisplayedFileOnDiffEditor(
         category,
         metadata,
         diffEditor,
@@ -57,11 +57,11 @@ export default defineComponent({
 
     watch(
       () => root.$accessor.draft.editingElementMetadata.before,
-      (value) => changeEditingElement('before', value)
+      (value) => setupEditingElement('before', value)
     )
     watch(
       () => root.$accessor.draft.editingElementMetadata.after,
-      (value) => changeEditingElement('after', value)
+      (value) => setupEditingElement('after', value)
     )
 
     return {
