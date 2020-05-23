@@ -2,26 +2,17 @@
   <div class="files-header">
     <div class="content d-flex align-center pl-2">
       <span
-        v-if="commitFiles && displayedFileMetadata.before !== undefined"
-        :title="commitFiles[displayedFileMetadata.before.index].previousName"
+        v-if="fileName.before"
+        :title="fileName.before"
         class="subtitle-1"
-        >{{
-          trimFileName(
-            commitFiles[displayedFileMetadata.before.index].previousName
-          )
-        }}</span
+        >{{ trimFileName(fileName.before) }}</span
       >
     </div>
     <v-divider vertical />
     <div class="content d-flex align-center pl-2">
-      <span
-        v-if="commitFiles && displayedFileMetadata.after !== undefined"
-        :title="commitFiles[displayedFileMetadata.after.index].name"
-        class="subtitle-1"
-        >{{
-          trimFileName(commitFiles[displayedFileMetadata.after.index].name)
-        }}</span
-      >
+      <span v-if="fileName.after" :title="fileName.after" class="subtitle-1">{{
+        trimFileName(fileName.after)
+      }}</span>
     </div>
   </div>
 </template>
@@ -37,9 +28,24 @@ export default defineComponent({
     const displayedFileMetadata = computed(
       () => root.$accessor.draft.displayedFileMetadata
     )
+    const fileName = computed(() => ({
+      before: (() => {
+        const index = displayedFileMetadata.value?.before?.index
+        return commitFiles.value && index !== undefined
+          ? commitFiles.value[index].previousName
+          : ''
+      })(),
+      after: (() => {
+        const index = displayedFileMetadata.value?.after?.index
+        return commitFiles.value && index !== undefined
+          ? commitFiles.value[index].name
+          : ''
+      })(),
+    }))
     return {
       commitFiles,
       displayedFileMetadata,
+      fileName,
       trimFileName,
     }
   },
