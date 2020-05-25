@@ -49,6 +49,7 @@ import { defineComponent, computed, PropType } from '@vue/composition-api'
 import { Element, DiffCategory } from 'refactorhub'
 import NumberColumn from './NumberColumn.vue'
 import { trimFileName } from '@/components/common/editor/use/trim'
+import { deleteElementDecoration } from '@/components/draft/ElementEditor/use/elementDecorations'
 
 export default defineComponent({
   name: 'ElementLocation',
@@ -95,6 +96,11 @@ export default defineComponent({
           props.elementKey,
           props.elementIndex
         )
+      )
+      deleteElementDecoration(
+        props.category,
+        props.elementKey,
+        props.elementIndex
       )
     }
 
