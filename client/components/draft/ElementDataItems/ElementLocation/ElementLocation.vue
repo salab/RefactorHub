@@ -25,7 +25,7 @@
         tile
         color="primary"
         class="mt-1"
-        @click="startEditLocation"
+        @click="toggleEditLocation"
       >
         <span class="text-none font-weight-regular">edit</span>
       </v-btn>
@@ -104,17 +104,6 @@ export default defineComponent({
       )
     }
 
-    const startEditLocation = async () => {
-      await root.$accessor.draft.setEditingElementMetadata({
-        category: props.category,
-        metadata: {
-          key: props.elementKey,
-          index: props.elementIndex,
-          type: props.element.type,
-        },
-      })
-    }
-
     const isEditing = computed(() => {
       const metadata =
         root.$accessor.draft.editingElementMetadata[props.category]
@@ -124,11 +113,28 @@ export default defineComponent({
       )
     })
 
+    const toggleEditLocation = async () => {
+      if (!isEditing.value) {
+        await root.$accessor.draft.setEditingElementMetadata({
+          category: props.category,
+          metadata: {
+            key: props.elementKey,
+            index: props.elementIndex,
+            type: props.element.type,
+          },
+        })
+      } else {
+        await root.$accessor.draft.setEditingElementMetadata({
+          category: props.category,
+        })
+      }
+    }
+
     return {
       path,
       previewLocation,
       deleteLocation,
-      startEditLocation,
+      toggleEditLocation,
       isEditing,
     }
   },
