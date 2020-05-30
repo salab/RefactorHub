@@ -54,6 +54,7 @@ import { defineComponent, PropType, computed } from '@vue/composition-api'
 import { ElementData, DiffCategory } from 'refactorhub'
 import ElementLocation from './ElementLocation/ElementLocation.vue'
 import AddLocationButton from './AddLocationButton.vue'
+import { deleteElementDecoration } from '@/components/draft/ElementEditor/use/elementDecorations'
 
 export default defineComponent({
   name: 'ElementDataItem',
@@ -96,6 +97,9 @@ export default defineComponent({
           props.elementKey
         )
       )
+      props.elementData.elements.forEach((_, i) => {
+        deleteElementDecoration(props.category, props.elementKey, i)
+      })
     }
     return { isCompleted, deleteElementKey }
   },
