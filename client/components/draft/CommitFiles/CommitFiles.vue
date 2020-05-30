@@ -6,6 +6,7 @@
           <commit-files-header />
         </v-expansion-panel-header>
         <v-expansion-panel-content>
+          <v-divider />
           <div class="files-content d-flex">
             <div class="flex-grow-1">
               <commit-files-contents category="before" />

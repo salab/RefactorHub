@@ -1,21 +1,22 @@
 <template>
-  <v-list v-if="commitFiles" dense>
+  <v-list v-if="commitFiles" dense class="file-list">
     <v-list-item-group v-model="index">
-      <v-list-item
-        v-for="(file, i) in commitFiles"
-        :key="i"
-        :disabled="isDisabled(file) || i === index"
-        @click="onClickItem(i)"
-      >
-        <v-list-item-content>
-          <v-list-item-title
-            v-if="!isDisabled(file)"
-            :title="getFileName(file)"
-          >
-            {{ trimFileName(getFileName(file), 50) }}
-          </v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
+      <div v-for="(file, i) in commitFiles" :key="i">
+        <v-list-item
+          :disabled="isDisabled(file) || i === index"
+          @click="onClickItem(i)"
+        >
+          <v-list-item-content>
+            <v-list-item-title
+              v-if="!isDisabled(file)"
+              :title="getFileName(file)"
+            >
+              {{ trimFileName(getFileName(file), 50) }}
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-divider />
+      </div>
     </v-list-item-group>
   </v-list>
 </template>
@@ -76,3 +77,9 @@ export default defineComponent({
   },
 })
 </script>
+
+<style lang="scss" scoped>
+.file-list {
+  padding: 0;
+}
+</style>

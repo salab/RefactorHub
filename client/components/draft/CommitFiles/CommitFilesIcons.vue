@@ -1,25 +1,23 @@
 <template>
-  <v-list v-if="commitFiles" dense>
+  <v-list v-if="commitFiles" dense class="icon-list">
     <v-list-item-group v-model="index">
-      <v-list-item
-        v-for="(file, i) in commitFiles"
-        :key="i"
-        :disabled="i === index"
-        @click="onClickItem(i)"
-      >
-        <v-icon v-if="file.status === 'modified'" small color="amber">
-          fa-fw fa-pen-square
-        </v-icon>
-        <v-icon v-if="file.status === 'added'" small color="green">
-          fa-fw fa-plus-square
-        </v-icon>
-        <v-icon v-if="file.status === 'removed'" small color="red">
-          fa-fw fa-minus-square
-        </v-icon>
-        <v-icon v-if="file.status === 'renamed'" small color="purple">
-          fa-fw fa-caret-square-right
-        </v-icon>
-      </v-list-item>
+      <div v-for="(file, i) in commitFiles" :key="i">
+        <v-list-item :disabled="i === index" @click="onClickItem(i)">
+          <v-icon v-if="file.status === 'modified'" small color="amber">
+            fa-fw fa-pen-square
+          </v-icon>
+          <v-icon v-if="file.status === 'added'" small color="green">
+            fa-fw fa-plus-square
+          </v-icon>
+          <v-icon v-if="file.status === 'removed'" small color="red">
+            fa-fw fa-minus-square
+          </v-icon>
+          <v-icon v-if="file.status === 'renamed'" small color="purple">
+            fa-fw fa-caret-square-right
+          </v-icon>
+        </v-list-item>
+        <v-divider />
+      </div>
     </v-list-item-group>
   </v-list>
 </template>
@@ -80,3 +78,9 @@ export default defineComponent({
   },
 })
 </script>
+
+<style lang="scss" scoped>
+.icon-list {
+  padding: 0;
+}
+</style>
