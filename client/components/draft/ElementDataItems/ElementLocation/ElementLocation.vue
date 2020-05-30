@@ -16,8 +16,15 @@
       </div>
     </div>
     <div class="pa-1 buttons d-flex flex-column justify-center">
-      <v-btn x-small outlined tile disabled @click="previewLocation">
-        <span class="text-none font-weight-regular">preview</span>
+      <v-btn
+        x-small
+        outlined
+        tile
+        color="secondary"
+        :disabled="!isExist"
+        @click="openLocation"
+      >
+        <span class="text-none font-weight-regular">open</span>
       </v-btn>
       <v-btn
         x-small
@@ -85,7 +92,25 @@ export default defineComponent({
 
     const draft = computed(() => root.$accessor.draft.draft)
 
-    const previewLocation = async () => {}
+    const fileIndex = computed(() =>
+      root.$accessor.draft.commitInfo?.files
+        ?.map((f) => (props.category === 'before' ? f.previousName : f.name))
+        ?.indexOf(props.element.location.path)
+    )
+
+    const isExist = computed(
+      () => fileIndex.value !== undefined && fileIndex.value >= 0
+    )
+
+    const openLocation = async () => {
+      const index = fileIndex.value
+      if (index !== undefined && index >= 0) {
+        await root.$accessor.draft.setDisplayedFileMetadata({
+          category: props.category,
+          metadata: { index },
+        })
+      }
+    }
 
     const deleteLocation = async () => {
       if (!draft.value) return
@@ -132,7 +157,8 @@ export default defineComponent({
 
     return {
       path,
-      previewLocation,
+      isExist,
+      openLocation,
       deleteLocation,
       toggleEditLocation,
       isEditing,
@@ -143,6 +169,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .buttons {
-  width: 3.75rem;
+  width: 3.5rem;
 }
 </style>
