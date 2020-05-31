@@ -13,3 +13,6 @@ spring:
 logging:
   level:
     root: ERROR
+    jp.ac.titech.cs.se.refactorhub:
+      config:
+        filter: INFO
