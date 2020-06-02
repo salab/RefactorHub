@@ -41,12 +41,14 @@ interface Element : Serializable {
 
     data class Info(
         val type: Type,
-        val multiple: Boolean = false
+        val multiple: Boolean = false,
+        val required: Boolean = false
     ) : Serializable
 
     data class Data(
         val type: Type,
         val multiple: Boolean = false,
+        val required: Boolean = false,
         val elements: MutableList<Element> = mutableListOf(type.dataClass.createInstance())
     ) : Serializable
 }

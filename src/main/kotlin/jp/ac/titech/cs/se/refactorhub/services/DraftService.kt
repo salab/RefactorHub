@@ -113,7 +113,7 @@ class DraftService(
     private fun updateElements(types: Map<String, Element.Info>, elements: MutableMap<String, Element.Data>) {
         types.entries.forEach {
             if (elements[it.key]?.type != it.value.type)
-                elements[it.key] = Element.Data(it.value.type, it.value.multiple)
+                elements[it.key] = Element.Data(it.value.type, it.value.multiple, it.value.required)
         }
     }
 
