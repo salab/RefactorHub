@@ -1,8 +1,13 @@
 package jp.ac.titech.cs.se.refactorhub.models
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import java.util.*
-import javax.persistence.*
+import java.util.ArrayList
+import java.util.Date
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.OneToMany
+import javax.persistence.Table
 
 @Entity
 @Table(name = "commit")

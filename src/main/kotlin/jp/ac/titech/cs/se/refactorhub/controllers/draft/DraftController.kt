@@ -5,7 +5,15 @@ import jp.ac.titech.cs.se.refactorhub.controllers.draft.requests.UpdateElementRe
 import jp.ac.titech.cs.se.refactorhub.controllers.draft.requests.UpdateRequest
 import jp.ac.titech.cs.se.refactorhub.services.DraftService
 import jp.ac.titech.cs.se.refactorhub.services.RefactoringService
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/draft")
@@ -66,5 +74,4 @@ class DraftController(
         @PathVariable("category") category: String,
         @PathVariable("key") key: String
     ) = draftService.deleteElementKey(id, category, key)
-
 }

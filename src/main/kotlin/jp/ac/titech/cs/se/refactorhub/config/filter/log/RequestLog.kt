@@ -1,6 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.config.filter.log
 
-import java.util.*
+import java.util.Date
 
 data class RequestLog(
     val user: String,

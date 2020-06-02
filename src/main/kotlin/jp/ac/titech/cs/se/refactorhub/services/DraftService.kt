@@ -239,5 +239,4 @@ class DraftService(
         map.remove(key)
         return save(draft)
     }
-
 }

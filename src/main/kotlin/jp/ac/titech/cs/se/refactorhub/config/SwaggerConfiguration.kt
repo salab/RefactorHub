@@ -47,5 +47,4 @@ class SwaggerConfiguration {
 
     private fun defaultAuth(): List<SecurityReference> =
         singletonList(SecurityReference(HttpHeaders.AUTHORIZATION, arrayOf(AuthorizationScope("global", "accessEverything"))))
-
 }

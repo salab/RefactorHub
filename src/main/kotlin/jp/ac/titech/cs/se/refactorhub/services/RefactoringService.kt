@@ -3,9 +3,7 @@ package jp.ac.titech.cs.se.refactorhub.services
 import jp.ac.titech.cs.se.refactorhub.exceptions.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.models.Draft
 import jp.ac.titech.cs.se.refactorhub.models.Refactoring
-import jp.ac.titech.cs.se.refactorhub.models.RefactoringType
 import jp.ac.titech.cs.se.refactorhub.repositories.RefactoringRepository
-import jp.ac.titech.cs.se.refactorhub.repositories.RefactoringTypeRepository
 import org.springframework.stereotype.Service
 
 @Service
@@ -58,5 +56,4 @@ class RefactoringService(
     fun save(refactoring: Refactoring): Refactoring = refactoringRepository.save(refactoring)
 
     fun delete(id: Long) = refactoringRepository.deleteById(id)
-
 }

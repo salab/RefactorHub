@@ -1,7 +1,11 @@
 package jp.ac.titech.cs.se.refactorhub.services
 
 import jp.ac.titech.cs.se.refactorhub.models.Commit
-import org.kohsuke.github.*
+import org.kohsuke.github.GHCommit
+import org.kohsuke.github.GHContent
+import org.kohsuke.github.GHRepository
+import org.kohsuke.github.GHUser
+import org.kohsuke.github.GitHub
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
@@ -30,5 +34,4 @@ class GitHubService(
 
     fun getContent(sha: String, owner: String, repository: String, path: String): GHContent =
         getRepository(owner, repository).getFileContent(path, sha)
-
 }

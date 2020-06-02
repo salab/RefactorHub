@@ -3,7 +3,7 @@ package jp.ac.titech.cs.se.refactorhub.config.filter
 import org.kohsuke.github.GHUser
 import org.kohsuke.github.GitHub
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter
-import java.util.*
+import java.util.Locale
 import javax.servlet.http.HttpServletRequest
 
 class GitHubFilter : AbstractPreAuthenticatedProcessingFilter() {
@@ -26,5 +26,4 @@ class GitHubFilter : AbstractPreAuthenticatedProcessingFilter() {
         return if (authorization == null || !authorization.toLowerCase(Locale.ENGLISH).startsWith(bearerPrefix)) null
         else authorization.substring(bearerPrefix.length)
     }
-
 }

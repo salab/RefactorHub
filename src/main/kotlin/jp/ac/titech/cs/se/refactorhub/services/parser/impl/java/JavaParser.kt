@@ -17,5 +17,4 @@ class JavaParser : Parser {
         unit.accept(visitor)
         return visitor.elements
     }
-
 }

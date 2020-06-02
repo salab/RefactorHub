@@ -3,9 +3,20 @@ package jp.ac.titech.cs.se.refactorhub.models
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jp.ac.titech.cs.se.refactorhub.models.element.Element
 import java.io.Serializable
-import java.util.*
-import javax.persistence.*
-import kotlin.reflect.full.createInstance
+import java.util.ArrayList
+import java.util.Date
+import javax.persistence.CascadeType
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.Lob
+import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
+import javax.persistence.PostUpdate
+import javax.persistence.PreRemove
+import javax.persistence.Table
 
 @Entity
 @Table(name = "refactoring")

@@ -1,7 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.controllers.editor
 
 import jp.ac.titech.cs.se.refactorhub.services.EditorService
-import jp.ac.titech.cs.se.refactorhub.services.GitHubService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -20,5 +19,4 @@ class EditorController(
         @RequestParam repository: String,
         @RequestParam path: String
     ) = editorService.getFileContent(sha, owner, repository, path)
-
 }

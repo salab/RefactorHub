@@ -3,11 +3,23 @@ package jp.ac.titech.cs.se.refactorhub.services.parser.impl.java
 import jp.ac.titech.cs.se.refactorhub.models.element.Element
 import jp.ac.titech.cs.se.refactorhub.models.element.data.Location
 import jp.ac.titech.cs.se.refactorhub.models.element.data.Range
-import jp.ac.titech.cs.se.refactorhub.models.element.impl.*
-import org.eclipse.jdt.core.dom.*
+import jp.ac.titech.cs.se.refactorhub.models.element.impl.ClassDeclaration
+import jp.ac.titech.cs.se.refactorhub.models.element.impl.CodeFragments
+import jp.ac.titech.cs.se.refactorhub.models.element.impl.ConstructorDeclaration
+import jp.ac.titech.cs.se.refactorhub.models.element.impl.InterfaceDeclaration
+import jp.ac.titech.cs.se.refactorhub.models.element.impl.ParameterDeclaration
+import org.eclipse.jdt.core.dom.ASTNode
+import org.eclipse.jdt.core.dom.ASTVisitor
+import org.eclipse.jdt.core.dom.CompilationUnit
 import org.eclipse.jdt.core.dom.FieldDeclaration
 import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.jdt.core.dom.MethodInvocation
+import org.eclipse.jdt.core.dom.PackageDeclaration
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration
+import org.eclipse.jdt.core.dom.Statement
+import org.eclipse.jdt.core.dom.TypeDeclaration
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement
 
 class Visitor(
     private val unit: CompilationUnit,
@@ -139,5 +151,4 @@ class Visitor(
         unit.getLineNumber(endPosition - 1),
         unit.getColumnNumber(endPosition - 1) + 1
     )
-
 }

@@ -7,6 +7,8 @@ plugins {
     kotlin("plugin.jpa") version kotlinVersion
     id("org.springframework.boot") version "2.2.2.RELEASE"
     id("io.spring.dependency-management") version "1.0.8.RELEASE"
+    id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
+    id("org.jlleitschuh.gradle.ktlint-idea") version "9.2.1"
 }
 
 group = "jp.ac.titech.cs.se"
@@ -52,4 +54,9 @@ tasks {
     withType<Test> {
         useJUnitPlatform()
     }
+}
+
+ktlint {
+    // See https://github.com/pinterest/ktlint/issues/527
+    disabledRules.set(setOf("import-ordering"))
 }

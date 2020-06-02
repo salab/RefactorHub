@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.web.util.ContentCachingRequestWrapper
 import org.springframework.web.util.ContentCachingResponseWrapper
-import java.util.*
+import java.util.Date
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -53,5 +53,4 @@ class LoggingRequestFilter : OncePerRequestFilter() {
     private fun wrap(response: HttpServletResponse): ContentCachingResponseWrapper =
         if (response is ContentCachingResponseWrapper) response
         else ContentCachingResponseWrapper(response)
-
 }

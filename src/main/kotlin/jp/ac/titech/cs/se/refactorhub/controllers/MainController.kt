@@ -14,5 +14,4 @@ class MainController {
 
     @PostMapping("/hello")
     fun postHello() = "Post Hello"
-
 }

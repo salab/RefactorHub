@@ -11,5 +11,4 @@ class ElementController {
 
     @GetMapping("/types")
     fun types() = Element.Type.values().map { it.name }
-
 }

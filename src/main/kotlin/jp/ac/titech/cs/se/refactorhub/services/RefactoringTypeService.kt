@@ -41,5 +41,4 @@ class RefactoringTypeService(
     fun save(type: RefactoringType): RefactoringType = refactoringTypeRepository.save(type)
 
     fun delete(id: Long) = refactoringTypeRepository.deleteById(id)
-
 }

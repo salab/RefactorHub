@@ -71,5 +71,4 @@ class UserService(
         return if (principal is User) principal
         else throw UnauthorizedException("User is not logged in.")
     }
-
 }

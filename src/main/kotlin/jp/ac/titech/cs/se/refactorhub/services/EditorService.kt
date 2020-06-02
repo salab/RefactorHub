@@ -42,5 +42,4 @@ class EditorService(
             connect()
             contentType.matches(Regex("text/.*"))
         }
-
 }

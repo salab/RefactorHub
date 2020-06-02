@@ -23,5 +23,4 @@ class UserController(
 
     @GetMapping("/me")
     fun me() = userService.me()
-
 }
