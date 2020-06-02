@@ -11,11 +11,11 @@
             >fa-fw fa-check</v-icon
           >
           <v-icon
-            v-else
+            v-else-if="elementData.required"
             x-small
             color="error"
-            title="This element is not completed"
-            >fa-fw fa-exclamation</v-icon
+            title="This element is required"
+            >fa-fw fa-asterisk</v-icon
           >
         </div>
         <v-list-item-content>

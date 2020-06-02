@@ -47,11 +47,13 @@ declare module 'refactorhub' {
   interface ElementInfo {
     type: string
     multiple: boolean
+    required: boolean
   }
 
   interface ElementData {
     type: string
     multiple: boolean
+    required: boolean
     elements: Element[]
   }
 
