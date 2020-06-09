@@ -31,7 +31,7 @@ class DataConfig(
     }
 
     private fun createRefactoringTypes() {
-        val stream = javaClass.classLoader.getResourceAsStream("data/types.json") ?: return
+        val stream = javaClass.classLoader.getResourceAsStream("data/rminer/types.json") ?: return
         val types = jacksonObjectMapper().readValue<List<RefactoringType>>(stream)
         types.forEach { refactoringTypeService.create(it.name, it.before, it.after) }
     }

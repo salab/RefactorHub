@@ -1,0 +1,385 @@
+[
+  {
+    "name": "Custom",
+    "description": ""
+  },
+  {
+    "name": "InlineMethod",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true,
+        "multiple": true
+      },
+      "inlined method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "inlined method invocation": {
+        "type": "MethodInvocation",
+        "required": true,
+        "multiple": true
+      },
+      "inlined code": {
+        "type": "CodeFragments",
+        "multiple": true
+      }
+    },
+    "after": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true,
+        "multiple": true
+      },
+      "inlined code": {
+        "type": "CodeFragments",
+        "multiple": true
+      }
+    }
+  },
+  {
+    "name": "ExtractMethod",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true,
+        "multiple": true
+      },
+      "extracted code": {
+        "type": "CodeFragments",
+        "multiple": true
+      }
+    },
+    "after": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true,
+        "multiple": true
+      },
+      "extracted method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "extracted method invocation": {
+        "type": "MethodInvocation",
+        "required": true,
+        "multiple": true
+      },
+      "extracted code": {
+        "type": "CodeFragments",
+        "multiple": true
+      }
+    }
+  },
+  {
+    "name": "MoveAttribute",
+    "description": "",
+    "before": {
+      "target attribute": {
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved attribute": {
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "MoveClass",
+    "description": "",
+    "before": {
+      "target class": {
+        "type": "ClassDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved class": {
+        "type": "ClassDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "ExtractInterface",
+    "description": "",
+    "before": {
+      "target class": {
+        "type": "ClassDeclaration",
+        "required": true,
+        "multiple": true
+      }
+    },
+    "after": {
+      "extracted interface": {
+        "type": "InterfaceDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "PushDownMethod",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "PushDownAttribute",
+    "description": "",
+    "before": {
+      "target attribute": {
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved attribute": {
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "PullUpMethod",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "PullUpAttribute",
+    "description": "",
+    "before": {
+      "target attribute": {
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved attribute": {
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "MoveMethod",
+    "description": "",
+    "before": {
+      "target attribute": {
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved attribute": {
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "ExtractAndMoveMethod",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true,
+        "multiple": true
+      },
+      "extracted code": {
+        "type": "CodeFragments",
+        "multiple": true
+      }
+    },
+    "after": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true,
+        "multiple": true
+      },
+      "extracted method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "extracted method invocation": {
+        "type": "MethodInvocation",
+        "required": true,
+        "multiple": true
+      },
+      "extracted code": {
+        "type": "CodeFragments",
+        "multiple": true
+      }
+    }
+  },
+  {
+    "name": "RenameMethod",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "target invocation": {
+        "type": "MethodInvocation",
+        "multiple": true
+      }
+    },
+    "after": {
+      "renamed method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "renamed invocation": {
+        "type": "MethodInvocation",
+        "multiple": true
+      }
+    }
+  },
+  {
+    "name": "ExtractSuperclass",
+    "description": "",
+    "before": {
+      "target class": {
+        "type": "ClassDeclaration",
+        "required": true,
+        "multiple": true
+      }
+    },
+    "after": {
+      "extracted class": {
+        "type": "ClassDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "RenameParameter",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "target parameter": {
+        "type": "ParameterDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "renamed parameter": {
+        "type": "ParameterDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "RenameClass",
+    "description": "",
+    "before": {
+      "target class": {
+        "type": "ClassDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "renamed class": {
+        "type": "ClassDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "MoveAndRenameClass",
+    "description": "",
+    "before": {
+      "target class": {
+        "type": "ClassDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "renamed class": {
+        "type": "ClassDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "RenameVariable",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "target variable": {
+        "type": "VariableDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "renamed variable": {
+        "type": "VariableDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "ParameterizeVariable",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "target variable": {
+        "type": "VariableDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "renamed variable": {
+        "type": "VariableDeclaration",
+        "required": true
+      }
+    }
+  }
+]
