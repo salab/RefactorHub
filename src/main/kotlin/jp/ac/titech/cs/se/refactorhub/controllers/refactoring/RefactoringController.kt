@@ -1,11 +1,13 @@
 package jp.ac.titech.cs.se.refactorhub.controllers.refactoring
 
+import jp.ac.titech.cs.se.refactorhub.controllers.refactoring.requests.AddRefactoringTypeRequest
 import jp.ac.titech.cs.se.refactorhub.services.DraftService
 import jp.ac.titech.cs.se.refactorhub.services.RefactoringService
 import jp.ac.titech.cs.se.refactorhub.services.RefactoringTypeService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -37,4 +39,8 @@ class RefactoringController(
 
     @GetMapping("/types")
     fun types() = refactoringTypeService.getAll()
+
+    @PutMapping("/types")
+    fun addType(request: AddRefactoringTypeRequest) =
+        refactoringTypeService.create(request.name, request.before, request.after)
 }
