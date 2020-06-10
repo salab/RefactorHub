@@ -1,0 +1,182 @@
+[
+  {
+    "type": "InlineMethod",
+    "description": "Inline Method public build(target ServiceTarget, containerName String, cacheName String) : ServiceBuilder<T> inlined to public build(target ServiceTarget) : ServiceBuilder<T> in class org.wildfly.clustering.server.singleton.CacheSingletonServiceBuilder",
+    "url": "https://github.com/wildfly/wildfly/commit/4aa2e8746b5492bbc1cf2b36af956cf3b01e40f5"
+  },
+  {
+    "type": "InlineMethod",
+    "description": "Inline Method public isOracle() : boolean inlined to private batch(config Config, conn Connection, sql String, paras Object[][], batchSize int) : int[] in class com.jfinal.plugin.activerecord.DbPro",
+    "url": "https://github.com/jfinal/jfinal/commit/881baed894540031bd55e402933bcad28b74ca88"
+  },
+  {
+    "type": "ExtractMethod",
+    "description": "Extract Method private rehashAwareIteration(complete AtomicBoolean, consumer Consumer<R>, supplier IteratorSupplier<R>, iteratorParallelDistribute boolean) : void extracted from package remoteIterator() : Iterator<R> in class org.infinispan.stream.impl.DistributedCacheStream",
+    "url": "https://github.com/infinispan/infinispan/commit/043030723632627b0908dca6b24dae91d3dfd938"
+  },
+  {
+    "type": "ExtractMethod",
+    "description": "Extract Method private renderConnection() : void extracted from public toString() : String in class com.hazelcast.internal.monitors.HealthMonitor.HealthMetrics",
+    "url": "https://github.com/hazelcast/hazelcast/commit/30c4ae09745d6062077925a54f27205b7401d8df"
+  },
+  {
+    "type": "MoveAttribute",
+    "description": "Move Attribute private m_callbacks : CallbacksRef from class org.voltdb.importer.ChannelChangeNotifier to package m_callbacks : CallbacksRef from class org.voltdb.importer.ChannelDistributer",
+    "url": "https://github.com/VoltDB/voltdb/commit/7527cfc746dc20ddb78002c7b3a65d55026a334e"
+  },
+  {
+    "type": "MoveAttribute",
+    "description": "Move Attribute public BUTTON_TEXTURES : ResourceLocation from class buildcraft.core.lib.gui.buttons.GuiBetterButton to public BUTTON_TEXTURES : ResourceLocation from class buildcraft.core.lib.gui.buttons.StandardButtonTextureSets",
+    "url": "https://github.com/BuildCraft/BuildCraft/commit/6abc40ed4850d74ee6c155f5a28f8b34881a0284"
+  },
+  {
+    "type": "MoveClass",
+    "description": "Move Class org.apache.poi.util.LittleEndianConsts moved to org.docx4j.org.apache.poi.util.LittleEndianConsts",
+    "url": "https://github.com/plutext/docx4j/commit/e29924b33ec0c0298ba4fc3f7a8c218c8e6cfa0c"
+  },
+  {
+    "type": "MoveClass",
+    "description": "Move Class org.jboss.as.clustering.jgroups.TopologyAddressGenerator moved to org.infinispan.server.jgroups.TopologyAddressGenerator",
+    "url": "https://github.com/infinispan/infinispan/commit/8f446b6ddf540e1b1fefca34dd10f45ba7256095"
+  },
+  {
+    "type": "ExtractInterface",
+    "description": "Extract Interface com.orientechnologies.orient.core.storage.cache.local.O2QCacheMXBean from class com.orientechnologies.orient.core.storage.cache.local.O2QCache",
+    "url": "https://github.com/orientechnologies/orientdb/commit/f50f234b24e6ada29c82ce57830118508bf55d51"
+  },
+  {
+    "type": "ExtractInterface",
+    "description": "Extract Interface org.geoserver.ogr.core.FormatConverter from class org.geoserver.wfs.response.Ogr2OgrOutputFormat",
+    "url": "https://github.com/geoserver/geoserver/commit/e78cda0fcf23de3973b659bc54f58a4e9b1f3bd3"
+  },
+  {
+    "type": "PushDownMethod",
+    "description": "Push Down Method public getBlockSize() : long from class tachyon.worker.block.meta.BlockMetaBase to public getBlockSize() : long from class tachyon.worker.block.meta.TempBlockMeta",
+    "url": "https://github.com/Alluxio/alluxio/commit/6d10621465c0e6ae81ad8d240d70a55c72caeea6"
+  },
+  {
+    "type": "PushDownMethod",
+    "description": "Push Down Method public getCollectionResponsePaging() : CollectionMetadata from class com.linkedin.restli.internal.server.AugmentedRestLiResponseData to public getCollectionResponsePaging() : CollectionMetadata from class com.linkedin.restli.internal.server.response.CollectionResponseEnvelope",
+    "url": "https://github.com/linkedin/rest.li/commit/ec5ea36faa3dd74585bb339beabdba6149ed63be"
+  },
+  {
+    "type": "PushDownAttribute",
+    "description": "Push Down Attribute private _collectionResponseCustomMetadata : RecordTemplate from class com.linkedin.restli.internal.server.AugmentedRestLiResponseData to private _collectionResponseCustomMetadata : RecordTemplate from class com.linkedin.restli.internal.server.response.CollectionResponseEnvelope\n\n",
+    "url": "https://github.com/linkedin/rest.li/commit/ec5ea36faa3dd74585bb339beabdba6149ed63be"
+  },
+  {
+    "type": "PushDownAttribute",
+    "description": "Push Down Attribute public ERROR_PUSHMATRIX_OVERFLOW : String from class processing.core.PConstants to protected ERROR_PUSHMATRIX_OVERFLOW : String from class processing.core.PGraphics",
+    "url": "https://github.com/processing/processing/commit/d7f781da42e54824c17875a6036d3448672637f5"
+  },
+  {
+    "type": "PullUpMethod",
+    "description": "Pull Up Method public DefaultHandshakeHandler() from class org.springframework.web.socket.server.support.DefaultHandshakeHandler to protected AbstractHandshakeHandler() from class org.springframework.web.socket.server.support.AbstractHandshakeHandler",
+    "url": "https://github.com/spring-projects/spring-framework/commit/e083683f4fe9206609201bb39a60bbd8ee0c8a0f"
+  },
+  {
+    "type": "PullUpMethod",
+    "description": "Pull Up Method private getElement(clazz Class<?>) : TypeElement from class com.squareup.javapoet.TypesTest to private getElement(clazz Class<?>) : TypeElement from class com.squareup.javapoet.AbstractTypesTest",
+    "url": "https://github.com/square/javapoet/commit/5a37c2aa596377cb4c9b6f916614407fd0a7d3db"
+  },
+  {
+    "type": "PullUpAttribute",
+    "description": "Pull Up Attribute private prefixID : String from class cascading.stats.tez.TezNodeStats to private prefixID : String from class cascading.stats.CascadingStats",
+    "url": "https://github.com/cwensel/cascading/commit/f9d3171f5020da5c359cdda28ef05172e858c464"
+  },
+  {
+    "type": "PullUpAttribute",
+    "description": "Pull Up Attribute private genericDefinition : String from class org.springframework.roo.classpath.details.MethodMetadataBuilder to private genericDefinition : String from class org.springframework.roo.classpath.details.AbstractInvocableMemberMetadataBuilder",
+    "url": "https://github.com/spring-projects/spring-roo/commit/0bb4cca1105fc6eb86e7c4b75bfff3dbbd55f0c8"
+  },
+  {
+    "type": "MoveMethod",
+    "description": "Move Method public getSplits(jobConf JobConf, numSplits int) : InputSplit[] from class org.apache.cassandra.hadoop.AbstractColumnFamilyInputFormat to public getSplits(jobConf JobConf, numSplits int) : InputSplit[] from class org.apache.cassandra.hadoop.cql3.CqlInputFormat",
+    "url": "https://github.com/apache/cassandra/commit/446e2537895c15b404a74107069a12f3fc404b15"
+  },
+  {
+    "type": "MoveMethod",
+    "description": "Move Method private isOperator(op String) : boolean from class io.undertow.predicate.PredicateParser to private isOperator(op String) : boolean from class io.undertow.server.handlers.builder.PredicatedHandlersParser",
+    "url": "https://github.com/undertow-io/undertow/commit/d5b2bb8cd1393f1c5a5bb623e3d8906cd57e53c4"
+  },
+  {
+    "type": "ExtractAndMoveMethod",
+    "description": "Extract And Move Method protected logWarn(message String, arguments Object...) : void extracted from protected addTaskStats(taskReports TaskReport[], skipLast boolean) : void in class cascading.stats.hadoop.HadoopNodeStats & moved to class cascading.stats.CascadingStats",
+    "url": "https://github.com/cwensel/cascading/commit/f9d3171f5020da5c359cdda28ef05172e858c464"
+  },
+  {
+    "type": "ExtractAndMoveMethod",
+    "description": "Extract And Move Method protected getConnection(channel Channel) : NetSocketImpl extracted from public channelReadComplete(ctx ChannelHandlerContext) : void in class io.vertx.core.net.impl.VertxHandler & moved to class io.vertx.core.net.impl.VertxNetHandler",
+    "url": "https://github.com/eclipse/vert.x/commit/718782014519034b28f6d3182fd9d340b7b31a74"
+  },
+  {
+    "type": "RenameMethod",
+    "description": "Rename Method public requiresImmediateFlushingIfNotFiring() : boolean renamed to public requiresImmediateFlushing() : boolean in class org.drools.core.phreak.PhreakTimerNode.TimerAction",
+    "url": "https://github.com/droolsjbpm/drools/commit/1bf2875e9d73e2d1cd3b58200d5300485f890ff5"
+  },
+  {
+    "type": "RenameMethod",
+    "description": "Rename Method public getAllocatedPages() : long renamed to public getExclusiveWriteCachePagesSize() : long in class com.orientechnologies.orient.core.storage.impl.memory.ODirectMemoryOnlyDiskCache",
+    "url": "https://github.com/orientechnologies/orientdb/commit/f50f234b24e6ada29c82ce57830118508bf55d51"
+  },
+  {
+    "type": "ExtractSuperclass",
+    "description": "Extract Superclass org.springframework.security.web.context.OnCommittedResponseWrapper from class org.springframework.security.web.context.SaveContextOnUpdateOrErrorResponseWrapper",
+    "url": "https://github.com/spring-projects/spring-security/commit/08b1b56e2cd5ad72126f4bbeb15a47d9b104dfff"
+  },
+  {
+    "type": "ExtractSuperclass",
+    "description": "Extract Superclass org.neo4j.kernel.impl.store.PropertyConstraintRule from class org.neo4j.kernel.impl.store.UniquePropertyConstraintRule",
+    "url": "https://github.com/neo4j/neo4j/commit/8d9bedbf96b14beb027ebc1338bc6d5750e1feb5"
+  },
+  {
+    "type": "RenameParameter",
+    "description": "Rename Parameter recoveredLogVersion : long to recoveryPosition : LogPosition in method public recoveryRequired(recoveryPosition LogPosition) : void in class org.neo4j.kernel.recovery.Recovery.Monitor",
+    "url": "https://github.com/neo4j/neo4j/commit/001de307492df8f84ad15f6aaa0bd1e748d4ce27"
+  },
+  {
+    "type": "RenameParameter",
+    "description": "Rename Parameter edge : int to edgeId : int in method public SingleLevelEdge(baseGraph BaseGraph, propAccess InternalGraphPropertyAccess, edgeId int, nodeId int) in class com.graphhopper.storage.LevelGraphImpl.SingleLevelEdge",
+    "url": "https://github.com/graphhopper/graphhopper/commit/7f80425b6a0af9bdfef12c8a873676e39e0a04a6"
+  },
+  {
+    "type": "RenameClass",
+    "description": "Rename Class com.hazelcast.internal.metrics.impl.GaugeImpl renamed to com.hazelcast.internal.metrics.impl.ProbeInstance",
+    "url": "https://github.com/hazelcast/hazelcast/commit/30c4ae09745d6062077925a54f27205b7401d8df"
+  },
+  {
+    "type": "RenameClass",
+    "description": "Rename Class com.linkedin.restli.internal.server.AugmentedRestLiResponseData renamed to com.linkedin.restli.internal.server.RestLiResponseEnvelope",
+    "url": "https://github.com/linkedin/rest.li/commit/ec5ea36faa3dd74585bb339beabdba6149ed63be"
+  },
+  {
+    "type": "MoveAndRenameClass",
+    "description": "Move And Rename Class org.apache.zookeeper.server.NIOServerCnxn.CommandThread moved and renamed to org.apache.zookeeper.server.command.AbstractFourLetterCommand",
+    "url": "https://github.com/apache/zookeeper/commit/3fd77b419673ce6ec41e06cdc27558b1d8f4ca06"
+  },
+  {
+    "type": "MoveAndRenameClass",
+    "description": "Move And Rename Class org.jboss.as.clustering.jgroups.subsystem.JGroupsSubsystemRemove.OriginalSubsystemRemoveHandler moved and renamed to org.infinispan.server.jgroups.subsystem.JGroupsSubsystemAddHandler",
+    "url": "https://github.com/infinispan/infinispan/commit/8f446b6ddf540e1b1fefca34dd10f45ba7256095"
+  },
+  {
+    "type": "RenameVariable",
+    "description": "Rename Variable bde : BitmapDecodingException to e : BitmapDecodingException in method public getContactPhoto(context Context, uri Uri, name String) : ContactPhoto in class org.thoughtcrime.securesms.contacts.avatars.ContactPhotoFactory",
+    "url": "https://github.com/WhisperSystems/Signal-Android/commit/99528dcc3b4a82b5e52a87d3e7aed5c6479028c7"
+  },
+  {
+    "type": "RenameVariable",
+    "description": "Rename Variable error : UnsuitableDirectoryException to ude : UnsuitableDirectoryException in method public actionPerformed(e ActionEvent) : void in class org.neo4j.desktop.ui.BrowseForDatabaseActionListener",
+    "url": "https://github.com/neo4j/neo4j/commit/d1a6ae2a16ba1d53b1de02eea8745d67c6a1a005"
+  },
+  {
+    "type": "ParameterizeVariable",
+    "description": "Parameterize Variable e : Exception to t : Throwable in method protected failedSubscribe(s Subscriber<? super T>, t Throwable) : void in class co.paralleluniverse.strands.channels.reactivestreams.ChannelPublisher",
+    "url": "https://github.com/puniverse/quasar/commit/c22d40fab8dfe4c5cad9ba582caf0855ff64b324"
+  },
+  {
+    "type": "ParameterizeVariable",
+    "description": "Parameterize Variable e : Exception to exception : Exception in method private handleSendFailure(account Account, localStore Store, localFolder Folder, message Message, exception Exception, permanentFailure boolean) : void in class com.fsck.k9.controller.MessagingController",
+    "url": "https://github.com/k9mail/k-9/commit/9d44f0e06232661259681d64002dd53c7c43099d"
+  }
+]

@@ -41,7 +41,7 @@ class DataConfig(
     }
 
     private fun createExperiment() {
-        createRefactorings(userService.create(2, "experiment"), "data/experiment.json")
+        createRefactorings(userService.create(2, "experiment"), "data/rminer/experiment.json")
     }
 
     private fun createRefactorings(user: User, path: String) {
