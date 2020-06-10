@@ -8,6 +8,7 @@ import {
   RefactoringType,
   FileContent,
   DiffCategory,
+  ElementInfo,
 } from 'refactorhub'
 
 export class Client {
@@ -141,6 +142,20 @@ export class Client {
   async getRefactoringTypes() {
     return (await this.$axios.get<RefactoringType[]>('/api/refactoring/types'))
       .data
+  }
+
+  async addRefactoringType(
+    name: string,
+    before: { [key: string]: ElementInfo },
+    after: { [key: string]: ElementInfo }
+  ) {
+    return (
+      await this.$axios.put<RefactoringType>('/api/refactoring/types', {
+        name,
+        before,
+        after,
+      })
+    ).data
   }
 
   async getElementTypes() {
