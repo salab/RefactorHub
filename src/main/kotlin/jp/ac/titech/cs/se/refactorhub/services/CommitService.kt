@@ -66,6 +66,6 @@ class CommitService(
     }
 
     companion object {
-        val GITHUB_COMMIT_URL = """https://github.com/([a-zA-Z0-9\-]+)/([\w\-]+)/commit/([a-fA-F0-9]+)/?""".toRegex()
+        val GITHUB_COMMIT_URL = """https://github.com/([a-zA-Z0-9\-.]+)/([\w\-.]+)/commit/([a-fA-F0-9]+)/?""".toRegex()
     }
 }
