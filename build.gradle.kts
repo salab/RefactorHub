@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.URI
 
 plugins {
     val kotlinVersion = "1.3.61"
@@ -17,6 +18,11 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
+    maven {
+        name = "JitPack"
+        url = URI("https://jitpack.io")
+    }
+    maven { url = uri("https://dl.bintray.com/kotlin/kotlinx") }
 }
 
 dependencies {
@@ -37,6 +43,11 @@ dependencies {
     implementation("io.springfox:springfox-swagger-ui:2.+")
     // Parser
     implementation("org.eclipse.jdt:org.eclipse.jdt.core:3.+")
+    // Tools
+    implementation("com.github.tsantalis:RefactoringMiner:ab3ad84") {
+        exclude("org.slf4j")
+    }
+    // implementation("com.github.tsantalis:RefactoringMiner:master-SNAPSHOT")
     // Other
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.kohsuke:github-api:1.+")
