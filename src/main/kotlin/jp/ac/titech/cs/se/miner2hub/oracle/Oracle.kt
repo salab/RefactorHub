@@ -5,6 +5,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import java.io.IOException
 
+private val REPOSITORY_URL = Regex("""https://github.com/([\w\-]+)/([\w\-.]+)\.git""")
+
 object Oracle {
     private fun getDataJson(): String? = javaClass.classLoader.getResource("rminer/data.json")?.readText()
 
@@ -14,11 +16,17 @@ object Oracle {
         commit.refactorings.filter {
             it.validation == "TP" && it.detectionTools.contains("RefactoringMiner")
         }.map {
+            val result = REPOSITORY_URL.matchEntire(commit.repository)
+                ?: throw RuntimeException("repository url is invalid: ${commit.repository}")
+            val (owner, repo) = result.destructured
             RefactoringMetadata(
                 it.type,
                 it.description,
-                commit.repository,
-                commit.sha1
+                RefactoringMetadata.Commit(
+                    owner,
+                    repo,
+                    commit.sha1
+                )
             )
         }
     }

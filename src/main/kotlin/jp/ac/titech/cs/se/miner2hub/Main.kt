@@ -8,7 +8,7 @@ fun main(args: Array<String>) {
     val dataset = Oracle.getDataset("Extract Method", 1, 1, false)
     dataset.forEach { metadata ->
         Miner.reDetect(metadata) {
-            println(convert(it))
+            println(convert(it, metadata))
         }
     }
 }
