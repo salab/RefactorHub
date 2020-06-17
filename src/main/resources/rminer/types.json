@@ -1,9 +1,5 @@
 [
   {
-    "name": "Custom",
-    "description": ""
-  },
-  {
     "name": "InlineMethod",
     "description": "",
     "before": {

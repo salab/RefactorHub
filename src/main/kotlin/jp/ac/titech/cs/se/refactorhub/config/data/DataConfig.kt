@@ -25,13 +25,14 @@ class DataConfig(
     @Profile("dev", "prod")
     @Bean
     fun initializeData() = InitializingBean {
-        createRefactoringTypes()
+        createRefactoringTypes("data/types.json")
+        createRefactoringTypes("rminer/types.json")
         createTutorial()
         createExperiment()
     }
 
-    private fun createRefactoringTypes() {
-        val stream = javaClass.classLoader.getResourceAsStream("data/rminer/types.json") ?: return
+    private fun createRefactoringTypes(path: String) {
+        val stream = javaClass.classLoader.getResourceAsStream(path) ?: return
         val types = jacksonObjectMapper().readValue<List<RefactoringType>>(stream)
         types.forEach { refactoringTypeService.create(it.name, it.before, it.after) }
     }
@@ -41,7 +42,7 @@ class DataConfig(
     }
 
     private fun createExperiment() {
-        createRefactorings(userService.create(2, "experiment"), "data/rminer/experiment.json")
+        createRefactorings(userService.create(2, "experiment"), "data/experiment.json")
     }
 
     private fun createRefactorings(user: User, path: String) {
