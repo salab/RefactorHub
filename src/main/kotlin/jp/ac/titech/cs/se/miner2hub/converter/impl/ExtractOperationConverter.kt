@@ -17,12 +17,42 @@ class ExtractOperationConverter : Converter<ExtractOperationRefactoring> {
                 mapOf(
                     "target method" to Element.Data(
                         type = Element.Type.MethodDeclaration,
-                        multiple = true,
                         required = true,
+                        multiple = true,
                         elements = mutableListOf(convertElement(refactoring.sourceOperationBeforeExtraction))
+                    ),
+                    "extracted code" to Element.Data(
+                        type = Element.Type.CodeFragments,
+                        multiple = true,
+                        elements = refactoring.extractedCodeFragmentsFromSourceOperation.map { convertElement(it) }
+                            .toMutableList()
                     )
                 ),
-                mapOf()
+                mapOf(
+                    "target method" to Element.Data(
+                        type = Element.Type.MethodDeclaration,
+                        required = true,
+                        multiple = true,
+                        elements = mutableListOf(convertElement(refactoring.sourceOperationAfterExtraction))
+                    ),
+                    "extracted method" to Element.Data(
+                        type = Element.Type.MethodDeclaration,
+                        required = true,
+                        elements = mutableListOf(convertElement(refactoring.extractedOperation))
+                    ),
+                    "extracted method invocation" to Element.Data(
+                        type = Element.Type.MethodInvocation,
+                        required = true,
+                        multiple = true,
+                        elements = refactoring.extractedOperationInvocations.map { convertElement(it) }.toMutableList()
+                    ),
+                    "extracted code" to Element.Data(
+                        type = Element.Type.CodeFragments,
+                        multiple = true,
+                        elements = refactoring.extractedCodeFragmentsToExtractedOperation.map { convertElement(it) }
+                            .toMutableList()
+                    )
+                )
             )
         )
     }
