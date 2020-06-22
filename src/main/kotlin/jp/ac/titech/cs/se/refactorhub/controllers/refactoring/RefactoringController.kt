@@ -1,5 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.controllers.refactoring
 
+import jp.ac.titech.cs.se.refactorhub.controllers.refactoring.requests.AddRefactoringRequest
 import jp.ac.titech.cs.se.refactorhub.controllers.refactoring.requests.AddRefactoringTypeRequest
 import jp.ac.titech.cs.se.refactorhub.services.DraftService
 import jp.ac.titech.cs.se.refactorhub.services.RefactoringService
@@ -19,6 +20,10 @@ class RefactoringController(
     private val refactoringTypeService: RefactoringTypeService,
     private val draftService: DraftService
 ) {
+
+    @PutMapping
+    fun add(@RequestBody request: AddRefactoringRequest) =
+        refactoringService.add(request.type, request.description, request.commit, request.data)
 
     @GetMapping
     fun getAll() = refactoringService.getAll()

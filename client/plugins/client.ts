@@ -9,6 +9,8 @@ import {
   FileContent,
   DiffCategory,
   ElementInfo,
+  Commit,
+  RefactoringData,
 } from 'refactorhub'
 
 export class Client {
@@ -112,6 +114,22 @@ export class Client {
     return (
       await this.$axios.get<FileContent>(`/api/editor/content`, {
         params: { owner, repository, sha, path },
+      })
+    ).data
+  }
+
+  async addRefactoring(
+    type: string,
+    description: string,
+    commit: Commit,
+    data: RefactoringData
+  ) {
+    return (
+      await this.$axios.put<Refactoring>('/api/refactoring', {
+        type,
+        description,
+        commit,
+        data,
       })
     ).data
   }
