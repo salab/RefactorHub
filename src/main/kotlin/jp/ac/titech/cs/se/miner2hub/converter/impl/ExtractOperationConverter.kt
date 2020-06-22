@@ -3,8 +3,10 @@ package jp.ac.titech.cs.se.miner2hub.converter.impl
 import gr.uom.java.xmi.diff.ExtractOperationRefactoring
 import jp.ac.titech.cs.se.miner2hub.converter.Converter
 import jp.ac.titech.cs.se.miner2hub.converter.RefactoringOutput
+import jp.ac.titech.cs.se.miner2hub.converter.convertCommit
 import jp.ac.titech.cs.se.miner2hub.converter.element.convertElement
 import jp.ac.titech.cs.se.miner2hub.oracle.RefactoringMetadata
+import jp.ac.titech.cs.se.refactorhub.models.Refactoring
 import jp.ac.titech.cs.se.refactorhub.models.element.Element
 
 class ExtractOperationConverter : Converter<ExtractOperationRefactoring> {
@@ -12,9 +14,9 @@ class ExtractOperationConverter : Converter<ExtractOperationRefactoring> {
         return RefactoringOutput(
             "ExtractMethod",
             refactoring.toString(),
-            metadata.commit,
-            RefactoringOutput.Data(
-                mapOf(
+            convertCommit(metadata.commit),
+            Refactoring.Data(
+                mutableMapOf(
                     "target method" to Element.Data(
                         type = Element.Type.MethodDeclaration,
                         required = true,
@@ -28,7 +30,7 @@ class ExtractOperationConverter : Converter<ExtractOperationRefactoring> {
                             .toMutableList()
                     )
                 ),
-                mapOf(
+                mutableMapOf(
                     "target method" to Element.Data(
                         type = Element.Type.MethodDeclaration,
                         required = true,

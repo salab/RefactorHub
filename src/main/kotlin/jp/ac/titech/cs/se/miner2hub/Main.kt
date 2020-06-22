@@ -12,7 +12,7 @@ const val PATH = "outputs/dataset.ndjson"
 fun main(args: Array<String>) {
     val file = File(PATH)
     if (!file.exists()) file.createNewFile()
-    val dataset = Oracle.getDataset("Extract Method", 1, 1, false)
+    val dataset = Oracle.getDataset("Extract Method", 5, 1, false)
     dataset.forEach { metadata ->
         Miner.reDetect(metadata) {
             FileWriter(file, true).use { out ->
