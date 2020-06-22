@@ -9,6 +9,9 @@
       </div>
     </div>
     <div class="px-2">
+      <div class="body-2">{{ refactoring.description }}</div>
+    </div>
+    <div class="px-2">
       <div class="subtitle-1">Child Refactorings</div>
       <div class="d-flex flex-wrap">
         <div v-for="child in children" :key="child.id" class="ma-1">
