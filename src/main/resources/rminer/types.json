@@ -241,7 +241,7 @@
         "type": "MethodDeclaration",
         "required": true
       },
-      "target invocation": {
+      "target method invocation": {
         "type": "MethodInvocation",
         "multiple": true
       }
@@ -251,7 +251,7 @@
         "type": "MethodDeclaration",
         "required": true
       },
-      "renamed invocation": {
+      "renamed method invocation": {
         "type": "MethodInvocation",
         "multiple": true
       }

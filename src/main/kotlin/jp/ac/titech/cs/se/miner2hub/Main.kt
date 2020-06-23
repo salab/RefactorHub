@@ -12,12 +12,16 @@ const val PATH = "outputs/dataset.ndjson"
 fun main(args: Array<String>) {
     val file = File(PATH)
     if (!file.exists()) file.createNewFile()
-    val dataset = Oracle.getDataset("Extract Method", 5, 1, false)
+    val dataset = Oracle.getDataset("Rename Method", 7, 3, false)
     dataset.forEach { metadata ->
-        Miner.reDetect(metadata) {
-            FileWriter(file, true).use { out ->
-                out.appendln(jacksonObjectMapper().writeValueAsString(convert(it, metadata)))
+        try {
+            Miner.reDetect(metadata) {
+                FileWriter(file, true).use { out ->
+                    out.appendln(jacksonObjectMapper().writeValueAsString(convert(it, metadata)))
+                }
             }
+        } catch (e: Exception) {
+            println(e)
         }
     }
 }
