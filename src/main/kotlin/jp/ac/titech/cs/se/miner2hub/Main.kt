@@ -10,16 +10,25 @@ import java.io.FileWriter
 const val PATH = "outputs/dataset.ndjson"
 
 fun main(args: Array<String>) {
+    createDataset("Extract Method", 5, 1, false)
+    createDataset("Rename Method", 5, 3, false)
+    createDataset("Move Method", 5, 1, false)
+}
+
+fun createDataset(type: String, n: Int, m: Int, random: Boolean) {
     val file = File(PATH)
     if (!file.exists()) file.createNewFile()
-    val dataset = Oracle.getDataset("Rename Method", 7, 3, false)
-    dataset.forEach { metadata ->
+    val dataset = Oracle.getDataset(type, n * 2, m, random)
+    var count = 0
+    for (metadata in dataset) {
+        if (count >= n) break
         try {
             Miner.reDetect(metadata) {
                 FileWriter(file, true).use { out ->
                     out.appendln(jacksonObjectMapper().writeValueAsString(convert(it, metadata)))
                 }
             }
+            count++
         } catch (e: Exception) {
             println(e)
         }

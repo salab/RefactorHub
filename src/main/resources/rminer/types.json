@@ -186,14 +186,14 @@
     "name": "MoveMethod",
     "description": "",
     "before": {
-      "target attribute": {
-        "type": "FieldDeclaration",
+      "target method": {
+        "type": "MethodDeclaration",
         "required": true
       }
     },
     "after": {
-      "moved attribute": {
-        "type": "FieldDeclaration",
+      "moved method": {
+        "type": "MethodDeclaration",
         "required": true
       }
     }
