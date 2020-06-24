@@ -1,6 +1,6 @@
 [
   {
-    "name": "InlineMethod",
+    "name": "Inline Method",
     "description": "",
     "before": {
       "target method": {
@@ -35,7 +35,7 @@
     }
   },
   {
-    "name": "ExtractMethod",
+    "name": "Extract Method",
     "description": "",
     "before": {
       "target method": {
@@ -70,7 +70,7 @@
     }
   },
   {
-    "name": "MoveAttribute",
+    "name": "Move Attribute",
     "description": "",
     "before": {
       "target attribute": {
@@ -86,7 +86,7 @@
     }
   },
   {
-    "name": "MoveClass",
+    "name": "Move Class",
     "description": "",
     "before": {
       "target class": {
@@ -102,7 +102,7 @@
     }
   },
   {
-    "name": "ExtractInterface",
+    "name": "Extract Interface",
     "description": "",
     "before": {
       "target class": {
@@ -119,7 +119,7 @@
     }
   },
   {
-    "name": "PushDownMethod",
+    "name": "Push Down Method",
     "description": "",
     "before": {
       "target method": {
@@ -135,7 +135,7 @@
     }
   },
   {
-    "name": "PushDownAttribute",
+    "name": "Push Down Attribute",
     "description": "",
     "before": {
       "target attribute": {
@@ -151,7 +151,7 @@
     }
   },
   {
-    "name": "PullUpMethod",
+    "name": "Pull Up Method",
     "description": "",
     "before": {
       "target method": {
@@ -167,7 +167,7 @@
     }
   },
   {
-    "name": "PullUpAttribute",
+    "name": "Pull Up Attribute",
     "description": "",
     "before": {
       "target attribute": {
@@ -183,7 +183,7 @@
     }
   },
   {
-    "name": "MoveMethod",
+    "name": "Move Method",
     "description": "",
     "before": {
       "target method": {
@@ -199,7 +199,7 @@
     }
   },
   {
-    "name": "ExtractAndMoveMethod",
+    "name": "Extract And Move Method",
     "description": "",
     "before": {
       "target method": {
@@ -234,7 +234,7 @@
     }
   },
   {
-    "name": "RenameMethod",
+    "name": "Rename Method",
     "description": "",
     "before": {
       "target method": {
@@ -258,7 +258,7 @@
     }
   },
   {
-    "name": "ExtractSuperclass",
+    "name": "Extract Superclass",
     "description": "",
     "before": {
       "target class": {
@@ -275,7 +275,7 @@
     }
   },
   {
-    "name": "RenameParameter",
+    "name": "Rename Parameter",
     "description": "",
     "before": {
       "target method": {
@@ -299,7 +299,7 @@
     }
   },
   {
-    "name": "RenameClass",
+    "name": "Rename Class",
     "description": "",
     "before": {
       "target class": {
@@ -315,7 +315,7 @@
     }
   },
   {
-    "name": "MoveAndRenameClass",
+    "name": "Move And Rename Class",
     "description": "",
     "before": {
       "target class": {
@@ -331,7 +331,7 @@
     }
   },
   {
-    "name": "RenameVariable",
+    "name": "Rename Variable",
     "description": "",
     "before": {
       "target method": {
@@ -355,7 +355,7 @@
     }
   },
   {
-    "name": "ParameterizeVariable",
+    "name": "Parameterize Variable",
     "description": "",
     "before": {
       "target method": {

@@ -1,6 +1,6 @@
 [
   {
-    "type": "ExtractMethod",
+    "type": "Extract Method",
     "description": "This is a tutorial of ExtractMethod annotation.",
     "url": "https://github.com/danilofes/refactoring-toy-example/commit/f35b2c8eb8c320f173237e44d04eefb4634649a2"
   },

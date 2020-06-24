@@ -12,7 +12,7 @@ import jp.ac.titech.cs.se.refactorhub.models.element.Element
 class RenameOperationConverter : Converter<RenameOperationRefactoring> {
     override fun convert(refactoring: RenameOperationRefactoring, metadata: RefactoringMetadata): RefactoringOutput {
         return RefactoringOutput(
-            "RenameMethod",
+            refactoring.refactoringType.displayName,
             refactoring.toString(),
             convertCommit(metadata.commit),
             Refactoring.Data(

@@ -12,7 +12,7 @@ import jp.ac.titech.cs.se.refactorhub.models.element.Element
 class ExtractOperationConverter : Converter<ExtractOperationRefactoring> {
     override fun convert(refactoring: ExtractOperationRefactoring, metadata: RefactoringMetadata): RefactoringOutput {
         return RefactoringOutput(
-            "ExtractMethod",
+            refactoring.refactoringType.displayName,
             refactoring.toString(),
             convertCommit(metadata.commit),
             Refactoring.Data(

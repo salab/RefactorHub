@@ -15,7 +15,7 @@ class MoveOperationConverter : Converter<MoveOperationRefactoring> {
             println("${it.type}: $it")
         }
         return RefactoringOutput(
-            "MoveMethod",
+            refactoring.refactoringType.displayName,
             refactoring.toString(),
             convertCommit(metadata.commit),
             Refactoring.Data(
