@@ -18,7 +18,7 @@ export default defineComponent({
   props: {
     isLoading: {
       type: Boolean,
-      required: true,
+      default: false,
     },
   },
   setup() {

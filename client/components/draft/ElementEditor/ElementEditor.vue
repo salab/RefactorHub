@@ -1,23 +1,36 @@
 <template>
-  <monaco-editor
-    ref="editorRef"
-    :is-loading="isLoading"
-    class="element-editor"
-  />
+  <div class="editor-wrapper">
+    <code-fragment-diff />
+    <monaco-editor
+      ref="editorRef"
+      :is-loading="isLoading"
+      class="element-editor"
+    />
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, computed } from '@vue/composition-api'
+import {
+  defineComponent,
+  ref,
+  watch,
+  computed,
+  onMounted,
+} from '@vue/composition-api'
 import consola from 'consola'
 import { DiffCategory, FileMetadata } from 'refactorhub'
 import { setupDisplayedFileOnDiffEditor } from './use/displayedFile'
 import { setupEditingElement } from './use/editingElement'
 import MonacoEditor from '@/components/common/editor/MonacoEditor.vue'
+import CodeFragmentDiff, {
+  useCodeFragmentDiff,
+} from '@/components/draft/CodeFragmentDiff/CodeFragmentDiff.vue'
 
 export default defineComponent({
   name: 'ElementEditor',
   components: {
     MonacoEditor,
+    CodeFragmentDiff,
   },
   setup(_, { root }) {
     const editorRef = ref<InstanceType<typeof MonacoEditor>>()
@@ -64,6 +77,38 @@ export default defineComponent({
       (value) => setupEditingElement('after', value)
     )
 
+    onMounted(() => {
+      const { open, setContents } = useCodeFragmentDiff()
+      const diffEditor = editorRef.value?.diffEditor
+      if (!diffEditor) {
+        consola.log('diffEditor is not loaded')
+        return
+      }
+      const getContent = (category: DiffCategory) => {
+        const editor =
+          category === 'before'
+            ? diffEditor.getOriginalEditor()
+            : diffEditor.getModifiedEditor()
+        const selection = editor.getSelection()
+        return selection
+          ? editor.getModel()?.getValueInRange(selection) || ''
+          : ''
+      }
+
+      diffEditor.addAction({
+        id: 'compare_selections',
+        label: 'Compare Selections',
+        contextMenuGroupId: '9_cutcopypaste',
+        run() {
+          setContents({
+            before: getContent('before'),
+            after: getContent('after'),
+          })
+          open()
+        },
+      })
+    })
+
     return {
       editorRef,
       isLoading,
@@ -73,6 +118,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.editor-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
 .element-editor ::v-deep {
   .element-widget {
     cursor: pointer;
