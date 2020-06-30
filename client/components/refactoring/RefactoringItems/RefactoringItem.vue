@@ -11,7 +11,7 @@
     <div class="px-2">
       <div class="body-2">{{ refactoring.description }}</div>
     </div>
-    <div class="px-2">
+    <div v-if="fetchChildren" class="px-2">
       <div class="subtitle-1">Child Refactorings</div>
       <div class="d-flex flex-wrap">
         <div v-for="child in children" :key="child.id" class="ma-1">
@@ -19,7 +19,7 @@
         </div>
       </div>
     </div>
-    <div class="px-2">
+    <div v-if="fetchDrafts" class="px-2">
       <div class="subtitle-1">Drafts</div>
       <div class="d-flex flex-wrap">
         <div v-for="draft in drafts" :key="draft.id" class="ma-1">
@@ -49,19 +49,31 @@ export default defineComponent({
       type: Object as PropType<Refactoring>,
       required: true,
     },
+    fetchChildren: {
+      type: Boolean,
+      default: false,
+    },
+    fetchDrafts: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(props, { root }) {
     const children = ref<Refactoring[]>([])
     const drafts = ref<Draft[]>([])
 
     onMounted(async () => {
-      children.value = await root.$client.getRefactoringChildren(
-        props.refactoring.id
-      )
+      if (props.fetchChildren) {
+        children.value = await root.$client.getRefactoringChildren(
+          props.refactoring.id
+        )
+      }
       // TODO: Fix API
-      drafts.value = await root.$client.getRefactoringDrafts(
-        props.refactoring.id
-      )
+      if (props.fetchDrafts) {
+        drafts.value = await root.$client.getRefactoringDrafts(
+          props.refactoring.id
+        )
+      }
     })
 
     return { children, drafts }
