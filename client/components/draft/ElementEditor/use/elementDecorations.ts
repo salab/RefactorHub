@@ -48,6 +48,14 @@ export function deleteElementDecoration(
   }
 }
 
+export function clearElementDecorations(category: DiffCategory) {
+  decorationMetadataMap[category].forEach((metadata) => {
+    const model = monaco.editor.getModel(monaco.Uri.parse(metadata.uri))
+    if (model) model.deltaDecorations([metadata.id], [])
+  })
+  decorationMetadataMap[category].clear()
+}
+
 function createElementDecoration(
   key: string,
   element: Element

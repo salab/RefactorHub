@@ -1,7 +1,10 @@
 import * as monaco from 'monaco-editor'
 import consola from 'consola'
 import { DiffCategory, FileMetadata, CommitInfo } from 'refactorhub'
-import { setElementDecorationOnEditor } from './elementDecorations'
+import {
+  setElementDecorationOnEditor,
+  clearElementDecorations,
+} from './elementDecorations'
 import {
   setElementWidgetOnEditor,
   clearElementWidgetsOnEditor,
@@ -112,6 +115,7 @@ function setupElementDecorationsOnDiffEditor(
   }
   if (!isExistFile(category, commitInfo, metadata)) return
 
+  clearElementDecorations(category)
   const path = getCommitFileName(category, commitInfo, metadata)
   const editor = getEditor(category, diffEditor)
   Object.entries(draft.data[category]).forEach(([key, data]) => {
