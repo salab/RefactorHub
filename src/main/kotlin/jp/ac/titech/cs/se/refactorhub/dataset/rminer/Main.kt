@@ -15,6 +15,7 @@ fun main(args: Array<String>) {
     createDataset("Move Method", 5, 1, false)
     createDataset("Rename Variable", 5, 3, false)
     createDataset("Parameterize Variable", 5, 3, false)
+    createDataset("Extract And Move Method", 5, 5, false)
 }
 
 fun createDataset(type: String, n: Int, m: Int, random: Boolean) {
