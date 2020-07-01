@@ -1,7 +1,7 @@
-package jp.ac.titech.cs.se.miner2hub.converter.element.impl
+package jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.element.impl
 
-import jp.ac.titech.cs.se.miner2hub.converter.element.ElementConverter
-import jp.ac.titech.cs.se.miner2hub.converter.element.convertLocation
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.element.ElementConverter
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.element.convertLocation
 import jp.ac.titech.cs.se.refactorhub.models.element.impl.VariableDeclaration
 
 class VariableDeclarationConverter : ElementConverter<gr.uom.java.xmi.decomposition.VariableDeclaration> {

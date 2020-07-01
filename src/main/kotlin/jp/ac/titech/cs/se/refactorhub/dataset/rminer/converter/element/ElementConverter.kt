@@ -1,14 +1,14 @@
-package jp.ac.titech.cs.se.miner2hub.converter.element
+package jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.element
 
 import gr.uom.java.xmi.LocationInfo
 import gr.uom.java.xmi.UMLOperation
 import gr.uom.java.xmi.decomposition.AbstractCodeFragment
 import gr.uom.java.xmi.decomposition.OperationInvocation
 import gr.uom.java.xmi.decomposition.VariableDeclaration
-import jp.ac.titech.cs.se.miner2hub.converter.element.impl.CodeFragmentConverter
-import jp.ac.titech.cs.se.miner2hub.converter.element.impl.OperationInvocationConverter
-import jp.ac.titech.cs.se.miner2hub.converter.element.impl.UMLOperationConverter
-import jp.ac.titech.cs.se.miner2hub.converter.element.impl.VariableDeclarationConverter
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.element.impl.CodeFragmentConverter
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.element.impl.OperationInvocationConverter
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.element.impl.UMLOperationConverter
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.element.impl.VariableDeclarationConverter
 import jp.ac.titech.cs.se.refactorhub.models.element.Element
 import jp.ac.titech.cs.se.refactorhub.models.element.data.Location
 import jp.ac.titech.cs.se.refactorhub.models.element.data.Range

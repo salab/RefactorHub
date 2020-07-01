@@ -1,4 +1,4 @@
-package jp.ac.titech.cs.se.miner2hub.oracle
+package jp.ac.titech.cs.se.refactorhub.dataset.rminer.oracle
 
 data class RefactoringMetadata(
     val type: String,

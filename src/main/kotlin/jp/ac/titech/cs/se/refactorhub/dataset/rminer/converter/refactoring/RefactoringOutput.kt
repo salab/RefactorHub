@@ -1,4 +1,4 @@
-package jp.ac.titech.cs.se.miner2hub.converter
+package jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.refactoring
 
 import jp.ac.titech.cs.se.refactorhub.models.Commit
 import jp.ac.titech.cs.se.refactorhub.models.Refactoring

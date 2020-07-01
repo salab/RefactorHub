@@ -1,9 +1,9 @@
-package jp.ac.titech.cs.se.miner2hub
+package jp.ac.titech.cs.se.refactorhub.dataset.rminer
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import jp.ac.titech.cs.se.miner2hub.converter.convert
-import jp.ac.titech.cs.se.miner2hub.miner.Miner
-import jp.ac.titech.cs.se.miner2hub.oracle.Oracle
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.refactoring.convert
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.miner.Miner
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.oracle.Oracle
 import java.io.File
 import java.io.FileWriter
 
@@ -27,7 +27,12 @@ fun createDataset(type: String, n: Int, m: Int, random: Boolean) {
         try {
             Miner.reDetect(metadata) {
                 FileWriter(file, true).use { out ->
-                    out.appendln(jacksonObjectMapper().writeValueAsString(convert(it, metadata)))
+                    out.appendln(jacksonObjectMapper().writeValueAsString(
+                        convert(
+                            it,
+                            metadata
+                        )
+                    ))
                 }
             }
             count++

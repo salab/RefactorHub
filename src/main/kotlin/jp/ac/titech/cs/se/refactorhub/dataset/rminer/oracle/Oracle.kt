@@ -1,4 +1,4 @@
-package jp.ac.titech.cs.se.miner2hub.oracle
+package jp.ac.titech.cs.se.refactorhub.dataset.rminer.oracle
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper

@@ -1,6 +1,6 @@
-package jp.ac.titech.cs.se.miner2hub.miner
+package jp.ac.titech.cs.se.refactorhub.dataset.rminer.miner
 
-import jp.ac.titech.cs.se.miner2hub.oracle.RefactoringMetadata
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.oracle.RefactoringMetadata
 import org.refactoringminer.api.Refactoring
 import org.refactoringminer.api.RefactoringHandler
 import org.refactoringminer.rm1.GitHistoryRefactoringMinerImpl

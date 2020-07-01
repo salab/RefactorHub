@@ -1,18 +1,18 @@
-package jp.ac.titech.cs.se.miner2hub.converter
+package jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.refactoring
 
 import gr.uom.java.xmi.diff.ExtractOperationRefactoring
 import gr.uom.java.xmi.diff.MoveOperationRefactoring
 import gr.uom.java.xmi.diff.RenameOperationRefactoring
 import gr.uom.java.xmi.diff.RenameVariableRefactoring
-import jp.ac.titech.cs.se.miner2hub.converter.impl.ExtractOperationConverter
-import jp.ac.titech.cs.se.miner2hub.converter.impl.MoveOperationConverter
-import jp.ac.titech.cs.se.miner2hub.converter.impl.RenameOperationConverter
-import jp.ac.titech.cs.se.miner2hub.converter.impl.RenameVariableConverter
-import jp.ac.titech.cs.se.miner2hub.oracle.RefactoringMetadata
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.refactoring.impl.ExtractOperationConverter
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.refactoring.impl.MoveOperationConverter
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.refactoring.impl.RenameOperationConverter
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.refactoring.impl.RenameVariableConverter
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.oracle.RefactoringMetadata
 import jp.ac.titech.cs.se.refactorhub.models.Commit
 import org.refactoringminer.api.Refactoring
 
-interface Converter<T : Refactoring> {
+interface RefactoringConverter<T : Refactoring> {
     fun convert(refactoring: T, metadata: RefactoringMetadata): RefactoringOutput
 }
 

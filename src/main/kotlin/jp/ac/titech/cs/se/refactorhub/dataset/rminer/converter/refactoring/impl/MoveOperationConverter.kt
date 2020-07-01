@@ -1,15 +1,16 @@
-package jp.ac.titech.cs.se.miner2hub.converter.impl
+package jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.refactoring.impl
 
 import gr.uom.java.xmi.diff.MoveOperationRefactoring
-import jp.ac.titech.cs.se.miner2hub.converter.Converter
-import jp.ac.titech.cs.se.miner2hub.converter.RefactoringOutput
-import jp.ac.titech.cs.se.miner2hub.converter.convertCommit
-import jp.ac.titech.cs.se.miner2hub.converter.element.convertElement
-import jp.ac.titech.cs.se.miner2hub.oracle.RefactoringMetadata
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.refactoring.RefactoringConverter
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.refactoring.RefactoringOutput
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.refactoring.convertCommit
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.converter.element.convertElement
+import jp.ac.titech.cs.se.refactorhub.dataset.rminer.oracle.RefactoringMetadata
 import jp.ac.titech.cs.se.refactorhub.models.Refactoring
 import jp.ac.titech.cs.se.refactorhub.models.element.Element
 
-class MoveOperationConverter : Converter<MoveOperationRefactoring> {
+class MoveOperationConverter :
+    RefactoringConverter<MoveOperationRefactoring> {
     override fun convert(refactoring: MoveOperationRefactoring, metadata: RefactoringMetadata): RefactoringOutput {
         refactoring.replacements.forEach {
             println("${it.type}: $it")
