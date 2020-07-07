@@ -4,7 +4,7 @@ import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementMetadata
 
 data class RefactoringType(
     val name: String,
-    val description: String,
-    val before: Map<String, CodeElementMetadata>,
-    val after: Map<String, CodeElementMetadata>
+    val before: Map<String, CodeElementMetadata> = mapOf(),
+    val after: Map<String, CodeElementMetadata> = mapOf(),
+    val description: String = ""
 )

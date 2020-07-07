@@ -5,8 +5,8 @@ import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementType
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.data.Location
 
 data class ClassDeclaration(
-    val name: String,
-    override val location: Location
+    val name: String? = null,
+    override val location: Location? = null
 ) : CodeElement {
     override val type: CodeElementType get() = CodeElementType.ClassDeclaration
 }

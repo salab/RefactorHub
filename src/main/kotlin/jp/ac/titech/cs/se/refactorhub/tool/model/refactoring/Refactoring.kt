@@ -5,12 +5,12 @@ import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementHolder
 
 data class Refactoring(
     val type: String,
-    val description: String,
     val commit: Commit,
-    val data: Data
+    val data: Data = Data(),
+    val description: String = ""
 ) {
     data class Data(
-        val before: Map<String, CodeElementHolder>,
-        val after: Map<String, CodeElementHolder>
+        val before: Map<String, CodeElementHolder> = mapOf(),
+        val after: Map<String, CodeElementHolder> = mapOf()
     )
 }
