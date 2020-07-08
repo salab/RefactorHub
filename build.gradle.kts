@@ -1,70 +1,75 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
 
 plugins {
-    val kotlinVersion = "1.3.61"
-    kotlin("jvm") version kotlinVersion
-    kotlin("plugin.spring") version kotlinVersion
-    kotlin("plugin.jpa") version kotlinVersion
-    id("org.springframework.boot") version "2.2.2.RELEASE"
-    id("io.spring.dependency-management") version "1.0.8.RELEASE"
+    application
+    kotlin("jvm") version "1.3.70"
     id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
     id("org.jlleitschuh.gradle.ktlint-idea") version "9.2.1"
+    id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 
 group = "jp.ac.titech.cs.se"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+
+application {
+    mainClassName = "io.ktor.server.netty.EngineMain"
+}
 
 repositories {
-    mavenCentral()
+    jcenter()
     maven {
         name = "JitPack"
         url = URI("https://jitpack.io")
     }
-    maven { url = uri("https://dl.bintray.com/kotlin/kotlinx") }
+    maven { url = uri("https://kotlin.bintray.com/ktor") }
+    maven { url = uri("https://kotlin.bintray.com/exposed") }
 }
+
+val ktor_version: String by project
+val koin_version: String by project
+val logback_version: String by project
+val exposed_version: String by project
+val h2_version: String by project
+val hikaricp_version: String by project
 
 dependencies {
     // Kotlin
-    implementation(kotlin("reflect"))
     implementation(kotlin("stdlib-jdk8"))
-    // Spring
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    runtimeOnly("org.springframework.boot:spring-boot-devtools")
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude("org.junit.vintage")
-    }
-    testImplementation("org.springframework.security:spring-security-test")
-    // Swagger
-    implementation("io.springfox:springfox-swagger2:2.+")
-    implementation("io.springfox:springfox-swagger-ui:2.+")
-    // Parser
-    implementation("org.eclipse.jdt:org.eclipse.jdt.core:3.+")
+
+    // Ktor
+    implementation("io.ktor:ktor-server-core:$ktor_version")
+    implementation("io.ktor:ktor-server-netty:$ktor_version")
+    implementation("io.ktor:ktor-server-host-common:$ktor_version")
+    implementation("io.ktor:ktor-locations:$ktor_version")
+    implementation("io.ktor:ktor-client-apache:$ktor_version")
+    implementation("io.ktor:ktor-auth:$ktor_version")
+    implementation("io.ktor:ktor-jackson:$ktor_version")
+
+    // DI
+    implementation("org.koin:koin-ktor:$koin_version")
+
+    // DB
+    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation("com.h2database:h2:$h2_version")
+    implementation("com.zaxxer:HikariCP:$hikaricp_version")
+
+    // Log
+    implementation("ch.qos.logback:logback-classic:$logback_version")
+
     // Tools
+    implementation("org.eclipse.jdt:org.eclipse.jdt.core:3.+")
     implementation("com.github.tsantalis:RefactoringMiner:ab3ad84") {
         exclude("org.slf4j")
     }
     // implementation("com.github.tsantalis:RefactoringMiner:master-SNAPSHOT")
-    // Other
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.kohsuke:github-api:1.+")
-    runtimeOnly("mysql:mysql-connector-java:8.+")
-    runtimeOnly("com.h2database:h2")
-}
 
-tasks {
-    withType<KotlinCompile> {
-        kotlinOptions {
-            freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = "1.8"
-        }
-    }
-    withType<Test> {
-        useJUnitPlatform()
-    }
+    // Other
+    implementation("org.kohsuke:github-api:1.+")
+
+    // Test
+    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 }
 
 ktlint {
