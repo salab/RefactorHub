@@ -1,7 +1,9 @@
 package jp.ac.titech.cs.se.refactorhub.tool.model.element
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.data.Location
 
+@JsonDeserialize(using = CodeElementDeserializer::class)
 interface CodeElement {
     val type: CodeElementType
     val location: Location?

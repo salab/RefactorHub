@@ -3,6 +3,7 @@ import java.net.URI
 plugins {
     application
     kotlin("jvm") version "1.3.70"
+    kotlin("plugin.serialization") version "1.3.70"
     id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
     id("org.jlleitschuh.gradle.ktlint-idea") version "9.2.1"
     id("com.github.johnrengelman.shadow") version "6.0.0"
@@ -21,6 +22,7 @@ repositories {
         name = "JitPack"
         url = URI("https://jitpack.io")
     }
+    maven { url = uri("https://kotlin.bintray.com/kotlinx") }
     maven { url = uri("https://kotlin.bintray.com/ktor") }
     maven { url = uri("https://kotlin.bintray.com/exposed") }
 }
@@ -36,6 +38,7 @@ val postgresql_version: String by project
 dependencies {
     // Kotlin
     implementation(kotlin("stdlib-jdk8"))
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
 
     // Ktor
     implementation("io.ktor:ktor-server-core:$ktor_version")
@@ -54,8 +57,8 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
+    implementation("org.postgresql:postgresql:$postgresql_version")
     runtimeOnly("com.h2database:h2:$h2_version")
-    runtimeOnly("org.postgresql:postgresql:$postgresql_version")
 
     // Log
     implementation("ch.qos.logback:logback-classic:$logback_version")
