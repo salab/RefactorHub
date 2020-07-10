@@ -18,23 +18,23 @@ class UserController : KoinComponent {
     data class GetUser(val id: Int)
 
     @Location("/{id}/drafts")
-    data class GetDrafts(val id: Int)
+    data class GetUserDrafts(val id: Int)
 
     @Location("/{id}/refactorings")
-    data class GetRefactorings(val id: Int)
+    data class GetUserRefactorings(val id: Int)
 
     @Location("/me")
     class GetMe
 
-    fun get(request: GetUser): User {
-        return userService.get(request.id)
+    fun get(params: GetUser): User {
+        return userService.get(params.id)
     }
 
-    fun getDrafts(request: GetDrafts): List<RefactoringDraft> {
+    fun getDrafts(params: GetUserDrafts): List<RefactoringDraft> {
         TODO()
     }
 
-    fun getRefactorings(request: GetRefactorings): List<Refactoring> {
+    fun getRefactorings(params: GetUserRefactorings): List<Refactoring> {
         TODO()
     }
 
