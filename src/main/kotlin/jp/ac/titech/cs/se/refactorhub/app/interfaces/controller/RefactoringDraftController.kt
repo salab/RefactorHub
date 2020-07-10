@@ -10,74 +10,58 @@ import org.koin.core.KoinComponent
 @Location("/drafts")
 class RefactoringDraftController : KoinComponent {
 
-    @Location("/{id}")
-    data class GetDraft(val id: Int)
-
-    @Location("/{id}/save")
-    data class SaveDraft(val id: Int)
-
-    @Location("/{id}/discard")
-    data class DiscardDraft(val id: Int)
-
-    @Location("/{id}")
-    data class UpdateDraft(val id: Int)
     data class UpdateDraftBody(
         val description: String? = null,
         val type: String? = null
     )
 
-    @Location("/{id}/{category}")
-    data class PutDraftElementKey(val id: Int, val category: String)
-    data class PutDraftElementKeyBody(val key: String)
+    data class PutDraftElementKeyBody(
+        val key: String
+    )
 
-    @Location("/{id}/{category}/{key}")
-    data class RemoveDraftElementKey(val id: Int, val category: String, val key: String)
-
-    @Location("/{id}/{category}/{key}")
-    data class AppendDraftElementValue(val id: Int, val category: String, val key: String)
-
-    @Location("/{id}/{category}/{key}/{index}")
-    data class UpdateDraftElementValue(val id: Int, val category: String, val key: String, val index: Int)
     data class UpdateDraftElementValueBody(
         val element: CodeElement
     )
 
-    @Location("/{id}/{category}/{key}/{index}")
-    data class RemoveDraftElementValue(val id: Int, val category: String, val key: String, val index: Int)
-
-    fun get(params: GetDraft): RefactoringDraft {
+    fun get(id: Int): RefactoringDraft {
         TODO()
     }
 
-    fun save(params: SaveDraft): RefactoringDraft {
+    fun save(id: Int): RefactoringDraft {
         TODO()
     }
 
-    fun discard(params: DiscardDraft) {
+    fun discard(id: Int) {
         TODO()
     }
 
-    fun update(params: UpdateDraft, body: UpdateDraftBody): RefactoringDraft {
+    fun update(id: Int, body: UpdateDraftBody): RefactoringDraft {
         TODO()
     }
 
-    fun putElementKey(params: PutDraftElementKey, body: PutDraftElementKeyBody): RefactoringDraft {
+    fun putElementKey(id: Int, category: String, body: PutDraftElementKeyBody): RefactoringDraft {
         TODO()
     }
 
-    fun removeElementKey(params: RemoveDraftElementKey): RefactoringDraft {
+    fun removeElementKey(id: Int, category: String, key: String): RefactoringDraft {
         TODO()
     }
 
-    fun appendElementValue(params: AppendDraftElementValue): RefactoringDraft {
+    fun appendElementValue(id: Int, category: String, key: String): RefactoringDraft {
         TODO()
     }
 
-    fun updateElementValue(params: UpdateDraftElementValue, body: UpdateDraftElementValueBody): RefactoringDraft {
+    fun updateElementValue(
+        id: Int,
+        category: String,
+        key: String,
+        index: Int,
+        body: UpdateDraftElementValueBody
+    ): RefactoringDraft {
         TODO()
     }
 
-    fun removeElementValue(params: RemoveDraftElementValue): RefactoringDraft {
+    fun removeElementValue(id: Int, category: String, key: String, index: Int): RefactoringDraft {
         TODO()
     }
 }

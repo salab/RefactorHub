@@ -1,17 +1,11 @@
 package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.locations.Location
 import jp.ac.titech.cs.se.refactorhub.tool.model.Commit
 import jp.ac.titech.cs.se.refactorhub.tool.model.refactoring.Refactoring
 import org.koin.core.KoinComponent
 
-@KtorExperimentalLocationsAPI
-@Location("/refactorings")
 class RefactoringController : KoinComponent {
 
-    @Location("")
-    class CreateRefactoring
     data class CreateRefactoringBody(
         val type: String,
         val description: String,
@@ -19,25 +13,7 @@ class RefactoringController : KoinComponent {
         val data: Refactoring.Data
     )
 
-    @Location("")
-    class GetAllRefactorings
-
-    @Location("/{id}")
-    data class GetRefactoring(val id: Int)
-
-    @Location("/{id}/children")
-    data class GetRefactoringChildren(val id: Int)
-
-    @Location("/{id}/drafts")
-    data class GetRefactoringDrafts(val id: Int)
-
-    @Location("/{id}/fork")
-    data class ForkRefactoring(val id: Int)
-
-    @Location("/{id}/edit")
-    data class EditRefactoring(val id: Int)
-
-    fun create(params: CreateRefactoring, body: CreateRefactoringBody): Refactoring {
+    fun create(body: CreateRefactoringBody): Refactoring {
         TODO()
     }
 
@@ -45,23 +21,23 @@ class RefactoringController : KoinComponent {
         TODO()
     }
 
-    fun get(params: GetRefactoring): Refactoring {
+    fun get(id: Int): Refactoring {
         TODO()
     }
 
-    fun getChildren(params: GetRefactoringChildren): Refactoring {
+    fun getChildren(id: Int): Refactoring {
         TODO()
     }
 
-    fun getDrafts(params: GetRefactoringDrafts): Refactoring {
+    fun getDrafts(id: Int): Refactoring {
         TODO()
     }
 
-    fun fork(params: ForkRefactoring): Refactoring {
+    fun fork(id: Int): Refactoring {
         TODO()
     }
 
-    fun edit(params: EditRefactoring): Refactoring {
+    fun edit(id: Int): Refactoring {
         TODO()
     }
 }

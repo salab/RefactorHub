@@ -18,11 +18,10 @@ import io.ktor.sessions.cookie
 import io.ktor.util.KtorExperimentalAPI
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.github
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.login
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.connectDB
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.feature.SinglePageApplication
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.module.koinModules
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.root
 import org.koin.ktor.ext.Koin
 
 fun main(args: Array<String>) = EngineMain.main(args)
@@ -56,7 +55,6 @@ fun Application.module() {
     connectDB()
 
     routing {
-        login()
-        api()
+        root()
     }
 }

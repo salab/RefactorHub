@@ -9,9 +9,6 @@ import org.koin.core.KoinComponent
 @Location("/elements")
 class ElementController : KoinComponent {
 
-    @Location("/types")
-    class GetElementTypes
-
     fun getTypes(): List<CodeElement> {
         TODO()
     }
