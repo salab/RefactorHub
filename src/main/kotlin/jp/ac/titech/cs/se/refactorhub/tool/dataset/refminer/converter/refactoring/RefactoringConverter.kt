@@ -18,7 +18,7 @@ interface RefactoringConverter<T : Refactoring> {
 fun convert(
     refactoring: Refactoring,
     data: RefOracleData
-): jp.ac.titech.cs.se.refactorhub.tool.model.refactoring.Refactoring = when (refactoring) {
+): jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.model.Refactoring = when (refactoring) {
     is ExtractOperationRefactoring -> ExtractOperationConverter().convert(refactoring, data)
     is RenameOperationRefactoring -> RenameOperationConverter().convert(refactoring, data)
     is MoveOperationRefactoring -> MoveOperationConverter().convert(refactoring, data)

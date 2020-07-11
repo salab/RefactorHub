@@ -2,15 +2,18 @@ package jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.refactori
 
 import gr.uom.java.xmi.diff.ExtractOperationRefactoring
 import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.element.convertElement
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.refactoring.RefactoringConverter
 import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.oracle.RefOracleData
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementHolder
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementType
-import jp.ac.titech.cs.se.refactorhub.tool.model.refactoring.Refactoring
 
 class ExtractOperationConverter :
     RefactoringConverter<ExtractOperationRefactoring> {
-    override fun convert(refactoring: ExtractOperationRefactoring, data: RefOracleData): Refactoring {
+    override fun convert(
+        refactoring: ExtractOperationRefactoring,
+        data: RefOracleData
+    ): Refactoring {
         return Refactoring(
             refactoring.refactoringType.displayName,
             data.commit,

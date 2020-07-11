@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.OUTPUTS_PATH
-import jp.ac.titech.cs.se.refactorhub.tool.model.Commit
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.model.Commit
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.net.URL
