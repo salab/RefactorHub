@@ -2,18 +2,35 @@ package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 
 import io.ktor.features.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.UserRepository
+import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
+import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
 import jp.ac.titech.cs.se.refactorhub.app.model.User
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+import javax.naming.AuthenticationException
 
 class UserService : KoinComponent {
-
     private val userRepository: UserRepository by inject()
+    private val refactoringService: RefactoringService by inject()
+    private val refactoringDraftService: RefactoringDraftService by inject()
 
     fun get(id: Int): User {
         val user = userRepository.findById(id)
         user ?: throw NotFoundException("User(id=$id) is not found")
         return user
+    }
+
+    fun getDrafts(id: Int): List<RefactoringDraft> {
+        return refactoringDraftService.getUserDrafts(id)
+    }
+
+    fun getRefactorings(id: Int): List<Refactoring> {
+        return refactoringService.getUserRefactorings(id)
+    }
+
+    fun getMe(id: Int?): User {
+        id ?: throw AuthenticationException("You are not logged in")
+        return get(id)
     }
 
     fun createIfNotExist(subId: Int, name: String): User {

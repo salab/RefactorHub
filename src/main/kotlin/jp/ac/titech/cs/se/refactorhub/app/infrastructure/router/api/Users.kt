@@ -7,6 +7,9 @@ import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.route
+import io.ktor.sessions.get
+import io.ktor.sessions.sessions
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.UserController
 import org.koin.ktor.ext.inject
 
@@ -41,7 +44,8 @@ fun Route.users() {
             call.respond(userController.getRefactorings(it.id))
         }
         get<GetMe> {
-            call.respond(userController.getMe())
+            val session = call.sessions.get<Session>()
+            call.respond(userController.getMe(session?.id))
         }
     }
 }
