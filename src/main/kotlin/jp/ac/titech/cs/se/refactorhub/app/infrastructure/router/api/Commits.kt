@@ -7,6 +7,9 @@ import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.route
+import io.ktor.sessions.get
+import io.ktor.sessions.sessions
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.CommitController
 import org.koin.ktor.ext.inject
 
@@ -26,7 +29,8 @@ fun Route.commits() {
             call.respond(commitController.get(it.sha))
         }
         get<GetCommitDetail> {
-            call.respond(commitController.getDetail(it.sha))
+            val session = call.sessions.get<Session>()
+            call.respond(commitController.getDetail(it.sha, session?.accessToken))
         }
     }
 }

@@ -1,6 +1,13 @@
 package jp.ac.titech.cs.se.refactorhub.app.model
 
+import jp.ac.titech.cs.se.refactorhub.tool.model.Commit
 import java.util.Date
+
+data class Commit(
+    override val sha: String,
+    override var owner: String,
+    override var repository: String
+) : Commit
 
 data class CommitDetail(
     val sha: String,
