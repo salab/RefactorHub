@@ -18,5 +18,12 @@ interface RefactoringDraftRepository {
         isFork: Boolean
     ): RefactoringDraft
 
+    fun update(
+        id: Int,
+        typeName: String? = null,
+        data: Refactoring.Data? = null,
+        description: String? = null
+    ): RefactoringDraft
+
     fun deleteById(id: Int)
 }

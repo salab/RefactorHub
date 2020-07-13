@@ -11,6 +11,12 @@ interface RefactoringRepository {
         commitSha: String, typeName: String, data: Refactoring.Data, description: String, userId: Int, parentId: Int?
     ): Refactoring
 
-    fun update(id: Int, typeName: String?, data: Refactoring.Data?, description: String?): Refactoring
+    fun update(
+        id: Int,
+        typeName: String? = null,
+        data: Refactoring.Data? = null,
+        description: String? = null
+    ): Refactoring
+
     fun deleteById(id: Int)
 }

@@ -77,6 +77,19 @@ class RefactoringDraftRepositoryImpl : RefactoringDraftRepository {
         }
     }
 
+    override fun update(id: Int, typeName: String?, data: Refactoring.Data?, description: String?): RefactoringDraft {
+        return transaction {
+            val dao = RefactoringDraftDao.findById(id)!!
+            if (typeName != null) {
+                val type = RefactoringTypeDao.find { RefactoringTypes.name eq typeName }.singleOrNull()
+                if (type != null) dao.type = type
+            }
+            if (data != null) dao.data = data
+            if (description != null) dao.description = description
+            dao.asModel()
+        }
+    }
+
     override fun deleteById(id: Int) {
         transaction {
             RefactoringDraftDao.findById(id)?.delete()

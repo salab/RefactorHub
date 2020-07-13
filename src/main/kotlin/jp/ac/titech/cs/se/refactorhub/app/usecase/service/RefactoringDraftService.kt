@@ -1,10 +1,17 @@
 package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 
+import io.ktor.features.BadRequestException
 import io.ktor.features.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.exception.ForbiddenException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringDraftRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
+import jp.ac.titech.cs.se.refactorhub.tool.editor.appendCodeElementValue
+import jp.ac.titech.cs.se.refactorhub.tool.editor.changeRefactoringType
+import jp.ac.titech.cs.se.refactorhub.tool.editor.putCodeElementKey
+import jp.ac.titech.cs.se.refactorhub.tool.editor.removeCodeElementKey
+import jp.ac.titech.cs.se.refactorhub.tool.editor.removeCodeElementValue
+import jp.ac.titech.cs.se.refactorhub.tool.editor.updateCodeElementValue
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElement
 import org.koin.core.KoinComponent
 import org.koin.core.inject
@@ -70,18 +77,43 @@ class RefactoringDraftService : KoinComponent {
         val draft = getByOwner(id, userId)
         if (typeName != null) {
             val type = refactoringTypeService.getByName(typeName)
+            val refactoring = changeRefactoringType(type, draft)
+            return refactoringDraftRepository.update(
+                id,
+                refactoring.type,
+                Refactoring.Data(
+                    refactoring.data.before,
+                    refactoring.data.after
+                ),
+                description
+            )
         }
-        TODO()
+        if (description != null) {
+            return refactoringDraftRepository.update(id, description = description)
+        }
+        return draft
     }
 
     fun putElementKey(
         id: Int,
         category: String,
         key: String,
+        typeName: String,
         userId: Int?
     ): RefactoringDraft {
         val draft = getByOwner(id, userId)
-        TODO()
+        val refactoring = try {
+            putCodeElementKey(category, key, typeName, draft)
+        } catch (e: Exception) {
+            throw BadRequestException(e.message!!)
+        }
+        return refactoringDraftRepository.update(
+            id,
+            data = Refactoring.Data(
+                refactoring.data.before,
+                refactoring.data.after
+            )
+        )
     }
 
     fun removeElementKey(
@@ -91,7 +123,19 @@ class RefactoringDraftService : KoinComponent {
         userId: Int?
     ): RefactoringDraft {
         val draft = getByOwner(id, userId)
-        TODO()
+        val type = refactoringTypeService.getByName(draft.type)
+        val refactoring = try {
+            removeCodeElementKey(category, key, draft, type)
+        } catch (e: Exception) {
+            throw BadRequestException(e.message!!)
+        }
+        return refactoringDraftRepository.update(
+            id,
+            data = Refactoring.Data(
+                refactoring.data.before,
+                refactoring.data.after
+            )
+        )
     }
 
     fun appendElementValue(
@@ -101,7 +145,18 @@ class RefactoringDraftService : KoinComponent {
         userId: Int?
     ): RefactoringDraft {
         val draft = getByOwner(id, userId)
-        TODO()
+        val refactoring = try {
+            appendCodeElementValue(category, key, draft)
+        } catch (e: Exception) {
+            throw BadRequestException(e.message!!)
+        }
+        return refactoringDraftRepository.update(
+            id,
+            data = Refactoring.Data(
+                refactoring.data.before,
+                refactoring.data.after
+            )
+        )
     }
 
     fun updateElementValue(
@@ -113,7 +168,18 @@ class RefactoringDraftService : KoinComponent {
         userId: Int?
     ): RefactoringDraft {
         val draft = getByOwner(id, userId)
-        TODO()
+        val refactoring = try {
+            updateCodeElementValue(category, key, index, element, draft)
+        } catch (e: Exception) {
+            throw BadRequestException(e.message!!)
+        }
+        return refactoringDraftRepository.update(
+            id,
+            data = Refactoring.Data(
+                refactoring.data.before,
+                refactoring.data.after
+            )
+        )
     }
 
     fun removeElementValue(
@@ -124,7 +190,18 @@ class RefactoringDraftService : KoinComponent {
         userId: Int?
     ): RefactoringDraft {
         val draft = getByOwner(id, userId)
-        TODO()
+        val refactoring = try {
+            removeCodeElementValue(category, key, index, draft)
+        } catch (e: Exception) {
+            throw BadRequestException(e.message!!)
+        }
+        return refactoringDraftRepository.update(
+            id,
+            data = Refactoring.Data(
+                refactoring.data.before,
+                refactoring.data.after
+            )
+        )
     }
 
     fun fork(refactoring: Refactoring, userId: Int): RefactoringDraft {

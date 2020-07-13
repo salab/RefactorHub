@@ -5,8 +5,8 @@ data class RefactoringDraft(
     val ownerId: Int,
     val originId: Int,
     val isFork: Boolean,
-    val commit: Commit,
-    val type: String,
-    val data: Refactoring.Data = Refactoring.Data(),
-    val description: String = ""
-)
+    override val commit: Commit,
+    override val type: String,
+    override val data: Refactoring.Data = Refactoring.Data(),
+    override val description: String = ""
+) : jp.ac.titech.cs.se.refactorhub.tool.model.refactoring.Refactoring
