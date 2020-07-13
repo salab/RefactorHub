@@ -11,6 +11,9 @@ import io.ktor.locations.put
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
+import io.ktor.sessions.get
+import io.ktor.sessions.sessions
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringDraftController
 import org.koin.ktor.ext.inject
 
@@ -57,30 +60,47 @@ fun Route.drafts() {
         call.respond(refactoringDraftController.get(it.id))
     }
     post<SaveDraft> {
-        call.respond(refactoringDraftController.save(it.id))
+        val session = call.sessions.get<Session>()
+        call.respond(refactoringDraftController.save(it.id, session?.id))
     }
     post<DiscardDraft> {
-        call.respond(refactoringDraftController.discard(it.id))
+        val session = call.sessions.get<Session>()
+        call.respond(refactoringDraftController.discard(it.id, session?.id))
     }
     patch<UpdateDraft> {
+        val session = call.sessions.get<Session>()
         val body = call.receive<RefactoringDraftController.UpdateDraftBody>()
-        call.respond(refactoringDraftController.update(it.id, body))
+        call.respond(refactoringDraftController.update(it.id, body, session?.id))
     }
     put<PutDraftElementKey> {
+        val session = call.sessions.get<Session>()
         val body = call.receive<RefactoringDraftController.PutDraftElementKeyBody>()
-        call.respond(refactoringDraftController.putElementKey(it.id, it.category, body))
+        call.respond(refactoringDraftController.putElementKey(it.id, it.category, body, session?.id))
     }
     delete<RemoveDraftElementKey> {
-        call.respond(refactoringDraftController.removeElementKey(it.id, it.category, it.key))
+        val session = call.sessions.get<Session>()
+        call.respond(refactoringDraftController.removeElementKey(it.id, it.category, it.key, session?.id))
     }
     post<AppendDraftElementValue> {
-        call.respond(refactoringDraftController.appendElementValue(it.id, it.category, it.key))
+        val session = call.sessions.get<Session>()
+        call.respond(refactoringDraftController.appendElementValue(it.id, it.category, it.key, session?.id))
     }
     patch<UpdateDraftElementValue> {
+        val session = call.sessions.get<Session>()
         val body = call.receive<RefactoringDraftController.UpdateDraftElementValueBody>()
-        call.respond(refactoringDraftController.updateElementValue(it.id, it.category, it.key, it.index, body))
+        call.respond(
+            refactoringDraftController.updateElementValue(
+                it.id,
+                it.category,
+                it.key,
+                it.index,
+                body,
+                session?.id
+            )
+        )
     }
     delete<RemoveDraftElementValue> {
-        call.respond(refactoringDraftController.removeElementValue(it.id, it.category, it.key, it.index))
+        val session = call.sessions.get<Session>()
+        call.respond(refactoringDraftController.removeElementValue(it.id, it.category, it.key, it.index, session?.id))
     }
 }

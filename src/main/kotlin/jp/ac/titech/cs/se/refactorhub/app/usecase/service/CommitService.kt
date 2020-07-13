@@ -43,4 +43,9 @@ class CommitService : KoinComponent {
             )
         }
     }
+
+    fun createIfNotExist(sha: String, owner: String, repository: String): Commit {
+        val commit = commitRepository.findBySha(sha)
+        return commit ?: commitRepository.save(Commit(sha, owner, repository))
+    }
 }

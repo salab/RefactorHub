@@ -11,9 +11,7 @@ class CommitRepositoryImpl : CommitRepository {
         return transaction {
             CommitDao.find {
                 Commits.sha eq sha
-            }.singleOrNull()?.let {
-                Commit(it.sha, it.owner, it.repository)
-            }
+            }.singleOrNull()?.asModel()
         }
     }
 
@@ -23,9 +21,7 @@ class CommitRepositoryImpl : CommitRepository {
                 this.sha = commit.sha
                 this.owner = commit.owner
                 this.repository = commit.repository
-            }.let {
-                Commit(it.sha, it.owner, it.repository)
-            }
+            }.asModel()
         }
     }
 }

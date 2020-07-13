@@ -1,5 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao
 
+import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -11,10 +12,18 @@ object Commits : IntIdTable("commits") {
     val repository = varchar("repository", 100)
 }
 
-class CommitDao(id: EntityID<Int>) : IntEntity(id) {
+class CommitDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Commit> {
     companion object : IntEntityClass<CommitDao>(Commits)
 
     var sha by Commits.sha
     var owner by Commits.owner
     var repository by Commits.repository
+
+    override fun asModel(): Commit {
+        return Commit(
+            this.sha,
+            this.owner,
+            this.repository
+        )
+    }
 }

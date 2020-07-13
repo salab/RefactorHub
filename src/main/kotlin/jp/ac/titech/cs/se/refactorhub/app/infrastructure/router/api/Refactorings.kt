@@ -9,6 +9,9 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.route
+import io.ktor.sessions.get
+import io.ktor.sessions.sessions
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringController
 import org.koin.ktor.ext.inject
 
@@ -46,7 +49,8 @@ fun Route.refactorings() {
         val refactoringController: RefactoringController by inject()
         post<CreateRefactoring> {
             val body = call.receive<RefactoringController.CreateRefactoringBody>()
-            call.respond(refactoringController.create(body))
+            val session = call.sessions.get<Session>()
+            call.respond(refactoringController.create(body, session?.id))
         }
         get<GetAllRefactorings> {
             call.respond(refactoringController.getAll())
@@ -61,10 +65,12 @@ fun Route.refactorings() {
             call.respond(refactoringController.getDrafts(it.id))
         }
         post<ForkRefactoring> {
-            call.respond(refactoringController.fork(it.id))
+            val session = call.sessions.get<Session>()
+            call.respond(refactoringController.fork(it.id, session?.id))
         }
         post<EditRefactoring> {
-            call.respond(refactoringController.edit(it.id))
+            val session = call.sessions.get<Session>()
+            call.respond(refactoringController.edit(it.id, session?.id))
         }
     }
 }

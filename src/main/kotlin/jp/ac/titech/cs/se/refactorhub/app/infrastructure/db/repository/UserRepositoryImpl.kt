@@ -10,9 +10,7 @@ class UserRepositoryImpl : UserRepository {
 
     override fun findById(id: Int): User? {
         return transaction {
-            UserDao.findById(id)?.let {
-                User(it.id.value, it.name)
-            }
+            UserDao.findById(id)?.asModel()
         }
     }
 
@@ -20,9 +18,7 @@ class UserRepositoryImpl : UserRepository {
         return transaction {
             UserDao.find {
                 Users.subId eq subId
-            }.singleOrNull()?.let {
-                User(it.id.value, it.name)
-            }
+            }.singleOrNull()?.asModel()
         }
     }
 
@@ -31,9 +27,7 @@ class UserRepositoryImpl : UserRepository {
             UserDao.new {
                 this.subId = subId
                 this.name = name
-            }.let {
-                User(it.id.value, it.name)
-            }
+            }.asModel()
         }
     }
 }

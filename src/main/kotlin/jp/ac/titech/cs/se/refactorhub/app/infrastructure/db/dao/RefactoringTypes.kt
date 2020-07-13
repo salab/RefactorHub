@@ -3,6 +3,7 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.extension.jsonb
+import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringType
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementMetadata
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -17,13 +18,23 @@ object RefactoringTypes : IntIdTable("refactoring_types") {
     val description = text("description")
 }
 
-class RefactoringTypeDao(id: EntityID<Int>) : IntEntity(id) {
+class RefactoringTypeDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<RefactoringType> {
     companion object : IntEntityClass<RefactoringTypeDao>(RefactoringTypes)
 
     var name by RefactoringTypes.name
     var before by RefactoringTypes.before
     var after by RefactoringTypes.after
     var description by RefactoringTypes.description
+
+    override fun asModel(): RefactoringType {
+        return RefactoringType(
+            this.id.value,
+            this.name,
+            this.before,
+            this.after,
+            this.description
+        )
+    }
 }
 
 private fun stringify(data: Map<String, CodeElementMetadata>): String {

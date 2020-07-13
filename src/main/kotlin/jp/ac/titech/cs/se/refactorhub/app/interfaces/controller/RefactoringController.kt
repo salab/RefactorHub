@@ -1,43 +1,47 @@
 package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 
-import jp.ac.titech.cs.se.refactorhub.tool.model.Commit
-import jp.ac.titech.cs.se.refactorhub.tool.model.refactoring.Refactoring
+import jp.ac.titech.cs.se.refactorhub.app.model.Commit
+import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
+import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
+import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringService
 import org.koin.core.KoinComponent
+import org.koin.core.inject
 
 class RefactoringController : KoinComponent {
+    private val refactoringService: RefactoringService by inject()
 
     data class CreateRefactoringBody(
-        val type: String,
-        val description: String,
         val commit: Commit,
-        val data: Refactoring.Data
+        val type: String,
+        val data: Refactoring.Data,
+        val description: String
     )
 
-    fun create(body: CreateRefactoringBody): Refactoring {
-        TODO()
+    fun create(body: CreateRefactoringBody, userId: Int?): Refactoring {
+        return refactoringService.create(body.commit, body.type, body.data, body.description, userId)
     }
 
     fun getAll(): List<Refactoring> {
-        TODO()
+        return refactoringService.getAll()
     }
 
     fun get(id: Int): Refactoring {
-        TODO()
+        return refactoringService.get(id)
     }
 
-    fun getChildren(id: Int): Refactoring {
-        TODO()
+    fun getChildren(id: Int): List<Refactoring> {
+        return refactoringService.getChildren(id)
     }
 
-    fun getDrafts(id: Int): Refactoring {
-        TODO()
+    fun getDrafts(id: Int): List<RefactoringDraft> {
+        return refactoringService.getDrafts(id)
     }
 
-    fun fork(id: Int): Refactoring {
-        TODO()
+    fun fork(id: Int, userId: Int?): RefactoringDraft {
+        return refactoringService.fork(id, userId)
     }
 
-    fun edit(id: Int): Refactoring {
-        TODO()
+    fun edit(id: Int, userId: Int?): RefactoringDraft {
+        return refactoringService.edit(id, userId)
     }
 }
