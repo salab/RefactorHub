@@ -17,11 +17,8 @@ application {
 }
 
 repositories {
+    mavenCentral()
     jcenter()
-    maven {
-        name = "JitPack"
-        url = URI("https://jitpack.io")
-    }
     maven { url = uri("https://kotlin.bintray.com/kotlinx") }
     maven { url = uri("https://kotlin.bintray.com/ktor") }
     maven { url = uri("https://kotlin.bintray.com/exposed") }
@@ -34,6 +31,7 @@ val exposed_version: String by project
 val h2_version: String by project
 val hikaricp_version: String by project
 val postgresql_version: String by project
+val refminer_version: String by project
 
 dependencies {
     // Kotlin
@@ -65,7 +63,7 @@ dependencies {
 
     // Tools
     implementation("org.eclipse.jdt:org.eclipse.jdt.core:3.+")
-    implementation("com.github.tsantalis:RefactoringMiner:ab3ad84") {
+    implementation("com.github.tsantalis:refactoring-miner:$refminer_version") {
         exclude("org.slf4j")
     }
     // implementation("com.github.tsantalis:RefactoringMiner:master-SNAPSHOT")
