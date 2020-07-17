@@ -564,6 +564,37 @@ paths:
       tags:
         - elements
 
+  "/editor/contnet":
+    get:
+      summary: get file content with elements
+      operationId: getFileContent
+      parameters:
+        - in: query
+          name: sha
+          schema:
+            type: string
+        - in: query
+          name: owner
+          schema:
+            type: string
+        - in: query
+          name: repository
+          schema:
+            type: string
+        - in: query
+          name: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileContent"
+      tags:
+        - editor
+
 components:
   securitySchemes:
     cookieAuth:
@@ -738,7 +769,24 @@ components:
         - type
         - data
         - description
-        
+
+    FileContent:
+      type: object
+      properties:
+        value:
+          type: string
+        language:
+          type: string
+        uri:
+          type: string
+        elements:
+          type: array
+          items:
+            $ref: "#/components/schemas/CodeElement"
+      required:
+        - value
+        - uri
+        - elements
 
     CodeElement:
       type: object

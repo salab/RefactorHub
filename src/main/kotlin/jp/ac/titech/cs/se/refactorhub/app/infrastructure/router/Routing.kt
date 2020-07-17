@@ -6,6 +6,7 @@ import io.ktor.routing.route
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.login
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api.commits
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api.drafts
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api.editor
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api.elements
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api.refactoringTypes
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api.refactorings
@@ -21,6 +22,7 @@ fun Routing.root() {
         refactorings()
         refactoringTypes()
         drafts()
+        editor()
         elements()
     }
 }
