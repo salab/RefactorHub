@@ -1,0 +1,864 @@
+openapi: 3.0.0
+info:
+  title: RefactorHub
+  description: RefactorHub API
+  version: 0.0.1-SNAPSHOT
+
+servers:
+  - url: "https://refactorhub.com/api"
+    description: production
+  - url: "http://localhost:8080/api"
+    description: local
+
+tags:
+  - name: users
+    description: User
+  - name: commits
+    description: Commit
+  - name: refactorings
+    description: Refactoring
+  - name: refactoringTypes
+    description: Refactoring Type
+  - name: drafts
+    description: Refactoring Draft
+  - name: editor
+    description: Editor
+  - name: elements
+    description: Element
+
+paths:
+  "/users/{userId}":
+    parameters:
+      - $ref: "#/components/parameters/userIdInPath"
+    get:
+      summary: get user
+      operationId: getUser
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User is not found
+      tags:
+        - users
+  "/users/{userId}/refactorings":
+    parameters:
+      - $ref: "#/components/parameters/userIdInPath"
+    get:
+      summary: get refactorings the user has
+      operationId: getUserRefactorings
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Refactoring"
+        "404":
+          description: User is not found
+      tags:
+        - users
+  "/users/{userId}/drafts":
+    parameters:
+      - $ref: "#/components/parameters/userIdInPath"
+    get:
+      summary: get drafts the user has
+      operationId: getUserDrafts
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RefactoringDraft"
+        "404":
+          description: User is not found
+      tags:
+        - users
+  "/users/me":
+    get:
+      summary: get logged in user
+      operationId: getMe
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: You are not logged in
+      tags:
+        - users
+
+  "/commits/{commitSha}":
+    parameters:
+      - $ref: "#/components/parameters/commitShaInPath"
+    get:
+      summary: get commit
+      operationId: getCommit
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Commit"
+        "404":
+          description: Commit is not found
+      tags:
+        - commits
+  "/commits/{commitSha}/detail":
+    parameters:
+      - $ref: "#/components/parameters/commitShaInPath"
+    get:
+      summary: get commit detail
+      operationId: getCommitDetail
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommitDetail"
+        "400":
+          description: First commit is not supported
+        "404":
+          description: Commit is not found
+      tags:
+        - commits
+
+  "/refactorings":
+    get:
+      summary: get all refactorings
+      operationId: getAllRefactorings
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Refactoring"
+      tags:
+        - refactorings
+    post:
+      summary: create a new refactoring
+      operationId: createRefactoring
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                commit:
+                  $ref: "#/components/schemas/Commit"
+                type:
+                  type: string
+                data:
+                  $ref: "#/components/schemas/RefactoringData"
+                description:
+                  type: string
+              required:
+                - commit
+                - type
+                - data
+                - description
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Refactoring"
+        "401":
+          description: You are not logged in
+      tags:
+        - refactorings
+  "/refactorings/{refactoringId}":
+    parameters:
+      - $ref: "#/components/parameters/refactoringIdInPath"
+    get:
+      summary: get refactoring
+      operationId: getRefactoring
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Refactoring"
+        "404":
+          description: Refactoring is not found
+      tags:
+        - refactorings
+  "/refactorings/{refactoringId}/children":
+    parameters:
+      - $ref: "#/components/parameters/refactoringIdInPath"
+    get:
+      summary: get refactoring children of the refactoring
+      operationId: getRefactoringChildren
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Refactoring"
+        "404":
+          description: Refactoring is not found
+      tags:
+        - refactorings
+  "/refactorings/{refactoringId}/drafts":
+    parameters:
+      - $ref: "#/components/parameters/refactoringIdInPath"
+    get:
+      summary: get editing refactoring drafts of the refactoring
+      operationId: getRefactoringDrafts
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RefactoringDraft"
+        "404":
+          description: Refactoring is not found
+      tags:
+        - refactorings
+  "/refactorings/{refactoringId}/fork":
+    parameters:
+      - $ref: "#/components/parameters/refactoringIdInPath"
+    post:
+      summary: copy & create a new refactoring from the refactoring
+      operationId: forkRefactoring
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefactoringDraft"
+        "401":
+          description: You are not logged in
+        "404":
+          description: Refactoring is not found
+      tags:
+        - refactorings
+  "/refactorings/{refactoringId}/edit":
+    parameters:
+      - $ref: "#/components/parameters/refactoringIdInPath"
+    post:
+      summary: start to edit the refactoring
+      operationId: editRefactoring
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefactoringDraft"
+        "401":
+          description: You are not logged in
+        "403":
+          description: You are not an owner
+        "404":
+          description: Refactoring is not found
+      tags:
+        - refactorings
+
+  "/refactoring_types":
+    get:
+      summary: get all refactoring types
+      operationId: getAllRefactoringTypes
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RefactoringType"
+      tags:
+        - refactoringTypes
+    post:
+      summary: create a new refactoring type
+      operationId: createRefactoringType
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                before:
+                  type: object
+                  additionalProperties:
+                    $ref: "#/components/schemas/CodeElementMetadata"
+                after:
+                  type: object
+                  additionalProperties:
+                    $ref: "#/components/schemas/CodeElementMetadata"
+                description:
+                  type: string
+              required:
+                - name
+                - before
+                - after
+                - description
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefactoringType"
+        "400":
+          description: This name already exists
+      tags:
+        - refactoringTypes
+
+  "/drafts/{draftId}":
+    parameters:
+      - $ref: "#/components/parameters/draftIdInPath"
+    get:
+      summary: get refactoring draft
+      operationId: getRefactoringDraft
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefactoringDraft"
+        "404":
+          description: RefactoringDraft is not found
+      tags:
+        - drafts
+    patch:
+      summary: update description or type of refactoring draft
+      operationId: updateRefactoringDraft
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                type:
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefactoringDraft"
+        "404":
+          description: RefactoringDraft is not found
+      tags:
+        - drafts
+  "/drafts/{draftId}/save":
+    parameters:
+      - $ref: "#/components/parameters/draftIdInPath"
+    post:
+      summary: save refactoring draft as refactoring
+      operationId: saveRefactoringDraft
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Refactoring"
+        "404":
+          description: RefactoringDraft is not found
+      tags:
+        - drafts
+  "/drafts/{draftId}/discard":
+    parameters:
+      - $ref: "#/components/parameters/draftIdInPath"
+    post:
+      summary: discard refactoring draft
+      operationId: discardRefactoringDraft
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: RefactoringDraft is not found
+      tags:
+        - drafts
+  "/drafts/{draftId}/{diffCategory}":
+    parameters:
+      - $ref: "#/components/parameters/draftIdInPath"
+      - $ref: "#/components/parameters/diffCategoryInPath"
+    put:
+      summary: put element key on refactoring draft data[category]
+      operationId: putRefactoringDraftElementKey
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key:
+                  type: string
+                type:
+                  type: string
+              required:
+                - key
+                - type
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefactoringDraft"
+        "400":
+          description: Bad Request
+        "404":
+          description: RefactoringDraft is not found
+      tags:
+        - drafts
+  "/drafts/{draftId}/{diffCategory}/{elementKey}":
+    parameters:
+      - $ref: "#/components/parameters/draftIdInPath"
+      - $ref: "#/components/parameters/diffCategoryInPath"
+      - $ref: "#/components/parameters/elementKeyInPath"
+    delete:
+      summary: remove element key on refactoring draft data[category]
+      operationId: removeRefactoringDraftElementKey
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefactoringDraft"
+        "400":
+          description: Bad Request
+        "404":
+          description: RefactoringDraft is not found
+      tags:
+        - drafts
+    post:
+      summary: append element value on refactoring draft data[category][key].elements
+      operationId: appendRefactoringDraftElementValue
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefactoringDraft"
+        "400":
+          description: Bad Request
+        "404":
+          description: RefactoringDraft is not found
+      tags:
+        - drafts
+  "/drafts/{draftId}/{diffCategory}/{elementKey}/{elementIndex}":
+    parameters:
+      - $ref: "#/components/parameters/draftIdInPath"
+      - $ref: "#/components/parameters/diffCategoryInPath"
+      - $ref: "#/components/parameters/elementKeyInPath"
+      - $ref: "#/components/parameters/elementIndexInPath"
+    patch:
+      summary: update element value of refactoring draft data[category][key].elements[index]
+      operationId: updateRefactoringDraftElementValue
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                element:
+                  $ref: "#/components/schemas/CodeElement"
+              required:
+                - element
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefactoringDraft"
+        "400":
+          description: Bad Request
+        "404":
+          description: RefactoringDraft is not found
+      tags:
+        - drafts
+    delete:
+      summary: delete element value of refactoring draft data[category][key].elements[index]
+      operationId: deleteRefactoringDraftElementValue
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefactoringDraft"
+        "400":
+          description: Bad Request
+        "404":
+          description: RefactoringDraft is not found
+      tags:
+        - drafts
+
+  "/elements/types":
+    get:
+      summary: get all element types
+      operationId: getElementTypes
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      tags:
+        - elements
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: app_session
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+      required:
+        - id
+        - name
+
+    Commit:
+      type: object
+      properties:
+        sha:
+          type: string
+        owner:
+          type: string
+        repository:
+          type: string
+      required:
+        - sha
+        - owner
+        - repository
+    CommitDetail:
+      type: object
+      properties:
+        sha:
+          type: string
+        owner:
+          type: string
+        repository:
+          type: string
+        url:
+          type: string
+        message:
+          type: string
+        author:
+          type: string
+        authorDate:
+          type: string
+          format: date-time
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommitFile"
+        parent:
+          type: string
+      required:
+        - sha
+        - owner
+        - repository
+        - url
+        - message
+        - author
+        - authorDate
+        - files
+        - parent
+    CommitFile:
+      type: object
+      properties:
+        sha:
+          type: string
+        status:
+          type: string
+          enum: [modified, added, removed, renamed]
+        name:
+          type: string
+        previousName:
+          type: string
+      required:
+        - sha
+        - status
+        - name
+        - previousName
+
+    Refactoring:
+      type: object
+      properties:
+        id:
+          type: integer
+        ownerId:
+          type: integer
+        parentId:
+          type: integer
+        commit:
+          $ref: "#/components/schemas/Commit"
+        type:
+          type: string
+        data:
+          $ref: "#/components/schemas/RefactoringData"
+        description:
+          type: string
+      required:
+        - id
+        - ownerId
+        - commit
+        - type
+        - data
+        - description
+    RefactoringData:
+      type: object
+      properties:
+        before:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/CodeElementHolder"
+        after:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/CodeElementHolder"
+      required:
+        - before
+        - after
+    RefactoringType:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        before:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/CodeElementMetadata"
+        after:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/CodeElementMetadata"
+        description:
+          type: string
+      required:
+        - id
+        - name
+        - before
+        - after
+        - description
+
+    RefactoringDraft:
+      type: object
+      properties:
+        id:
+          type: integer
+        ownerId:
+          type: integer
+        originId:
+          type: integer
+        isFork:
+          type: boolean
+        commit:
+          $ref: "#/components/schemas/Commit"
+        type:
+          type: string
+        data:
+          $ref: "#/components/schemas/RefactoringData"
+        description:
+          type: string
+      required:
+        - id
+        - ownerId
+        - originId
+        - isFork
+        - commit
+        - type
+        - data
+        - description
+        
+
+    CodeElement:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/CodeElementType"
+        location:
+          $ref: "#/components/schemas/Location"
+      required:
+        - type
+    CodeElementType:
+      type: string
+      enum:
+        [
+          ClassDeclaration,
+          ConstructorDeclaration,
+          FieldDeclaration,
+          InterfaceDeclaration,
+          MethodDeclaration,
+          MethodInvocation,
+          ParameterDeclaration,
+          VariableDeclaration,
+          CodeFragment,
+        ]
+    CodeElementHolder:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/CodeElementType"
+        multiple:
+          type: boolean
+        elements:
+          type: array
+          items:
+            $ref: "#/components/schemas/CodeElement"
+      required:
+        - type
+        - multiple
+        - elements
+    CodeElementMetadata:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/CodeElementType"
+        multiple:
+          type: boolean
+        required:
+          type: boolean
+      required:
+        - type
+        - multiple
+        - required
+
+    Location:
+      type: object
+      properties:
+        path:
+          type: string
+        range:
+          $ref: "#/components/schemas/Range"
+      required:
+        - path
+    Range:
+      type: object
+      properties:
+        startLine:
+          type: integer
+        startColumn:
+          type: integer
+        endLine:
+          type: integer
+        endColumn:
+          type: integer
+      required:
+        - startLine
+        - startColumn
+        - endLine
+        - endColumn
+
+  parameters:
+    userIdInPath:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: integer
+    commitShaInPath:
+      name: commitSha
+      in: path
+      required: true
+      schema:
+        type: string
+    refactoringIdInPath:
+      name: refactoringId
+      in: path
+      required: true
+      schema:
+        type: integer
+    draftIdInPath:
+      name: draftId
+      in: path
+      required: true
+      schema:
+        type: integer
+    diffCategoryInPath:
+      name: diffCategory
+      in: path
+      required: true
+      schema:
+        type: string
+        enum: [before, after]
+    elementKeyInPath:
+      name: elementKey
+      in: path
+      required: true
+      schema:
+        type: string
+    elementIndexInPath:
+      name: elementIndex
+      in: path
+      required: true
+      schema:
+        type: integer
