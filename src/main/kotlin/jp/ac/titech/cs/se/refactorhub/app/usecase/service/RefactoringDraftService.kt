@@ -34,7 +34,7 @@ class RefactoringDraftService : KoinComponent {
     private fun getByOwner(id: Int, userId: Int?): RefactoringDraft {
         val draft = get(id)
         if (draft.ownerId != userId) {
-            throw ForbiddenException("User(id=${userId}) is not RefactoringDraft(id=$id)'s owner.")
+            throw ForbiddenException("User(id=$userId) is not RefactoringDraft(id=$id)'s owner.")
         }
         return draft
     }

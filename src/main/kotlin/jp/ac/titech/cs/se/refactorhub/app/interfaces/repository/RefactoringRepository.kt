@@ -8,7 +8,12 @@ interface RefactoringRepository {
     fun findByOwnerId(ownerId: Int): List<Refactoring>
     fun findByParentId(id: Int): List<Refactoring>
     fun create(
-        commitSha: String, typeName: String, data: Refactoring.Data, description: String, userId: Int, parentId: Int?
+        commitSha: String,
+        typeName: String,
+        data: Refactoring.Data,
+        description: String,
+        userId: Int,
+        parentId: Int?
     ): Refactoring
 
     fun update(

@@ -15,7 +15,7 @@ class CommitService : KoinComponent {
 
     fun get(sha: String): Commit {
         val commit = commitRepository.findBySha(sha)
-        commit ?: throw NotFoundException("Commit(sha=${sha}) is not found")
+        commit ?: throw NotFoundException("Commit(sha=$sha) is not found")
         return commit
     }
 
