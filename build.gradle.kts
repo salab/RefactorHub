@@ -7,6 +7,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
     id("org.jlleitschuh.gradle.ktlint-idea") version "9.2.1"
     id("com.github.johnrengelman.shadow") version "6.0.0"
+    id("org.flywaydb.flyway") version "6.5.1"
 }
 
 group = "jp.ac.titech.cs.se"
@@ -78,4 +79,11 @@ dependencies {
 ktlint {
     // See https://github.com/pinterest/ktlint/issues/527
     disabledRules.set(setOf("import-ordering"))
+}
+
+flyway {
+    url = System.getenv("DATABASE_URL")
+    user = System.getenv("DATABASE_USER")
+    password = System.getenv("DATABASE_PASSWORD")
+    baselineOnMigrate = true
 }
