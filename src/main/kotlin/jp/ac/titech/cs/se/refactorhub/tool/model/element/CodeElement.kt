@@ -1,8 +1,10 @@
 package jp.ac.titech.cs.se.refactorhub.tool.model.element
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.data.Location
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(using = CodeElementDeserializer::class)
 interface CodeElement {
     val type: CodeElementType
