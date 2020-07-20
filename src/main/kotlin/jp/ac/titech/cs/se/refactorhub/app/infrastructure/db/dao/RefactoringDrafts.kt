@@ -30,7 +30,7 @@ class RefactoringDraftDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Ref
     var commit by CommitDao referencedOn RefactoringDrafts.commit
     var type by RefactoringTypeDao referencedOn RefactoringDrafts.type
     var data by RefactoringDrafts.data
-    var description by Refactorings.description
+    var description by RefactoringDrafts.description
 
     override fun asModel(): RefactoringDraft {
         return RefactoringDraft(

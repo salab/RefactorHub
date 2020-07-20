@@ -69,6 +69,7 @@ class RefactoringDraftRepositoryImpl : RefactoringDraftRepository {
             RefactoringDraftDao.new {
                 this.owner = UserDao.findById(userId)!!
                 this.origin = RefactoringDao.find { Refactorings.id eq originId }.single()
+                this.isFork = isFork
                 this.commit = CommitDao.find { Commits.sha eq commitSha }.single()
                 this.type = RefactoringTypeDao.find { RefactoringTypes.name eq typeName }.single()
                 this.data = data

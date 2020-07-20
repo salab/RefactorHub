@@ -53,14 +53,15 @@ class RefactoringRepositoryImpl : RefactoringRepository {
         parentId: Int?
     ): Refactoring {
         return transaction {
-            RefactoringDao.new {
+            val dao = RefactoringDao.new {
                 this.owner = UserDao.findById(userId)!!
-                this.parents = RefactoringDao.find { Refactorings.id eq parentId }
                 this.commit = CommitDao.find { Commits.sha eq commitSha }.single()
                 this.type = RefactoringTypeDao.find { RefactoringTypes.name eq typeName }.single()
                 this.data = data
                 this.description = description
-            }.asModel()
+            }
+            dao.parents = RefactoringDao.find { Refactorings.id eq parentId }
+            dao.asModel()
         }
     }
 

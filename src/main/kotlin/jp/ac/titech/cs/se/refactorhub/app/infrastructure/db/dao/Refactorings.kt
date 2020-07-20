@@ -19,7 +19,7 @@ object Refactorings : IntIdTable("refactorings") {
     val description = text("description")
 }
 
-object RefactoringToRefactorings : Table() {
+object RefactoringToRefactorings : Table("refactoring_to_refactorings") {
     val parent = reference("parent_refactoring_id", Refactorings)
     val child = reference("child_refactoring_id", Refactorings)
 }
