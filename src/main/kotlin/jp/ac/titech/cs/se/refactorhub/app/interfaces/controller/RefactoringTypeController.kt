@@ -23,4 +23,8 @@ class RefactoringTypeController : KoinComponent {
     fun getAll(): List<RefactoringType> {
         return refactoringTypeService.getAll()
     }
+
+    fun get(name: String): RefactoringType {
+        return refactoringTypeService.getByName(name)
+    }
 }

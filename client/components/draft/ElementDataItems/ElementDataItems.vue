@@ -28,9 +28,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed } from '@vue/composition-api'
+import {
+  defineComponent,
+  PropType,
+  computed,
+  ref,
+  watch,
+} from '@vue/composition-api'
 import { capitalize } from 'lodash-es'
-import { DiffCategory } from 'refactorhub'
+import { DiffCategory, RefactoringType } from 'refactorhub'
 import ElementDataItem from './ElementDataItem.vue'
 import AddElementKeyButton from './AddElementKeyButton.vue'
 
@@ -59,14 +65,23 @@ export default defineComponent({
       return {}
     })
 
-    const type = computed(() => {
+    const type = ref<RefactoringType>()
+    watch(draft, async () => {
       if (draft.value) {
-        return props.category === 'before' ? {} : {} // TODO: temporary fix
+        type.value = await root.$client.getRefactoringType(draft.value.type)
+      }
+    })
+    const elementMap = computed(() => {
+      if (type.value) {
+        return props.category === 'before'
+          ? type.value.before
+          : type.value.after
       }
       return {}
     })
 
-    const isDeletable = (key: string) => !Object.keys(type.value).includes(key)
+    const isDeletable = (key: string) =>
+      !Object.keys(elementMap.value).includes(key)
 
     return {
       title,

@@ -21,6 +21,10 @@ class CreateRefactoringType
 class GetAllRefactoringTypes
 
 @KtorExperimentalLocationsAPI
+@Location("/{name}")
+class GetRefactoringType(val name: String)
+
+@KtorExperimentalLocationsAPI
 fun Route.refactoringTypes() {
     route("/refactoring_types") {
         val refactoringTypeController: RefactoringTypeController by inject()
@@ -30,6 +34,9 @@ fun Route.refactoringTypes() {
         }
         get<GetAllRefactoringTypes> {
             call.respond(refactoringTypeController.getAll())
+        }
+        get<GetRefactoringType> {
+            call.respond(refactoringTypeController.get(it.name))
         }
     }
 }

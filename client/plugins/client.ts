@@ -79,6 +79,12 @@ export class Client {
       .data
   }
 
+  async getRefactoringType(name: string) {
+    return (
+      await this.$axios.get<RefactoringType>(`/api/refactoring_types/${name}`)
+    ).data
+  }
+
   async createRefactoringType(
     name: string,
     before: { [key: string]: CodeElementMetadata },

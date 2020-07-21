@@ -341,6 +341,21 @@ paths:
           description: This name already exists
       tags:
         - refactoringTypes
+  "/refactoring_types/{typeName}":
+    parameters:
+      - $ref: "#/components/parameters/typeNameInPath"
+    get:
+      summary: get refactoring type
+      operationId: getRefactoringType
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefactoringType"
+      tags:
+        - refactoringTypes
 
   "/drafts/{draftId}":
     parameters:
@@ -885,6 +900,12 @@ components:
       required: true
       schema:
         type: integer
+    typeNameInPath:
+      name: typeName
+      in: path
+      required: true
+      schema:
+        type: string
     draftIdInPath:
       name: draftId
       in: path
