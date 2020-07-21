@@ -8,6 +8,7 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.Refactori
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.RefactoringTypeRepositoryImpl
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.UserRepositoryImpl
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.CommitController
+import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.EditorController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ElementController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringDraftController
@@ -19,6 +20,7 @@ import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringRepos
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringTypeRepository
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.UserRepository
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.CommitService
+import jp.ac.titech.cs.se.refactorhub.app.usecase.service.EditorService
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.ElementService
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringDraftService
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringService
@@ -35,12 +37,14 @@ val koinModules = module {
     single { RefactoringTypeController() }
     single { RefactoringDraftController() }
     single { ElementController() }
+    single { EditorController() }
     single { UserService() }
     single { CommitService() }
     single { RefactoringService() }
     single { RefactoringTypeService() }
     single { RefactoringDraftService() }
     single { ElementService() }
+    single { EditorService() }
     single<UserRepository> { UserRepositoryImpl() }
     single<CommitRepository> { CommitRepositoryImpl() }
     single<RefactoringRepository> { RefactoringRepositoryImpl() }
