@@ -1,9 +1,7 @@
 <template>
   <v-card outlined tile class="pa-2">
     <div class="d-flex justify-space-between align-center px-1">
-      <div class="title">
-        {{ refactoring.type.name }} (id={{ refactoring.id }})
-      </div>
+      <div class="title">{{ refactoring.type }} (id={{ refactoring.id }})</div>
       <div class="ml-3">
         <fork-refactoring-button :refactoring="refactoring" />
       </div>

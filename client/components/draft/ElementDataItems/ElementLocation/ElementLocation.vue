@@ -115,7 +115,7 @@ export default defineComponent({
     const deleteLocation = async () => {
       if (!draft.value) return
       await root.$accessor.draft.setDraft(
-        await root.$client.deleteElement(
+        await root.$client.removeElementValue(
           draft.value.id,
           props.category,
           props.elementKey,

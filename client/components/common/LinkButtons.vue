@@ -11,10 +11,7 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
 
-const links = [
-  { name: 'Tutorial', to: '/tutorial' },
-  { name: 'Experiment', to: '/experiment' },
-]
+const links = [{ name: 'All', to: '/all' }]
 
 export default defineComponent({
   name: 'LinkButtons',

@@ -56,7 +56,7 @@ export default defineComponent({
       try {
         const added = await Promise.all(
           refs.map((ref) =>
-            root.$client.addRefactoring(
+            root.$client.createRefactoring(
               ref.type,
               ref.description,
               ref.commit,

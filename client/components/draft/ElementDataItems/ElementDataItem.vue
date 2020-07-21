@@ -51,7 +51,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, computed } from '@vue/composition-api'
-import { ElementData, DiffCategory } from 'refactorhub'
+import { CodeElementHolder, DiffCategory } from 'refactorhub'
 import ElementLocation from './ElementLocation/ElementLocation.vue'
 import AddLocationButton from './AddLocationButton.vue'
 import { deleteElementDecoration } from '@/components/draft/ElementEditor/use/elementDecorations'
@@ -72,7 +72,7 @@ export default defineComponent({
       required: true,
     },
     elementData: {
-      type: Object as PropType<ElementData>,
+      type: Object as PropType<CodeElementHolder>,
       required: true,
     },
     isDeletable: {
@@ -91,7 +91,7 @@ export default defineComponent({
     const deleteElementKey = async () => {
       if (!draft.value) return
       await root.$accessor.draft.setDraft(
-        await root.$client.deleteElementKey(
+        await root.$client.removeElementKey(
           draft.value.id,
           props.category,
           props.elementKey

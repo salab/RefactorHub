@@ -110,7 +110,7 @@ export async function updateEditingCodeFragments(
   nextElement.location.range = asRange(range)
 
   $accessor.draft.setDraft(
-    await $client.updateElement(
+    await $client.updateElementValue(
       draft.id,
       category,
       metadata.key,

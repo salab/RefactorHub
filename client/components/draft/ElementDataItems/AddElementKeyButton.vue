@@ -55,7 +55,7 @@ export default defineComponent({
       if (draft.value && elementKey.value && elementType.value) {
         await root.$accessor.draft.setDraft(
           // TODO: error handling
-          await root.$client.addElementKey(
+          await root.$client.putElementKey(
             draft.value.id,
             props.category,
             elementKey.value,

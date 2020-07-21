@@ -61,9 +61,7 @@ export default defineComponent({
 
     const type = computed(() => {
       if (draft.value) {
-        return props.category === 'before'
-          ? draft.value.type.before
-          : draft.value.type.after
+        return props.category === 'before' ? {} : {} // TODO: temporary fix
       }
       return {}
     })

@@ -117,7 +117,7 @@ export const actions = actionTree(
       await commit('setDraft', draft)
       await commit(
         'setCommitInfo',
-        await this.$client.getCommitInfo(draft.commit.sha)
+        await this.$client.getCommitDetail(draft.commit.sha)
       )
       await commit(
         'setRefactoringTypes',

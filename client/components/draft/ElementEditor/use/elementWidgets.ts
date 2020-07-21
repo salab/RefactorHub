@@ -120,7 +120,7 @@ async function updateEditingElement(
   if (!draft || !metadata) return
 
   $accessor.draft.setDraft(
-    await $client.updateElement(
+    await $client.updateElementValue(
       draft.id,
       category,
       metadata.key,

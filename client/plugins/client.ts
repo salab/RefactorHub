@@ -8,7 +8,7 @@ import {
   RefactoringType,
   FileContent,
   DiffCategory,
-  ElementInfo,
+  CodeElementMetadata,
   Commit,
   RefactoringData,
 } from 'refactorhub'
@@ -20,31 +20,124 @@ export class Client {
     this.$axios = $axios
   }
 
-  async getHello() {
-    return (await this.$axios.get<string>('/api/hello')).data
+  async getUserRefactorings(id: number) {
+    return (
+      await this.$axios.get<Refactoring[]>(`/api/users/${id}/refactorings`)
+    ).data
   }
 
-  async postHello() {
-    return (await this.$axios.post<string>('/api/hello')).data
+  async getUserDrafts(id: number) {
+    return (await this.$axios.get<Draft[]>(`/api/users/${id}/drafts`)).data
+  }
+
+  async getCommitDetail(sha: string) {
+    return (await this.$axios.get<CommitInfo>(`/api/commits/${sha}/detail`))
+      .data
+  }
+
+  async createRefactoring(
+    type: string,
+    description: string,
+    commit: Commit,
+    data: RefactoringData
+  ) {
+    return (
+      await this.$axios.post<Refactoring>('/api/refactorings', {
+        type,
+        description,
+        commit,
+        data,
+      })
+    ).data
+  }
+
+  async getRefactorings() {
+    return (await this.$axios.get<Refactoring[]>('/api/refactorings')).data
+  }
+
+  async getRefactoringChildren(id: number) {
+    return (
+      await this.$axios.get<Refactoring[]>(`/api/refactorings/${id}/children`)
+    ).data
+  }
+
+  async getRefactoringDrafts(id: number) {
+    return (await this.$axios.get<Draft[]>(`/api/refactorings/${id}/drafts`))
+      .data
+  }
+
+  async forkRefactoring(id: number) {
+    return (await this.$axios.post<Draft>(`/api/refactorings/${id}/fork`)).data
+  }
+
+  async editRefactoring(id: number) {
+    return (await this.$axios.post<Draft>(`/api/refactorings/${id}/edit`)).data
+  }
+
+  async getRefactoringTypes() {
+    return (await this.$axios.get<RefactoringType[]>('/api/refactoring_types'))
+      .data
+  }
+
+  async createRefactoringType(
+    name: string,
+    before: { [key: string]: CodeElementMetadata },
+    after: { [key: string]: CodeElementMetadata }
+  ) {
+    return (
+      await this.$axios.post<RefactoringType>('/api/refactoring_types', {
+        name,
+        before,
+        after,
+      })
+    ).data
   }
 
   async getDraft(id: number) {
-    return (await this.$axios.get<Draft>(`/api/draft/${id}`)).data
+    return (await this.$axios.get<Draft>(`/api/drafts/${id}`)).data
   }
 
   async updateDraft(id: number, data: { description?: string; type?: string }) {
-    return (await this.$axios.patch<Draft>(`/api/draft/${id}`, data)).data
+    return (await this.$axios.patch<Draft>(`/api/drafts/${id}`, data)).data
   }
 
   async saveDraft(id: number) {
-    return (await this.$axios.post<Refactoring>(`/api/draft/${id}/save`)).data
+    return (await this.$axios.post<Refactoring>(`/api/drafts/${id}/save`)).data
   }
 
   async discardDraft(id: number) {
-    return (await this.$axios.post<void>(`/api/draft/${id}/discard`)).data
+    return (await this.$axios.post<void>(`/api/drafts/${id}/discard`)).data
   }
 
-  async updateElement(
+  async putElementKey(
+    id: number,
+    category: DiffCategory,
+    key: string,
+    type: string,
+    multiple: boolean
+  ) {
+    return (
+      await this.$axios.put<Draft>(`/api/drafts/${id}/${category}`, {
+        key,
+        type,
+        multiple,
+      })
+    ).data
+  }
+
+  async removeElementKey(id: number, category: DiffCategory, key: string) {
+    return (
+      await this.$axios.delete<Draft>(`/api/drafts/${id}/${category}/${key}`)
+    ).data
+  }
+
+  async appendElementValue(id: number, category: DiffCategory, key: string) {
+    return (
+      await this.$axios.post<Draft>(`/api/drafts/${id}/${category}/${key}`)
+    ).data
+  }
+
+  async updateElementValue(
     id: number,
     category: DiffCategory,
     key: string,
@@ -53,7 +146,7 @@ export class Client {
   ) {
     return (
       await this.$axios.patch<Draft>(
-        `/api/draft/${id}/${category}/${key}/${index}`,
+        `/api/drafts/${id}/${category}/${key}/${index}`,
         {
           element,
         }
@@ -61,12 +154,7 @@ export class Client {
     ).data
   }
 
-  async addElement(id: number, category: DiffCategory, key: string) {
-    return (await this.$axios.put<Draft>(`/api/draft/${id}/${category}/${key}`))
-      .data
-  }
-
-  async deleteElement(
+  async removeElementValue(
     id: number,
     category: DiffCategory,
     key: string,
@@ -74,35 +162,9 @@ export class Client {
   ) {
     return (
       await this.$axios.delete<Draft>(
-        `/api/draft/${id}/${category}/${key}/${index}`
+        `/api/drafts/${id}/${category}/${key}/${index}`
       )
     ).data
-  }
-
-  async addElementKey(
-    id: number,
-    category: DiffCategory,
-    key: string,
-    type: string,
-    multiple: boolean
-  ) {
-    return (
-      await this.$axios.put<Draft>(`/api/draft/${id}/${category}`, {
-        key,
-        type,
-        multiple,
-      })
-    ).data
-  }
-
-  async deleteElementKey(id: number, category: DiffCategory, key: string) {
-    return (
-      await this.$axios.delete<Draft>(`/api/draft/${id}/${category}/${key}`)
-    ).data
-  }
-
-  async getCommitInfo(sha: string) {
-    return (await this.$axios.get<CommitInfo>(`/api/commit/${sha}/info`)).data
   }
 
   async getFileContent(
@@ -118,76 +180,8 @@ export class Client {
     ).data
   }
 
-  async addRefactoring(
-    type: string,
-    description: string,
-    commit: Commit,
-    data: RefactoringData
-  ) {
-    return (
-      await this.$axios.put<Refactoring>('/api/refactoring', {
-        type,
-        description,
-        commit,
-        data,
-      })
-    ).data
-  }
-
-  async getRefactorings() {
-    return (await this.$axios.get<Refactoring[]>('/api/refactoring')).data
-  }
-
-  async getRefactoringChildren(id: number) {
-    return (
-      await this.$axios.get<Refactoring[]>(`/api/refactoring/${id}/children`)
-    ).data
-  }
-
-  async getRefactoringDrafts(id: number) {
-    return (await this.$axios.get<Draft[]>(`/api/refactoring/${id}/drafts`))
-      .data
-  }
-
-  async forkRefactoring(id: number) {
-    return (await this.$axios.post<Draft>(`/api/refactoring/${id}/fork`)).data
-  }
-
-  async editRefactoring(id: number) {
-    return (await this.$axios.post<Draft>(`/api/refactoring/${id}/edit`)).data
-  }
-
-  async getRefactoringTypes() {
-    return (await this.$axios.get<RefactoringType[]>('/api/refactoring/types'))
-      .data
-  }
-
-  async addRefactoringType(
-    name: string,
-    before: { [key: string]: ElementInfo },
-    after: { [key: string]: ElementInfo }
-  ) {
-    return (
-      await this.$axios.put<RefactoringType>('/api/refactoring/types', {
-        name,
-        before,
-        after,
-      })
-    ).data
-  }
-
   async getElementTypes() {
-    return (await this.$axios.get<string[]>('/api/element/types')).data
-  }
-
-  async getUserRefactorings(id: number) {
-    return (
-      await this.$axios.get<Refactoring[]>(`/api/user/${id}/refactorings`)
-    ).data
-  }
-
-  async getUserDrafts(id: number) {
-    return (await this.$axios.get<Draft[]>(`/api/user/${id}/drafts`)).data
+    return (await this.$axios.get<string[]>('/api/elements/types')).data
   }
 }
 

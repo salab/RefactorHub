@@ -49,20 +49,6 @@ export default {
   },
   proxy: {
     '/api': process.env.API_URL || 'http://localhost:8080',
-  },
-  auth: {
-    redirect: {
-      login: '/login',
-      logout: '/',
-      callback: '/callback',
-    },
-    strategies: {
-      github: {
-        client_id: process.env.CLIENT_ID,
-        client_secret: process.env.CLIENT_SECRET,
-        userinfo_endpoint: '/api/user/me',
-        scope: ['read:user'],
-      },
-    },
+    '/login': 'http://localhost:8080',
   },
 } as Configuration

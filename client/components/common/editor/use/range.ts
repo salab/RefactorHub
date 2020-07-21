@@ -1,7 +1,10 @@
 import * as monaco from 'monaco-editor'
 import { Range } from 'refactorhub'
 
-export function asMonacoRange(range: Range): monaco.Range {
+export function asMonacoRange(range?: Range): monaco.Range {
+  if (!range) {
+    return new monaco.Range(0, 0, 0, 0)
+  }
   return new monaco.Range(
     range.startLine,
     range.startColumn,

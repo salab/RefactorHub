@@ -4,39 +4,37 @@ declare module 'refactorhub' {
    */
 
   interface Refactoring {
-    owner: User
+    id: number
+    ownerId: number
+    parentId?: number
     commit: Commit
-    parent: Refactoring | null
-    type: RefactoringType
+    type: string
     data: RefactoringData
     description: string
-    created: string
-    lastModified: string
-    id: number
   }
 
   interface RefactoringData {
-    before: { [key: string]: ElementData }
-    after: { [key: string]: ElementData }
+    before: { [key: string]: CodeElementHolder }
+    after: { [key: string]: CodeElementHolder }
   }
 
   interface RefactoringType {
     name: string
-    before: { [key: string]: ElementInfo }
-    after: { [key: string]: ElementInfo }
+    before: { [key: string]: CodeElementMetadata }
+    after: { [key: string]: CodeElementMetadata }
     description: string
     id: number
   }
 
   interface Draft {
-    owner: User
+    id: number
+    ownerId: number
+    originId: number
+    isFork: boolean
     commit: Commit
-    parent: Refactoring | null
-    origin: Refactoring | null
-    type: RefactoringType
+    type: string
     data: RefactoringData
     description: string
-    id: number
   }
 
   interface Element {
@@ -44,22 +42,21 @@ declare module 'refactorhub' {
     location: Location
   }
 
-  interface ElementInfo {
+  interface CodeElementMetadata {
     type: string
     multiple: boolean
     required: boolean
   }
 
-  interface ElementData {
+  interface CodeElementHolder {
     type: string
     multiple: boolean
-    required: boolean
     elements: Element[]
   }
 
   interface Location {
     path: string
-    range: Range
+    range?: Range
   }
 
   interface Range {

@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from '@vue/composition-api'
-import { ElementInfo } from 'refactorhub'
+import { CodeElementMetadata } from 'refactorhub'
 import { readAsText } from '@/utils/file'
 
 export default defineComponent({
@@ -43,14 +43,18 @@ export default defineComponent({
 
       const types: {
         name: string
-        before: { [key: string]: ElementInfo }
-        after: { [key: string]: ElementInfo }
+        before: { [key: string]: CodeElementMetadata }
+        after: { [key: string]: CodeElementMetadata }
       }[] = JSON.parse(content)
 
       try {
         const added = await Promise.all(
           types.map((type) =>
-            root.$client.addRefactoringType(type.name, type.before, type.after)
+            root.$client.createRefactoringType(
+              type.name,
+              type.before,
+              type.after
+            )
           )
         )
         message.value = `Added types: ${added
