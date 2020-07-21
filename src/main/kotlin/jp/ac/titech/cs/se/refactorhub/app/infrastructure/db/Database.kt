@@ -4,13 +4,7 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.Application
 import io.ktor.util.KtorExperimentalAPI
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Commits
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringDrafts
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringTypes
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Refactorings
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Users
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils.create
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -30,6 +24,5 @@ fun Application.connectDB() {
     )
     transaction {
         addLogger(StdOutSqlLogger)
-        create(Commits, Users, Refactorings, RefactoringTypes, RefactoringDrafts)
     }
 }
