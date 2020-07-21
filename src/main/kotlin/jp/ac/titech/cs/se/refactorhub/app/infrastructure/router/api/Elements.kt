@@ -6,6 +6,7 @@ import io.ktor.locations.Location
 import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Route
+import io.ktor.routing.route
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ElementController
 import org.koin.ktor.ext.inject
 
@@ -15,8 +16,10 @@ class GetElementTypes
 
 @KtorExperimentalLocationsAPI
 fun Route.elements() {
-    val elementController: ElementController by inject()
-    get<GetElementTypes> {
-        call.respond(elementController.getTypes())
+    route("/elements") {
+        val elementController: ElementController by inject()
+        get<GetElementTypes> {
+            call.respond(elementController.getTypes())
+        }
     }
 }
