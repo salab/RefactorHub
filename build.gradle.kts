@@ -59,6 +59,7 @@ dependencies {
 
     // Log
     implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("org.codehaus.janino:janino:3.+")
 
     // Tools
     implementation("org.eclipse.jdt:org.eclipse.jdt.core:3.+")

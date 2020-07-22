@@ -4,9 +4,19 @@
             <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <root level="trace">
-        <appender-ref ref="STDOUT"/>
-    </root>
+    <if condition='property("APP_ENV").contains("dev")'>
+        <then>
+            <root level="trace">
+                <appender-ref ref="STDOUT"/>
+            </root>
+        </then>
+        <else>
+            <root level="error">
+                <appender-ref ref="STDOUT"/>
+            </root>
+        </else>
+    </if>
+    <logger name="com.zaxxer.hikari" level="INFO"/>
     <logger name="org.eclipse.jetty" level="INFO"/>
     <logger name="io.netty" level="INFO"/>
 </configuration>
