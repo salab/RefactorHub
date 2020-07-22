@@ -1,0 +1,6 @@
+{
+  "name": "RefactorHub",
+  "description": "A dataset creation support tool for empirical studies on refactoring activity.",
+  "image": "heroku/java",
+  "addons": ["heroku-postgresql"]
+}
