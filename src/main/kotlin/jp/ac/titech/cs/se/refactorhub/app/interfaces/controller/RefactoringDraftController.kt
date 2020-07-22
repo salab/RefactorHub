@@ -17,7 +17,8 @@ class RefactoringDraftController : KoinComponent {
 
     data class PutDraftElementKeyBody(
         val key: String,
-        val type: String
+        val type: String,
+        val multiple: Boolean
     )
 
     data class UpdateDraftElementValueBody(
@@ -41,7 +42,7 @@ class RefactoringDraftController : KoinComponent {
     }
 
     fun putElementKey(id: Int, category: String, body: PutDraftElementKeyBody, userId: Int?): RefactoringDraft {
-        return refactoringDraftService.putElementKey(id, category, body.key, body.type, userId)
+        return refactoringDraftService.putElementKey(id, category, body.key, body.type, body.multiple, userId)
     }
 
     fun removeElementKey(id: Int, category: String, key: String, userId: Int?): RefactoringDraft {

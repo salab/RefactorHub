@@ -99,11 +99,12 @@ class RefactoringDraftService : KoinComponent {
         category: String,
         key: String,
         typeName: String,
+        multiple: Boolean,
         userId: Int?
     ): RefactoringDraft {
         val draft = getByOwner(id, userId)
         val refactoring = try {
-            putCodeElementKey(category, key, typeName, draft)
+            putCodeElementKey(category, key, typeName, multiple, draft)
         } catch (e: Exception) {
             throw BadRequestException(e.message!!)
         }

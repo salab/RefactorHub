@@ -453,6 +453,8 @@ paths:
                   type: string
                 type:
                   type: string
+                multiple:
+                  type: boolean
               required:
                 - key
                 - type

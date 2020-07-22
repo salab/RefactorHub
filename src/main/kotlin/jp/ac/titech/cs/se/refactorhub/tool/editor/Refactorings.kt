@@ -105,7 +105,13 @@ private fun putDefaultCodeElements(
     return map
 }
 
-fun putCodeElementKey(category: String, key: String, typeName: String, refactoring: Refactoring): Refactoring {
+fun putCodeElementKey(
+    category: String,
+    key: String,
+    typeName: String,
+    multiple: Boolean,
+    refactoring: Refactoring
+): Refactoring {
     val map = getCodeElementMap(refactoring, category).toMutableMap()
     val type = try {
         CodeElementType.valueOf(typeName)
@@ -113,7 +119,7 @@ fun putCodeElementKey(category: String, key: String, typeName: String, refactori
         throw RuntimeException("CodeElementType(type=$typeName) is unsupported")
     }
     if (!map.containsKey(key)) {
-        map[key] = CodeElementHolder(type)
+        map[key] = CodeElementHolder(type, multiple)
     } else {
         throw RuntimeException("already has key=$key")
     }
