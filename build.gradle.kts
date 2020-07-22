@@ -1,5 +1,3 @@
-
-
 plugins {
     application
     kotlin("jvm") version "1.3.70"
@@ -86,4 +84,24 @@ flyway {
     user = System.getenv("DATABASE_USER")
     password = System.getenv("DATABASE_PASSWORD")
     baselineOnMigrate = true
+}
+
+tasks {
+    withType<Jar> {
+        dependsOn("processClient")
+        manifest {
+            attributes(
+                mapOf(
+                    "Main-Class" to application.mainClassName
+                )
+            )
+        }
+    }
+    register<Copy>("processClient") {
+        dependsOn(":client:build")
+        from("client/dist") {
+            include("**/*.*")
+        }
+        into("${project.buildDir}/resources/main/static")
+    }
 }
