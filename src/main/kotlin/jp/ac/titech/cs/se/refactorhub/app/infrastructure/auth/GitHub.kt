@@ -1,5 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth
 
+import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.auth.Authentication
 import io.ktor.auth.OAuthAccessTokenResponse
@@ -12,7 +13,9 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import io.ktor.locations.location
-import io.ktor.locations.url
+import io.ktor.locations.locations
+import io.ktor.request.host
+import io.ktor.request.port
 import io.ktor.response.respondRedirect
 import io.ktor.response.respondText
 import io.ktor.routing.Route
@@ -44,7 +47,19 @@ fun Authentication.Configuration.github() {
                 clientSecret = application.environment.config.property("ktor.oauth.clientSecret").getString()
             )
         }
-        urlProvider = { url(Login()) }
+        urlProvider = {
+            redirectUrl(Login())
+        }
+    }
+}
+
+@KtorExperimentalLocationsAPI
+private fun <T : Any> ApplicationCall.redirectUrl(t: T): String {
+    val host = request.host()
+    val path = application.locations.href(t)
+    return when (host) {
+        "localhost" -> "http://$host${request.port().let { if (it == 80) "" else ":$it" }}$path"
+        else -> "https://$host$path"
     }
 }
 
