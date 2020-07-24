@@ -7,6 +7,7 @@ import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.HttpStatusCodeContent
+import io.ktor.http.content.JarFileContent
 import io.ktor.http.content.defaultResource
 import io.ktor.http.content.resolveResource
 import io.ktor.http.content.resources
@@ -63,13 +64,20 @@ class SinglePageApplication(private val configuration: Configuration) {
                 val isNotFound by lazy {
                     it is HttpStatusCodeContent && it.status == HttpStatusCode.NotFound
                 }
+                val isFolder by lazy {
+                    if (it is JarFileContent) {
+                        println("type: ${it.contentType}")
+                        println("match: ${ContentType.Application.OctetStream.match(it.contentType)}")
+                    }
+                    it is JarFileContent && ContentType.Application.OctetStream.match(it.contentType)
+                }
                 val acceptsHtml by lazy {
                     call.request.acceptItems().any {
                         ContentType.Text.Html.match(it.value)
                     }
                 }
 
-                if (shouldIgnored || !isSpaRoute || !isNotFound || !acceptsHtml) return@intercept
+                if (shouldIgnored || !isSpaRoute || (!isNotFound && !isFolder) || !acceptsHtml) return@intercept
 
                 call.attributes.put(key, feature)
 
