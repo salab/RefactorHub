@@ -1,6 +1,7 @@
 package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 
 import io.ktor.features.NotFoundException
+import jp.ac.titech.cs.se.refactorhub.app.exception.ForbiddenException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
@@ -72,6 +73,7 @@ class RefactoringService : KoinComponent {
     fun edit(id: Int, userId: Int?): RefactoringDraft {
         val user = userService.getMe(userId)
         val refactoring = get(id)
+        if (refactoring.ownerId != user.id) throw ForbiddenException("You are not Refactoring(id=${refactoring.id})'s owner")
         return refactoringDraftService.edit(refactoring, user.id)
     }
 
