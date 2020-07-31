@@ -70,6 +70,7 @@ dependencies {
 
     // Other
     implementation("org.kohsuke:github-api:1.+")
+    implementation("com.fasterxml.jackson.module:jackson-module-jsonSchema:2.+")
 
     // Test
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")

@@ -15,11 +15,18 @@ import org.koin.ktor.ext.inject
 class GetElementTypes
 
 @KtorExperimentalLocationsAPI
+@Location("/schemas")
+class GetElementSchemas
+
+@KtorExperimentalLocationsAPI
 fun Route.elements() {
     route("/elements") {
         val elementController: ElementController by inject()
         get<GetElementTypes> {
             call.respond(elementController.getTypes())
+        }
+        get<GetElementSchemas> {
+            call.respond(elementController.getSchemas())
         }
     }
 }
