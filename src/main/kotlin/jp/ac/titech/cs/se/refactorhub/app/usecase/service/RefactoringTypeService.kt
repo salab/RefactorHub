@@ -1,6 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 
-import io.ktor.features.NotFoundException
+import jp.ac.titech.cs.se.refactorhub.app.exception.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringTypeRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringType
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementMetadata

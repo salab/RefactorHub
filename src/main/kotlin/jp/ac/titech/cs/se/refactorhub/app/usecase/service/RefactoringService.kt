@@ -1,7 +1,7 @@
 package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 
-import io.ktor.features.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.exception.ForbiddenException
+import jp.ac.titech.cs.se.refactorhub.app.exception.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring

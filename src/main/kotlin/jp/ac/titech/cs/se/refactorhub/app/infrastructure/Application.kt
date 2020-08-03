@@ -7,6 +7,7 @@ import io.ktor.auth.Authentication
 import io.ktor.features.AutoHeadResponse
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
+import io.ktor.features.StatusPages
 import io.ktor.jackson.jackson
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
@@ -20,6 +21,7 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.github
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.connectDB
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.feature.SinglePageApplication
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.feature.setExceptions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.module.koinModules
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.root
 import org.koin.ktor.ext.Koin
@@ -47,6 +49,10 @@ fun Application.module() {
     }
 
     install(SinglePageApplication)
+
+    install(StatusPages) {
+        setExceptions()
+    }
 
     install(Koin) {
         modules(koinModules)

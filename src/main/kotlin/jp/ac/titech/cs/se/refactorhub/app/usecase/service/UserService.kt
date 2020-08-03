@@ -1,13 +1,13 @@
 package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 
-import io.ktor.features.NotFoundException
+import jp.ac.titech.cs.se.refactorhub.app.exception.NotFoundException
+import jp.ac.titech.cs.se.refactorhub.app.exception.UnauthorizedException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.UserRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
 import jp.ac.titech.cs.se.refactorhub.app.model.User
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import javax.naming.AuthenticationException
 
 class UserService : KoinComponent {
     private val userRepository: UserRepository by inject()
@@ -29,7 +29,7 @@ class UserService : KoinComponent {
     }
 
     fun getMe(id: Int?): User {
-        id ?: throw AuthenticationException("You are not logged in")
+        id ?: throw UnauthorizedException("You are not logged in")
         return get(id)
     }
 

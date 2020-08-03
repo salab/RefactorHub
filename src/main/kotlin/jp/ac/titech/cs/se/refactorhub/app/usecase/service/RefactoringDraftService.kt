@@ -1,8 +1,8 @@
 package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 
-import io.ktor.features.BadRequestException
-import io.ktor.features.NotFoundException
+import jp.ac.titech.cs.se.refactorhub.app.exception.BadRequestException
 import jp.ac.titech.cs.se.refactorhub.app.exception.ForbiddenException
+import jp.ac.titech.cs.se.refactorhub.app.exception.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringDraftRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
@@ -106,7 +106,7 @@ class RefactoringDraftService : KoinComponent {
         val refactoring = try {
             putCodeElementKey(category, key, typeName, multiple, draft)
         } catch (e: Exception) {
-            throw BadRequestException(e.message!!)
+            throw BadRequestException(e.message)
         }
         return refactoringDraftRepository.update(
             id,
@@ -128,7 +128,7 @@ class RefactoringDraftService : KoinComponent {
         val refactoring = try {
             removeCodeElementKey(category, key, draft, type)
         } catch (e: Exception) {
-            throw BadRequestException(e.message!!)
+            throw BadRequestException(e.message)
         }
         return refactoringDraftRepository.update(
             id,
@@ -149,7 +149,7 @@ class RefactoringDraftService : KoinComponent {
         val refactoring = try {
             appendCodeElementValue(category, key, draft)
         } catch (e: Exception) {
-            throw BadRequestException(e.message!!)
+            throw BadRequestException(e.message)
         }
         return refactoringDraftRepository.update(
             id,
@@ -172,7 +172,7 @@ class RefactoringDraftService : KoinComponent {
         val refactoring = try {
             updateCodeElementValue(category, key, index, element, draft)
         } catch (e: Exception) {
-            throw BadRequestException(e.message!!)
+            throw BadRequestException(e.message)
         }
         return refactoringDraftRepository.update(
             id,
@@ -194,7 +194,7 @@ class RefactoringDraftService : KoinComponent {
         val refactoring = try {
             removeCodeElementValue(category, key, index, draft)
         } catch (e: Exception) {
-            throw BadRequestException(e.message!!)
+            throw BadRequestException(e.message)
         }
         return refactoringDraftRepository.update(
             id,
