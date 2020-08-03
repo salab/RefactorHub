@@ -1,5 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 
+import jp.ac.titech.cs.se.refactorhub.app.exception.BadRequestException
 import jp.ac.titech.cs.se.refactorhub.app.exception.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringTypeRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringType
@@ -16,6 +17,8 @@ class RefactoringTypeService : KoinComponent {
         after: Map<String, CodeElementMetadata>,
         description: String
     ): RefactoringType {
+        val type = refactoringTypeRepository.findByName(name)
+        if (type != null) throw BadRequestException("RefactoringType(name=$name) already exists")
         return refactoringTypeRepository.create(name, before, after, description)
     }
 
