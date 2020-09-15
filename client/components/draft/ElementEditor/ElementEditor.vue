@@ -16,15 +16,15 @@ import {
   watch,
   computed,
   onMounted,
-} from '@vue/composition-api'
+} from '@nuxtjs/composition-api'
 import consola from 'consola'
 import { DiffCategory, FileMetadata } from 'refactorhub'
-import { setupDisplayedFileOnDiffEditor } from './use/displayedFile'
-import { setupEditingElement } from './use/editingElement'
 import MonacoEditor from '@/components/common/editor/MonacoEditor.vue'
 import CodeFragmentDiff, {
   useCodeFragmentDiff,
 } from '@/components/draft/CodeFragmentDiff/CodeFragmentDiff.vue'
+import { setupDisplayedFileOnDiffEditor } from './use/displayedFile'
+import { setupEditingElement } from './use/editingElement'
 
 export default defineComponent({
   name: 'ElementEditor',

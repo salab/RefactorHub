@@ -1,9 +1,7 @@
-import { Plugin } from '@nuxt/types'
+import { defineNuxtPlugin } from '@nuxtjs/composition-api'
 
-const axios: Plugin = ({ $axios }) => {
+export default defineNuxtPlugin(({ $axios }) => {
   $axios.defaults.withCredentials = true
   $axios.defaults.xsrfCookieName = 'XSRF-TOKEN'
   $axios.defaults.xsrfHeaderName = 'X-XSRF-TOKEN'
-}
-
-export default axios
+})

@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed } from '@nuxtjs/composition-api'
 import { debounce } from 'lodash-es'
 
 export default defineComponent({

@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from '@vue/composition-api'
+import { defineComponent, ref } from '@nuxtjs/composition-api'
 import { Commit, RefactoringData } from 'refactorhub'
 import { readAsText } from '@/utils/file'
 

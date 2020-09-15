@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from '@vue/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
 import { Refactoring } from 'refactorhub'
 import RefactoringItem from './RefactoringItem.vue'
 
@@ -21,7 +21,7 @@ export default defineComponent({
   },
   props: {
     refactorings: {
-      type: Array as PropType<Refactoring[]>,
+      type: Array as () => Refactoring[],
       required: true,
     },
   },

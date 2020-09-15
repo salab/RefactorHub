@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from '@vue/composition-api'
+import { defineComponent, ref, onMounted } from '@nuxtjs/composition-api'
 import { Refactoring } from 'refactorhub'
 import RefactoringItems from '@/components/refactoring/RefactoringItems/RefactoringItems.vue'
 

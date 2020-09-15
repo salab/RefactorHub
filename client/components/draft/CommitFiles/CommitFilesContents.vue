@@ -22,13 +22,7 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  computed,
-  ref,
-  watch,
-  PropType,
-} from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@nuxtjs/composition-api'
 import { DiffCategory, CommitFile } from 'refactorhub'
 import { trimFileName } from '@/components/common/editor/use/trim'
 
@@ -36,7 +30,7 @@ export default defineComponent({
   name: 'CommitFilesContents',
   props: {
     category: {
-      type: String as PropType<DiffCategory>,
+      type: String as () => DiffCategory,
       required: true,
     },
   },

@@ -1,6 +1,8 @@
 import * as monaco from 'monaco-editor'
 import consola from 'consola'
 import { DiffCategory, FileMetadata, CommitInfo } from 'refactorhub'
+import { accessorType } from '@/store'
+import { Client } from '@/plugins/client'
 import {
   setElementDecorationOnEditor,
   clearElementDecorations,
@@ -14,8 +16,6 @@ import {
   clearCodeFragmentsCursors,
 } from './codeFragments'
 import { setupEditingElement } from './editingElement'
-import { accessorType } from '@/store'
-import { Client } from '@/plugins/client'
 
 export async function setupDisplayedFileOnDiffEditor(
   category: DiffCategory,

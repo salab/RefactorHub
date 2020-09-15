@@ -28,13 +28,7 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  PropType,
-  computed,
-  ref,
-  watch,
-} from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@nuxtjs/composition-api'
 import { capitalize } from 'lodash-es'
 import { DiffCategory, RefactoringType } from 'refactorhub'
 import ElementDataItem from './ElementDataItem.vue'
@@ -48,7 +42,7 @@ export default defineComponent({
   },
   props: {
     category: {
-      type: String as PropType<DiffCategory>,
+      type: String as () => DiffCategory,
       required: true,
     },
   },

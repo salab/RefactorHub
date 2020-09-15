@@ -1,13 +1,13 @@
 import * as monaco from 'monaco-editor'
 import { cloneDeep, debounce } from 'lodash-es'
 import { DiffCategory, Element } from 'refactorhub'
+import { asRange, asMonacoRange } from '@/components/common/editor/use/range'
+import { Client } from '@/plugins/client'
+import { accessorType } from '@/store'
 import {
   deleteElementDecoration,
   setElementDecorationOnEditor,
 } from './elementDecorations'
-import { asRange, asMonacoRange } from '@/components/common/editor/use/range'
-import { Client } from '@/plugins/client'
-import { accessorType } from '@/store'
 
 interface CodeFragmentsCursor {
   setup(): void

@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from '@vue/composition-api'
+import { defineComponent, ref, onMounted } from '@nuxtjs/composition-api'
 import * as monaco from 'monaco-editor'
 import cryptoRandomString from 'crypto-random-string'
 import Loading from '@/components/common/editor/Loading.vue'

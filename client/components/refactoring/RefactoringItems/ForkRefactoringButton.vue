@@ -6,14 +6,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from '@vue/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
 import { Refactoring } from 'refactorhub'
 
 export default defineComponent({
   name: 'ForkRefactoringButton',
   props: {
     refactoring: {
-      type: Object as PropType<Refactoring>,
+      type: Object as () => Refactoring,
       required: true,
     },
   },

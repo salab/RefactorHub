@@ -50,11 +50,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed } from '@vue/composition-api'
+import { defineComponent, computed } from '@nuxtjs/composition-api'
 import { CodeElementHolder, DiffCategory } from 'refactorhub'
+import { deleteElementDecoration } from '@/components/draft/ElementEditor/use/elementDecorations'
 import ElementLocation from './ElementLocation/ElementLocation.vue'
 import AddLocationButton from './AddLocationButton.vue'
-import { deleteElementDecoration } from '@/components/draft/ElementEditor/use/elementDecorations'
 
 export default defineComponent({
   name: 'ElementDataItem',
@@ -64,7 +64,7 @@ export default defineComponent({
   },
   props: {
     category: {
-      type: String as PropType<DiffCategory>,
+      type: String as () => DiffCategory,
       required: true,
     },
     elementKey: {
@@ -72,7 +72,7 @@ export default defineComponent({
       required: true,
     },
     elementData: {
-      type: Object as PropType<CodeElementHolder>,
+      type: Object as () => CodeElementHolder,
       required: true,
     },
     isDeletable: {

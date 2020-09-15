@@ -52,11 +52,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, PropType } from '@vue/composition-api'
+import { defineComponent, computed } from '@nuxtjs/composition-api'
 import { Element, DiffCategory } from 'refactorhub'
-import NumberColumn from './NumberColumn.vue'
 import { trimFileName } from '@/components/common/editor/use/trim'
 import { deleteElementDecoration } from '@/components/draft/ElementEditor/use/elementDecorations'
+import NumberColumn from './NumberColumn.vue'
 
 export default defineComponent({
   name: 'ElementLocation',
@@ -65,7 +65,7 @@ export default defineComponent({
   },
   props: {
     category: {
-      type: String as PropType<DiffCategory>,
+      type: String as () => DiffCategory,
       required: true,
     },
     elementKey: {
@@ -77,7 +77,7 @@ export default defineComponent({
       required: true,
     },
     element: {
-      type: Object as PropType<Element>,
+      type: Object as () => Element,
       required: true,
     },
     multiple: {

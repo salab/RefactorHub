@@ -7,14 +7,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from '@vue/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
 import { Draft } from 'refactorhub'
 
 export default defineComponent({
   name: 'OpenDraftButton',
   props: {
     draft: {
-      type: Object as PropType<Draft>,
+      type: Object as () => Draft,
       required: true,
     },
   },

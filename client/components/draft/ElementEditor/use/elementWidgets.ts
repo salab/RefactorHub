@@ -2,16 +2,16 @@ import * as monaco from 'monaco-editor'
 import cryptoRandomString from 'crypto-random-string'
 import { DiffCategory, Element } from 'refactorhub'
 import {
-  setElementDecorationOnEditor,
-  deleteElementDecoration,
-} from './elementDecorations'
-import {
   asMonacoRange,
   getRangeWidthOnEditor,
   getRangeHeightOnEditor,
 } from '@/components/common/editor/use/range'
 import { Client } from '@/plugins/client'
 import { accessorType } from '@/store'
+import {
+  setElementDecorationOnEditor,
+  deleteElementDecoration,
+} from './elementDecorations'
 
 interface ElementWidget extends monaco.editor.IContentWidget {
   type: string

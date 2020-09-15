@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="dialog" width="80%">
-    <div style="height: 400px;">
+    <div :class="$style.container">
       <monaco-editor ref="editorRef" />
     </div>
   </v-dialog>
@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import * as monaco from 'monaco-editor'
-import { defineComponent, ref, watch } from '@vue/composition-api'
+import { defineComponent, ref, watch } from '@nuxtjs/composition-api'
 import consola from 'consola'
 import { DiffCategory } from 'refactorhub'
 import MonacoEditor from '@/components/common/editor/MonacoEditor.vue'
@@ -59,3 +59,9 @@ export default defineComponent({
   },
 })
 </script>
+
+<style lang="scss" module>
+.container {
+  height: 400px;
+}
+</style>

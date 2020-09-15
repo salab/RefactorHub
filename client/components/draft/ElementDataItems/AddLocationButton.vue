@@ -5,14 +5,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed } from '@vue/composition-api'
+import { defineComponent, computed } from '@nuxtjs/composition-api'
 import { DiffCategory } from 'refactorhub'
 
 export default defineComponent({
   name: 'AddLocationButton',
   props: {
     category: {
-      type: String as PropType<DiffCategory>,
+      type: String as () => DiffCategory,
       required: true,
     },
     elementKey: {

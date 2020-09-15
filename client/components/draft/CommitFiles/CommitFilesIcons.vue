@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@nuxtjs/composition-api'
 
 export default defineComponent({
   name: 'CommitFilesIcons',

@@ -18,14 +18,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from '@vue/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
 import { NuxtError } from '@nuxt/types'
 
 export default defineComponent({
   name: 'error',
   props: {
     error: {
-      type: Object as PropType<NuxtError>,
+      type: Object as () => NuxtError,
       required: true,
     },
   },

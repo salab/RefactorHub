@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
 import CommitFilesHeader from './CommitFilesHeader.vue'
 import CommitFilesContents from './CommitFilesContents.vue'
 import CommitFilesIcons from './CommitFilesIcons.vue'

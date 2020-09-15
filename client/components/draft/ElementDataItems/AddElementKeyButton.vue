@@ -32,14 +32,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@nuxtjs/composition-api'
 import { DiffCategory } from 'refactorhub'
 
 export default defineComponent({
   name: 'AddElementKeyButton',
   props: {
     category: {
-      type: String as PropType<DiffCategory>,
+      type: String as () => DiffCategory,
       required: true,
     },
   },

@@ -1,5 +1,5 @@
-import { Plugin } from '@nuxt/types'
 import { NuxtAxiosInstance } from '@nuxtjs/axios'
+import { defineNuxtPlugin } from '@nuxtjs/composition-api'
 import {
   Element,
   Draft,
@@ -191,8 +191,6 @@ export class Client {
   }
 }
 
-const client: Plugin = ({ $axios }, inject) => {
+export default defineNuxtPlugin(({ $axios }, inject) => {
   inject('client', new Client($axios))
-}
-
-export default client
+})

@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, onMounted } from '@vue/composition-api'
+import { defineComponent, ref, onMounted } from '@nuxtjs/composition-api'
 import { Refactoring, Draft } from 'refactorhub'
 import EditRefactoringButton from './EditRefactoringButton.vue'
 import ForkRefactoringButton from './ForkRefactoringButton.vue'
@@ -44,7 +44,7 @@ export default defineComponent({
   },
   props: {
     refactoring: {
-      type: Object as PropType<Refactoring>,
+      type: Object as () => Refactoring,
       required: true,
     },
     fetchChildren: {
