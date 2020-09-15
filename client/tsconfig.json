@@ -11,7 +11,6 @@
       "scripthost"
     ],
     "esModuleInterop": true,
-    "importHelpers": true,
     "sourceMap": true,
     "strict": true,
     "noEmit": true,
@@ -24,8 +23,12 @@
       "@types/node",
       "@nuxt/types",
       "@nuxtjs/axios",
-      "@nuxtjs/vuetify",
-      "@types/nuxtjs__auth"
+      "@nuxtjs/vuetify"
     ]
-  }
+  },
+  "exclude": [
+    "node_modules",
+    ".nuxt",
+    "dist"
+  ]
 }

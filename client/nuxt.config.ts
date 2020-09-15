@@ -1,8 +1,9 @@
-import { Configuration } from '@nuxt/types'
+import { NuxtConfig } from '@nuxt/types'
 import MonacoEditorWebpackPlugin from 'monaco-editor-webpack-plugin'
 
 export default {
-  mode: 'spa',
+  ssr: false,
+  target: 'static',
   head: {
     title: 'RefactorHub',
     meta: [
@@ -16,27 +17,22 @@ export default {
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
-  loading: {},
-  typescript: { typeCheck: { eslint: true } },
-  plugins: [
-    '@/plugins/composition-api',
-    '@/plugins/axios',
-    '@/plugins/client',
-    '@/plugins/consola',
-  ],
+  plugins: ['@/plugins/axios', '@/plugins/client', '@/plugins/consola'],
+  components: true,
   build: {
-    transpile: [/typed-vuex/],
     extend(config) {
       if (config.plugins) config.plugins.push(new MonacoEditorWebpackPlugin())
     },
   },
   buildModules: [
     '@nuxt/typescript-build',
+    '@nuxtjs/composition-api',
     '@nuxtjs/eslint-module',
+    '@nuxtjs/stylelint-module',
     '@nuxtjs/vuetify',
     'nuxt-typed-vuex',
   ],
-  modules: ['@nuxtjs/axios', '@nuxtjs/auth', '@nuxtjs/proxy'],
+  modules: ['@nuxtjs/axios', '@nuxtjs/proxy'],
   vuetify: {
     customVariables: ['@/assets/styles/variables.scss'],
     defaultAssets: {
@@ -51,4 +47,4 @@ export default {
     '/api': process.env.API_URL || 'http://localhost:8080',
     '/login': 'http://localhost:8080',
   },
-} as Configuration
+} as NuxtConfig
