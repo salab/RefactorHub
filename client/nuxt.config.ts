@@ -2,6 +2,7 @@ import { NuxtConfig } from '@nuxt/types'
 import MonacoEditorWebpackPlugin from 'monaco-editor-webpack-plugin'
 
 export default {
+  srcDir: 'src',
   ssr: false,
   target: 'static',
   head: {
