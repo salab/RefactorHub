@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from '@nuxtjs/composition-api'
+import { defineComponent, ref, useAsync } from '@nuxtjs/composition-api'
 import { Refactoring } from 'refactorhub'
 import RefactoringItems from '@/components/refactoring/RefactoringItems/RefactoringItems.vue'
 
@@ -23,7 +23,7 @@ export default defineComponent({
   setup(_, { root }) {
     const refactorings = ref<Refactoring[]>([])
 
-    onMounted(async () => {
+    useAsync(async () => {
       refactorings.value = await root.$client.getRefactorings()
     })
 

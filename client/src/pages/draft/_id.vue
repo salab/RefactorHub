@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount } from '@nuxtjs/composition-api'
+import { defineComponent, useAsync } from '@nuxtjs/composition-api'
 import DraftActionBar from '@/components/draft/DraftActionBar.vue'
 import DraftInfo from '@/components/draft/DraftInfo.vue'
 import CommitFiles from '@/components/draft/CommitFiles/CommitFiles.vue'
@@ -43,7 +43,7 @@ export default defineComponent({
     ElementTypeColors,
   },
   setup(_, { root }) {
-    onBeforeMount(async () => {
+    useAsync(async () => {
       initElementDecorations()
       initElementWidgets()
       await root.$accessor.draft.initDraftStates(
