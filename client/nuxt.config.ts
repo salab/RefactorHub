@@ -18,7 +18,7 @@ export default {
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
-  plugins: ['@/plugins/axios', '@/plugins/client', '@/plugins/consola'],
+  plugins: ['@/plugins/consola'],
   components: true,
   build: {
     extend(config) {
