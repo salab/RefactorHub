@@ -159,21 +159,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                commit:
-                  $ref: "#/components/schemas/Commit"
-                type:
-                  type: string
-                data:
-                  $ref: "#/components/schemas/RefactoringData"
-                description:
-                  type: string
-              required:
-                - commit
-                - type
-                - data
-                - description
+              $ref: '#/components/schemas/CreateRefactoringRequest'
       responses:
         "200":
           description: OK
@@ -311,25 +297,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                before:
-                  type: object
-                  additionalProperties:
-                    $ref: "#/components/schemas/CodeElementMetadata"
-                after:
-                  type: object
-                  additionalProperties:
-                    $ref: "#/components/schemas/CodeElementMetadata"
-                description:
-                  type: string
-              required:
-                - name
-                - before
-                - after
-                - description
+              $ref: '#/components/schemas/CreateRefactoringTypeRequest'
       responses:
         "200":
           description: OK
@@ -383,12 +351,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                description:
-                  type: string
-                type:
-                  type: string
+              $ref: '#/components/schemas/UpdateRefactoringDraftRequest'
       responses:
         "200":
           description: OK
@@ -447,17 +410,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                key:
-                  type: string
-                type:
-                  type: string
-                multiple:
-                  type: boolean
-              required:
-                - key
-                - type
+              $ref: '#/components/schemas/PutRefactoringDraftElementKeyRequest'
       responses:
         "200":
           description: OK
@@ -527,12 +480,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                element:
-                  $ref: "#/components/schemas/CodeElement"
-              required:
-                - element
+              $ref: '#/components/schemas/UpdateRefactoringDraftElementValueRequest'
       responses:
         "200":
           description: OK
@@ -882,6 +830,69 @@ components:
         - startColumn
         - endLine
         - endColumn
+        
+    CreateRefactoringRequest:
+      type: object
+      properties:
+        commit:
+          $ref: "#/components/schemas/Commit"
+        type:
+          type: string
+        data:
+          $ref: "#/components/schemas/RefactoringData"
+        description:
+          type: string
+      required:
+        - commit
+        - type
+        - data
+        - description
+    CreateRefactoringTypeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        before:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/CodeElementMetadata"
+        after:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/CodeElementMetadata"
+        description:
+          type: string
+      required:
+        - name
+        - before
+        - after
+        - description
+    UpdateRefactoringDraftRequest:
+      type: object
+      properties:
+        description:
+          type: string
+        type:
+          type: string
+    PutRefactoringDraftElementKeyRequest:
+      type: object
+      properties:
+        key:
+          type: string
+        type:
+          type: string
+        multiple:
+          type: boolean
+      required:
+        - key
+        - type
+    UpdateRefactoringDraftElementValueRequest:
+      type: object
+      properties:
+        element:
+          $ref: "#/components/schemas/CodeElement"
+      required:
+        - element
 
   parameters:
     userIdInPath:
