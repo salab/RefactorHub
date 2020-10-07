@@ -1,5 +1,5 @@
+import axios from 'axios'
 import {
-  Configuration,
   UsersApi,
   CommitsApi,
   RefactoringsApi,
@@ -9,20 +9,22 @@ import {
   ElementsApi,
 } from '@/apis/generated'
 
-const config = new Configuration({
-  basePath: '/api',
-  credentials: 'same-origin',
+const basePath = '/api'
+const instance = axios.create({
+  withCredentials: true,
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
 })
 
 const apis = {
-  users: new UsersApi(config),
-  commits: new CommitsApi(config),
-  refactorings: new RefactoringsApi(config),
-  refactoringTypes: new RefactoringTypesApi(config),
-  drafts: new DraftsApi(config),
-  editor: new EditorApi(config),
-  elements: new ElementsApi(config),
+  users: new UsersApi({}, basePath, instance),
+  commits: new CommitsApi({}, basePath, instance),
+  refactorings: new RefactoringsApi({}, basePath, instance),
+  refactoringTypes: new RefactoringTypesApi({}, basePath, instance),
+  drafts: new DraftsApi({}, basePath, instance),
+  editor: new EditorApi({}, basePath, instance),
+  elements: new ElementsApi({}, basePath, instance),
 }
 
 export default apis
-export * from '@/apis/generated/models'
+export * from '@/apis/generated'
