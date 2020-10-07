@@ -9,9 +9,9 @@
 <script lang="ts">
 import * as monaco from 'monaco-editor'
 import { defineComponent, ref, watch } from '@nuxtjs/composition-api'
-import consola from 'consola'
 import { DiffCategory } from 'refactorhub'
 import MonacoEditor from '@/components/common/editor/MonacoEditor.vue'
+import { logger } from '@/utils/logger'
 
 const dialog = ref(false)
 const contents = ref<{ [category in DiffCategory]: string }>({
@@ -40,7 +40,7 @@ export default defineComponent({
     watch(contents, () => {
       const diffEditor = editorRef.value?.diffEditor
       if (!diffEditor) {
-        consola.log('diffEditor is not loaded')
+        logger.log('diffEditor is not loaded')
         return
       }
       diffEditor.setModel({

@@ -17,12 +17,12 @@ import {
   computed,
   onMounted,
 } from '@nuxtjs/composition-api'
-import consola from 'consola'
 import { DiffCategory, FileMetadata } from 'refactorhub'
 import MonacoEditor from '@/components/common/editor/MonacoEditor.vue'
 import CodeFragmentDiff, {
   useCodeFragmentDiff,
 } from '@/components/draft/CodeFragmentDiff/CodeFragmentDiff.vue'
+import { logger } from '@/utils/logger'
 import { setupDisplayedFileOnDiffEditor } from './use/displayedFile'
 import { setupEditingElement } from './use/editingElement'
 
@@ -44,7 +44,7 @@ export default defineComponent({
       if (!metadata) return
       const diffEditor = editorRef.value?.diffEditor
       if (!diffEditor) {
-        consola.log('diffEditor is not loaded')
+        logger.log('diffEditor is not loaded')
         return
       }
 
@@ -81,7 +81,7 @@ export default defineComponent({
       const { open, setContents } = useCodeFragmentDiff()
       const diffEditor = editorRef.value?.diffEditor
       if (!diffEditor) {
-        consola.log('diffEditor is not loaded')
+        logger.log('diffEditor is not loaded')
         return
       }
       const getContent = (category: DiffCategory) => {
