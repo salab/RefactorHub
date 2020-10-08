@@ -13,7 +13,9 @@
             <v-progress-linear indeterminate />
           </template>
           <template v-else>
-            {{ message }}
+            <div v-for="message in messages" :key="message">
+              {{ message }}
+            </div>
           </template>
         </v-row>
       </v-col>
@@ -23,20 +25,20 @@
 
 <script lang="ts">
 import { defineComponent, ref } from '@nuxtjs/composition-api'
-import { CodeElementMetadata } from 'refactorhub'
+import apis, { CodeElementMetadata } from '@/apis'
 import { readAsText } from '@/utils/file'
 
 export default defineComponent({
   name: 'add-type',
-  setup(_, { root }) {
-    const message = ref('')
+  setup() {
+    const messages = ref<string[]>([])
     const loading = ref(false)
 
     async function onInputFile(file: File) {
       loading.value = true
       const content = await readAsText(file)
       if (!content) {
-        message.value = 'Failed to load JSON file.'
+        messages.value = ['Failed to load JSON file.']
         loading.value = false
         return
       }
@@ -48,25 +50,30 @@ export default defineComponent({
       }[] = JSON.parse(content)
 
       try {
-        const added = await Promise.all(
-          types.map((type) =>
-            root.$client.createRefactoringType(
-              type.name,
-              type.before,
-              type.after
-            )
+        const addedTypes = await Promise.all(
+          types.map(
+            async (type) =>
+              (
+                await apis.refactoringTypes.createRefactoringType({
+                  name: type.name,
+                  before: type.before,
+                  after: type.after,
+                  description: '',
+                })
+              ).data
           )
         )
-        message.value = `Added types: ${added
-          .map((type) => type.name)
-          .join(', ')}`
+        messages.value = [
+          'Added RefactoringTypes:',
+          ...addedTypes.map((type) => type.name),
+        ]
       } finally {
         loading.value = false
       }
     }
 
     return {
-      message,
+      messages,
       loading,
       onInputFile,
     }

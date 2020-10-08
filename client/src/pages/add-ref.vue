@@ -25,7 +25,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from '@nuxtjs/composition-api'
-import { Commit, RefactoringData } from 'refactorhub'
+import apis, { Commit, RefactoringData } from '@/apis'
 import { readAsText } from '@/utils/file'
 
 export default defineComponent({
@@ -54,17 +54,23 @@ export default defineComponent({
         .map((it) => JSON.parse(it))
 
       try {
-        const added = await Promise.all(
-          refs.map((ref) =>
-            root.$client.createRefactoring(
-              ref.type,
-              ref.description,
-              ref.commit,
-              ref.data
-            )
+        const addedRefs = await Promise.all(
+          refs.map(
+            async (ref) =>
+              (
+                await apis.refactorings.createRefactoring({
+                  type: ref.type,
+                  description: ref.description,
+                  commit: ref.commit,
+                  data: ref.data,
+                })
+              ).data
           )
         )
-        messages.value = ['Added refs:', ...added.map((ref) => ref.description)]
+        messages.value = [
+          'Added Refactorings:',
+          ...addedRefs.map((ref) => ref.description),
+        ]
       } finally {
         loading.value = false
       }
