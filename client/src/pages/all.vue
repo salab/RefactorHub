@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, useAsync } from '@nuxtjs/composition-api'
-import { Refactoring } from 'refactorhub'
+import apis, { Refactoring } from '@/apis'
 import RefactoringItems from '@/components/refactoring/RefactoringItems/RefactoringItems.vue'
 
 export default defineComponent({
@@ -20,11 +20,11 @@ export default defineComponent({
   components: {
     RefactoringItems,
   },
-  setup(_, { root }) {
+  setup() {
     const refactorings = ref<Refactoring[]>([])
 
     useAsync(async () => {
-      refactorings.value = await root.$client.getRefactorings()
+      refactorings.value = (await apis.refactorings.getAllRefactorings()).data
     })
 
     return { refactorings }
