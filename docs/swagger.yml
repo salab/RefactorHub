@@ -159,16 +159,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateRefactoringRequest'
+              $ref: "#/components/schemas/CreateRefactoringRequest"
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Refactoring"
+                $ref: "#/components/schemas/Refactoring"
         "401":
           description: You are not logged in
       tags:
@@ -297,7 +295,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateRefactoringTypeRequest'
+              $ref: "#/components/schemas/CreateRefactoringTypeRequest"
       responses:
         "200":
           description: OK
@@ -351,7 +349,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateRefactoringDraftRequest'
+              $ref: "#/components/schemas/UpdateRefactoringDraftRequest"
       responses:
         "200":
           description: OK
@@ -410,7 +408,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PutRefactoringDraftElementKeyRequest'
+              $ref: "#/components/schemas/PutRefactoringDraftElementKeyRequest"
       responses:
         "200":
           description: OK
@@ -480,7 +478,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateRefactoringDraftElementValueRequest'
+              $ref: "#/components/schemas/UpdateRefactoringDraftElementValueRequest"
       responses:
         "200":
           description: OK
@@ -830,7 +828,7 @@ components:
         - startColumn
         - endLine
         - endColumn
-        
+
     CreateRefactoringRequest:
       type: object
       properties:
