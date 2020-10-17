@@ -1,9 +1,9 @@
 <template>
   <div class="app">
-    <div class="d-flex flex-column fill-height">
-      <draft-action-bar />
+    <div v-if="draft && commit" class="d-flex flex-column fill-height">
+      <draft-action-bar :save="save" :discard="discard" />
       <v-divider />
-      <draft-info />
+      <draft-summary :draft="draft" :commit="commit" />
       <v-divider />
       <div class="flex-grow-1 d-flex min-height-0">
         <element-data-items category="before" />
@@ -22,34 +22,46 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, useAsync } from '@nuxtjs/composition-api'
-import DraftActionBar from '@/components/draft/DraftActionBar.vue'
-import DraftInfo from '@/components/draft/DraftInfo.vue'
-import CommitFiles from '@/components/draft/CommitFiles/CommitFiles.vue'
-import ElementDataItems from '@/components/draft/ElementDataItems/ElementDataItems.vue'
-import ElementEditor from '@/components/draft/ElementEditor/ElementEditor.vue'
-import ElementTypeColors from '@/components/draft/ElementTypeColors.vue'
-import { initElementDecorations } from '@/components/draft/ElementEditor/use/elementDecorations'
-import { initElementWidgets } from '@/components/draft/ElementEditor/use/elementWidgets'
+import {
+  computed,
+  defineComponent,
+  useAsync,
+  useContext,
+} from '@nuxtjs/composition-api'
+import apis from '@/apis'
 
 export default defineComponent({
   name: 'draft',
-  components: {
-    DraftActionBar,
-    DraftInfo,
-    CommitFiles,
-    ElementDataItems,
-    ElementEditor,
-    ElementTypeColors,
-  },
-  setup(_, { root }) {
+  setup() {
+    const {
+      params,
+      app: { router, $accessor },
+    } = useContext()
+    const draft = computed(() => $accessor.draft.draft)
+    const commit = computed(() => $accessor.draft.commit)
+
     useAsync(async () => {
-      initElementDecorations()
-      initElementWidgets()
-      await root.$accessor.draft.initDraftStates(
-        parseInt(root.$route.params.id)
-      )
+      await $accessor.draft.initStates(parseInt(params.value.id))
     })
+
+    async function save(id: number) {
+      await apis.drafts.saveRefactoringDraft(id)
+      router?.back()
+      // TODO: Jump preview page after save
+      // const refactoring = (await apis.drafts.saveRefactoringDraft(id)).data
+      // router?.push(`/refactoring/${refactoring.id}`)
+    }
+    async function discard(id: number) {
+      await apis.drafts.discardRefactoringDraft(id)
+      router?.back()
+    }
+
+    return {
+      draft,
+      commit,
+      save,
+      discard,
+    }
   },
 })
 </script>

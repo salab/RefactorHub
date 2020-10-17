@@ -13,27 +13,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from '@nuxtjs/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
 
 export default defineComponent({
-  name: 'DraftActionBar',
-  setup(_, { root }) {
-    const id = computed(() => root.$accessor.draft.draft?.id)
-
-    const save = async () => {
-      if (!id.value) return
-      await root.$client.saveDraft(id.value)
-      root.$router.back()
-      // TODO: jump preview page after save
-      // const refactoring = await root.$client.saveDraft(props.id)
-      // root.$router.push(`/refactoring/${refactoring.id}`)
-    }
-    const discard = async () => {
-      if (!id.value) return
-      await root.$client.discardDraft(id.value)
-      root.$router.back()
-    }
-    return { save, discard }
+  props: {
+    save: {
+      type: Function,
+      required: true,
+    },
+    discard: {
+      type: Function,
+      required: true,
+    },
   },
 })
 </script>

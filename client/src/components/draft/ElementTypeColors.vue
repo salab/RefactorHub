@@ -21,12 +21,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from '@nuxtjs/composition-api'
+import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
 
 export default defineComponent({
-  name: 'ElementTypeColors',
-  setup(_, { root }) {
-    const elementTypes = computed(() => root.$accessor.draft.elementTypes)
+  setup() {
+    const { app: $accessor } = useContext()
+    const elementTypes = computed(() => $accessor.draft.elementTypes)
     const getTypeColor = (type: string, alpha = 1.0) => {
       const length = elementTypes.value.length
       const index = elementTypes.value.indexOf(type)

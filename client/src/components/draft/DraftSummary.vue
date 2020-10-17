@@ -3,9 +3,9 @@
     <v-expansion-panel class="info-panel">
       <v-expansion-panel-header v-slot="{ open }">
         <v-fade-transition>
-          <div v-if="draft && !open" class="d-flex">
+          <div v-if="!open" class="d-flex">
             <div class="flex-grow-0 d-flex align-center pr-3 title">
-              {{ draft.type.name }}
+              {{ draft.type }}
             </div>
             <div class="d-flex align-center">{{ draft.description }}</div>
           </div>
@@ -14,11 +14,11 @@
       <v-expansion-panel-content>
         <v-container fluid class="py-0">
           <v-row>
-            <v-col v-if="draft" cols="6">
+            <v-col cols="6">
               <div>
                 <v-select
                   v-if="refactoringTypes"
-                  :value="draft.type.name"
+                  :value="draft.type"
                   :items="refactoringTypes.map((it) => it.name)"
                   label="Refactoring Type"
                   @input="updateRefactoringType"
@@ -31,14 +31,14 @@
                 />
               </div>
             </v-col>
-            <v-col v-if="commitInfo" cols="6">
+            <v-col cols="6">
               <div class="subtitle-1 font-weight-medium">
-                <span>{{ commitInfo.owner }}</span>
+                <span>{{ commit.owner }}</span>
                 /
-                <span>{{ commitInfo.repository }}</span>
+                <span>{{ commit.repository }}</span>
                 /
-                <a :href="commitInfo.url" target="_blank" rel="noopener">{{
-                  commitInfo.sha.substring(0, 7)
+                <a :href="commit.url" target="_blank" rel="noopener">{{
+                  commit.sha.substring(0, 7)
                 }}</a>
               </div>
               <v-divider class="my-1" />
@@ -56,10 +56,10 @@
               </div>
               <v-divider class="my-1" />
               <div>
-                <span class="subtitle-2">{{ commitInfo.author }}</span>
+                <span class="subtitle-2">{{ commit.author }}</span>
                 <span class="body-2">committed on</span>
                 <span class="body-2">{{
-                  new Date(commitInfo.authorDate).toLocaleString()
+                  new Date(commit.authorDate).toLocaleString()
                 }}</span>
               </div>
             </v-col>
@@ -71,38 +71,59 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from '@nuxtjs/composition-api'
+import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
 import { debounce } from 'lodash-es'
+import apis, { CommitDetail, RefactoringDraft } from '@/apis'
 
 export default defineComponent({
-  name: 'DraftInfo',
-  setup(_, { root }) {
-    const draft = computed(() => root.$accessor.draft.draft)
-    const commitInfo = computed(() => root.$accessor.draft.commitInfo)
-    const refactoringTypes = computed(
-      () => root.$accessor.draft.refactoringTypes
-    )
+  props: {
+    draft: {
+      type: Object as () => RefactoringDraft,
+      required: true,
+    },
+    commit: {
+      type: Object as () => CommitDetail,
+      required: true,
+    },
+  },
+  setup(props) {
+    const {
+      app: { $accessor },
+    } = useContext()
+
+    const draft = computed(() => props.draft)
+    const commit = computed(() => props.commit)
+    const refactoringTypes = computed(() => $accessor.draft.refactoringTypes)
     const messageLines = computed(() =>
-      commitInfo.value ? commitInfo.value.message.split('\n') : []
+      commit.value ? commit.value.message.split('\n') : []
     )
+
+    const updateDescription = debounce(async (value: string) => {
+      $accessor.draft.setDraft(
+        (
+          await apis.drafts.updateRefactoringDraft(draft.value.id, {
+            description: value,
+          })
+        ).data
+      )
+    }, 500)
+    const updateRefactoringType = debounce(async (value: string) => {
+      $accessor.draft.setDraft(
+        (
+          await apis.drafts.updateRefactoringDraft(draft.value.id, {
+            type: value,
+          })
+        ).data
+      )
+    }, 100)
 
     return {
       draft,
-      commitInfo,
+      commit,
       refactoringTypes,
       messageLines,
-      updateDescription: debounce(async (value: string) => {
-        if (!draft.value) return
-        root.$accessor.draft.setDraft(
-          await root.$client.updateDraft(draft.value.id, { description: value })
-        )
-      }, 500),
-      updateRefactoringType: debounce(async (value: string) => {
-        if (!draft.value) return
-        root.$accessor.draft.setDraft(
-          await root.$client.updateDraft(draft.value.id, { type: value })
-        )
-      }, 100),
+      updateDescription,
+      updateRefactoringType,
     }
   },
 })
