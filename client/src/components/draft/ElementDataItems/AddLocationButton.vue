@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from '@nuxtjs/composition-api'
+import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
 import { DiffCategory } from 'refactorhub'
 import apis from '@/apis'
 
@@ -21,11 +21,15 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, { root }) {
-    const draft = computed(() => root.$accessor.draft.draft)
+  setup(props) {
+    const {
+      app: { $accessor },
+    } = useContext()
+
+    const draft = computed(() => $accessor.draft.draft)
     const addLocation = async () => {
       if (draft.value) {
-        await root.$accessor.draft.setDraft(
+        await $accessor.draft.setDraft(
           (
             await apis.drafts.appendRefactoringDraftElementValue(
               draft.value.id,

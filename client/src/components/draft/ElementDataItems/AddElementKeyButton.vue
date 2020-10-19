@@ -32,7 +32,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from '@nuxtjs/composition-api'
+import {
+  defineComponent,
+  computed,
+  ref,
+  useContext,
+} from '@nuxtjs/composition-api'
 import { DiffCategory } from 'refactorhub'
 import apis from '@/apis'
 
@@ -44,9 +49,13 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, { root }) {
-    const draft = computed(() => root.$accessor.draft.draft)
-    const elementTypes = computed(() => root.$accessor.draft.elementTypes)
+  setup(props) {
+    const {
+      app: { $accessor },
+    } = useContext()
+
+    const draft = computed(() => $accessor.draft.draft)
+    const elementTypes = computed(() => $accessor.draft.elementTypes)
 
     const elementKey = ref('')
     const elementType = ref('')
@@ -54,7 +63,7 @@ export default defineComponent({
 
     const addElementKey = async () => {
       if (draft.value && elementKey.value && elementType.value) {
-        await root.$accessor.draft.setDraft(
+        await $accessor.draft.setDraft(
           // TODO: error handling
           (
             await apis.drafts.putRefactoringDraftElementKey(

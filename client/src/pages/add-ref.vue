@@ -30,7 +30,7 @@ import { readAsText } from '@/utils/file'
 
 export default defineComponent({
   name: 'add-ref',
-  setup(_, { root }) {
+  setup() {
     const messages = ref<string[]>([])
     const loading = ref(false)
 

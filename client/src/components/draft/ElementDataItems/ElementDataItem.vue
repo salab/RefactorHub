@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from '@nuxtjs/composition-api'
+import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
 import { CodeElementHolder, DiffCategory } from 'refactorhub'
 import { deleteElementDecoration } from '@/components/draft/ElementEditor/use/elementDecorations'
 import apis from '@/apis'
@@ -81,17 +81,21 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, { root }) {
+  setup(props) {
+    const {
+      app: { $accessor },
+    } = useContext()
+
     const isCompleted = computed(
       () =>
         props.elementData.elements.length > 0 &&
         props.elementData.elements.every((e) => !!e.location.path)
     )
 
-    const draft = computed(() => root.$accessor.draft.draft)
+    const draft = computed(() => $accessor.draft.draft)
     const deleteElementKey = async () => {
       if (!draft.value) return
-      await root.$accessor.draft.setDraft(
+      await $accessor.draft.setDraft(
         (
           await apis.drafts.removeRefactoringDraftElementKey(
             draft.value.id,

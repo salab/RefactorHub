@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from '@nuxtjs/composition-api'
+import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
 import { Element, DiffCategory } from 'refactorhub'
 import { trimFileName } from '@/components/common/editor/utils/trim'
 import { deleteElementDecoration } from '@/components/draft/ElementEditor/use/elementDecorations'
@@ -86,15 +86,19 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, { root }) {
+  setup(props) {
+    const {
+      app: { $accessor },
+    } = useContext()
+
     const path = computed(
       () => trimFileName(props.element.location.path, 20) || '-'
     )
 
-    const draft = computed(() => root.$accessor.draft.draft)
+    const draft = computed(() => $accessor.draft.draft)
 
     const fileIndex = computed(() =>
-      root.$accessor.draft.commitInfo?.files
+      $accessor.draft.commitInfo?.files
         ?.map((f) => (props.category === 'before' ? f.previousName : f.name))
         ?.indexOf(props.element.location.path)
     )
@@ -106,16 +110,16 @@ export default defineComponent({
     const openLocation = async () => {
       const index = fileIndex.value
       if (index !== undefined && index >= 0) {
-        await root.$accessor.draft.setDisplayedFileMetadata({
+        await $accessor.draft.setDisplayedFile({
           category: props.category,
-          metadata: { index },
+          file: { index },
         })
       }
     }
 
     const deleteLocation = async () => {
       if (!draft.value) return
-      await root.$accessor.draft.setDraft(
+      await $accessor.draft.setDraft(
         (
           await apis.drafts.deleteRefactoringDraftElementValue(
             draft.value.id,
@@ -133,8 +137,7 @@ export default defineComponent({
     }
 
     const isEditing = computed(() => {
-      const metadata =
-        root.$accessor.draft.editingElementMetadata[props.category]
+      const metadata = $accessor.draft.editingElementMetadata[props.category]
       return (
         metadata?.key === props.elementKey &&
         metadata?.index === props.elementIndex
@@ -143,7 +146,7 @@ export default defineComponent({
 
     const toggleEditLocation = async () => {
       if (!isEditing.value) {
-        await root.$accessor.draft.setEditingElementMetadata({
+        await $accessor.draft.setEditingElementMetadata({
           category: props.category,
           metadata: {
             key: props.elementKey,
@@ -152,7 +155,7 @@ export default defineComponent({
           },
         })
       } else {
-        await root.$accessor.draft.setEditingElementMetadata({
+        await $accessor.draft.setEditingElementMetadata({
           category: props.category,
         })
       }

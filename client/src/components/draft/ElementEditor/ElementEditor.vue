@@ -16,6 +16,7 @@ import {
   watch,
   computed,
   onMounted,
+  useContext,
 } from '@nuxtjs/composition-api'
 import { DiffCategory, FileMetadata } from 'refactorhub'
 import MonacoEditor from '@/components/common/editor/MonacoEditor.vue'
@@ -32,7 +33,11 @@ export default defineComponent({
     MonacoEditor,
     CodeFragmentDiff,
   },
-  setup(_, { root }) {
+  setup() {
+    const {
+      app: { $accessor },
+    } = useContext()
+
     const editorRef = ref<InstanceType<typeof MonacoEditor>>()
     const pending = ref(0)
     const isLoading = computed(() => pending.value > 0)
@@ -53,26 +58,26 @@ export default defineComponent({
         category,
         metadata,
         diffEditor,
-        root.$accessor
+        $accessor
       )
       pending.value--
     }
 
     watch(
-      () => root.$accessor.draft.displayedFileMetadata.before,
+      () => $accessor.draft.displayedFile.before,
       (value) => onChangeDisplayedFileMetadata('before', value)
     )
     watch(
-      () => root.$accessor.draft.displayedFileMetadata.after,
+      () => $accessor.draft.displayedFile.after,
       (value) => onChangeDisplayedFileMetadata('after', value)
     )
 
     watch(
-      () => root.$accessor.draft.editingElementMetadata.before,
+      () => $accessor.draft.editingElementMetadata.before,
       (value) => setupEditingElement('before', value)
     )
     watch(
-      () => root.$accessor.draft.editingElementMetadata.after,
+      () => $accessor.draft.editingElementMetadata.after,
       (value) => setupEditingElement('after', value)
     )
 

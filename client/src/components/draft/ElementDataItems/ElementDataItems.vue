@@ -28,7 +28,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from '@nuxtjs/composition-api'
+import {
+  defineComponent,
+  computed,
+  ref,
+  watch,
+  useContext,
+} from '@nuxtjs/composition-api'
 import { capitalize } from 'lodash-es'
 import { DiffCategory, RefactoringType } from 'refactorhub'
 import apis from '@/apis'
@@ -47,10 +53,14 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, { root }) {
+  setup(props) {
+    const {
+      app: { $accessor },
+    } = useContext()
+
     const title = capitalize(props.category)
 
-    const draft = computed(() => root.$accessor.draft.draft)
+    const draft = computed(() => $accessor.draft.draft)
     const elementDataMap = computed(() => {
       if (draft.value) {
         return props.category === 'before'

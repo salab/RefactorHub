@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+import { defineComponent, useContext } from '@nuxtjs/composition-api'
 import { Draft } from 'refactorhub'
 
 export default defineComponent({
@@ -18,9 +18,13 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, { root }) {
+  setup(props) {
+    const {
+      app: { router },
+    } = useContext()
+
     const open = () => {
-      root.$router.push(`/draft/${props.draft.id}`)
+      router?.push(`/draft/${props.draft.id}`)
     }
     return { open }
   },

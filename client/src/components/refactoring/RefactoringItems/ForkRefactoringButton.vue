@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+import { defineComponent, useContext } from '@nuxtjs/composition-api'
 import apis, { Refactoring } from '@/apis'
 
 export default defineComponent({
@@ -17,12 +17,16 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, { root }) {
+  setup(props) {
+    const {
+      app: { router },
+    } = useContext()
+
     const fork = async () => {
       const draft = (
         await apis.refactorings.forkRefactoring(props.refactoring.id)
       ).data
-      root.$router.push(`/draft/${draft.id}`)
+      router?.push(`/draft/${draft.id}`)
     }
     return { fork }
   },
