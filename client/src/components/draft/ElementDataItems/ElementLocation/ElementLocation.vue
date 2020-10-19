@@ -93,7 +93,7 @@ export default defineComponent({
     const draft = computed(() => $accessor.draft.draft)
 
     const fileIndex = computed(() =>
-      $accessor.draft.commitInfo?.files
+      $accessor.draft.commit?.files
         ?.map((f) => (props.category === 'before' ? f.previousName : f.name))
         ?.indexOf(props.element.location.path)
     )

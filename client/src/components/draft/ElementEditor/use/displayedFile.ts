@@ -1,7 +1,8 @@
 import * as monaco from 'monaco-editor'
-import { DiffCategory, FileMetadata, CommitInfo } from 'refactorhub'
+import { DiffCategory, FileMetadata } from 'refactorhub'
 import { accessorType } from '@/store'
 import { logger } from '@/utils/logger'
+import { CommitDetail } from '@/apis'
 import {
   setElementDecorationOnEditor,
   clearElementDecorations,
@@ -71,22 +72,22 @@ async function getTextModelOfFile(
   metadata: FileMetadata,
   $accessor: typeof accessorType
 ) {
-  const commitInfo = $accessor.draft.commitInfo
-  if (!commitInfo) {
-    logger.log('commitInfo is not loaded')
+  const commit = $accessor.draft.commit
+  if (!commit) {
+    logger.log('commit is not loaded')
     return
   }
-  if (!isExistFile(category, commitInfo, metadata))
+  if (!isExistFile(category, commit, metadata))
     return monaco.editor.createModel('', 'text/plain')
 
-  const sha = getCommitSHA(category, commitInfo)
-  const path = getCommitFileName(category, commitInfo, metadata)
+  const sha = getCommitSHA(category, commit)
+  const path = getCommitFileName(category, commit, metadata)
   const content = await $accessor.draft.getFileContent({
-    owner: commitInfo.owner,
-    repository: commitInfo.repository,
+    owner: commit.owner,
+    repository: commit.repository,
     sha,
     path,
-    uri: getCommitFileUri(commitInfo.owner, commitInfo.repository, sha, path),
+    uri: getCommitFileUri(commit.owner, commit.repository, sha, path),
   })
   return (
     monaco.editor.getModel(monaco.Uri.parse(content.uri)) ||
@@ -105,15 +106,15 @@ function setupElementDecorationsOnDiffEditor(
   $accessor: typeof accessorType
 ) {
   const draft = $accessor.draft.draft
-  const commitInfo = $accessor.draft.commitInfo
-  if (!draft || !commitInfo) {
-    logger.log('draft or commitInfo is not loaded')
+  const commit = $accessor.draft.commit
+  if (!draft || !commit) {
+    logger.log('draft or commit is not loaded')
     return
   }
-  if (!isExistFile(category, commitInfo, metadata)) return
+  if (!isExistFile(category, commit, metadata)) return
 
   clearElementDecorations(category)
-  const path = getCommitFileName(category, commitInfo, metadata)
+  const path = getCommitFileName(category, commit, metadata)
   const editor = getEditor(category, diffEditor)
   Object.entries(draft.data[category]).forEach(([key, data]) => {
     data.elements.forEach((element, index) => {
@@ -130,28 +131,28 @@ async function setupElementWidgetsOnDiffEditor(
   diffEditor: monaco.editor.IDiffEditor,
   $accessor: typeof accessorType
 ) {
-  const commitInfo = $accessor.draft.commitInfo
-  if (!commitInfo) {
-    logger.log('commitInfo is not loaded')
+  const commit = $accessor.draft.commit
+  if (!commit) {
+    logger.log('commit is not loaded')
     return
   }
-  if (!isExistFile(category, commitInfo, metadata)) return
+  if (!isExistFile(category, commit, metadata)) return
 
-  const sha = getCommitSHA(category, commitInfo)
-  const path = getCommitFileName(category, commitInfo, metadata)
+  const sha = getCommitSHA(category, commit)
+  const path = getCommitFileName(category, commit, metadata)
   const content = await $accessor.draft.getFileContent({
-    owner: commitInfo.owner,
-    repository: commitInfo.repository,
+    owner: commit.owner,
+    repository: commit.repository,
     sha,
     path,
-    uri: getCommitFileUri(commitInfo.owner, commitInfo.repository, sha, path),
+    uri: getCommitFileUri(commit.owner, commit.repository, sha, path),
   })
   const editor = getEditor(category, diffEditor)
 
   clearElementWidgetsOnEditor(category, editor)
   clearCodeFragmentsCursors(category)
   content.elements.forEach((element) => {
-    if (element.type === 'CodeFragments') {
+    if (element.type === 'CodeFragment') {
       prepareCodeFragmentsCursor(category, element, editor, $accessor)
     } else {
       setElementWidgetOnEditor(category, element, editor, $accessor)
@@ -170,26 +171,26 @@ function getEditor(
 
 function isExistFile(
   category: DiffCategory,
-  commitInfo: CommitInfo,
+  commit: CommitDetail,
   metadata: FileMetadata
 ) {
-  const file = commitInfo.files[metadata.index]
+  const file = commit.files[metadata.index]
   return !(
     (category === 'before' && file.status === 'added') ||
     (category === 'after' && file.status === 'removed')
   )
 }
 
-function getCommitSHA(category: DiffCategory, commitInfo: CommitInfo) {
-  return category === 'before' ? commitInfo.parent : commitInfo.sha
+function getCommitSHA(category: DiffCategory, commit: CommitDetail) {
+  return category === 'before' ? commit.parent : commit.sha
 }
 
 function getCommitFileName(
   category: DiffCategory,
-  commitInfo: CommitInfo,
+  commit: CommitDetail,
   metadata: FileMetadata
 ) {
-  const file = commitInfo.files[metadata.index]
+  const file = commit.files[metadata.index]
   return category === 'before' ? file.previousName : file.name
 }
 
