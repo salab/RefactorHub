@@ -29,20 +29,10 @@
 </template>
 
 <script lang="ts">
-import apis from '@/apis'
 import { defineComponent, ref, onMounted } from '@nuxtjs/composition-api'
-import { Refactoring, Draft } from 'refactorhub'
-import EditRefactoringButton from './EditRefactoringButton.vue'
-import ForkRefactoringButton from './ForkRefactoringButton.vue'
-import OpenDraftButton from './OpenDraftButton.vue'
+import apis, { Refactoring, RefactoringDraft } from '@/apis'
 
 export default defineComponent({
-  name: 'RefactoringItem',
-  components: {
-    EditRefactoringButton,
-    ForkRefactoringButton,
-    OpenDraftButton,
-  },
   props: {
     refactoring: {
       type: Object as () => Refactoring,
@@ -59,7 +49,7 @@ export default defineComponent({
   },
   setup(props) {
     const children = ref<Refactoring[]>([])
-    const drafts = ref<Draft[]>([])
+    const drafts = ref<RefactoringDraft[]>([])
 
     onMounted(async () => {
       if (props.fetchChildren) {

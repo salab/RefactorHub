@@ -1,9 +1,9 @@
 import * as monaco from 'monaco-editor'
 import { cloneDeep, debounce } from 'lodash-es'
-import { DiffCategory, Element } from 'refactorhub'
+import { DiffCategory } from 'refactorhub'
 import { asRange, asMonacoRange } from '@/components/common/editor/utlis/range'
 import { accessorType } from '@/store'
-import apis from '@/apis'
+import apis, { CodeElement } from '@/apis'
 import {
   deleteElementDecoration,
   setElementDecorationOnEditor,
@@ -22,7 +22,7 @@ const cursors: {
 }
 
 const fragments: {
-  [category in DiffCategory]: Element[]
+  [category in DiffCategory]: CodeElement[]
 } = {
   before: [],
   after: [],
@@ -50,7 +50,7 @@ export function clearCodeFragmentsCursors(category: DiffCategory) {
 
 export function prepareCodeFragmentsCursor(
   category: DiffCategory,
-  element: Element,
+  element: CodeElement,
   editor: monaco.editor.ICodeEditor,
   $accessor: typeof accessorType
 ) {

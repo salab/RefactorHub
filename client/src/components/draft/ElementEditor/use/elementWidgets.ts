@@ -1,14 +1,13 @@
 import * as monaco from 'monaco-editor'
 import cryptoRandomString from 'crypto-random-string'
-import { DiffCategory, Element } from 'refactorhub'
+import { DiffCategory } from 'refactorhub'
 import {
   asMonacoRange,
   getRangeWidthOnEditor,
   getRangeHeightOnEditor,
 } from '@/components/common/editor/utlis/range'
-import { Client } from '@/plugins/client'
 import { accessorType } from '@/store'
-import apis from '@/apis'
+import apis, { CodeElement } from '@/apis'
 import {
   setElementDecorationOnEditor,
   deleteElementDecoration,
@@ -61,7 +60,7 @@ export function clearElementWidgetsOnEditor(
 
 export function setElementWidgetOnEditor(
   category: DiffCategory,
-  element: Element,
+  element: CodeElement,
   editor: monaco.editor.ICodeEditor,
   $accessor: typeof accessorType
 ) {
@@ -73,7 +72,7 @@ export function setElementWidgetOnEditor(
 }
 
 function createElementWidget(
-  element: Element,
+  element: CodeElement,
   editor: monaco.editor.ICodeEditor,
   onClick: () => void
 ): ElementWidget {
@@ -110,7 +109,7 @@ function createElementWidget(
 
 async function updateEditingElement(
   category: DiffCategory,
-  element: Element,
+  element: CodeElement,
   editor: monaco.editor.ICodeEditor,
   $accessor: typeof accessorType
 ) {

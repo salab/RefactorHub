@@ -13,7 +13,6 @@
 import { defineComponent } from '@nuxtjs/composition-api'
 
 export default defineComponent({
-  name: 'NumberColumn',
   props: {
     number: {
       type: Number,

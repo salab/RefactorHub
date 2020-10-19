@@ -9,7 +9,6 @@ import { defineComponent, useContext } from '@nuxtjs/composition-api'
 import apis, { Refactoring } from '@/apis'
 
 export default defineComponent({
-  name: 'EditRefactoringButton',
   props: {
     refactoring: {
       type: Object as () => Refactoring,

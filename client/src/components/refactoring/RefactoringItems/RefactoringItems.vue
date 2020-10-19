@@ -11,14 +11,9 @@
 
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api'
-import { Refactoring } from 'refactorhub'
-import RefactoringItem from './RefactoringItem.vue'
+import { Refactoring } from '@/apis'
 
 export default defineComponent({
-  name: 'RefactoringItems',
-  components: {
-    RefactoringItem,
-  },
   props: {
     refactorings: {
       type: Array as () => Refactoring[],

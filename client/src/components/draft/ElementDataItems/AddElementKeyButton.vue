@@ -42,7 +42,6 @@ import { DiffCategory } from 'refactorhub'
 import apis from '@/apis'
 
 export default defineComponent({
-  name: 'AddElementKeyButton',
   props: {
     category: {
       type: String as () => DiffCategory,

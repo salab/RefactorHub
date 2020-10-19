@@ -8,12 +8,8 @@
 
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api'
-import LinkButtons from '@/components/common/LinkButtons.vue'
 
 export default defineComponent({
   name: 'home',
-  components: {
-    LinkButtons,
-  },
 })
 </script>

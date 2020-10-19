@@ -51,18 +51,11 @@
 
 <script lang="ts">
 import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
-import { CodeElementHolder, DiffCategory } from 'refactorhub'
+import { DiffCategory } from 'refactorhub'
 import { deleteElementDecoration } from '@/components/draft/ElementEditor/use/elementDecorations'
-import apis from '@/apis'
-import ElementLocation from './ElementLocation/ElementLocation.vue'
-import AddLocationButton from './AddLocationButton.vue'
+import apis, { CodeElementHolder } from '@/apis'
 
 export default defineComponent({
-  name: 'ElementDataItem',
-  components: {
-    ElementLocation,
-    AddLocationButton,
-  },
   props: {
     category: {
       type: String as () => DiffCategory,

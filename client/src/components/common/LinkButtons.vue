@@ -14,7 +14,6 @@ import { defineComponent } from '@nuxtjs/composition-api'
 const links = [{ name: 'All', to: '/all' }]
 
 export default defineComponent({
-  name: 'LinkButtons',
   setup() {
     return { links }
   },

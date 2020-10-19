@@ -8,13 +8,12 @@
 
 <script lang="ts">
 import { defineComponent, useContext } from '@nuxtjs/composition-api'
-import { Draft } from 'refactorhub'
+import { RefactoringDraft } from '@/apis'
 
 export default defineComponent({
-  name: 'OpenDraftButton',
   props: {
     draft: {
-      type: Object as () => Draft,
+      type: Object as () => RefactoringDraft,
       required: true,
     },
   },

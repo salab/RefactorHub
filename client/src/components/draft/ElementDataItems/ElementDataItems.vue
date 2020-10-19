@@ -36,17 +36,10 @@ import {
   useContext,
 } from '@nuxtjs/composition-api'
 import { capitalize } from 'lodash-es'
-import { DiffCategory, RefactoringType } from 'refactorhub'
-import apis from '@/apis'
-import ElementDataItem from './ElementDataItem.vue'
-import AddElementKeyButton from './AddElementKeyButton.vue'
+import { DiffCategory } from 'refactorhub'
+import apis, { RefactoringType } from '@/apis'
 
 export default defineComponent({
-  name: 'ElementDataItems',
-  components: {
-    ElementDataItem,
-    AddElementKeyButton,
-  },
   props: {
     category: {
       type: String as () => DiffCategory,

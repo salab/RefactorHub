@@ -10,7 +10,6 @@ import { DiffCategory } from 'refactorhub'
 import apis from '@/apis'
 
 export default defineComponent({
-  name: 'AddLocationButton',
   props: {
     category: {
       type: String as () => DiffCategory,

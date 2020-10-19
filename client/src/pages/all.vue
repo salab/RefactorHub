@@ -13,13 +13,9 @@
 <script lang="ts">
 import { defineComponent, ref, useAsync } from '@nuxtjs/composition-api'
 import apis, { Refactoring } from '@/apis'
-import RefactoringItems from '@/components/refactoring/RefactoringItems/RefactoringItems.vue'
 
 export default defineComponent({
   name: 'all',
-  components: {
-    RefactoringItems,
-  },
   setup() {
     const refactorings = ref<Refactoring[]>([])
 

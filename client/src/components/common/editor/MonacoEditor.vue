@@ -8,13 +8,8 @@
 import { defineComponent, ref, onMounted } from '@nuxtjs/composition-api'
 import * as monaco from 'monaco-editor'
 import cryptoRandomString from 'crypto-random-string'
-import Loading from '@/components/common/editor/Loading.vue'
 
 export default defineComponent({
-  name: 'MonacoEditor',
-  components: {
-    Loading,
-  },
   props: {
     isLoading: {
       type: Boolean,

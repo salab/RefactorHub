@@ -30,10 +30,6 @@ export const useCodeFragmentDiff = () => {
 }
 
 export default defineComponent({
-  name: 'CodeFragmentDiff',
-  components: {
-    MonacoEditor,
-  },
   setup() {
     const editorRef = ref<InstanceType<typeof MonacoEditor>>()
 

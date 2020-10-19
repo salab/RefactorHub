@@ -1,7 +1,6 @@
 import * as monaco from 'monaco-editor'
 import { DiffCategory, FileMetadata, CommitInfo } from 'refactorhub'
 import { accessorType } from '@/store'
-import { Client } from '@/plugins/client'
 import { logger } from '@/utils/logger'
 import {
   setElementDecorationOnEditor,

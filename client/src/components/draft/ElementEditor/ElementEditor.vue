@@ -20,19 +20,12 @@ import {
 } from '@nuxtjs/composition-api'
 import { DiffCategory, FileMetadata } from 'refactorhub'
 import MonacoEditor from '@/components/common/editor/MonacoEditor.vue'
-import CodeFragmentDiff, {
-  useCodeFragmentDiff,
-} from '@/components/draft/CodeFragmentDiff/CodeFragmentDiff.vue'
+import { useCodeFragmentDiff } from '@/components/draft/CodeFragmentDiff/CodeFragmentDiff.vue'
 import { logger } from '@/utils/logger'
 import { setupDisplayedFileOnDiffEditor } from './use/displayedFile'
 import { setupEditingElement } from './use/editingElement'
 
 export default defineComponent({
-  name: 'ElementEditor',
-  components: {
-    MonacoEditor,
-    CodeFragmentDiff,
-  },
   setup() {
     const {
       app: { $accessor },
