@@ -1,7 +1,8 @@
 import * as monaco from 'monaco-editor'
 import hash from 'object-hash'
-import { Element, DiffCategory, DecorationMetadata } from 'refactorhub'
-import { asMonacoRange } from '@/components/common/editor/utlis/range'
+import { DiffCategory, DecorationMetadata } from 'refactorhub'
+import { asMonacoRange } from '@/components/common/editor/utils/range'
+import { CodeElement } from '@/apis'
 
 const decorationMetadataMap: {
   [category in DiffCategory]: Map<string, DecorationMetadata>
@@ -19,7 +20,7 @@ export function setElementDecorationOnEditor(
   category: DiffCategory,
   key: string,
   index: number,
-  element: Element,
+  element: CodeElement,
   editor: monaco.editor.ICodeEditor
 ) {
   const model = editor.getModel()
@@ -58,10 +59,10 @@ export function clearElementDecorations(category: DiffCategory) {
 
 function createElementDecoration(
   key: string,
-  element: Element
+  element: CodeElement
 ): monaco.editor.IModelDeltaDecoration {
   return {
-    range: asMonacoRange(element.location.range),
+    range: asMonacoRange(element.location?.range),
     options: {
       className: `element-decoration element-decoration-${element.type}`,
       hoverMessage: { value: key },

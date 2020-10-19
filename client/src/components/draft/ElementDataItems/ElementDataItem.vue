@@ -52,7 +52,7 @@
 <script lang="ts">
 import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
 import { DiffCategory } from 'refactorhub'
-import { deleteElementDecoration } from '@/components/draft/ElementEditor/use/elementDecorations'
+import { deleteElementDecoration } from '@/components/draft/ElementEditor/ts/elementDecorations'
 import apis, { CodeElementHolder } from '@/apis'
 
 export default defineComponent({
@@ -82,7 +82,7 @@ export default defineComponent({
     const isCompleted = computed(
       () =>
         props.elementData.elements.length > 0 &&
-        props.elementData.elements.every((e) => !!e.location.path)
+        props.elementData.elements.every((e) => !!e.location)
     )
 
     const draft = computed(() => $accessor.draft.draft)

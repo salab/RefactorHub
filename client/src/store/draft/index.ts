@@ -5,7 +5,7 @@ import apis, {
   RefactoringType,
   FileContent,
 } from '@/apis'
-import { DiffCategory, FileMetadata } from 'refactorhub'
+import { DiffCategory, FileMetadata, ElementMetadata } from 'refactorhub'
 
 export const state = (): {
   draft?: RefactoringDraft
@@ -16,6 +16,9 @@ export const state = (): {
   displayedFile: {
     [category in DiffCategory]?: FileMetadata
   }
+  editingElement: {
+    [category in DiffCategory]?: ElementMetadata
+  }
 } => ({
   draft: undefined,
   commit: undefined,
@@ -23,6 +26,10 @@ export const state = (): {
   elementTypes: [],
   fileContentCache: new Map(),
   displayedFile: {
+    before: undefined,
+    after: undefined,
+  },
+  editingElement: {
     before: undefined,
     after: undefined,
   },
@@ -72,6 +79,19 @@ export const mutations = mutationTree(state, {
   ) => {
     state.displayedFile[category] = file
   },
+
+  setEditingElement: (
+    state,
+    {
+      category,
+      element,
+    }: {
+      category: DiffCategory
+      element?: ElementMetadata
+    }
+  ) => {
+    state.editingElement[category] = element
+  },
 })
 
 export const actions = actionTree(
@@ -114,7 +134,7 @@ export const actions = actionTree(
         return state.fileContentCache.get(uri)!!
       }
       const content = (
-        await apis.editor.getFileContent(owner, repository, sha, path)
+        await apis.editor.getFileContent(sha, owner, repository, path)
       ).data
       await commit('cacheFileContent', {
         uri,

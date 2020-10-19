@@ -29,6 +29,8 @@ import {
   useContext,
 } from '@nuxtjs/composition-api'
 import apis from '@/apis'
+import { initElementDecorations } from '@/components/draft/ElementEditor/ts/elementDecorations'
+import { initElementWidgets } from '@/components/draft/ElementEditor/ts/elementWidgets'
 
 export default defineComponent({
   name: 'draft',
@@ -41,6 +43,8 @@ export default defineComponent({
     const commit = computed(() => $accessor.draft.commit)
 
     useAsync(async () => {
+      initElementDecorations()
+      initElementWidgets()
       await $accessor.draft.initStates(parseInt(params.value.id))
     })
 

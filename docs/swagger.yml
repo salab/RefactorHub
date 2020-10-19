@@ -527,7 +527,7 @@ paths:
       tags:
         - elements
 
-  "/editor/contnet":
+  "/editor/content":
     get:
       summary: get file content with elements
       operationId: getFileContent

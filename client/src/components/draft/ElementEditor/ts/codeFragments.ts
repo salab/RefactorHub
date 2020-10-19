@@ -1,7 +1,7 @@
 import * as monaco from 'monaco-editor'
 import { cloneDeep, debounce } from 'lodash-es'
 import { DiffCategory } from 'refactorhub'
-import { asRange, asMonacoRange } from '@/components/common/editor/utlis/range'
+import { asRange, asMonacoRange } from '@/components/common/editor/utils/range'
 import { accessorType } from '@/store'
 import apis, { CodeElement } from '@/apis'
 import {
@@ -95,16 +95,16 @@ export async function updateEditingCodeFragments(
     return
 
   const element = fragments[category].find((it) =>
-    asMonacoRange(it.location.range).containsRange(range)
+    asMonacoRange(it.location?.range).containsRange(range)
   )
   if (!element) return
 
   const draft = $accessor.draft.draft
-  const metadata = $accessor.draft.editingElementMetadata[category]
+  const metadata = $accessor.draft.editingElement[category]
   if (!draft || !metadata) return
 
   const nextElement = cloneDeep(element)
-  nextElement.location.range = asRange(range)
+  nextElement.location!.range = asRange(range)
 
   $accessor.draft.setDraft(
     (

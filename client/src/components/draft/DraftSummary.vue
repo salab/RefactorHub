@@ -118,8 +118,6 @@ export default defineComponent({
     }, 100)
 
     return {
-      draft,
-      commit,
       refactoringTypes,
       messageLines,
       updateDescription,

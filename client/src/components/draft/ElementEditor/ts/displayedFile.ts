@@ -36,10 +36,7 @@ export async function setupDisplayedFileOnDiffEditor(
     diffEditor,
     $accessor
   )
-  setupEditingElement(
-    category,
-    $accessor.draft.editingElementMetadata[category]
-  )
+  setupEditingElement(category, $accessor.draft.editingElement[category])
 }
 
 async function setTextModelOnDiffEditor(
@@ -118,7 +115,7 @@ function setupElementDecorationsOnDiffEditor(
   const editor = getEditor(category, diffEditor)
   Object.entries(draft.data[category]).forEach(([key, data]) => {
     data.elements.forEach((element, index) => {
-      if (path === element.location.path) {
+      if (path === element.location?.path) {
         setElementDecorationOnEditor(category, key, index, element, editor)
       }
     })

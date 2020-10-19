@@ -22,8 +22,8 @@ import { DiffCategory, FileMetadata } from 'refactorhub'
 import MonacoEditor from '@/components/common/editor/MonacoEditor.vue'
 import { useCodeFragmentDiff } from '@/components/draft/CodeFragmentDiff/CodeFragmentDiff.vue'
 import { logger } from '@/utils/logger'
-import { setupDisplayedFileOnDiffEditor } from './use/displayedFile'
-import { setupEditingElement } from './use/editingElement'
+import { setupDisplayedFileOnDiffEditor } from './ts/displayedFile'
+import { setupEditingElement } from './ts/editingElement'
 
 export default defineComponent({
   setup() {
@@ -66,11 +66,11 @@ export default defineComponent({
     )
 
     watch(
-      () => $accessor.draft.editingElementMetadata.before,
+      () => $accessor.draft.editingElement.before,
       (value) => setupEditingElement('before', value)
     )
     watch(
-      () => $accessor.draft.editingElementMetadata.after,
+      () => $accessor.draft.editingElement.after,
       (value) => setupEditingElement('after', value)
     )
 

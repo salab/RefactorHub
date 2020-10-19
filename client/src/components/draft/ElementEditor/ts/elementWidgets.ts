@@ -5,7 +5,7 @@ import {
   asMonacoRange,
   getRangeWidthOnEditor,
   getRangeHeightOnEditor,
-} from '@/components/common/editor/utlis/range'
+} from '@/components/common/editor/utils/range'
 import { accessorType } from '@/store'
 import apis, { CodeElement } from '@/apis'
 import {
@@ -76,7 +76,7 @@ function createElementWidget(
   editor: monaco.editor.ICodeEditor,
   onClick: () => void
 ): ElementWidget {
-  const range = asMonacoRange(element.location.range)
+  const range = asMonacoRange(element.location?.range)
   const id = cryptoRandomString({ length: 10 })
   const div = document.createElement('div')
   div.classList.add('element-widget', `element-widget-${element.type}`)
@@ -114,7 +114,7 @@ async function updateEditingElement(
   $accessor: typeof accessorType
 ) {
   const draft = $accessor.draft.draft
-  const metadata = $accessor.draft.editingElementMetadata[category]
+  const metadata = $accessor.draft.editingElement[category]
   if (!draft || !metadata) return
 
   $accessor.draft.setDraft(
@@ -140,5 +140,5 @@ async function updateEditingElement(
     editor
   )
 
-  $accessor.draft.setEditingElementMetadata({ category })
+  $accessor.draft.setEditingElement({ category })
 }

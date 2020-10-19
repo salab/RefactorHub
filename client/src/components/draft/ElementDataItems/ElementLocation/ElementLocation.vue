@@ -55,7 +55,7 @@
 import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
 import { DiffCategory } from 'refactorhub'
 import { trimFileName } from '@/components/common/editor/utils/trim'
-import { deleteElementDecoration } from '@/components/draft/ElementEditor/use/elementDecorations'
+import { deleteElementDecoration } from '@/components/draft/ElementEditor/ts/elementDecorations'
 import apis, { CodeElement } from '@/apis'
 
 export default defineComponent({
@@ -86,8 +86,8 @@ export default defineComponent({
       app: { $accessor },
     } = useContext()
 
-    const path = computed(
-      () => trimFileName(props.element.location.path, 20) || '-'
+    const path = computed(() =>
+      trimFileName(props.element.location?.path || '-', 20)
     )
 
     const draft = computed(() => $accessor.draft.draft)
@@ -95,7 +95,7 @@ export default defineComponent({
     const fileIndex = computed(() =>
       $accessor.draft.commit?.files
         ?.map((f) => (props.category === 'before' ? f.previousName : f.name))
-        ?.indexOf(props.element.location.path)
+        ?.indexOf(props.element.location?.path || '')
     )
 
     const isExist = computed(
@@ -132,7 +132,7 @@ export default defineComponent({
     }
 
     const isEditing = computed(() => {
-      const metadata = $accessor.draft.editingElementMetadata[props.category]
+      const metadata = $accessor.draft.editingElement[props.category]
       return (
         metadata?.key === props.elementKey &&
         metadata?.index === props.elementIndex
@@ -141,16 +141,16 @@ export default defineComponent({
 
     const toggleEditLocation = async () => {
       if (!isEditing.value) {
-        await $accessor.draft.setEditingElementMetadata({
+        await $accessor.draft.setEditingElement({
           category: props.category,
-          metadata: {
+          element: {
             key: props.elementKey,
             index: props.elementIndex,
             type: props.element.type,
           },
         })
       } else {
-        await $accessor.draft.setEditingElementMetadata({
+        await $accessor.draft.setEditingElement({
           category: props.category,
         })
       }

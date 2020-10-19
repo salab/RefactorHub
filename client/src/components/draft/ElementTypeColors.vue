@@ -25,7 +25,9 @@ import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
 
 export default defineComponent({
   setup() {
-    const { app: $accessor } = useContext()
+    const {
+      app: { $accessor },
+    } = useContext()
     const elementTypes = computed(() => $accessor.draft.elementTypes)
     const getTypeColor = (type: string, alpha = 1.0) => {
       const length = elementTypes.value.length
