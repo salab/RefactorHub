@@ -31,6 +31,7 @@
 import { defineComponent, computed, ref, watch } from '@nuxtjs/composition-api'
 import { capitalize } from 'lodash-es'
 import { DiffCategory, RefactoringType } from 'refactorhub'
+import apis from '@/apis'
 import ElementDataItem from './ElementDataItem.vue'
 import AddElementKeyButton from './AddElementKeyButton.vue'
 
@@ -62,7 +63,9 @@ export default defineComponent({
     const type = ref<RefactoringType>()
     watch(draft, async () => {
       if (draft.value) {
-        type.value = await root.$client.getRefactoringType(draft.value.type)
+        type.value = (
+          await apis.refactoringTypes.getRefactoringType(draft.value.type)
+        ).data
       }
     })
     const elementMap = computed(() => {

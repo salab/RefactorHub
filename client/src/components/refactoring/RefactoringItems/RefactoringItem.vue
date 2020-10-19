@@ -29,6 +29,7 @@
 </template>
 
 <script lang="ts">
+import apis from '@/apis'
 import { defineComponent, ref, onMounted } from '@nuxtjs/composition-api'
 import { Refactoring, Draft } from 'refactorhub'
 import EditRefactoringButton from './EditRefactoringButton.vue'
@@ -56,21 +57,21 @@ export default defineComponent({
       default: false,
     },
   },
-  setup(props, { root }) {
+  setup(props) {
     const children = ref<Refactoring[]>([])
     const drafts = ref<Draft[]>([])
 
     onMounted(async () => {
       if (props.fetchChildren) {
-        children.value = await root.$client.getRefactoringChildren(
-          props.refactoring.id
-        )
+        children.value = (
+          await apis.refactorings.getRefactoringChildren(props.refactoring.id)
+        ).data
       }
       // TODO: Fix API
       if (props.fetchDrafts) {
-        drafts.value = await root.$client.getRefactoringDrafts(
-          props.refactoring.id
-        )
+        drafts.value = (
+          await apis.refactorings.getRefactoringDrafts(props.refactoring.id)
+        ).data
       }
     })
 

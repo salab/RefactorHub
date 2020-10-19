@@ -2,8 +2,8 @@ import * as monaco from 'monaco-editor'
 import { cloneDeep, debounce } from 'lodash-es'
 import { DiffCategory, Element } from 'refactorhub'
 import { asRange, asMonacoRange } from '@/components/common/editor/utlis/range'
-import { Client } from '@/plugins/client'
 import { accessorType } from '@/store'
+import apis from '@/apis'
 import {
   deleteElementDecoration,
   setElementDecorationOnEditor,
@@ -52,8 +52,7 @@ export function prepareCodeFragmentsCursor(
   category: DiffCategory,
   element: Element,
   editor: monaco.editor.ICodeEditor,
-  $accessor: typeof accessorType,
-  $client: Client
+  $accessor: typeof accessorType
 ) {
   fragments[category].push(element)
 
@@ -68,8 +67,7 @@ export function prepareCodeFragmentsCursor(
                 category,
                 e.selection,
                 editor,
-                $accessor,
-                $client
+                $accessor
               )
             }, 500)
           )
@@ -88,8 +86,7 @@ export async function updateEditingCodeFragments(
   category: DiffCategory,
   range: monaco.Range,
   editor: monaco.editor.ICodeEditor,
-  $accessor: typeof accessorType,
-  $client: Client
+  $accessor: typeof accessorType
 ) {
   if (
     range.startLineNumber === range.endLineNumber &&
@@ -110,13 +107,17 @@ export async function updateEditingCodeFragments(
   nextElement.location.range = asRange(range)
 
   $accessor.draft.setDraft(
-    await $client.updateElementValue(
-      draft.id,
-      category,
-      metadata.key,
-      metadata.index,
-      nextElement
-    )
+    (
+      await apis.drafts.updateRefactoringDraftElementValue(
+        draft.id,
+        category,
+        metadata.key,
+        metadata.index,
+        {
+          element: nextElement,
+        }
+      )
+    ).data
   )
 
   deleteElementDecoration(category, metadata.key, metadata.index)

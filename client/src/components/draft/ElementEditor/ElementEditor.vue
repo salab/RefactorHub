@@ -53,8 +53,7 @@ export default defineComponent({
         category,
         metadata,
         diffEditor,
-        root.$accessor,
-        root.$client
+        root.$accessor
       )
       pending.value--
     }

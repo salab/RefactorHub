@@ -21,8 +21,7 @@ export async function setupDisplayedFileOnDiffEditor(
   category: DiffCategory,
   metadata: FileMetadata,
   diffEditor: monaco.editor.IDiffEditor,
-  $accessor: typeof accessorType,
-  $client: Client
+  $accessor: typeof accessorType
 ) {
   await setTextModelOnDiffEditor(category, metadata, diffEditor, $accessor)
   await setupElementDecorationsOnDiffEditor(
@@ -35,8 +34,7 @@ export async function setupDisplayedFileOnDiffEditor(
     category,
     metadata,
     diffEditor,
-    $accessor,
-    $client
+    $accessor
   )
   setupEditingElement(
     category,
@@ -131,8 +129,7 @@ async function setupElementWidgetsOnDiffEditor(
   category: DiffCategory,
   metadata: FileMetadata,
   diffEditor: monaco.editor.IDiffEditor,
-  $accessor: typeof accessorType,
-  $client: Client
+  $accessor: typeof accessorType
 ) {
   const commitInfo = $accessor.draft.commitInfo
   if (!commitInfo) {
@@ -156,9 +153,9 @@ async function setupElementWidgetsOnDiffEditor(
   clearCodeFragmentsCursors(category)
   content.elements.forEach((element) => {
     if (element.type === 'CodeFragments') {
-      prepareCodeFragmentsCursor(category, element, editor, $accessor, $client)
+      prepareCodeFragmentsCursor(category, element, editor, $accessor)
     } else {
-      setElementWidgetOnEditor(category, element, editor, $accessor, $client)
+      setElementWidgetOnEditor(category, element, editor, $accessor)
     }
   })
 }

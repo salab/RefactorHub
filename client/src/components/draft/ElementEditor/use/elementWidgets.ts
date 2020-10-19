@@ -8,6 +8,7 @@ import {
 } from '@/components/common/editor/utlis/range'
 import { Client } from '@/plugins/client'
 import { accessorType } from '@/store'
+import apis from '@/apis'
 import {
   setElementDecorationOnEditor,
   deleteElementDecoration,
@@ -62,11 +63,10 @@ export function setElementWidgetOnEditor(
   category: DiffCategory,
   element: Element,
   editor: monaco.editor.ICodeEditor,
-  $accessor: typeof accessorType,
-  $client: Client
+  $accessor: typeof accessorType
 ) {
   const widget = createElementWidget(element, editor, () =>
-    updateEditingElement(category, element, editor, $accessor, $client)
+    updateEditingElement(category, element, editor, $accessor)
   )
   editor.addContentWidget(widget)
   widgets[category].push(widget)
@@ -112,21 +112,24 @@ async function updateEditingElement(
   category: DiffCategory,
   element: Element,
   editor: monaco.editor.ICodeEditor,
-  $accessor: typeof accessorType,
-  $client: Client
+  $accessor: typeof accessorType
 ) {
   const draft = $accessor.draft.draft
   const metadata = $accessor.draft.editingElementMetadata[category]
   if (!draft || !metadata) return
 
   $accessor.draft.setDraft(
-    await $client.updateElementValue(
-      draft.id,
-      category,
-      metadata.key,
-      metadata.index,
-      element
-    )
+    (
+      await apis.drafts.updateRefactoringDraftElementValue(
+        draft.id,
+        category,
+        metadata.key,
+        metadata.index,
+        {
+          element,
+        }
+      )
+    ).data
   )
 
   deleteElementDecoration(category, metadata.key, metadata.index)

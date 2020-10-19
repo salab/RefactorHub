@@ -34,6 +34,7 @@
 <script lang="ts">
 import { defineComponent, computed, ref } from '@nuxtjs/composition-api'
 import { DiffCategory } from 'refactorhub'
+import apis from '@/apis'
 
 export default defineComponent({
   name: 'AddElementKeyButton',
@@ -55,13 +56,17 @@ export default defineComponent({
       if (draft.value && elementKey.value && elementType.value) {
         await root.$accessor.draft.setDraft(
           // TODO: error handling
-          await root.$client.putElementKey(
-            draft.value.id,
-            props.category,
-            elementKey.value,
-            elementType.value,
-            multiple.value
-          )
+          (
+            await apis.drafts.putRefactoringDraftElementKey(
+              draft.value.id,
+              props.category,
+              {
+                key: elementKey.value,
+                type: elementType.value,
+                multiple: multiple.value,
+              }
+            )
+          ).data
         )
         elementKey.value = ''
         elementType.value = ''

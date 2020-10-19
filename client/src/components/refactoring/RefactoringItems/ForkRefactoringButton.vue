@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api'
-import { Refactoring } from 'refactorhub'
+import apis, { Refactoring } from '@/apis'
 
 export default defineComponent({
   name: 'ForkRefactoringButton',
@@ -19,7 +19,9 @@ export default defineComponent({
   },
   setup(props, { root }) {
     const fork = async () => {
-      const draft = await root.$client.forkRefactoring(props.refactoring.id)
+      const draft = (
+        await apis.refactorings.forkRefactoring(props.refactoring.id)
+      ).data
       root.$router.push(`/draft/${draft.id}`)
     }
     return { fork }

@@ -53,6 +53,7 @@
 import { defineComponent, computed } from '@nuxtjs/composition-api'
 import { CodeElementHolder, DiffCategory } from 'refactorhub'
 import { deleteElementDecoration } from '@/components/draft/ElementEditor/use/elementDecorations'
+import apis from '@/apis'
 import ElementLocation from './ElementLocation/ElementLocation.vue'
 import AddLocationButton from './AddLocationButton.vue'
 
@@ -91,11 +92,13 @@ export default defineComponent({
     const deleteElementKey = async () => {
       if (!draft.value) return
       await root.$accessor.draft.setDraft(
-        await root.$client.removeElementKey(
-          draft.value.id,
-          props.category,
-          props.elementKey
-        )
+        (
+          await apis.drafts.removeRefactoringDraftElementKey(
+            draft.value.id,
+            props.category,
+            props.elementKey
+          )
+        ).data
       )
       props.elementData.elements.forEach((_, i) => {
         deleteElementDecoration(props.category, props.elementKey, i)

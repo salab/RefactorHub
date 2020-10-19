@@ -7,6 +7,7 @@
 <script lang="ts">
 import { defineComponent, computed } from '@nuxtjs/composition-api'
 import { DiffCategory } from 'refactorhub'
+import apis from '@/apis'
 
 export default defineComponent({
   name: 'AddLocationButton',
@@ -25,11 +26,13 @@ export default defineComponent({
     const addLocation = async () => {
       if (draft.value) {
         await root.$accessor.draft.setDraft(
-          await root.$client.appendElementValue(
-            draft.value.id,
-            props.category,
-            props.elementKey
-          )
+          (
+            await apis.drafts.appendRefactoringDraftElementValue(
+              draft.value.id,
+              props.category,
+              props.elementKey
+            )
+          ).data
         )
       }
     }
