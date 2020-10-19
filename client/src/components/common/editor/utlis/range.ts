@@ -1,5 +1,5 @@
 import * as monaco from 'monaco-editor'
-import { Range } from 'refactorhub'
+import { Range } from '@/apis'
 
 export function asMonacoRange(range?: Range): monaco.Range {
   if (!range) {

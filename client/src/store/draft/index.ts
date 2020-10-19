@@ -5,6 +5,7 @@ import apis, {
   RefactoringType,
   FileContent,
 } from '@/apis'
+import { DiffCategory, FileMetadata } from 'refactorhub'
 
 export const state = (): {
   draft?: RefactoringDraft
@@ -12,12 +13,19 @@ export const state = (): {
   refactoringTypes: RefactoringType[]
   elementTypes: string[]
   fileContentCache: Map<string, FileContent>
+  displayedFile: {
+    [category in DiffCategory]?: FileMetadata
+  }
 } => ({
   draft: undefined,
   commit: undefined,
   refactoringTypes: [],
   elementTypes: [],
   fileContentCache: new Map(),
+  displayedFile: {
+    before: undefined,
+    after: undefined,
+  },
 })
 
 export const getters = getterTree(state, {})
@@ -50,6 +58,19 @@ export const mutations = mutationTree(state, {
     }
   ) => {
     state.fileContentCache.set(uri, content)
+  },
+
+  setDisplayedFile: (
+    state,
+    {
+      category,
+      file,
+    }: {
+      category: DiffCategory
+      file?: FileMetadata
+    }
+  ) => {
+    state.displayedFile[category] = file
   },
 })
 

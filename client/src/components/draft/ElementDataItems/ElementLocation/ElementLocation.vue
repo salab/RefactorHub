@@ -54,7 +54,7 @@
 <script lang="ts">
 import { defineComponent, computed } from '@nuxtjs/composition-api'
 import { Element, DiffCategory } from 'refactorhub'
-import { trimFileName } from '@/components/common/editor/use/trim'
+import { trimFileName } from '@/components/common/editor/utils/trim'
 import { deleteElementDecoration } from '@/components/draft/ElementEditor/use/elementDecorations'
 import NumberColumn from './NumberColumn.vue'
 

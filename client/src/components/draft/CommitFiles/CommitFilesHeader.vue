@@ -18,33 +18,31 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from '@nuxtjs/composition-api'
-import { trimFileName } from '@/components/common/editor/use/trim'
+import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
+import { trimFileName } from '@/components/common/editor/utils/trim'
 
 export default defineComponent({
-  name: 'CommitFilesHeader',
-  setup(_, { root }) {
-    const commitFiles = computed(() => root.$accessor.draft.commitInfo?.files)
-    const displayedFileMetadata = computed(
-      () => root.$accessor.draft.displayedFileMetadata
-    )
+  setup() {
+    const {
+      app: { $accessor },
+    } = useContext()
+
+    const displayedFile = computed(() => $accessor.draft.displayedFile)
+    const files = computed(() => $accessor.draft.commit?.files)
     const fileName = computed(() => ({
       before: (() => {
-        const index = displayedFileMetadata.value?.before?.index
-        return commitFiles.value && index !== undefined
-          ? commitFiles.value[index].previousName
+        const index = displayedFile.value?.before?.index
+        return files.value && index !== undefined
+          ? files.value[index].previousName
           : ''
       })(),
       after: (() => {
-        const index = displayedFileMetadata.value?.after?.index
-        return commitFiles.value && index !== undefined
-          ? commitFiles.value[index].name
-          : ''
+        const index = displayedFile.value?.after?.index
+        return files.value && index !== undefined ? files.value[index].name : ''
       })(),
     }))
     return {
-      commitFiles,
-      displayedFileMetadata,
+      displayedFile,
       fileName,
       trimFileName,
     }

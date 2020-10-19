@@ -5,7 +5,7 @@ import {
   asMonacoRange,
   getRangeWidthOnEditor,
   getRangeHeightOnEditor,
-} from '@/components/common/editor/use/range'
+} from '@/components/common/editor/utlis/range'
 import { Client } from '@/plugins/client'
 import { accessorType } from '@/store'
 import {

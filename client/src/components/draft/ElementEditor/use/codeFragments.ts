@@ -1,7 +1,7 @@
 import * as monaco from 'monaco-editor'
 import { cloneDeep, debounce } from 'lodash-es'
 import { DiffCategory, Element } from 'refactorhub'
-import { asRange, asMonacoRange } from '@/components/common/editor/use/range'
+import { asRange, asMonacoRange } from '@/components/common/editor/utlis/range'
 import { Client } from '@/plugins/client'
 import { accessorType } from '@/store'
 import {

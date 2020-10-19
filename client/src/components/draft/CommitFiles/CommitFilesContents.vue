@@ -1,7 +1,7 @@
 <template>
-  <v-list v-if="commitFiles" dense class="file-list">
+  <v-list dense class="file-list">
     <v-list-item-group v-model="index">
-      <div v-for="(file, i) in commitFiles" :key="i">
+      <div v-for="(file, i) in files" :key="i">
         <v-list-item
           :disabled="isDisabled(file) || i === index"
           @click="onClickItem(i)"
@@ -22,31 +22,41 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from '@nuxtjs/composition-api'
-import { DiffCategory, CommitFile } from 'refactorhub'
-import { trimFileName } from '@/components/common/editor/use/trim'
+import {
+  defineComponent,
+  ref,
+  watch,
+  useContext,
+  computed,
+} from '@nuxtjs/composition-api'
+import { DiffCategory } from 'refactorhub'
+import { CommitFile } from '@/apis'
+import { trimFileName } from '@/components/common/editor/utils/trim'
 
 export default defineComponent({
-  name: 'CommitFilesContents',
   props: {
     category: {
       type: String as () => DiffCategory,
       required: true,
     },
   },
-  setup(props, { root }) {
+  setup(props) {
+    const {
+      app: { $accessor },
+    } = useContext()
+
     const index = ref<number>()
-    const commitFiles = computed(() => root.$accessor.draft.commitInfo?.files)
+    const files = computed(() => $accessor.draft.commit?.files || [])
 
     const onClickItem = (value: number) => {
-      root.$accessor.draft.setDisplayedFileMetadata({
+      $accessor.draft.setDisplayedFile({
         category: props.category,
-        metadata: { index: value },
+        file: { index: value },
       })
     }
 
     watch(
-      () => root.$accessor.draft.displayedFileMetadata[props.category]?.index,
+      () => $accessor.draft.displayedFile[props.category]?.index,
       (value) => {
         index.value = value
       }
@@ -62,7 +72,7 @@ export default defineComponent({
 
     return {
       index,
-      commitFiles,
+      files,
       onClickItem,
       getFileName,
       isDisabled,

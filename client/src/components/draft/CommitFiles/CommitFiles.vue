@@ -26,18 +26,8 @@
 
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api'
-import CommitFilesHeader from './CommitFilesHeader.vue'
-import CommitFilesContents from './CommitFilesContents.vue'
-import CommitFilesIcons from './CommitFilesIcons.vue'
 
-export default defineComponent({
-  name: 'CommitFiles',
-  components: {
-    CommitFilesHeader,
-    CommitFilesContents,
-    CommitFilesIcons,
-  },
-})
+export default defineComponent({})
 </script>
 
 <style lang="scss" scoped>

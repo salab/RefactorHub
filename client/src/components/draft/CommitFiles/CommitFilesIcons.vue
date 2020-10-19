@@ -1,7 +1,7 @@
 <template>
-  <v-list v-if="commitFiles" dense class="icon-list">
+  <v-list dense class="icon-list">
     <v-list-item-group v-model="index">
-      <div v-for="(file, i) in commitFiles" :key="i">
+      <div v-for="(file, i) in files" :key="i">
         <v-list-item :disabled="i === index" @click="onClickItem(i)">
           <v-icon v-if="file.status === 'modified'" small color="amber">
             fa-fw fa-pen-square
@@ -23,48 +23,51 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from '@nuxtjs/composition-api'
+import {
+  defineComponent,
+  computed,
+  ref,
+  watch,
+  useContext,
+} from '@nuxtjs/composition-api'
 
 export default defineComponent({
-  name: 'CommitFilesIcons',
-  setup(_, { root }) {
+  setup() {
+    const {
+      app: { $accessor },
+    } = useContext()
+
     const index = ref<number>()
-    const commitFiles = computed(() => root.$accessor.draft.commitInfo?.files)
+    const files = computed(() => $accessor.draft.commit?.files || [])
 
     const onClickItem = (value: number) => {
-      if (root.$accessor.draft.displayedFileMetadata.before?.index !== value) {
-        root.$accessor.draft.setDisplayedFileMetadata({
+      if ($accessor.draft.displayedFile.before?.index !== value) {
+        $accessor.draft.setDisplayedFile({
           category: 'before',
-          metadata: { index: value },
+          file: { index: value },
         })
       }
-      if (root.$accessor.draft.displayedFileMetadata.after?.index !== value) {
-        root.$accessor.draft.setDisplayedFileMetadata({
+      if ($accessor.draft.displayedFile.after?.index !== value) {
+        $accessor.draft.setDisplayedFile({
           category: 'after',
-          metadata: { index: value },
+          file: { index: value },
         })
       }
     }
 
     watch(
-      () => root.$accessor.draft.displayedFileMetadata.before,
+      () => $accessor.draft.displayedFile.before,
       (value) => {
-        if (
-          value?.index ===
-          root.$accessor.draft.displayedFileMetadata.after?.index
-        ) {
+        if (value?.index === $accessor.draft.displayedFile.after?.index) {
           index.value = value?.index
         } else index.value = undefined
       }
     )
 
     watch(
-      () => root.$accessor.draft.displayedFileMetadata.after,
+      () => $accessor.draft.displayedFile.after,
       (value) => {
-        if (
-          value?.index ===
-          root.$accessor.draft.displayedFileMetadata.before?.index
-        ) {
+        if (value?.index === $accessor.draft.displayedFile.before?.index) {
           index.value = value?.index
         } else index.value = undefined
       }
@@ -72,7 +75,7 @@ export default defineComponent({
 
     return {
       index,
-      commitFiles,
+      files,
       onClickItem,
     }
   },

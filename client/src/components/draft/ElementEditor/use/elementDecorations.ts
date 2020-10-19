@@ -1,7 +1,7 @@
 import * as monaco from 'monaco-editor'
 import hash from 'object-hash'
 import { Element, DiffCategory, DecorationMetadata } from 'refactorhub'
-import { asMonacoRange } from '@/components/common/editor/use/range'
+import { asMonacoRange } from '@/components/common/editor/utlis/range'
 
 const decorationMetadataMap: {
   [category in DiffCategory]: Map<string, DecorationMetadata>
