@@ -9,15 +9,14 @@ import org.apache.commons.io.FileUtils
 import java.io.File
 import java.net.URL
 
-private const val DATA_JSON_URL = "http://refactoring.encs.concordia.ca/oracle/api.php?json"
-
+private const val API_URL = "http://refactoring.encs.concordia.ca/oracle/api.php"
 private val REPOSITORY_URL_REGEX = Regex("""https://github.com/([\w\-]+)/([\w\-.]+)\.git""")
 
-private fun getDataJson(): String {
+private fun getDataJsonAsText(): String {
     val file = File("$OUTPUTS_PATH/oracle/data.json")
     if (!file.exists()) {
         file.parentFile.mkdirs()
-        FileUtils.copyURLToFile(URL(DATA_JSON_URL), file)
+        FileUtils.copyURLToFile(URL("$API_URL?json"), file)
     }
     return file.readText()
 }
@@ -28,43 +27,61 @@ private fun parseDataJson(json: String): List<RefOracleCommit> {
     return jacksonObjectMapper().readValue(fixed)
 }
 
-private fun convert(commits: List<RefOracleCommit>): List<List<RefOracleData>> = commits.map { commit ->
-    commit.refactorings.filter {
-        it.validation == "TP" && it.detectionTools.contains("RefactoringMiner")
-    }.map {
-        val result = REPOSITORY_URL_REGEX.matchEntire(commit.repository)
-            ?: throw RuntimeException("repository url is invalid: ${commit.repository}")
-        val (owner, repository) = result.destructured
-        RefOracleData(
-            it.type,
-            it.description,
-            Commit(
-                commit.sha1,
-                owner,
-                repository
+private fun getRefOracleCommits() = parseDataJson(getDataJsonAsText())
+
+private fun convert(
+    commits: List<RefOracleCommit>
+): List<List<RefOracleData>> =
+    commits.map { commit ->
+        commit.refactorings.map {
+            val result = REPOSITORY_URL_REGEX.matchEntire(commit.repository)
+                ?: throw RuntimeException("repository url is invalid: ${commit.repository}")
+            val (owner, repository) = result.destructured
+            RefOracleData(
+                it.type,
+                it.description,
+                Commit(
+                    commit.sha1,
+                    owner,
+                    repository
+                )
             )
+        }
+    }
+
+fun getRefOracleDataList(
+    type: String,
+    size: Int,
+    maxPerCommit: Int = 5,
+    minPerCommit: Int = 1,
+    overlap: Boolean = false,
+    random: Boolean = false,
+    validation: String = "TP",
+    tools: List<String> = listOf("RefactoringMiner")
+): List<RefOracleData> {
+    val commits = getRefOracleCommits().map { commit ->
+        RefOracleCommit(commit.id, commit.repository, commit.sha1,
+            commit.refactorings.filter { ref ->
+                ref.validation == validation && tools.all { tool -> ref.detectionTools.contains(tool) }
+            }
         )
     }
-}
-
-fun getRefOracleDataset(type: String, n: Int, m: Int = 10, random: Boolean = false): List<RefOracleData> {
-    val commits = parseDataJson(getDataJson())
     val refactoringLists = convert(commits)
 
-    val candidateLists = refactoringLists.filter { it.size <= m }.map { refs ->
+    val candidateLists = refactoringLists.filter { it.size in minPerCommit..maxPerCommit }.map { refs ->
         refs.filter { it.type == type }
     }.filter { it.isNotEmpty() }
 
-    if (n <= candidateLists.size) {
-        return (if (random) candidateLists.shuffled() else candidateLists).take(n).map { it.first() }
+    // all refactorings are in different commits
+    if (size <= candidateLists.size) {
+        return (if (random) candidateLists.shuffled() else candidateLists).take(size).map { it.first() }
     }
 
     val candidates = candidateLists.flatten()
-    if (n <= candidates.size) {
-        return (if (random) candidates.shuffled() else candidates).take(n)
+    if (overlap && size <= candidates.size) {
+        return (if (random) candidates.shuffled() else candidates).take(size)
     }
 
-    println("number of type='$type' is ${candidates.size}")
     return candidates
 }
 
