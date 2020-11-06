@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 import Vue from 'vue'
 
 declare module 'vue/types/vue' {
