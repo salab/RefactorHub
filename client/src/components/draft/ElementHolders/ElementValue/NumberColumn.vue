@@ -16,7 +16,6 @@ export default defineComponent({
   props: {
     number: {
       type: Number,
-      required: true,
     },
   },
 })
