@@ -6,7 +6,7 @@
       <draft-summary :draft="draft" :commit="commit" />
       <v-divider />
       <div class="flex-grow-1 d-flex min-height-0">
-        <element-holders category="before" />
+        <element-holders :draft="draft" category="before" />
         <div class="flex-grow-1 d-flex flex-column">
           <div class="flex-grow-1">
             <element-editor />
@@ -14,7 +14,7 @@
           <v-divider />
           <commit-files :files="commit.files" />
         </div>
-        <element-holders category="after" />
+        <element-holders :draft="draft" category="after" />
       </div>
       <element-type-colors />
     </div>

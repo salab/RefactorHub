@@ -2,7 +2,7 @@
   <div>
     <v-list-group
       class="element-holder"
-      :class="`element-holder-${elementData.type}`"
+      :class="`element-holder-${elementHolder.type}`"
       :value="true"
     >
       <template v-slot:activator>
@@ -11,7 +11,7 @@
             >fa-fw fa-check</v-icon
           >
           <v-icon
-            v-else-if="elementData.required"
+            v-else-if="elementMetadata.required"
             x-small
             color="error"
             title="This element is required"
@@ -21,26 +21,26 @@
         <v-list-item-content>
           <v-list-item-title>{{ elementKey }}</v-list-item-title>
           <v-list-item-subtitle>{{
-            `${elementData.type}${elementData.multiple ? '[]' : ''}`
+            `${elementHolder.type}${elementHolder.multiple ? '[]' : ''}`
           }}</v-list-item-subtitle>
         </v-list-item-content>
-        <div v-if="isDeletable">
-          <v-btn icon x-small color="error" @click.stop="deleteElementKey">
+        <div v-if="isRemovable">
+          <v-btn icon x-small color="error" @click.stop="removeElementKey">
             <v-icon x-small>fa-trash</v-icon>
           </v-btn>
         </div>
       </template>
-      <div v-for="(element, i) in elementData.elements" :key="i">
+      <div v-for="(element, i) in elementHolder.elements" :key="i">
         <v-divider />
         <element-value
           :category="category"
           :element-key="elementKey"
           :element-index="i"
           :element="element"
-          :multiple="elementData.multiple"
+          :multiple="elementHolder.multiple"
         />
       </div>
-      <div v-if="elementData.multiple">
+      <div v-if="elementHolder.multiple">
         <v-divider />
         <element-value-append-button
           :category="category"
@@ -56,7 +56,7 @@
 import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
 import { DiffCategory } from 'refactorhub'
 import { deleteElementDecoration } from '@/components/draft/ElementEditor/ts/elementDecorations'
-import apis, { CodeElementHolder } from '@/apis'
+import apis, { CodeElementHolder, CodeElementMetadata } from '@/apis'
 
 export default defineComponent({
   props: {
@@ -68,11 +68,15 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    elementData: {
+    elementHolder: {
       type: Object as () => CodeElementHolder,
       required: true,
     },
-    isDeletable: {
+    elementMetadata: {
+      type: Object as () => CodeElementMetadata,
+      required: true,
+    },
+    isRemovable: {
       type: Boolean,
       required: true,
     },
@@ -84,27 +88,27 @@ export default defineComponent({
 
     const isCompleted = computed(
       () =>
-        props.elementData.elements.length > 0 &&
-        props.elementData.elements.every((e) => !!e.location)
+        props.elementHolder.elements.length > 0 &&
+        props.elementHolder.elements.every((e) => !!e.location)
     )
 
-    const draft = computed(() => $accessor.draft.draft)
-    const deleteElementKey = async () => {
-      if (!draft.value) return
+    const removeElementKey = async () => {
+      const draft = $accessor.draft.draft
+      if (!draft) return
       await $accessor.draft.setDraft(
         (
           await apis.drafts.removeRefactoringDraftElementKey(
-            draft.value.id,
+            draft.id,
             props.category,
             props.elementKey
           )
         ).data
       )
-      props.elementData.elements.forEach((_, i) => {
+      props.elementHolder.elements.forEach((_, i) => {
         deleteElementDecoration(props.category, props.elementKey, i)
       })
     }
-    return { isCompleted, deleteElementKey }
+    return { isCompleted, removeElementKey }
   },
 })
 </script>

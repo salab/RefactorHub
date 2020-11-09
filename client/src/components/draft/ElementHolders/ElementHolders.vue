@@ -9,12 +9,13 @@
         <div class="flex-grow-1 list-container">
           <v-list expand class="py-0">
             <element-holder
-              v-for="(data, key) in elementDataMap"
+              v-for="(holder, key) in elementHolderMap"
               :key="key"
               :category="category"
               :element-key="key"
-              :element-data="data"
-              :is-deletable="isDeletable(key)"
+              :element-holder="holder"
+              :element-metadata="elementMetadataMap[key]"
+              :is-removable="isRemovable(key)"
             />
           </v-list>
         </div>
@@ -28,19 +29,17 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  computed,
-  ref,
-  watch,
-  useContext,
-} from '@nuxtjs/composition-api'
+import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
 import { capitalize } from 'lodash-es'
 import { DiffCategory } from 'refactorhub'
-import apis, { RefactoringType } from '@/apis'
+import apis, { RefactoringDraft } from '@/apis'
 
 export default defineComponent({
   props: {
+    draft: {
+      type: Object as () => RefactoringDraft,
+      required: true,
+    },
     category: {
       type: String as () => DiffCategory,
       required: true,
@@ -52,41 +51,21 @@ export default defineComponent({
     } = useContext()
 
     const title = capitalize(props.category)
-
-    const draft = computed(() => $accessor.draft.draft)
-    const elementDataMap = computed(() => {
-      if (draft.value) {
-        return props.category === 'before'
-          ? draft.value.data.before
-          : draft.value.data.after
-      }
-      return {}
+    const elementHolderMap = computed(() => props.draft.data[props.category])
+    const elementMetadataMap = computed(() => {
+      const type = $accessor.draft.refactoringTypes.find(
+        (t) => t.name === props.draft.type
+      )
+      return type ? type[props.category] : {}
     })
-
-    const type = ref<RefactoringType>()
-    watch(draft, async () => {
-      if (draft.value) {
-        type.value = (
-          await apis.refactoringTypes.getRefactoringType(draft.value.type)
-        ).data
-      }
-    })
-    const elementMap = computed(() => {
-      if (type.value) {
-        return props.category === 'before'
-          ? type.value.before
-          : type.value.after
-      }
-      return {}
-    })
-
-    const isDeletable = (key: string) =>
-      !Object.keys(elementMap.value).includes(key)
+    const isRemovable = (key: string) =>
+      !Object.keys(elementMetadataMap.value).includes(key)
 
     return {
       title,
-      elementDataMap,
-      isDeletable,
+      elementHolderMap,
+      elementMetadataMap,
+      isRemovable,
     }
   },
 })
