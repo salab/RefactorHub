@@ -8,7 +8,7 @@
         <v-divider />
         <div class="flex-grow-1 list-container">
           <v-list expand class="py-0">
-            <element-data-item
+            <element-holder
               v-for="(data, key) in elementDataMap"
               :key="key"
               :category="category"
@@ -20,7 +20,7 @@
         </div>
         <div>
           <v-divider />
-          <add-element-key-button :category="category" />
+          <element-key-put-button :category="category" />
         </div>
       </div>
     </v-navigation-drawer>

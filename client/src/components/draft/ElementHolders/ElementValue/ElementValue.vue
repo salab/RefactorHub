@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="{ [`element-location-${element.type}`]: isEditing }"
+    :class="{ [`element-value-${element.type}`]: isEditing }"
     class="d-flex pl-3"
   >
     <div class="flex-grow-1 d-flex flex-column justify-center">

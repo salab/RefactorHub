@@ -1,8 +1,8 @@
 <template>
   <div>
     <v-list-group
-      class="element-data"
-      :class="`element-data-${elementData.type}`"
+      class="element-holder"
+      :class="`element-holder-${elementData.type}`"
       :value="true"
     >
       <template v-slot:activator>
@@ -32,7 +32,7 @@
       </template>
       <div v-for="(element, i) in elementData.elements" :key="i">
         <v-divider />
-        <element-location
+        <element-value
           :category="category"
           :element-key="elementKey"
           :element-index="i"
@@ -42,7 +42,10 @@
       </div>
       <div v-if="elementData.multiple">
         <v-divider />
-        <add-location-button :category="category" :element-key="elementKey" />
+        <element-value-append-button
+          :category="category"
+          :element-key="elementKey"
+        />
       </div>
     </v-list-group>
     <v-divider />
@@ -107,7 +110,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.element-data {
+.element-holder {
   border-left: solid 0.5rem;
   &::v-deep {
     .v-list-group__header {

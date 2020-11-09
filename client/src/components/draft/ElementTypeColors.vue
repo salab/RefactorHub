@@ -2,10 +2,10 @@
   <component :is="'style'">
     <!-- prettier-ignore -->
     <template v-for="type in elementTypes">
-      .element-data-{{ type }} {
+      .element-holder-{{ type }} {
         border-color: {{ getTypeColor(type) }} !important;
       }
-      .element-location-{{ type }} {
+      .element-value-{{ type }} {
         background-color: {{ getTypeColor(type, 0.2) }};
       }
       .element-widget-{{ type }} {
