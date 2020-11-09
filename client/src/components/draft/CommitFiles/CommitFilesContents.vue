@@ -27,7 +27,6 @@ import {
   ref,
   watch,
   useContext,
-  computed,
 } from '@nuxtjs/composition-api'
 import { DiffCategory } from 'refactorhub'
 import { CommitFile } from '@/apis'
@@ -39,6 +38,10 @@ export default defineComponent({
       type: String as () => DiffCategory,
       required: true,
     },
+    files: {
+      type: Array as () => CommitFile[],
+      required: true,
+    },
   },
   setup(props) {
     const {
@@ -46,7 +49,6 @@ export default defineComponent({
     } = useContext()
 
     const index = ref<number>()
-    const files = computed(() => $accessor.draft.commit?.files || [])
 
     const onClickItem = (value: number) => {
       $accessor.draft.setDisplayedFile({
@@ -72,7 +74,6 @@ export default defineComponent({
 
     return {
       index,
-      files,
       onClickItem,
       getFileName,
       isDisabled,

@@ -3,19 +3,19 @@
     <v-expansion-panels focusable flat tile :value="0">
       <v-expansion-panel class="files-panel">
         <v-expansion-panel-header class="pa-0 pr-2">
-          <commit-files-header />
+          <commit-files-header :files="files" />
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-divider />
           <div class="files-content d-flex">
             <div class="flex-grow-1">
-              <commit-files-contents category="before" />
+              <commit-files-contents :files="files" category="before" />
             </div>
             <div>
-              <commit-files-icons />
+              <commit-files-icons :files="files" />
             </div>
             <div class="flex-grow-1">
-              <commit-files-contents category="after" />
+              <commit-files-contents :files="files" category="after" />
             </div>
           </div>
         </v-expansion-panel-content>
@@ -26,8 +26,16 @@
 
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api'
+import { CommitFile } from '@/apis'
 
-export default defineComponent({})
+export default defineComponent({
+  props: {
+    files: {
+      type: Array as () => CommitFile[],
+      required: true,
+    },
+  },
+})
 </script>
 
 <style lang="scss" scoped>

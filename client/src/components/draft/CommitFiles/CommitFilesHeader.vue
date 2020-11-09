@@ -19,26 +19,30 @@
 
 <script lang="ts">
 import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
+import { CommitFile } from '@/apis'
 import { trimFileName } from '@/components/common/editor/utils/trim'
 
 export default defineComponent({
-  setup() {
+  props: {
+    files: {
+      type: Array as () => CommitFile[],
+      required: true,
+    },
+  },
+  setup(props) {
     const {
       app: { $accessor },
     } = useContext()
 
     const displayedFile = computed(() => $accessor.draft.displayedFile)
-    const files = computed(() => $accessor.draft.commit?.files)
     const fileName = computed(() => ({
       before: (() => {
         const index = displayedFile.value?.before?.index
-        return files.value && index !== undefined
-          ? files.value[index].previousName
-          : ''
+        return index !== undefined ? props.files[index].previousName : ''
       })(),
       after: (() => {
         const index = displayedFile.value?.after?.index
-        return files.value && index !== undefined ? files.value[index].name : ''
+        return index !== undefined ? props.files[index].name : ''
       })(),
     }))
     return {

@@ -12,7 +12,7 @@
             <element-editor />
           </div>
           <v-divider />
-          <commit-files />
+          <commit-files :files="commit.files" />
         </div>
         <element-holders category="after" />
       </div>

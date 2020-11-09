@@ -25,20 +25,25 @@
 <script lang="ts">
 import {
   defineComponent,
-  computed,
   ref,
   watch,
   useContext,
 } from '@nuxtjs/composition-api'
+import { CommitFile } from '@/apis'
 
 export default defineComponent({
+  props: {
+    files: {
+      type: Array as () => CommitFile[],
+      required: true,
+    },
+  },
   setup() {
     const {
       app: { $accessor },
     } = useContext()
 
     const index = ref<number>()
-    const files = computed(() => $accessor.draft.commit?.files || [])
 
     const onClickItem = (value: number) => {
       if ($accessor.draft.displayedFile.before?.index !== value) {
@@ -75,7 +80,6 @@ export default defineComponent({
 
     return {
       index,
-      files,
       onClickItem,
     }
   },
