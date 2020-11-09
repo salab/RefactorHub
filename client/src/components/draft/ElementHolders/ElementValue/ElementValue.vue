@@ -5,15 +5,7 @@
   >
     <div class="flex-grow-1 d-flex flex-column justify-center">
       <span class="caption text--secondary">{{ path }}</span>
-      <div class="d-flex align-center text--secondary">
-        <number-column :number="element.location?.range?.startLine" />
-        <div>:</div>
-        <number-column :number="element.location?.range?.startColumn" />
-        <div class="px-1">~</div>
-        <number-column :number="element.location?.range?.endLine" />
-        <div>:</div>
-        <number-column :number="element.location?.range?.endColumn" />
-      </div>
+      <range :range="range" />
     </div>
     <div class="pa-1 buttons d-flex flex-column justify-center">
       <v-btn
@@ -156,6 +148,8 @@ export default defineComponent({
       }
     }
 
+    const range = computed(() => props.element.location?.range)
+
     return {
       path,
       isExist,
@@ -163,6 +157,7 @@ export default defineComponent({
       deleteLocation,
       toggleEditLocation,
       isEditing,
+      range,
     }
   },
 })
