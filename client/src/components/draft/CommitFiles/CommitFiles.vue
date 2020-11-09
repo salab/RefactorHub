@@ -57,6 +57,6 @@ export default defineComponent({
 
 .files-content {
   max-height: 12rem;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 </style>

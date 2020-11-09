@@ -95,6 +95,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .list-container {
   min-height: 0;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 </style>

@@ -20,6 +20,7 @@ export default {
   },
   plugins: [],
   components: true,
+  css: ['@/assets/styles/common.scss'],
   build: {
     extend(config) {
       if (config.plugins) config.plugins.push(new MonacoEditorWebpackPlugin())
@@ -35,7 +36,7 @@ export default {
   ],
   modules: ['@nuxtjs/axios', '@nuxtjs/proxy'],
   vuetify: {
-    customVariables: ['@/assets/styles/variables.scss'],
+    customVariables: ['@/assets/styles/_variables.scss'],
     defaultAssets: {
       icons: 'fa',
     },
