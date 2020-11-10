@@ -20,7 +20,6 @@ export default {
   },
   plugins: [],
   components: true,
-  css: ['@/assets/styles/common.scss'],
   build: {
     extend(config) {
       if (config.plugins) config.plugins.push(new MonacoEditorWebpackPlugin())
