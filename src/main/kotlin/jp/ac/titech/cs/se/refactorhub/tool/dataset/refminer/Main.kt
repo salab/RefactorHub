@@ -24,9 +24,15 @@ fun main() {
     // createRefactoringMinerDataset(types, 5, 5)
 }
 
-fun createTypeDataset(types: List<String>, size: Int, maxPerCommit: Int) {
-    val file = File("$OUTPUTS_PATH/type.ndjson")
+fun getOutputFile(name: String): File {
+    val file = File("$OUTPUTS_PATH/$name.ndjson")
+    file.parentFile.mkdirs()
     if (!file.exists()) file.createNewFile()
+    return file
+}
+
+fun createTypeDataset(types: List<String>, size: Int, maxPerCommit: Int) {
+    val file = getOutputFile("type")
 
     for (type in types) {
         val dataList = getRefOracleDataList(type, size, maxPerCommit)
@@ -43,8 +49,7 @@ fun createTypeDataset(types: List<String>, size: Int, maxPerCommit: Int) {
 }
 
 fun createDescriptionDataset(types: List<String>, size: Int, maxPerCommit: Int) {
-    val file = File("$OUTPUTS_PATH/description.ndjson")
-    if (!file.exists()) file.createNewFile()
+    val file = getOutputFile("description")
 
     for (type in types) {
         val dataList = getRefOracleDataList(type, size, maxPerCommit)
@@ -61,8 +66,8 @@ fun createDescriptionDataset(types: List<String>, size: Int, maxPerCommit: Int) 
 }
 
 fun createRefactoringMinerDataset(types: List<String>, size: Int, maxPerCommit: Int) {
-    val file = File("$OUTPUTS_PATH/refminer.ndjson")
-    if (!file.exists()) file.createNewFile()
+    val file = getOutputFile("refminer")
+
     for (type in types) {
         val dataList = getRefOracleDataList(type, Int.MAX_VALUE, maxPerCommit)
         var count = 0
