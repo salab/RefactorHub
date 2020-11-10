@@ -1,43 +1,44 @@
 <template>
-  <div
-    :class="{ [`element-value-${element.type}`]: isEditing }"
-    class="d-flex pl-3"
-  >
+  <div :class="{ [`element-value-${element.type}`]: isEditing }" class="d-flex">
     <div class="flex-grow-1 d-flex flex-column justify-center">
-      <span class="caption text--secondary">{{ path }}</span>
+      <div class="d-flex justify-center">
+        <span class="caption text--secondary" :title="path">{{
+          trimFileName(path, 20)
+        }}</span>
+      </div>
       <element-range :range="range" />
     </div>
-    <div class="pa-1 buttons d-flex flex-column justify-center">
+    <div class="pa-1 d-flex flex-column justify-center">
       <v-btn
         x-small
-        outlined
-        tile
+        icon
+        title="Preview on editor"
         color="secondary"
         :disabled="!isExist"
         @click="openLocation"
       >
-        <span class="text-none font-weight-regular">open</span>
+        <v-icon x-small>fa-fw fa-eye</v-icon>
       </v-btn>
       <v-btn
         x-small
-        outlined
-        tile
+        icon
+        title="Start to select on editor"
         color="primary"
         class="mt-1"
         @click="toggleEditLocation"
       >
-        <span class="text-none font-weight-regular">edit</span>
+        <v-icon x-small>fa-fw fa-pen</v-icon>
       </v-btn>
       <v-btn
         v-if="multiple"
         x-small
-        outlined
-        tile
+        icon
+        title="Delete"
         color="error"
         class="mt-1"
         @click="deleteLocation"
       >
-        <span class="text-none font-weight-regular">delete</span>
+        <v-icon x-small>fa-fw fa-trash</v-icon>
       </v-btn>
     </div>
   </div>
@@ -78,9 +79,7 @@ export default defineComponent({
       app: { $accessor },
     } = useContext()
 
-    const path = computed(() =>
-      trimFileName(props.element.location?.path || '-', 20)
-    )
+    const path = computed(() => props.element.location?.path || '-')
 
     const draft = computed(() => $accessor.draft.draft)
 
@@ -152,6 +151,7 @@ export default defineComponent({
 
     return {
       path,
+      trimFileName,
       isExist,
       openLocation,
       deleteLocation,
@@ -162,9 +162,3 @@ export default defineComponent({
   },
 })
 </script>
-
-<style lang="scss" scoped>
-.buttons {
-  width: 3.5rem;
-}
-</style>

@@ -2,7 +2,7 @@
   <v-card
     outlined
     tile
-    :width="20"
+    :width="24"
     class="d-flex justify-center overflow-x-scroll"
   >
     <span class="number-letter">{{ number }}</span>
