@@ -32,7 +32,7 @@
 import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
 import { capitalize } from 'lodash-es'
 import { DiffCategory } from 'refactorhub'
-import apis, { RefactoringDraft } from '@/apis'
+import { RefactoringDraft } from '@/apis'
 
 export default defineComponent({
   props: {
