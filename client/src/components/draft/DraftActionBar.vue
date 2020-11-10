@@ -3,10 +3,10 @@
     <v-app-bar dense flat>
       <v-spacer />
       <v-btn depressed small tile color="primary" class="ml-2" @click="save">
-        save
+        <span class="text-none">Save</span>
       </v-btn>
       <v-btn depressed small tile text class="ml-2" @click="discard">
-        discard
+        <span class="text-none">Discard</span>
       </v-btn>
     </v-app-bar>
   </v-card>
