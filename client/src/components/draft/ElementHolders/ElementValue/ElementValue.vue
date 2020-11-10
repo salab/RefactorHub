@@ -5,7 +5,7 @@
   >
     <div class="flex-grow-1 d-flex flex-column justify-center">
       <span class="caption text--secondary">{{ path }}</span>
-      <range :range="range" />
+      <element-range :range="range" />
     </div>
     <div class="pa-1 buttons d-flex flex-column justify-center">
       <v-btn

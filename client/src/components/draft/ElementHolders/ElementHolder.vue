@@ -11,7 +11,7 @@
             >fa-fw fa-check</v-icon
           >
           <v-icon
-            v-else-if="elementMetadata.required"
+            v-else-if="elementMetadata && elementMetadata.required"
             x-small
             color="error"
             title="This element is required"
@@ -74,7 +74,6 @@ export default defineComponent({
     },
     elementMetadata: {
       type: Object as () => CodeElementMetadata,
-      required: true,
     },
     isRemovable: {
       type: Boolean,
