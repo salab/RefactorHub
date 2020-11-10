@@ -1,4 +1,4 @@
-import com.moowork.gradle.node.yarn.YarnTask
+import com.moowork.gradle.node.npm.NpmTask
 
 plugins {
     id("com.github.node-gradle.node") version "2.2.4"
@@ -9,8 +9,8 @@ node {
 }
 
 tasks {
-    register<YarnTask>("build") {
-        dependsOn("yarn")
-        args = listOf("build")
+    register<NpmTask>("build") {
+        dependsOn("npmInstall")
+        setArgs(listOf("run", "generate:with-api"))
     }
 }
