@@ -8,15 +8,11 @@
         <v-row no-gutters>
           <v-file-input label="input NDJSON file" @change="onInputFile" />
         </v-row>
-        <v-row no-gutters>
-          <template v-if="loading">
-            <v-progress-linear indeterminate />
-          </template>
-          <template v-else>
-            <div v-for="message in messages" :key="message">
-              {{ message }}
-            </div>
-          </template>
+        <v-row v-if="loading" no-gutters>
+          <v-progress-linear indeterminate />
+        </v-row>
+        <v-row v-for="message in messages" v-else :key="message" no-gutters>
+          {{ message }}
         </v-row>
       </v-col>
     </v-row>
