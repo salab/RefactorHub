@@ -34,6 +34,7 @@ import { initElementWidgets } from '@/components/draft/ElementEditor/ts/elementW
 
 export default defineComponent({
   name: 'draft',
+  middleware: 'authenticated',
   setup() {
     const {
       params,
