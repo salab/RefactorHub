@@ -16,13 +16,6 @@ const instance = axios.create({
   xsrfHeaderName: 'X-XSRF-TOKEN',
 })
 
-instance.interceptors.response.use((response) => {
-  if (response.status === 401) {
-    location.href = '/login'
-  }
-  return response
-})
-
 const apis = {
   users: new UsersApi({}, basePath, instance),
   commits: new CommitsApi({}, basePath, instance),

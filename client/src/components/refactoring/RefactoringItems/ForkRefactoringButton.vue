@@ -22,10 +22,14 @@ export default defineComponent({
     } = useContext()
 
     const fork = async () => {
-      const draft = (
-        await apis.refactorings.forkRefactoring(props.refactoring.id)
-      ).data
-      router?.push(`/draft/${draft.id}`)
+      try {
+        const draft = (
+          await apis.refactorings.forkRefactoring(props.refactoring.id)
+        ).data
+        router?.push(`/draft/${draft.id}`)
+      } catch (e) {
+        location.href = '/login'
+      }
     }
     return { fork }
   },
