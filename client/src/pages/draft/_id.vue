@@ -49,14 +49,18 @@ export default defineComponent({
       await $accessor.draft.initStates(parseInt(params.value.id))
     })
 
-    async function save(id: number) {
+    async function save() {
+      const id = draft.value?.id
+      if (id === undefined) return
       await apis.drafts.saveRefactoringDraft(id)
       router?.back()
       // TODO: Jump preview page after save
       // const refactoring = (await apis.drafts.saveRefactoringDraft(id)).data
       // router?.push(`/refactoring/${refactoring.id}`)
     }
-    async function discard(id: number) {
+    async function discard() {
+      const id = draft.value?.id
+      if (id === undefined) return
       await apis.drafts.discardRefactoringDraft(id)
       router?.back()
     }
