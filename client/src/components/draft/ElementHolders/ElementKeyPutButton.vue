@@ -3,7 +3,7 @@
     <div class="px-3 pb-1">
       <v-text-field
         v-model="elementKey"
-        label="elementName"
+        label="element name"
         dense
         single-line
         hide-details
@@ -11,7 +11,7 @@
       <v-select
         v-model="elementType"
         :items="elementTypes"
-        label="elementType"
+        label="ElementType"
         dense
         single-line
         hide-details
