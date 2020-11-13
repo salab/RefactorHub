@@ -53,6 +53,10 @@ import apis, { CodeElement } from '@/apis'
 
 export default defineComponent({
   props: {
+    draftId: {
+      type: Number,
+      required: true,
+    },
     category: {
       type: String as () => DiffCategory,
       required: true,
@@ -81,8 +85,6 @@ export default defineComponent({
 
     const path = computed(() => props.element.location?.path || '-')
 
-    const draft = computed(() => $accessor.draft.draft)
-
     const fileIndex = computed(() =>
       $accessor.draft.commit?.files
         ?.map((f) => (props.category === 'before' ? f.previousName : f.name))
@@ -104,11 +106,10 @@ export default defineComponent({
     }
 
     const deleteLocation = async () => {
-      if (!draft.value) return
       await $accessor.draft.setDraft(
         (
           await apis.drafts.deleteRefactoringDraftElementValue(
-            draft.value.id,
+            props.draftId,
             props.category,
             props.elementKey,
             props.elementIndex

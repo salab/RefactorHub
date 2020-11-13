@@ -33,6 +33,7 @@
       <div v-for="(element, i) in elementHolder.elements" :key="i">
         <v-divider />
         <element-value
+          :draft-id="draftId"
           :category="category"
           :element-key="elementKey"
           :element-index="i"
@@ -60,6 +61,10 @@ import apis, { CodeElementHolder, CodeElementMetadata } from '@/apis'
 
 export default defineComponent({
   props: {
+    draftId: {
+      type: Number,
+      required: true,
+    },
     category: {
       type: String as () => DiffCategory,
       required: true,
@@ -92,12 +97,10 @@ export default defineComponent({
     )
 
     const removeElementKey = async () => {
-      const draft = $accessor.draft.draft
-      if (!draft) return
       await $accessor.draft.setDraft(
         (
           await apis.drafts.removeRefactoringDraftElementKey(
-            draft.id,
+            props.draftId,
             props.category,
             props.elementKey
           )

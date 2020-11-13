@@ -11,6 +11,7 @@
             <element-holder
               v-for="(holder, key) in elementHolderMap"
               :key="key"
+              :draft-id="draft.id"
               :category="category"
               :element-key="key"
               :element-holder="holder"
