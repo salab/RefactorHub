@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+import { defineComponent, onMounted, useContext } from '@nuxtjs/composition-api'
 import { CommitFile } from '@/apis'
 
 export default defineComponent({
@@ -34,6 +34,22 @@ export default defineComponent({
       type: Array as () => CommitFile[],
       required: true,
     },
+  },
+  setup() {
+    const {
+      app: { $accessor },
+    } = useContext()
+
+    onMounted(() => {
+      $accessor.draft.setDisplayedFile({
+        category: 'before',
+        file: { index: 0 },
+      })
+      $accessor.draft.setDisplayedFile({
+        category: 'after',
+        file: { index: 0 },
+      })
+    })
   },
 })
 </script>
