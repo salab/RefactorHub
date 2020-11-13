@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" width="80%">
+  <v-dialog v-model="dialog" eager width="80%">
     <div :class="$style.container">
       <monaco-editor ref="editorRef" />
     </div>
@@ -11,7 +11,6 @@ import * as monaco from 'monaco-editor'
 import { defineComponent, ref, watch } from '@nuxtjs/composition-api'
 import { DiffCategory } from 'refactorhub'
 import MonacoEditor from '@/components/common/editor/MonacoEditor.vue'
-import { logger } from '@/utils/logger'
 
 const dialog = ref(false)
 const contents = ref<{ [category in DiffCategory]: string }>({
@@ -34,12 +33,7 @@ export default defineComponent({
     const editorRef = ref<InstanceType<typeof MonacoEditor>>()
 
     watch(contents, () => {
-      const diffEditor = editorRef.value?.diffEditor
-      if (!diffEditor) {
-        logger.log('diffEditor is not loaded')
-        return
-      }
-      diffEditor.setModel({
+      editorRef.value?.diffEditor?.setModel({
         original: monaco.editor.createModel(
           contents.value.before,
           'text/plain'
