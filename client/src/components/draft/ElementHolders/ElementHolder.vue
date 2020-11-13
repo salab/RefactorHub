@@ -97,6 +97,7 @@ export default defineComponent({
     )
 
     const removeElementKey = async () => {
+      if (!confirm('Are you sure you want to delete this element key?')) return
       await $accessor.draft.setDraft(
         (
           await apis.drafts.removeRefactoringDraftElementKey(

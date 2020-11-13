@@ -24,7 +24,7 @@
         icon
         title="Start to select on editor"
         color="primary"
-        @click="toggleEditLocation"
+        @click="toggleEditing"
       >
         <v-icon x-small>fa-fw fa-pen</v-icon>
       </v-btn>
@@ -34,7 +34,7 @@
         icon
         title="Delete"
         color="error"
-        @click="deleteLocation"
+        @click="deleteElement"
       >
         <v-icon x-small>fa-fw fa-trash</v-icon>
       </v-btn>
@@ -114,7 +114,8 @@ export default defineComponent({
       }
     }
 
-    const deleteLocation = async () => {
+    const deleteElement = async () => {
+      if (!confirm('Are you sure you want to delete this element?')) return
       await $accessor.draft.setDraft(
         (
           await apis.drafts.deleteRefactoringDraftElementValue(
@@ -140,7 +141,7 @@ export default defineComponent({
       )
     })
 
-    const toggleEditLocation = async () => {
+    const toggleEditing = async () => {
       if (!isEditing.value) {
         await $accessor.draft.setEditingElement({
           category: props.category,
@@ -165,8 +166,8 @@ export default defineComponent({
       trimFileName,
       isExist,
       openLocation,
-      deleteLocation,
-      toggleEditLocation,
+      toggleEditing,
+      deleteElement,
       isEditing,
       range,
     }
