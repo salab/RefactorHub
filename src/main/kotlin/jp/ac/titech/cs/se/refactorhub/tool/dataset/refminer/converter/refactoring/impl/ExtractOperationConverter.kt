@@ -21,7 +21,6 @@ class ExtractOperationConverter :
                 mapOf(
                     "target method" to CodeElementHolder(
                         type = CodeElementType.MethodDeclaration,
-                        multiple = true,
                         elements = listOf(convertElement(refactoring.sourceOperationBeforeExtraction))
                     ),
                     "extracted code" to CodeElementHolder(
@@ -33,16 +32,14 @@ class ExtractOperationConverter :
                 mapOf(
                     "target method" to CodeElementHolder(
                         type = CodeElementType.MethodDeclaration,
-                        multiple = true,
                         elements = listOf(convertElement(refactoring.sourceOperationAfterExtraction))
                     ),
                     "extracted method" to CodeElementHolder(
                         type = CodeElementType.MethodDeclaration,
                         elements = listOf(convertElement(refactoring.extractedOperation))
                     ),
-                    "extracted method invocation" to CodeElementHolder(
+                    "invocation" to CodeElementHolder(
                         type = CodeElementType.MethodInvocation,
-                        multiple = true,
                         elements = refactoring.extractedOperationInvocations.map { convertElement(it) }
                     ),
                     "extracted code" to CodeElementHolder(

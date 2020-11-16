@@ -5,17 +5,15 @@
     "before": {
       "target method": {
         "type": "MethodDeclaration",
-        "required": true,
-        "multiple": true
+        "required": true
       },
       "inlined method": {
         "type": "MethodDeclaration",
         "required": true
       },
-      "inlined method invocation": {
+      "invocation": {
         "type": "MethodInvocation",
-        "required": true,
-        "multiple": true
+        "required": true
       },
       "inlined code": {
         "type": "CodeFragment",
@@ -25,8 +23,7 @@
     "after": {
       "target method": {
         "type": "MethodDeclaration",
-        "required": true,
-        "multiple": true
+        "required": true
       },
       "inlined code": {
         "type": "CodeFragment",
@@ -40,8 +37,7 @@
     "before": {
       "target method": {
         "type": "MethodDeclaration",
-        "required": true,
-        "multiple": true
+        "required": true
       },
       "extracted code": {
         "type": "CodeFragment",
@@ -51,17 +47,15 @@
     "after": {
       "target method": {
         "type": "MethodDeclaration",
-        "required": true,
-        "multiple": true
+        "required": true
       },
       "extracted method": {
         "type": "MethodDeclaration",
         "required": true
       },
-      "extracted method invocation": {
+      "invocation": {
         "type": "MethodInvocation",
-        "required": true,
-        "multiple": true
+        "required": true
       },
       "extracted code": {
         "type": "CodeFragment",
@@ -107,8 +101,7 @@
     "before": {
       "target class": {
         "type": "ClassDeclaration",
-        "required": true,
-        "multiple": true
+        "required": true
       }
     },
     "after": {
@@ -204,8 +197,7 @@
     "before": {
       "target method": {
         "type": "MethodDeclaration",
-        "required": true,
-        "multiple": true
+        "required": true
       },
       "extracted code": {
         "type": "CodeFragment",
@@ -215,17 +207,15 @@
     "after": {
       "target method": {
         "type": "MethodDeclaration",
-        "required": true,
-        "multiple": true
+        "required": true
       },
       "extracted method": {
         "type": "MethodDeclaration",
         "required": true
       },
-      "extracted method invocation": {
+      "invocation": {
         "type": "MethodInvocation",
-        "required": true,
-        "multiple": true
+        "required": true
       },
       "extracted code": {
         "type": "CodeFragment",
@@ -241,7 +231,7 @@
         "type": "MethodDeclaration",
         "required": true
       },
-      "target method invocation": {
+      "invocation": {
         "type": "MethodInvocation",
         "multiple": true
       }
@@ -251,7 +241,7 @@
         "type": "MethodDeclaration",
         "required": true
       },
-      "renamed method invocation": {
+      "invocation": {
         "type": "MethodInvocation",
         "multiple": true
       }
@@ -263,8 +253,7 @@
     "before": {
       "target class": {
         "type": "ClassDeclaration",
-        "required": true,
-        "multiple": true
+        "required": true
       }
     },
     "after": {
@@ -279,8 +268,7 @@
     "description": "",
     "before": {
       "target method": {
-        "type": "MethodDeclaration",
-        "required": true
+        "type": "MethodDeclaration"
       },
       "target parameter": {
         "type": "ParameterDeclaration",
@@ -289,8 +277,7 @@
     },
     "after": {
       "target method": {
-        "type": "MethodDeclaration",
-        "required": true
+        "type": "MethodDeclaration"
       },
       "renamed parameter": {
         "type": "ParameterDeclaration",
@@ -324,7 +311,7 @@
       }
     },
     "after": {
-      "renamed class": {
+      "moved class": {
         "type": "ClassDeclaration",
         "required": true
       }
@@ -373,6 +360,74 @@
         "required": true
       },
       "renamed variable": {
+        "type": "VariableDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Move And Inline Method",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "inlined method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "invocation": {
+        "type": "MethodInvocation",
+        "required": true
+      },
+      "inlined code": {
+        "type": "CodeFragment",
+        "multiple": true
+      }
+    },
+    "after": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "inlined code": {
+        "type": "CodeFragment",
+        "multiple": true
+      }
+    }
+  },
+  {
+    "name": "Move And Rename Method",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Extract Variable",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "extracted variable": {
         "type": "VariableDeclaration",
         "required": true
       }
