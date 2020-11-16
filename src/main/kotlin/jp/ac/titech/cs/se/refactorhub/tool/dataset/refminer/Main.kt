@@ -15,12 +15,14 @@ fun main() {
         "Extract Method",
         "Rename Method",
         "Move Method",
+        "Move Attribute",
         "Extract Variable",
+        "Rename Variable",
         "Rename Parameter",
         "Move Class"
     )
-    // createTypeDataset(types, 5, 5)
-    // createDescriptionDataset(types, 5, 5)
+    createTypeDataset(types, 5, 5)
+    createDescriptionDataset(types, 5, 5)
     // createRefactoringMinerDataset(types, 5, 5)
 }
 
