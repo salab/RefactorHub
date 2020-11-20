@@ -19,7 +19,8 @@ import { defineComponent } from '@nuxtjs/composition-api'
 
 const links = [
   { name: 'All Refactorings', to: '/all' },
-  { name: 'Experiments', to: '/experiment' },
+  { name: 'Experiment (type)', to: '/experiment/1' },
+  { name: 'Experiment (description)', to: '/experiment/2' },
 ]
 
 export default defineComponent({

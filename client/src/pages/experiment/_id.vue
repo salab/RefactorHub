@@ -51,6 +51,7 @@ export default defineComponent({
   middleware: 'authenticated',
   setup() {
     const {
+      params,
       app: { router },
     } = useContext()
 
@@ -59,7 +60,9 @@ export default defineComponent({
     const myDrafts = ref<RefactoringDraft[]>([])
 
     useAsync(async () => {
-      refactorings.value = (await apis.users.getUserRefactorings(1)).data
+      refactorings.value = (
+        await apis.users.getUserRefactorings(parseInt(params.value.id))
+      ).data
       const me = (await apis.users.getMe()).data
       myRefactorings.value = (await apis.users.getUserRefactorings(me.id)).data
       myDrafts.value = (await apis.users.getUserDrafts(me.id)).data
