@@ -82,8 +82,8 @@ ktlint {
 }
 
 flyway {
-    url = System.getenv("DATABASE_URL")
-    user = System.getenv("DATABASE_USER")
+    url = System.getenv("DATABASE_JDBC_URL")
+    user = System.getenv("DATABASE_USERNAME")
     password = System.getenv("DATABASE_PASSWORD")
     baselineOnMigrate = true
 }

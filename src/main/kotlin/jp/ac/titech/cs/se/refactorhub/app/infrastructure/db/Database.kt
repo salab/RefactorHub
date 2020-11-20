@@ -23,7 +23,7 @@ fun Application.connectDB() {
             HikariConfig().apply {
                 driverClassName = environment.config.property("ktor.database.driver").getString()
                 jdbcUrl = environment.config.property("ktor.database.url").getString()
-                username = environment.config.property("ktor.database.user").getString()
+                username = environment.config.property("ktor.database.username").getString()
                 password = environment.config.property("ktor.database.password").getString()
                 validate()
             }
