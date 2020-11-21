@@ -79,12 +79,14 @@ export default defineComponent({
         // if already annotated
         const draft = (await apis.refactorings.editRefactoring(myRef.id)).data
         router?.push(`/draft/${draft.id}`)
+        return
       }
 
       const myDraft = myDrafts.value.find((ref) => ref.originId === id)
       if (myDraft) {
         // if on annotating
         router?.push(`/draft/${myDraft.id}`)
+        return
       }
 
       const draft = (await apis.refactorings.forkRefactoring(id)).data
