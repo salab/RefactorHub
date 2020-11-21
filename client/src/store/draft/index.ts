@@ -38,11 +38,11 @@ export const state = (): {
 export const getters = getterTree(state, {})
 
 export const mutations = mutationTree(state, {
-  setDraft: (state, draft: RefactoringDraft) => {
+  setDraft: (state, draft?: RefactoringDraft) => {
     state.draft = draft
   },
 
-  setCommit: (state, commit: CommitDetail) => {
+  setCommit: (state, commit?: CommitDetail) => {
     state.commit = commit
   },
 
@@ -98,6 +98,14 @@ export const actions = actionTree(
   { state, getters, mutations },
   {
     async initStates({ commit }, id: number) {
+      // TODO: temporary fix
+      await commit('setDraft', undefined)
+      await commit('setCommit', undefined)
+      await commit('setDisplayedFile', { category: 'before' })
+      await commit('setDisplayedFile', { category: 'after' })
+      await commit('setEditingElement', { category: 'before' })
+      await commit('setEditingElement', { category: 'after' })
+
       const draft = (await apis.drafts.getRefactoringDraft(id)).data
       await commit('setDraft', draft)
       await commit(
