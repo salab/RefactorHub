@@ -42,6 +42,7 @@
 <script lang="ts">
 import {
   defineComponent,
+  onMounted,
   ref,
   useAsync,
   useContext,
@@ -65,6 +66,12 @@ export default defineComponent({
       refactorings.value = (
         await apis.users.getUserRefactorings(parseInt(params.value.id))
       ).data
+      const me = (await apis.users.getMe()).data
+      myRefactorings.value = (await apis.users.getUserRefactorings(me.id)).data
+      myDrafts.value = (await apis.users.getUserDrafts(me.id)).data
+    })
+
+    onMounted(async () => {
       const me = (await apis.users.getMe()).data
       myRefactorings.value = (await apis.users.getUserRefactorings(me.id)).data
       myDrafts.value = (await apis.users.getUserDrafts(me.id)).data
