@@ -9,13 +9,13 @@ import {
   setElementDecorationOnEditor,
 } from './elementDecorations'
 
-interface CodeFragmentsCursor {
+interface CodeFragmentCursor {
   setup(): void
   dispose(): void
 }
 
 const cursors: {
-  [category in DiffCategory]: CodeFragmentsCursor[]
+  [category in DiffCategory]: CodeFragmentCursor[]
 } = {
   before: [],
   after: [],
@@ -28,27 +28,27 @@ const fragments: {
   after: [],
 }
 
-export function initCodeFragmentsCursor() {
+export function initCodeFragmentCursor() {
   cursors.before.length = 0
   cursors.after.length = 0
   fragments.before.length = 0
   fragments.after.length = 0
 }
 
-export function setupCodeFragmentsCursor(category: DiffCategory) {
+export function setupCodeFragmentCursor(category: DiffCategory) {
   cursors[category].forEach((cursor) => cursor.setup())
 }
 
-export function disposeCodeFragmentsCursor(category: DiffCategory) {
+export function disposeCodeFragmentCursor(category: DiffCategory) {
   cursors[category].forEach((cursor) => cursor.dispose())
 }
 
-export function clearCodeFragmentsCursors(category: DiffCategory) {
+export function clearCodeFragmentCursors(category: DiffCategory) {
   cursors[category].forEach((cursor) => cursor.dispose())
   cursors[category].length = 0
 }
 
-export function prepareCodeFragmentsCursor(
+export function prepareCodeFragmentCursor(
   category: DiffCategory,
   element: CodeElement,
   editor: monaco.editor.ICodeEditor,
@@ -63,7 +63,7 @@ export function prepareCodeFragmentsCursor(
         listeners.push(
           editor.onDidChangeCursorSelection(
             debounce((e) => {
-              updateEditingCodeFragments(
+              updateEditingCodeFragment(
                 category,
                 e.selection,
                 editor,
@@ -82,7 +82,7 @@ export function prepareCodeFragmentsCursor(
   cursors[category].push(cursor)
 }
 
-export async function updateEditingCodeFragments(
+export async function updateEditingCodeFragment(
   category: DiffCategory,
   range: monaco.Range,
   editor: monaco.editor.ICodeEditor,

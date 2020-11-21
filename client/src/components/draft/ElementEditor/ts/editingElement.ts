@@ -4,8 +4,8 @@ import {
   hideElementWidgets,
 } from './elementWidgets'
 import {
-  setupCodeFragmentsCursor,
-  disposeCodeFragmentsCursor,
+  setupCodeFragmentCursor,
+  disposeCodeFragmentCursor,
 } from './codeFragments'
 
 export function setupEditingElement(
@@ -13,15 +13,15 @@ export function setupEditingElement(
   metadata?: ElementMetadata
 ) {
   if (metadata !== undefined) {
-    if (metadata.type === 'CodeFragments') {
-      setupCodeFragmentsCursor(category)
+    if (metadata.type === 'CodeFragment') {
+      setupCodeFragmentCursor(category)
       hideElementWidgets(category)
     } else {
       showElementWidgetsWithType(category, metadata.type)
-      disposeCodeFragmentsCursor(category)
+      disposeCodeFragmentCursor(category)
     }
   } else {
     hideElementWidgets(category)
-    disposeCodeFragmentsCursor(category)
+    disposeCodeFragmentCursor(category)
   }
 }

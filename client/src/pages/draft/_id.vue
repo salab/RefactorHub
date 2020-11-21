@@ -31,6 +31,7 @@ import {
 import apis from '@/apis'
 import { initElementDecorations } from '@/components/draft/ElementEditor/ts/elementDecorations'
 import { initElementWidgets } from '@/components/draft/ElementEditor/ts/elementWidgets'
+import { initCodeFragmentCursor } from '@/components/draft/ElementEditor/ts/codeFragments'
 
 export default defineComponent({
   name: 'draft',
@@ -46,6 +47,7 @@ export default defineComponent({
     useAsync(async () => {
       initElementDecorations()
       initElementWidgets()
+      initCodeFragmentCursor()
       await $accessor.draft.initStates(parseInt(params.value.id))
     })
 
