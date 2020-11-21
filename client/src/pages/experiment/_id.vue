@@ -28,7 +28,9 @@
               </div>
             </div>
             <div class="pa-4">
-              <v-btn block depressed @click="start">start</v-btn>
+              <v-btn block depressed @click="() => start(refactoring.id)">
+                start
+              </v-btn>
             </div>
           </div>
         </v-card>
