@@ -5,10 +5,15 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Commits
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.ExperimentDao
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.ExperimentRefactorings
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Experiments
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringDrafts
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringToRefactorings
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringTypes
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Refactorings
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.UserDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Users
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.CommitRepositoryImpl
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.RefactoringRepositoryImpl
@@ -65,11 +70,16 @@ fun main() {
 
     transaction {
         addLogger(StdOutSqlLogger)
-        dropTables()
-        createTables()
-        createRefactoringTypes("types/refminer.json")
-        createExperiments()
+        v1()
+        v2()
     }
+}
+
+fun v1() {
+    dropTables()
+    createTables()
+    createRefactoringTypes("types/refminer.json")
+    createExperiments()
 }
 
 private fun dropTables() {
@@ -123,3 +133,30 @@ data class RefactoringBody(
     val data: Refactoring.Data,
     val description: String
 )
+
+fun v2() {
+    SchemaUtils.drop(Experiments, ExperimentRefactorings)
+    SchemaUtils.create(Experiments, ExperimentRefactorings)
+
+    ExperimentDao.new {
+        this.title = "Experiment (type)"
+        this.description = "Experiment that input data has only refactoring type"
+    }.apply {
+        this.refactorings = RefactoringDao.find { Refactorings.owner eq 1 }
+    }
+    ExperimentDao.new {
+        this.title = "Experiment (description)"
+        this.description = "Experiment that input data has refactoring type, description"
+    }.apply {
+        this.refactorings = RefactoringDao.find { Refactorings.owner eq 2 }
+    }
+
+    val admin = UserDao[1]
+    RefactoringDao.find {
+        Refactorings.owner eq 2
+    }.forEach {
+        it.owner = admin
+    }
+    admin.name = "admin"
+    UserDao[2].delete()
+}
