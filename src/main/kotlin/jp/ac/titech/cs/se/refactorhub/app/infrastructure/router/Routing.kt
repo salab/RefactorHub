@@ -8,6 +8,7 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api.commits
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api.drafts
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api.editor
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api.elements
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api.experiments
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api.refactoringTypes
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api.refactorings
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api.users
@@ -24,5 +25,6 @@ fun Routing.root() {
         drafts()
         editor()
         elements()
+        experiments()
     }
 }

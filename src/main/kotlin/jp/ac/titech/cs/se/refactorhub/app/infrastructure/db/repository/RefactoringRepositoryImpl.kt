@@ -2,6 +2,7 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository
 
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.CommitDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Commits
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.ExperimentDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringTypeDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringTypes
@@ -41,6 +42,12 @@ class RefactoringRepositoryImpl : RefactoringRepository {
             RefactoringDao.findById(id)?.children?.map {
                 it.asModel()
             } ?: emptyList()
+        }
+    }
+
+    override fun findByExperimentId(experimentId: Int): List<Refactoring> {
+        return transaction {
+            ExperimentDao.findById(experimentId)?.refactorings?.map { it.asModel() } ?: emptyList()
         }
     }
 

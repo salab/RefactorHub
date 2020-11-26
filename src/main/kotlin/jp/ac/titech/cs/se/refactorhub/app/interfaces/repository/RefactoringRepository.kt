@@ -7,6 +7,7 @@ interface RefactoringRepository {
     fun findById(id: Int): Refactoring?
     fun findByOwnerId(ownerId: Int): List<Refactoring>
     fun findByParentId(id: Int): List<Refactoring>
+    fun findByExperimentId(experimentId: Int): List<Refactoring>
     fun create(
         commitSha: String,
         typeName: String,

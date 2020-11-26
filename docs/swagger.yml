@@ -25,6 +25,8 @@ tags:
     description: Editor
   - name: elements
     description: Element
+  - name: experiments
+    description: Experiment
 
 paths:
   "/users/{userId}":
@@ -558,6 +560,58 @@ paths:
       tags:
         - editor
 
+  "/experiments":
+    get:
+      summary: get all experiments
+      operationId: getAllExperiments
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Experiment"
+      tags:
+        - experiments
+  "/experiments/{experimentId}":
+    parameters:
+      - $ref: "#/components/parameters/experimentIdInPath"
+    get:
+      summary: get experiment
+      operationId: getExperiment
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Experiment"
+        "404":
+          description: Experiment is not found
+      tags:
+        - experiments
+  "/experiments/{experimentId}/refactorings":
+    parameters:
+      - $ref: "#/components/parameters/experimentIdInPath"
+    get:
+      summary: get experiment refactorings
+      operationId: getExperimentRefactorings
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Refactoring"
+        "404":
+          description: Experiment is not found
+      tags:
+        - experiments
+
 components:
   securitySchemes:
     cookieAuth:
@@ -731,6 +785,20 @@ components:
         - commit
         - type
         - data
+        - description
+
+    Experiment:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+      required:
+        - id
+        - title
         - description
 
     FileContent:
@@ -938,6 +1006,12 @@ components:
         type: string
     elementIndexInPath:
       name: elementIndex
+      in: path
+      required: true
+      schema:
+        type: integer
+    experimentIdInPath:
+      name: experimentId
       in: path
       required: true
       schema:
