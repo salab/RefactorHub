@@ -19,7 +19,6 @@ import { defineComponent, ref, useAsync } from '@nuxtjs/composition-api'
 import apis, { Experiment } from '@/apis'
 
 export default defineComponent({
-  name: 'home',
   setup() {
     const experiments = ref<Experiment[]>([])
     useAsync(async () => {

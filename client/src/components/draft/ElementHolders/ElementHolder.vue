@@ -5,7 +5,7 @@
       :class="`element-holder-${elementHolder.type}`"
       :value="true"
     >
-      <template v-slot:activator>
+      <template #activator>
         <div class="pl-2 pr-1">
           <v-icon v-if="isCompleted" x-small color="success" title="Completed"
             >fa-fw fa-check</v-icon
@@ -79,6 +79,7 @@ export default defineComponent({
     },
     elementMetadata: {
       type: Object as () => CodeElementMetadata,
+      default: null,
     },
     isRemovable: {
       type: Boolean,

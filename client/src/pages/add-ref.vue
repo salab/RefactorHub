@@ -25,7 +25,6 @@ import apis, { Commit, RefactoringData } from '@/apis'
 import { readAsText } from '@/utils/file'
 
 export default defineComponent({
-  name: 'add-ref',
   middleware: 'authenticated',
   setup() {
     const messages = ref<string[]>([])

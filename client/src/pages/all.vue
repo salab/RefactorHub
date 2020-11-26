@@ -15,7 +15,6 @@ import { defineComponent, ref, useAsync } from '@nuxtjs/composition-api'
 import apis, { Refactoring } from '@/apis'
 
 export default defineComponent({
-  name: 'all',
   setup() {
     const refactorings = ref<Refactoring[]>([])
 

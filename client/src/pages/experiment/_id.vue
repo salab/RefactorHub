@@ -50,7 +50,6 @@ import {
 import apis, { Refactoring, RefactoringDraft } from '@/apis'
 
 export default defineComponent({
-  name: 'experiment',
   middleware: 'authenticated',
   setup() {
     const {

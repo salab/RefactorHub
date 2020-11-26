@@ -25,7 +25,6 @@ import apis, { CodeElementMetadata } from '@/apis'
 import { readAsText } from '@/utils/file'
 
 export default defineComponent({
-  name: 'add-type',
   middleware: 'authenticated',
   setup() {
     const messages = ref<string[]>([])

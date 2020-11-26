@@ -34,7 +34,6 @@ import { initElementWidgets } from '@/components/draft/ElementEditor/ts/elementW
 import { initCodeFragmentCursor } from '@/components/draft/ElementEditor/ts/codeFragments'
 
 export default defineComponent({
-  name: 'draft',
   middleware: 'authenticated',
   setup() {
     const {

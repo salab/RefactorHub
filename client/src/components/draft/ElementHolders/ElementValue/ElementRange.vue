@@ -18,6 +18,7 @@ export default defineComponent({
   props: {
     range: {
       type: Object as () => Range,
+      default: null,
     },
   },
 })
