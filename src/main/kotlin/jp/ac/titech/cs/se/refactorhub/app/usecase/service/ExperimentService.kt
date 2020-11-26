@@ -24,6 +24,6 @@ class ExperimentService : KoinComponent {
 
     fun getRefactorings(id: Int): List<Refactoring> {
         val experiment = get(id)
-        return refactoringRepository.findByExperimentId(experiment.id)
+        return refactoringRepository.findByExperimentId(experiment.id).sortedBy { it.id }
     }
 }
