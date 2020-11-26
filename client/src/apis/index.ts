@@ -7,6 +7,7 @@ import {
   DraftsApi,
   EditorApi,
   ElementsApi,
+  ExperimentsApi,
 } from '@/apis/generated'
 
 const basePath = '/api'
@@ -24,6 +25,7 @@ const apis = {
   drafts: new DraftsApi({}, basePath, instance),
   editor: new EditorApi({}, basePath, instance),
   elements: new ElementsApi({}, basePath, instance),
+  experiments: new ExperimentsApi({}, basePath, instance),
 }
 
 export default apis

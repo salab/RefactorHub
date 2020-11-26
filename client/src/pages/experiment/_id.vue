@@ -64,7 +64,9 @@ export default defineComponent({
 
     useAsync(async () => {
       refactorings.value = (
-        await apis.users.getUserRefactorings(parseInt(params.value.id))
+        await apis.experiments.getExperimentRefactorings(
+          parseInt(params.value.id)
+        )
       ).data
       const me = (await apis.users.getMe()).data
       myRefactorings.value = (await apis.users.getUserRefactorings(me.id)).data
