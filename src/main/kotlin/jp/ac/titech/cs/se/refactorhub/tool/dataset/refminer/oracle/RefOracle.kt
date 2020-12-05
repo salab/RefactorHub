@@ -54,6 +54,7 @@ fun getRefOracleDataList(
     size: Int,
     maxPerCommit: Int = 5,
     minPerCommit: Int = 1,
+    maxSameType: Int = 1,
     overlap: Boolean = false,
     random: Boolean = false,
     validation: String = "TP",
@@ -70,7 +71,7 @@ fun getRefOracleDataList(
 
     val candidateLists = refactoringLists.filter { it.size in minPerCommit..maxPerCommit }.map { refs ->
         refs.filter { it.type == type }
-    }.filter { it.isNotEmpty() }
+    }.filter { it.size in 1..maxSameType }
 
     // all refactorings are in different commits
     if (size <= candidateLists.size) {
