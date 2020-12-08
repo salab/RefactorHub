@@ -7,6 +7,7 @@ import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.refactorin
 import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.oracle.RefOracleData
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementHolder
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementType
+import org.refactoringminer.api.RefactoringType
 
 class RenameVariableConverter :
     RefactoringConverter<RenameVariableRefactoring> {
@@ -23,20 +24,34 @@ class RenameVariableConverter :
                         type = CodeElementType.MethodDeclaration,
                         elements = listOf(convertElement(refactoring.operationBefore))
                     ),
-                    "target variable" to CodeElementHolder(
-                        type = CodeElementType.VariableDeclaration,
-                        elements = listOf(convertElement(refactoring.originalVariable))
-                    )
+                    when (refactoring.refactoringType) {
+                        RefactoringType.RENAME_VARIABLE, RefactoringType.PARAMETERIZE_VARIABLE -> "target variable" to CodeElementHolder(
+                            type = CodeElementType.VariableDeclaration,
+                            elements = listOf(convertElement(refactoring.originalVariable))
+                        )
+                        RefactoringType.RENAME_PARAMETER -> "target parameter" to CodeElementHolder(
+                            type = CodeElementType.ParameterDeclaration,
+                            elements = listOf(convertElement(refactoring.originalVariable))
+                        )
+                        else -> throw RuntimeException("Converter for ${refactoring.refactoringType.displayName} is not implemented.")
+                    }
                 ),
                 mapOf(
                     "target method" to CodeElementHolder(
                         type = CodeElementType.MethodDeclaration,
                         elements = listOf(convertElement(refactoring.operationAfter))
                     ),
-                    "renamed variable" to CodeElementHolder(
-                        type = CodeElementType.VariableDeclaration,
-                        elements = listOf(convertElement(refactoring.renamedVariable))
-                    )
+                    when (refactoring.refactoringType) {
+                        RefactoringType.RENAME_VARIABLE -> "target variable" to CodeElementHolder(
+                            type = CodeElementType.VariableDeclaration,
+                            elements = listOf(convertElement(refactoring.originalVariable))
+                        )
+                        RefactoringType.RENAME_PARAMETER, RefactoringType.PARAMETERIZE_VARIABLE -> "target parameter" to CodeElementHolder(
+                            type = CodeElementType.ParameterDeclaration,
+                            elements = listOf(convertElement(refactoring.originalVariable))
+                        )
+                        else -> throw RuntimeException("Converter for ${refactoring.refactoringType.displayName} is not implemented.")
+                    }
                 )
             ),
             refactoring.toString()
