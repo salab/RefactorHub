@@ -359,8 +359,8 @@
         "type": "MethodDeclaration",
         "required": true
       },
-      "renamed variable": {
-        "type": "VariableDeclaration",
+      "renamed parameter": {
+        "type": "ParameterDeclaration",
         "required": true
       }
     }
