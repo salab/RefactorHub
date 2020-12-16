@@ -796,10 +796,13 @@ components:
           type: string
         description:
           type: string
+        isActive:
+          type: boolean
       required:
         - id
         - title
         - description
+        - isActive
 
     FileContent:
       type: object

@@ -5,7 +5,7 @@
     </div>
     <v-divider />
     <v-row justify="center" class="pa-5">
-      <div v-for="experiment in experiments" :key="experiment.id" class="ma-3">
+      <div v-for="experiment in actives" :key="experiment.id" class="ma-3">
         <v-btn :to="`/experiment/${experiment.id}`" class="text-none">
           {{ experiment.title }}
         </v-btn>
@@ -15,7 +15,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, useAsync } from '@nuxtjs/composition-api'
+import {
+  computed,
+  defineComponent,
+  ref,
+  useAsync,
+} from '@nuxtjs/composition-api'
 import apis, { Experiment } from '@/apis'
 
 export default defineComponent({
@@ -24,7 +29,10 @@ export default defineComponent({
     useAsync(async () => {
       experiments.value = (await apis.experiments.getAllExperiments()).data
     })
-    return { experiments }
+
+    const actives = computed(() => experiments.value.filter((e) => e.isActive))
+
+    return { experiments, actives }
   },
 })
 </script>

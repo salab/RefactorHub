@@ -10,6 +10,7 @@ import org.jetbrains.exposed.sql.Table
 object Experiments : IntIdTable("experiments") {
     val title = varchar("title", 100)
     val description = text("description")
+    val isActive = bool("is_active").default(false)
 }
 
 object ExperimentRefactorings : Table("experiment_refactorings") {
@@ -23,13 +24,15 @@ class ExperimentDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Experimen
 
     var title by Experiments.title
     var description by Experiments.description
+    var isActive by Experiments.isActive
     var refactorings by RefactoringDao via ExperimentRefactorings
 
     override fun asModel(): Experiment {
         return Experiment(
             this.id.value,
             this.title,
-            this.description
+            this.description,
+            this.isActive
         )
     }
 }
