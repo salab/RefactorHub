@@ -49,7 +49,8 @@ class RefactoringDraftService : KoinComponent {
                 draft.data,
                 draft.description,
                 draft.ownerId,
-                origin.id
+                origin.id,
+                true
             )
         } else {
             refactoringService.update(

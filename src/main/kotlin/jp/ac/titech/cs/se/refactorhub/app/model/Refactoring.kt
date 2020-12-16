@@ -10,7 +10,8 @@ data class Refactoring(
     override val commit: Commit,
     override val type: String,
     override val data: Data = Data(),
-    override val description: String = ""
+    override val description: String = "",
+    val isVerified: Boolean = false
 ) : Refactoring {
     data class Data(
         override val before: Map<String, CodeElementHolder> = mapOf(),

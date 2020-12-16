@@ -17,6 +17,7 @@ object Refactorings : IntIdTable("refactorings") {
     val type = reference("type", RefactoringTypes)
     val data = jsonb("data", ::stringify, ::parse)
     val description = text("description")
+    val isVerified = bool("is_verified").default(false)
 }
 
 object RefactoringToRefactorings : Table("refactoring_to_refactorings") {
@@ -34,6 +35,7 @@ class RefactoringDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Refactor
     var commit by CommitDao referencedOn Refactorings.commit
     var data by Refactorings.data
     var description by Refactorings.description
+    var isVerified by Refactorings.isVerified
 
     override fun asModel(): Refactoring {
         return Refactoring(
@@ -43,7 +45,8 @@ class RefactoringDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Refactor
             this.commit.asModel(),
             this.type.name,
             this.data,
-            this.description
+            this.description,
+            this.isVerified
         )
     }
 }

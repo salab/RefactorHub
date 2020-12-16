@@ -14,7 +14,8 @@ interface RefactoringRepository {
         data: Refactoring.Data,
         description: String,
         userId: Int,
-        parentId: Int?
+        parentId: Int?,
+        isVerified: Boolean = false
     ): Refactoring
 
     fun update(

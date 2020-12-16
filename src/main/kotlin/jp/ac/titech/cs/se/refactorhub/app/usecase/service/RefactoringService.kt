@@ -23,7 +23,8 @@ class RefactoringService : KoinComponent {
         data: Refactoring.Data,
         description: String,
         userId: Int?,
-        parentId: Int? = null
+        parentId: Int? = null,
+        isVerified: Boolean = false
     ): Refactoring {
         val user = userService.getMe(userId)
         val type = refactoringTypeService.getByName(typeName)
@@ -38,7 +39,8 @@ class RefactoringService : KoinComponent {
             ),
             description,
             user.id,
-            parentId
+            parentId,
+            isVerified
         )
     }
 

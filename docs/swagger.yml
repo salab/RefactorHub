@@ -713,6 +713,8 @@ components:
           $ref: "#/components/schemas/RefactoringData"
         description:
           type: string
+        isVerified:
+          type: boolean
       required:
         - id
         - ownerId
@@ -720,6 +722,7 @@ components:
         - type
         - data
         - description
+        - isVerified
     RefactoringData:
       type: object
       properties:

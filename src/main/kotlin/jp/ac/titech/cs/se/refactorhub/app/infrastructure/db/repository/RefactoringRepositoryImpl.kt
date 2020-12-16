@@ -57,7 +57,8 @@ class RefactoringRepositoryImpl : RefactoringRepository {
         data: Refactoring.Data,
         description: String,
         userId: Int,
-        parentId: Int?
+        parentId: Int?,
+        isVerified: Boolean
     ): Refactoring {
         return transaction {
             val dao = RefactoringDao.new {
@@ -66,6 +67,7 @@ class RefactoringRepositoryImpl : RefactoringRepository {
                 this.type = RefactoringTypeDao.find { RefactoringTypes.name eq typeName }.single()
                 this.data = data
                 this.description = description
+                this.isVerified = isVerified
             }
             dao.parents = RefactoringDao.find { Refactorings.id eq parentId }
             dao.asModel()
