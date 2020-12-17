@@ -13,17 +13,18 @@ const val OUTPUTS_PATH = "outputs"
 fun main() {
     val types = listOf(
         "Extract Method",
-        "Rename Method",
-        "Move Method",
         "Move Attribute",
-        "Extract Variable",
-        "Rename Variable",
+        "Move Class",
+        "Move Method",
+        "Rename Method",
         "Rename Parameter",
-        "Move Class"
+        "Extract Variable",
+        "Change Return Type",
+        "Change Variable Type"
     )
     createTypeDataset(types, 5, 5)
     createDescriptionDataset(types, 5, 5)
-    // createRefactoringMinerDataset(types, 5, 5)
+    createRefactoringMinerDataset(types, 5, 5)
 }
 
 fun getOutputFile(name: String): File {
