@@ -3,26 +3,54 @@ package jp.ac.titech.cs.se.refactorhub.tool.model.element
 import kotlin.reflect.KClass
 
 enum class CodeElementType {
+    TypeDeclaration,
     ClassDeclaration,
-    ConstructorDeclaration,
-    FieldDeclaration,
     InterfaceDeclaration,
+    EnumDeclaration,
+
+    FieldDeclaration,
+    FieldType,
+
     MethodDeclaration,
-    MethodInvocation,
+    ConstructorDeclaration,
+    ReturnType,
+
     ParameterDeclaration,
+    ParameterType,
+
+    MethodInvocation,
+
     VariableDeclaration,
+    VariableType,
+
+    Statement,
+
     CodeFragment;
 
     val klass: KClass<out CodeElement>
         get() = when (this) {
+            TypeDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.TypeDeclaration::class
             ClassDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.ClassDeclaration::class
-            ConstructorDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.ConstructorDeclaration::class
-            FieldDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.FieldDeclaration::class
             InterfaceDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.InterfaceDeclaration::class
+            EnumDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.EnumDeclaration::class
+
+            FieldDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.FieldDeclaration::class
+            FieldType -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.FieldType::class
+
             MethodDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.MethodDeclaration::class
-            MethodInvocation -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.MethodInvocation::class
+            ConstructorDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.ConstructorDeclaration::class
+            ReturnType -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.ReturnType::class
+
             ParameterDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.ParameterDeclaration::class
+            ParameterType -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.ParameterType::class
+
+            MethodInvocation -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.MethodInvocation::class
+
             VariableDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.VariableDeclaration::class
+            VariableType -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.VariableType::class
+
+            Statement -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.Statement::class
+
             CodeFragment -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.CodeFragment::class
         }
 }

@@ -6,20 +6,25 @@ import jp.ac.titech.cs.se.refactorhub.tool.model.element.data.Range
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.ClassDeclaration
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.CodeFragment
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.ConstructorDeclaration
+import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.FieldType
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.InterfaceDeclaration
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.ParameterDeclaration
+import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.ParameterType
+import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.ReturnType
+import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.VariableDeclaration
+import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.VariableType
 import org.eclipse.jdt.core.dom.ASTNode
 import org.eclipse.jdt.core.dom.ASTVisitor
 import org.eclipse.jdt.core.dom.CompilationUnit
+import org.eclipse.jdt.core.dom.EnumDeclaration
 import org.eclipse.jdt.core.dom.FieldDeclaration
 import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.PackageDeclaration
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration
-import org.eclipse.jdt.core.dom.Statement
 import org.eclipse.jdt.core.dom.TypeDeclaration
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment
-import org.eclipse.jdt.core.dom.VariableDeclarationStatement
 
 class CodeElementVisitor(
     private val unit: CompilationUnit,
@@ -55,18 +60,33 @@ class CodeElementVisitor(
         return super.visit(node)
     }
 
+    override fun visit(node: EnumDeclaration): Boolean {
+        className = "$packageName.${node.name.identifier}"
+        elements.add(
+            jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.EnumDeclaration(
+                className,
+                Location(path, node.range)
+            )
+        )
+        return super.visit(node)
+    }
+
     override fun visit(node: FieldDeclaration): Boolean {
-        val startPosition = node.startPosition
         node.fragments().forEach {
-            val fragment = it as VariableDeclarationFragment
-            elements.add(
-                jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.FieldDeclaration(
-                    fragment.name.identifier,
-                    className,
-                    Location(path, getRange(startPosition, fragment.endPosition))
-                )
+            it as VariableDeclarationFragment
+            jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.FieldDeclaration(
+                it.name.identifier,
+                className,
+                Location(path, it.range)
             )
         }
+        elements.add(
+            FieldType(
+                node.type.toString(),
+                className,
+                Location(path, node.type.range)
+            )
+        )
         return super.visit(node)
     }
 
@@ -87,6 +107,17 @@ class CodeElementVisitor(
                 Location(path, node.range)
             )
         )
+
+        node.returnType2?.let {
+            elements.add(
+                ReturnType(
+                    it.toString(),
+                    className,
+                    Location(path, it.range)
+                )
+            )
+        }
+
         methodName = node.name.identifier
         node.parameters().forEach {
             val parameter = it as SingleVariableDeclaration
@@ -98,18 +129,26 @@ class CodeElementVisitor(
                     Location(path, parameter.range)
                 )
             )
+            elements.add(
+                ParameterType(
+                    parameter.type.toString(),
+                    methodName,
+                    className,
+                    Location(path, parameter.type.range)
+                )
+            )
         }
-        if (node.body != null && node.body.statements().isNotEmpty()) {
-            val first = node.body.statements().first() as Statement
-            val last = node.body.statements().last() as Statement
+
+        node.body?.let {
             elements.add(
                 CodeFragment(
                     methodName,
                     className,
-                    Location(path, getRange(first.startPosition, last.endPosition))
+                    Location(path, it.range)
                 )
             )
         }
+
         return super.visit(node)
     }
 
@@ -124,21 +163,44 @@ class CodeElementVisitor(
         return super.visit(node)
     }
 
-    override fun visit(node: VariableDeclarationStatement): Boolean {
-        val startPosition = node.startPosition
+    override fun visit(node: VariableDeclarationExpression): Boolean {
         node.fragments().forEach {
-            val fragment = it as VariableDeclarationFragment
+            it as VariableDeclarationFragment
+            VariableDeclaration(
+                it.name.identifier,
+                methodName,
+                className,
+                Location(path, it.range)
+            )
+        }
+        elements.add(
+            VariableType(
+                node.type.toString(),
+                methodName,
+                className,
+                Location(
+                    path, node.type.range
+                )
+            )
+        )
+        return super.visit(node)
+    }
+
+    /* TODO
+    override fun visit(node: Block): Boolean {
+        node.statements().forEach {
+            val statement = it as Statement
             elements.add(
-                jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.VariableDeclaration(
-                    fragment.name.identifier,
+                jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.Statement(
                     methodName,
                     className,
-                    Location(path, getRange(startPosition, fragment.endPosition))
+                    Location(path, statement.range)
                 )
             )
         }
         return super.visit(node)
     }
+    */
 
     private val ASTNode.endPosition: Int get() = this.startPosition + this.length
 
