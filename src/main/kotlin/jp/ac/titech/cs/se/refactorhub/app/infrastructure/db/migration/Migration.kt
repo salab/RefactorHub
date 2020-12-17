@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.CommitDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Commits
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.ExperimentDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.ExperimentRefactorings
@@ -11,48 +12,29 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Experiments
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringDrafts
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringToRefactorings
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringTypeDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringTypes
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Refactorings
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.UserDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Users
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.CommitRepositoryImpl
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.RefactoringRepositoryImpl
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.RefactoringTypeRepositoryImpl
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.UserRepositoryImpl
-import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.CommitRepository
-import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringRepository
-import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringTypeRepository
-import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.UserRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
-import jp.ac.titech.cs.se.refactorhub.app.model.User
-import jp.ac.titech.cs.se.refactorhub.app.usecase.service.CommitService
-import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringService
-import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringTypeService
-import jp.ac.titech.cs.se.refactorhub.app.usecase.service.UserService
+import jp.ac.titech.cs.se.refactorhub.tool.editor.fixRefactoringData
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementMetadata
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
-import org.koin.java.KoinJavaComponent.inject
 
 // TODO
 fun main() {
     startKoin {
         modules(module {
             single { jacksonObjectMapper() }
-            single { UserService() }
-            single { CommitService() }
-            single { RefactoringService() }
-            single { RefactoringTypeService() }
-            single<UserRepository> { UserRepositoryImpl() }
-            single<CommitRepository> { CommitRepositoryImpl() }
-            single<RefactoringRepository> { RefactoringRepositoryImpl() }
-            single<RefactoringTypeRepository> { RefactoringTypeRepositoryImpl() }
         })
     }
 
@@ -70,53 +52,117 @@ fun main() {
 
     transaction {
         addLogger(StdOutSqlLogger)
-        v1()
-        v2()
+
+        initialize()
     }
 }
 
-fun v1() {
+fun initialize() {
     dropTables()
     createTables()
-    createRefactoringTypes("types/refminer.json")
+
+    createRefactoringTypes()
+    createUsers()
     createExperiments()
 }
 
 private fun dropTables() {
-    SchemaUtils.drop(Commits, Users, Refactorings, RefactoringToRefactorings, RefactoringTypes, RefactoringDrafts)
+    SchemaUtils.drop(
+        Commits,
+        Users,
+        Refactorings,
+        RefactoringToRefactorings,
+        RefactoringTypes,
+        RefactoringDrafts,
+        Experiments,
+        ExperimentRefactorings
+    )
 }
 
 private fun createTables() {
-    SchemaUtils.create(Commits, Users, Refactorings, RefactoringToRefactorings, RefactoringTypes, RefactoringDrafts)
+    SchemaUtils.create(
+        Commits,
+        Users,
+        Refactorings,
+        RefactoringToRefactorings,
+        RefactoringTypes,
+        RefactoringDrafts,
+        Experiments,
+        ExperimentRefactorings
+    )
 }
 
-private fun createRefactoringTypes(file: String) {
-    val stream = object {}.javaClass.classLoader.getResourceAsStream(file) ?: return
-    val types = jacksonObjectMapper().readValue<List<RefactoringTypeBody>>(stream)
-    val refactoringTypeService by inject(RefactoringTypeService::class.java)
-    types.forEach { refactoringTypeService.create(it.name, it.before, it.after, it.description) }
+private fun createUsers() {
+    UserDao.new {
+        this.name = "admin"
+        this.subId = 1
+    }
+}
+
+private fun createRefactoringTypes() {
+    val files = listOf("types/refminer.json")
+
+    for (file in files) {
+        val stream = object {}.javaClass.classLoader.getResourceAsStream(file) ?: return
+        val types = jacksonObjectMapper().readValue<List<RefactoringTypeBody>>(stream)
+        types.forEach {
+            RefactoringTypeDao.new {
+                this.name = it.name
+                this.before = it.before
+                this.after = it.after
+                this.description = it.description
+            }
+        }
+    }
 }
 
 private fun createExperiments() {
-    val userService by inject(UserService::class.java)
-    createRefactorings(userService.createIfNotExist(1, "experiment-type"), "data/type.ndjson")
-    createRefactorings(userService.createIfNotExist(2, "experiment-desc"), "data/description.ndjson")
+    createExperiment(
+        "Experiment (type)",
+        "Experiment that input data has only refactoring type",
+        "data/type.ndjson"
+    )
+    createExperiment(
+        "Experiment (description)",
+        "Experiment that input data has refactoring type, description",
+        "data/description.ndjson"
+    )
 }
 
-private fun createRefactorings(user: User, file: String) {
-    val ndjson = object {}.javaClass.classLoader.getResource(file)?.readText() ?: return
-    val refactorings = ndjson.trim().split("\n").map { jacksonObjectMapper().readValue<RefactoringBody>(it) }
-    val refactoringService by inject(RefactoringService::class.java)
+private fun createExperiment(title: String, description: String, input: String) {
+    ExperimentDao.new {
+        this.title = title
+        this.description = description
+        this.isActive = true
+    }.apply {
+        this.refactorings = SizedCollection(createRefactorings(input))
+    }
+}
 
-    refactorings.forEach {
-        refactoringService.create(
-            it.commit,
-            it.type,
-            it.data,
-            it.description,
-            user.id,
-            null
-        )
+private fun createRefactorings(file: String): List<RefactoringDao> {
+    val ndjson = object {}.javaClass.classLoader.getResource(file)?.readText() ?: return emptyList()
+    val mapper = jacksonObjectMapper()
+    val refactorings = ndjson.trim().split("\n").map { mapper.readValue<RefactoringBody>(it) }
+
+    val admin = UserDao[1]
+    return refactorings.map {
+        val commit = CommitDao.find {
+            Commits.sha eq it.commit.sha
+        }.singleOrNull() ?: CommitDao.new {
+            this.sha = it.commit.sha
+            this.owner = it.commit.owner
+            this.repository = it.commit.repository
+        }
+        val type = RefactoringTypeDao.find { RefactoringTypes.name eq it.type }.single()
+        val fixed = fixRefactoringData(type.asModel(), it.data)
+        RefactoringDao.new {
+            this.owner = admin
+            this.commit = commit
+            this.type = type
+            this.data = Refactoring.Data(fixed.before, fixed.after)
+            this.description = it.description
+            this.isVerified = false
+        }
     }
 }
 
@@ -133,30 +179,3 @@ data class RefactoringBody(
     val data: Refactoring.Data,
     val description: String
 )
-
-fun v2() {
-    SchemaUtils.drop(Experiments, ExperimentRefactorings)
-    SchemaUtils.create(Experiments, ExperimentRefactorings)
-
-    ExperimentDao.new {
-        this.title = "Experiment (type)"
-        this.description = "Experiment that input data has only refactoring type"
-    }.apply {
-        this.refactorings = RefactoringDao.find { Refactorings.owner eq 1 }
-    }
-    ExperimentDao.new {
-        this.title = "Experiment (description)"
-        this.description = "Experiment that input data has refactoring type, description"
-    }.apply {
-        this.refactorings = RefactoringDao.find { Refactorings.owner eq 2 }
-    }
-
-    val admin = UserDao[1]
-    RefactoringDao.find {
-        Refactorings.owner eq 2
-    }.forEach {
-        it.owner = admin
-    }
-    admin.name = "admin"
-    UserDao[2].delete()
-}
