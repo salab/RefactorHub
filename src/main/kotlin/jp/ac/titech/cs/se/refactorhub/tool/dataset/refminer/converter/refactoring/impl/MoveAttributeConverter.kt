@@ -19,13 +19,13 @@ class MoveAttributeConverter :
             data.commit,
             Refactoring.Data(
                 mapOf(
-                    "target attribute" to CodeElementHolder(
+                    "target field" to CodeElementHolder(
                         type = CodeElementType.FieldDeclaration,
                         elements = listOf(convertElement(refactoring.originalAttribute))
                     )
                 ),
                 mapOf(
-                    "moved attribute" to CodeElementHolder(
+                    "moved field" to CodeElementHolder(
                         type = CodeElementType.FieldDeclaration,
                         elements = listOf(convertElement(refactoring.movedAttribute))
                     )
