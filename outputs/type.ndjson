@@ -1,0 +1,45 @@
+{"type":"Extract Method","commit":{"sha":"6cf596df183b3c3a38ed5dd9bb3b0100c6548ebb","owner":"realm","repository":"realm-java"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Extract Method","commit":{"sha":"cb49e436b9d7ee55f2531ebc2ef1863f5c9ba9fe","owner":"rstudio","repository":"rstudio"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Extract Method","commit":{"sha":"7ed3f273ab0caf0337c22f0b721d51829bb0c877","owner":"JetBrains","repository":"intellij-community"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Extract Method","commit":{"sha":"2801269c7e47bd6e243612654a74cee809d20959","owner":"crashub","repository":"crash"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Extract Method","commit":{"sha":"722ef9156896248ef3fbe83adde0f6ff8f46856a","owner":"oblac","repository":"jodd"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Attribute","commit":{"sha":"6abc40ed4850d74ee6c155f5a28f8b34881a0284","owner":"BuildCraft","repository":"BuildCraft"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Attribute","commit":{"sha":"c76e6e1f27a6697b3b88ad4ed710441b801afb3b","owner":"rackerlabs","repository":"blueflood"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Attribute","commit":{"sha":"13b63c194b010201c439932ece2f1bc628ebf287","owner":"eclipse","repository":"jetty.project"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Attribute","commit":{"sha":"a896b8bf8f7067e41291eb7771deed76b3621fa0","owner":"VoltDB","repository":"voltdb"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Attribute","commit":{"sha":"bec15926deb49d2b3f7b979d4cfc819947a434ec","owner":"languagetool-org","repository":"languagetool"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Class","commit":{"sha":"3972b9b3d4e03bdb5e62dfa663e3e0a1871e3c9f","owner":"JetBrains","repository":"intellij-community"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Class","commit":{"sha":"5f18bed8da4dda4fa516907ecbbe28f712e944f7","owner":"JetBrains","repository":"intellij-community"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Class","commit":{"sha":"7c26ac669a4e17ca1d2319a5049a56424fd33104","owner":"hierynomus","repository":"sshj"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Class","commit":{"sha":"e66e49cd4a9dd8027204f712f780170a5c129f5b","owner":"hazelcast","repository":"hazelcast"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Class","commit":{"sha":"71820e573134be3fad3935035249cd77c4412f4e","owner":"SlimeKnights","repository":"TinkersConstruct"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Method","commit":{"sha":"c55a8c3761e9aae9f375d312c14b1bbb9ee9c0fa","owner":"SonarSource","repository":"sonarqube"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Method","commit":{"sha":"59fd9e696cec5f2ed44c27422bbc426b11647321","owner":"liferay","repository":"liferay-portal"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Method","commit":{"sha":"7668c875dfa7240b1ec08eb60b42107bae1b4cd3","owner":"SonarSource","repository":"sonarqube"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Method","commit":{"sha":"c928852d4ab7d8c744063979208709ed4429b8e9","owner":"elastic","repository":"elasticsearch"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Move Method","commit":{"sha":"e4de9513d0a06d381b4521211cf688b77379c39d","owner":"restlet","repository":"restlet-framework-java"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Rename Method","commit":{"sha":"c928852d4ab7d8c744063979208709ed4429b8e9","owner":"elastic","repository":"elasticsearch"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Rename Method","commit":{"sha":"851ab757698304e9d8d4ae24ab75be619ddae31a","owner":"GoClipse","repository":"goclipse"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Rename Method","commit":{"sha":"7a1659c12d76b510809dea1dea1f5100bcf4cd60","owner":"apache","repository":"pig"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Rename Method","commit":{"sha":"a9ca2efae56815dc464189b055ffe9da23766f7f","owner":"antlr","repository":"antlr4"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Rename Method","commit":{"sha":"bec15926deb49d2b3f7b979d4cfc819947a434ec","owner":"languagetool-org","repository":"languagetool"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Rename Parameter","commit":{"sha":"484038e916dc40bf87eca10c77889d79eca96c4d","owner":"JetBrains","repository":"intellij-community"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Rename Parameter","commit":{"sha":"6d10621465c0e6ae81ad8d240d70a55c72caeea6","owner":"Alluxio","repository":"alluxio"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Rename Parameter","commit":{"sha":"457a7f637ddb226acf477cae0b04c8ff16ec9a50","owner":"Netflix","repository":"eureka"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Rename Parameter","commit":{"sha":"71820e573134be3fad3935035249cd77c4412f4e","owner":"SlimeKnights","repository":"TinkersConstruct"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Rename Parameter","commit":{"sha":"37d842bfed9779e662321a5ee43c36b058386843","owner":"wildfly","repository":"wildfly"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Extract Variable","commit":{"sha":"6cf596df183b3c3a38ed5dd9bb3b0100c6548ebb","owner":"realm","repository":"realm-java"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Extract Variable","commit":{"sha":"7ed3f273ab0caf0337c22f0b721d51829bb0c877","owner":"JetBrains","repository":"intellij-community"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Extract Variable","commit":{"sha":"20d39f7af2165c67d5221f556f58820c992d2cc6","owner":"spring-projects","repository":"spring-boot"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Extract Variable","commit":{"sha":"e3b0d87b3ca0fd27cec39937cb3dc3a05b0cfc4e","owner":"infinispan","repository":"infinispan"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Extract Variable","commit":{"sha":"9a3fa887cfa03c082f249d1d4003d87c14ba5d24","owner":"apache","repository":"cassandra"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Change Return Type","commit":{"sha":"c928852d4ab7d8c744063979208709ed4429b8e9","owner":"elastic","repository":"elasticsearch"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Change Return Type","commit":{"sha":"1cfc6f64f64353bc5530a8ce8cdacfc3eba3e7b2","owner":"spring-projects","repository":"spring-boot"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Change Return Type","commit":{"sha":"6abc40ed4850d74ee6c155f5a28f8b34881a0284","owner":"BuildCraft","repository":"BuildCraft"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Change Return Type","commit":{"sha":"563d281b61e9f8748858e911eaa810e981f1e953","owner":"crate","repository":"crate"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Change Return Type","commit":{"sha":"8a16081a9322b4a4062baaf32edc6b6b8b4afa88","owner":"netty","repository":"netty"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Change Variable Type","commit":{"sha":"c22d40fab8dfe4c5cad9ba582caf0855ff64b324","owner":"puniverse","repository":"quasar"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Change Variable Type","commit":{"sha":"c928852d4ab7d8c744063979208709ed4429b8e9","owner":"elastic","repository":"elasticsearch"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Change Variable Type","commit":{"sha":"f1533756133dec84ce8218202585ac85904da7c9","owner":"belaban","repository":"JGroups"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Change Variable Type","commit":{"sha":"247232bdde24b81814a82100743f77d881aaf06b","owner":"spring-projects","repository":"spring-integration"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Change Variable Type","commit":{"sha":"e083683f4fe9206609201bb39a60bbd8ee0c8a0f","owner":"spring-projects","repository":"spring-framework"},"data":{"before":{},"after":{}},"description":""}
