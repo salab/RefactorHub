@@ -74,10 +74,12 @@ class CodeElementVisitor(
     override fun visit(node: FieldDeclaration): Boolean {
         node.fragments().forEach {
             it as VariableDeclarationFragment
-            jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.FieldDeclaration(
-                it.name.identifier,
-                className,
-                Location(path, it.range)
+            elements.add(
+                jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.FieldDeclaration(
+                    it.name.identifier,
+                    className,
+                    Location(path, it.range)
+                )
             )
         }
         elements.add(
@@ -166,11 +168,13 @@ class CodeElementVisitor(
     override fun visit(node: VariableDeclarationExpression): Boolean {
         node.fragments().forEach {
             it as VariableDeclarationFragment
-            VariableDeclaration(
-                it.name.identifier,
-                methodName,
-                className,
-                Location(path, it.range)
+            elements.add(
+                VariableDeclaration(
+                    it.name.identifier,
+                    methodName,
+                    className,
+                    Location(path, it.range)
+                )
             )
         }
         elements.add(
