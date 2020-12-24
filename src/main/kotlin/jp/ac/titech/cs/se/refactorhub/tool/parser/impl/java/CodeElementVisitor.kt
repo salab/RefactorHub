@@ -24,8 +24,8 @@ import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.PackageDeclaration
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration
 import org.eclipse.jdt.core.dom.TypeDeclaration
-import org.eclipse.jdt.core.dom.VariableDeclarationExpression
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement
 
 class CodeElementVisitor(
     private val unit: CompilationUnit,
@@ -170,7 +170,7 @@ class CodeElementVisitor(
         return super.visit(node)
     }
 
-    override fun visit(node: VariableDeclarationExpression): Boolean {
+    override fun visit(node: VariableDeclarationStatement): Boolean {
         val className = getFullyQualifiedClassName(node)
         val methodName = getMethodName(node)
         node.fragments().forEach {
