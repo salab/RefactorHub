@@ -136,6 +136,14 @@ class CodeElementVisitor(
                     parameter.type.location
                 )
             )
+            elements.add(
+                VariableDeclaration(
+                    parameter.name.identifier,
+                    methodName,
+                    className,
+                    parameter.name.location
+                )
+            )
         }
 
         node.body?.let {
