@@ -15,6 +15,7 @@ import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.VariableDeclaratio
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.VariableType
 import org.eclipse.jdt.core.dom.ASTNode
 import org.eclipse.jdt.core.dom.ASTVisitor
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration
 import org.eclipse.jdt.core.dom.CompilationUnit
 import org.eclipse.jdt.core.dom.EnumDeclaration
 import org.eclipse.jdt.core.dom.FieldDeclaration
@@ -31,29 +32,24 @@ class CodeElementVisitor(
     private val path: String,
     val elements: MutableList<CodeElement> = mutableListOf()
 ) : ASTVisitor() {
-    private var packageName = ""
-    private var className = ""
-    private var methodName = ""
-
     override fun visit(node: PackageDeclaration): Boolean {
-        packageName = node.name.fullyQualifiedName
         return super.visit(node)
     }
 
     override fun visit(node: TypeDeclaration): Boolean {
-        className = "$packageName.${node.name.identifier}"
+        val className = getFullyQualifiedClassName(node)
         if (node.isInterface) {
             elements.add(
                 InterfaceDeclaration(
                     className,
-                    Location(path, node.range)
+                    node.location
                 )
             )
         } else {
             elements.add(
                 ClassDeclaration(
                     className,
-                    Location(path, node.range)
+                    node.location
                 )
             )
         }
@@ -61,24 +57,24 @@ class CodeElementVisitor(
     }
 
     override fun visit(node: EnumDeclaration): Boolean {
-        className = "$packageName.${node.name.identifier}"
         elements.add(
             jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.EnumDeclaration(
-                className,
-                Location(path, node.range)
+                getFullyQualifiedClassName(node),
+                node.location
             )
         )
         return super.visit(node)
     }
 
     override fun visit(node: FieldDeclaration): Boolean {
+        val className = getFullyQualifiedClassName(node)
         node.fragments().forEach {
             it as VariableDeclarationFragment
             elements.add(
                 jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.FieldDeclaration(
                     it.name.identifier,
                     className,
-                    Location(path, it.range)
+                    it.location
                 )
             )
         }
@@ -86,19 +82,20 @@ class CodeElementVisitor(
             FieldType(
                 node.type.toString(),
                 className,
-                Location(path, node.type.range)
+                node.type.location
             )
         )
         return super.visit(node)
     }
 
     override fun visit(node: MethodDeclaration): Boolean {
+        val className = getFullyQualifiedClassName(node)
         if (node.isConstructor) {
             elements.add(
                 ConstructorDeclaration(
                     node.name.identifier,
                     className,
-                    Location(path, node.range)
+                    node.location
                 )
             )
         }
@@ -106,7 +103,7 @@ class CodeElementVisitor(
             jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.MethodDeclaration(
                 node.name.identifier,
                 className,
-                Location(path, node.range)
+                node.location
             )
         )
 
@@ -115,12 +112,12 @@ class CodeElementVisitor(
                 ReturnType(
                     it.toString(),
                     className,
-                    Location(path, it.range)
+                    it.location
                 )
             )
         }
 
-        methodName = node.name.identifier
+        val methodName = getMethodName(node)
         node.parameters().forEach {
             val parameter = it as SingleVariableDeclaration
             elements.add(
@@ -128,7 +125,7 @@ class CodeElementVisitor(
                     parameter.name.identifier,
                     methodName,
                     className,
-                    Location(path, parameter.range)
+                    parameter.location
                 )
             )
             elements.add(
@@ -136,7 +133,7 @@ class CodeElementVisitor(
                     parameter.type.toString(),
                     methodName,
                     className,
-                    Location(path, parameter.type.range)
+                    parameter.type.location
                 )
             )
         }
@@ -157,15 +154,17 @@ class CodeElementVisitor(
     override fun visit(node: MethodInvocation): Boolean {
         elements.add(
             jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.MethodInvocation(
-                methodName,
-                className,
-                Location(path, node.range)
+                getMethodName(node),
+                getFullyQualifiedClassName(node),
+                node.location
             )
         )
         return super.visit(node)
     }
 
     override fun visit(node: VariableDeclarationExpression): Boolean {
+        val className = getFullyQualifiedClassName(node)
+        val methodName = getMethodName(node)
         node.fragments().forEach {
             it as VariableDeclarationFragment
             elements.add(
@@ -173,7 +172,7 @@ class CodeElementVisitor(
                     it.name.identifier,
                     methodName,
                     className,
-                    Location(path, it.range)
+                    it.location
                 )
             )
         }
@@ -182,9 +181,7 @@ class CodeElementVisitor(
                 node.type.toString(),
                 methodName,
                 className,
-                Location(
-                    path, node.type.range
-                )
+                node.type.location
             )
         )
         return super.visit(node)
@@ -210,6 +207,29 @@ class CodeElementVisitor(
 
     private val ASTNode.range: Range
         get() = getRange(this.startPosition, this.endPosition)
+
+    private val ASTNode.location: Location
+        get() = Location(path, this.range)
+
+    private fun getFullyQualifiedClassName(node: ASTNode): String {
+        val paths = mutableListOf<String>()
+        for (it in generateSequence({ node }, { it.parent })) {
+            when (it) {
+                is CompilationUnit -> paths.add(it.`package`.name.fullyQualifiedName)
+                is AbstractTypeDeclaration -> paths.add(it.name.identifier)
+            }
+        }
+        return paths.reversed().joinToString(".")
+    }
+
+    private fun getMethodName(node: ASTNode): String {
+        for (it in generateSequence({ node }, { it.parent })) {
+            when (it) {
+                is MethodDeclaration -> return it.name.identifier
+            }
+        }
+        return ""
+    }
 
     private fun getRange(startPosition: Int, endPosition: Int): Range = Range(
         unit.getLineNumber(startPosition),
