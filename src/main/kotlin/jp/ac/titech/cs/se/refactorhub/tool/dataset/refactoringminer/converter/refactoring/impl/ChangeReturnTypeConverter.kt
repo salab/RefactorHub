@@ -1,10 +1,10 @@
-package jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.refactoring.impl
+package jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.refactoring.impl
 
 import gr.uom.java.xmi.diff.ChangeReturnTypeRefactoring
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.element.convertElement
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.refactoring.RefactoringConverter
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.model.Refactoring
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.oracle.RefOracleData
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.RefactoringOracle
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.element.convertElement
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.refactoring.RefactoringConverter
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementHolder
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementType
 
@@ -12,7 +12,7 @@ class ChangeReturnTypeConverter :
     RefactoringConverter<ChangeReturnTypeRefactoring> {
     override fun convert(
         refactoring: ChangeReturnTypeRefactoring,
-        data: RefOracleData
+        data: RefactoringOracle.Refactoring
     ): Refactoring {
         // TODO: originalType, changedType, returnReferences
         return Refactoring(

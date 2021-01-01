@@ -1,10 +1,10 @@
-package jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.refactoring.impl
+package jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.refactoring.impl
 
 import gr.uom.java.xmi.diff.RenameVariableRefactoring
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.element.convertElement
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.model.Refactoring
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.refactoring.RefactoringConverter
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.oracle.RefOracleData
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.RefactoringOracle
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.element.convertElement
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.refactoring.RefactoringConverter
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementHolder
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementType
 import org.refactoringminer.api.RefactoringType
@@ -13,7 +13,7 @@ class RenameVariableConverter :
     RefactoringConverter<RenameVariableRefactoring> {
     override fun convert(
         refactoring: RenameVariableRefactoring,
-        data: RefOracleData
+        data: RefactoringOracle.Refactoring
     ): Refactoring {
         return Refactoring(
             refactoring.refactoringType.displayName,

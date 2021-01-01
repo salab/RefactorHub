@@ -1,4 +1,4 @@
-package jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.model
+package jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.model
 
 import jp.ac.titech.cs.se.refactorhub.tool.model.Commit
 

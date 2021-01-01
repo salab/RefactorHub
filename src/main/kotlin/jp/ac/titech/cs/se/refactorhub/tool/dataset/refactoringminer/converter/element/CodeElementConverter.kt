@@ -1,4 +1,4 @@
-package jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.element
+package jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.element
 
 import gr.uom.java.xmi.LocationInfo
 import gr.uom.java.xmi.UMLAttribute
@@ -7,12 +7,12 @@ import gr.uom.java.xmi.UMLOperation
 import gr.uom.java.xmi.decomposition.AbstractCodeFragment
 import gr.uom.java.xmi.decomposition.OperationInvocation
 import gr.uom.java.xmi.decomposition.VariableDeclaration
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.element.impl.CodeFragmentConverter
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.element.impl.OperationInvocationConverter
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.element.impl.UMLAttributeConverter
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.element.impl.UMLClassConverter
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.element.impl.UMLOperationConverter
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.element.impl.VariableDeclarationConverter
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.element.impl.CodeFragmentConverter
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.element.impl.OperationInvocationConverter
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.element.impl.UMLAttributeConverter
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.element.impl.UMLClassConverter
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.element.impl.UMLOperationConverter
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.element.impl.VariableDeclarationConverter
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElement
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.data.Location
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.data.Range

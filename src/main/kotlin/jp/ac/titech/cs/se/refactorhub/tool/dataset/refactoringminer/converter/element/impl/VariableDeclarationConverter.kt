@@ -1,7 +1,7 @@
-package jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.element.impl
+package jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.element.impl
 
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.element.CodeElementConverter
-import jp.ac.titech.cs.se.refactorhub.tool.dataset.refminer.converter.element.convertLocation
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.element.CodeElementConverter
+import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.converter.element.convertLocation
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElement
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.ParameterDeclaration
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.VariableDeclaration
