@@ -5,9 +5,11 @@ import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.ExperimentReposi
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Experiment
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
+@KoinApiExtension
 class ExperimentService : KoinComponent {
     private val experimentRepository: ExperimentRepository by inject()
     private val refactoringRepository: RefactoringRepository by inject()

@@ -2,9 +2,11 @@ package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.ElementService
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
+@KoinApiExtension
 class ElementController : KoinComponent {
     private val elementService: ElementService by inject()
 

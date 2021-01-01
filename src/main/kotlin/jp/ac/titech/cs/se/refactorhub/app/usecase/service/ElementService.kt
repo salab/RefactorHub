@@ -4,8 +4,10 @@ import com.fasterxml.jackson.module.jsonSchema.JsonSchema
 import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementType
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
 
+@KoinApiExtension
 class ElementService : KoinComponent {
 
     fun getTypes(): List<String> {

@@ -45,7 +45,12 @@ private fun writeToCsv(name: String, refactorings: Iterable<IndexedValue<Refacto
     BufferedWriter(FileWriter(csv, true)).use { out ->
         out.appendln(
             listOf(
-                "ID", "Type", "Description", "Commit", "Size/Commit", "Others"
+                "ID",
+                "Type",
+                "Description",
+                "Commit",
+                "Size/Commit",
+                "Others"
             ).joinToString("\",\"", "\"", "\"")
         )
         for ((i, refactoring) in refactorings) {

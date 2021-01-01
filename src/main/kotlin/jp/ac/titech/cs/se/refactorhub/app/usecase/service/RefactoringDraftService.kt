@@ -13,9 +13,11 @@ import jp.ac.titech.cs.se.refactorhub.tool.editor.removeCodeElementKey
 import jp.ac.titech.cs.se.refactorhub.tool.editor.removeCodeElementValue
 import jp.ac.titech.cs.se.refactorhub.tool.editor.updateCodeElementValue
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElement
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
+@KoinApiExtension
 class RefactoringDraftService : KoinComponent {
     private val refactoringDraftRepository: RefactoringDraftRepository by inject()
     private val refactoringService: RefactoringService by inject()

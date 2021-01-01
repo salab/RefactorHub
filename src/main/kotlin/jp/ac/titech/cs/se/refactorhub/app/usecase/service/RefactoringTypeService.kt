@@ -5,9 +5,11 @@ import jp.ac.titech.cs.se.refactorhub.app.exception.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringTypeRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringType
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementMetadata
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
+@KoinApiExtension
 class RefactoringTypeService : KoinComponent {
     private val refactoringTypeRepository: RefactoringTypeRepository by inject()
 

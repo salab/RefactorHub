@@ -7,8 +7,6 @@ import jp.ac.titech.cs.se.refactorhub.tool.dataset.refactoringminer.model.Commit
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.net.URL
-import java.nio.file.Files
-import java.nio.file.Paths
 
 object RefactoringOracle {
     private const val API_URL = "http://refactoring.encs.concordia.ca/oracle/api.php"
@@ -40,7 +38,10 @@ object RefactoringOracle {
         tools: List<String> = listOf("RefactoringMiner")
     ): List<Refactoring> {
         val commits = getRefactoringCommits().map {
-            RefactoringCommit(it.id, it.repository, it.sha1,
+            RefactoringCommit(
+                it.id,
+                it.repository,
+                it.sha1,
                 it.refactorings.filter { ref ->
                     ref.validation == validation && tools.all { tool -> ref.detectionTools.contains(tool) }
                 }

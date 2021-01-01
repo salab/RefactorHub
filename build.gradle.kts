@@ -1,11 +1,11 @@
 plugins {
     application
-    kotlin("jvm") version "1.3.70"
-    kotlin("plugin.serialization") version "1.3.70"
-    id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
-    id("org.jlleitschuh.gradle.ktlint-idea") version "9.2.1"
-    id("com.github.johnrengelman.shadow") version "6.0.0"
-    id("org.flywaydb.flyway") version "6.5.1"
+    kotlin("jvm") version "1.4.21"
+    kotlin("plugin.serialization") version "1.4.21"
+    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
+    id("org.jlleitschuh.gradle.ktlint-idea") version "9.4.1"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("org.flywaydb.flyway") version "7.3.2"
 }
 
 group = "jp.ac.titech.cs.se"
@@ -18,9 +18,6 @@ application {
 repositories {
     mavenCentral()
     jcenter()
-    maven { url = uri("https://kotlin.bintray.com/kotlinx") }
-    maven { url = uri("https://kotlin.bintray.com/ktor") }
-    maven { url = uri("https://kotlin.bintray.com/exposed") }
 }
 
 val ktor_version: String by project

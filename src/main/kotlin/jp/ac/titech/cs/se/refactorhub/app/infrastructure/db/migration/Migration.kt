@@ -33,9 +33,11 @@ import org.koin.dsl.module
 // TODO
 fun main() {
     startKoin {
-        modules(module {
-            single { jacksonObjectMapper() }
-        })
+        modules(
+            module {
+                single { jacksonObjectMapper() }
+            }
+        )
     }
 
     Database.connect(

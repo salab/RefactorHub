@@ -12,18 +12,24 @@ object RefactoringMiner {
         GitServiceImpl().cloneIfNotExists("$REPOS_PATH/$repository/repo", "https://github.com/$owner/$repository.git")
             .use {
                 val miner = GitHistoryRefactoringMinerImpl()
-                miner.detectAtCommit(it, sha, object : RefactoringHandler() {
-                    override fun handle(commitId: String, refactorings: List<Refactoring>) {
-                        callback(refactorings)
+                miner.detectAtCommit(
+                    it,
+                    sha,
+                    object : RefactoringHandler() {
+                        override fun handle(commitId: String, refactorings: List<Refactoring>) {
+                            callback(refactorings)
+                        }
                     }
-                })
+                )
             }
     }
 
     fun reDetect(refactoring: RefactoringOracle.Refactoring, handler: (Refactoring) -> Unit) {
         detectAtCommit(refactoring.commit.owner, refactoring.commit.repository, refactoring.commit.sha) { refs ->
-            handler(refs.find { it.toString().replace("\t", " ") == refactoring.description }
-                ?: throw RuntimeException("Failed to re-detect: ${refactoring.description}"))
+            handler(
+                refs.find { it.toString().replace("\t", " ") == refactoring.description }
+                    ?: throw RuntimeException("Failed to re-detect: ${refactoring.description}")
+            )
         }
     }
 }

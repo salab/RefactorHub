@@ -3,9 +3,11 @@ package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringType
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringTypeService
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementMetadata
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
+@KoinApiExtension
 class RefactoringTypeController : KoinComponent {
     private val refactoringTypeService: RefactoringTypeService by inject()
 
