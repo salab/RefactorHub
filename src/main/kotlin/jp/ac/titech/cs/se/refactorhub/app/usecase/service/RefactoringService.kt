@@ -6,7 +6,7 @@ import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringRepos
 import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
-import jp.ac.titech.cs.se.refactorhub.tool.editor.fixRefactoringData
+import jp.ac.titech.cs.se.refactorhub.tool.editor.adjustRefactoringDataToType
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -31,7 +31,7 @@ class RefactoringService : KoinComponent {
         val user = userService.getMe(userId)
         val type = refactoringTypeService.getByName(typeName)
         val sha = commitService.createIfNotExist(commit.sha, commit.owner, commit.repository).sha
-        val fixed = fixRefactoringData(type, data)
+        val fixed = adjustRefactoringDataToType(data, type)
         return refactoringRepository.create(
             sha,
             type.name,

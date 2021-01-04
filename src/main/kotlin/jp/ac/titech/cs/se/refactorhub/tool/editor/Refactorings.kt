@@ -10,52 +10,25 @@ import jp.ac.titech.cs.se.refactorhub.tool.model.refactoring.RefactoringType
 import kotlin.reflect.full.createInstance
 
 /**
- * Fix Refactoring.Data that conflicts with the definition of RefactoringType
+ * Adjust Refactoring.Data to RefactoringType.
+ * Override/Add holders that defined on type, remove empty holders that not defined on type.
  */
-fun fixRefactoringData(type: RefactoringType, data: Refactoring.Data): Refactoring.Data {
+fun adjustRefactoringDataToType(data: Refactoring.Data, type: RefactoringType): Refactoring.Data {
     return object : Refactoring.Data {
         override val before: Map<String, CodeElementHolder> =
-            fixCodeElementMap(type.before, data.before)
+            adjustCodeElementHolderMapToType(data.before, type.before)
         override val after: Map<String, CodeElementHolder> =
-            fixCodeElementMap(type.after, data.after)
+            adjustCodeElementHolderMapToType(data.after, type.after)
     }
 }
 
-/**
- * Change RefactoringType and fix Refactoring.Data
- */
-fun changeRefactoringType(type: RefactoringType, refactoring: Refactoring): Refactoring {
-    return if (type.name != refactoring.type) {
-        val data = object : Refactoring.Data {
-            override val before: Map<String, CodeElementHolder> =
-                refactoring.data.before.let {
-                    removeEmptyCodeElements(type.before, it)
-                }.let {
-                    putDefaultCodeElements(type.before, it)
-                }
-            override val after: Map<String, CodeElementHolder> =
-                refactoring.data.after.let {
-                    removeEmptyCodeElements(type.after, it)
-                }.let {
-                    putDefaultCodeElements(type.after, it)
-                }
-        }
-        object : Refactoring {
-            override val type: String = type.name
-            override val commit: Commit = refactoring.commit
-            override val data: Refactoring.Data = data
-            override val description: String = refactoring.description
-        }
-    } else refactoring
-}
-
-private fun fixCodeElementMap(
-    metadataMap: Map<String, CodeElementMetadata>,
-    elementMap: Map<String, CodeElementHolder>
+private fun adjustCodeElementHolderMapToType(
+    holderMap: Map<String, CodeElementHolder>,
+    metadataMap: Map<String, CodeElementMetadata>
 ): Map<String, CodeElementHolder> {
-    val map = elementMap.toMutableMap()
+    val map = holderMap.toMutableMap()
     metadataMap.entries.forEach {
-        if (elementMap.containsKey(it.key)) {
+        if (holderMap.containsKey(it.key)) {
             val holder = map[it.key]!!
             map[it.key] = CodeElementHolder(
                 holder.type,
@@ -71,27 +44,55 @@ private fun fixCodeElementMap(
                 else listOf(it.value.type.klass.createInstance())
             )
         }
-        if (elementMap[it.key]?.elements?.isEmpty() == true) map.remove(it.key)
+        if (holderMap[it.key]?.elements?.isEmpty() == true) map.remove(it.key)
     }
     return map
 }
 
-private fun removeEmptyCodeElements(
-    metadataMap: Map<String, CodeElementMetadata>,
-    elementMap: Map<String, CodeElementHolder>
+/**
+ * Change RefactoringType and adjust Refactoring.Data to RefactoringType
+ */
+fun changeRefactoringType(refactoring: Refactoring, type: RefactoringType): Refactoring {
+    return if (type.name != refactoring.type) {
+        val data = object : Refactoring.Data {
+            override val before: Map<String, CodeElementHolder> =
+                refactoring.data.before.let {
+                    removeEmptyCodeElementHolders(it, type.before)
+                }.let {
+                    putDefaultCodeElementHolders(it, type.before)
+                }
+            override val after: Map<String, CodeElementHolder> =
+                refactoring.data.after.let {
+                    removeEmptyCodeElementHolders(it, type.after)
+                }.let {
+                    putDefaultCodeElementHolders(it, type.after)
+                }
+        }
+        object : Refactoring {
+            override val type: String = type.name
+            override val commit: Commit = refactoring.commit
+            override val data: Refactoring.Data = data
+            override val description: String = refactoring.description
+        }
+    } else refactoring
+}
+
+private fun removeEmptyCodeElementHolders(
+    holderMap: Map<String, CodeElementHolder>,
+    metadataMap: Map<String, CodeElementMetadata>
 ): Map<String, CodeElementHolder> {
-    val map = elementMap.toMutableMap()
+    val map = holderMap.toMutableMap()
     metadataMap.entries.forEach {
         if (map[it.key]?.elements?.isEmpty() == true) map.remove(it.key)
     }
     return map
 }
 
-private fun putDefaultCodeElements(
-    metadataMap: Map<String, CodeElementMetadata>,
-    elementMap: Map<String, CodeElementHolder>
+private fun putDefaultCodeElementHolders(
+    holderMap: Map<String, CodeElementHolder>,
+    metadataMap: Map<String, CodeElementMetadata>
 ): Map<String, CodeElementHolder> {
-    val map = elementMap.toMutableMap()
+    val map = holderMap.toMutableMap()
     metadataMap.entries.forEach {
         if (map[it.key]?.type != it.value.type) {
             map[it.key] = CodeElementHolder(
@@ -106,13 +107,13 @@ private fun putDefaultCodeElements(
 }
 
 fun putCodeElementKey(
+    refactoring: Refactoring,
     category: String,
     key: String,
     typeName: String,
-    multiple: Boolean,
-    refactoring: Refactoring
+    multiple: Boolean
 ): Refactoring {
-    val map = getCodeElementMap(refactoring, category).toMutableMap()
+    val map = getCodeElementHolderMap(refactoring, category).toMutableMap()
     val type = try {
         CodeElementType.valueOf(typeName)
     } catch (e: IllegalArgumentException) {
@@ -123,24 +124,33 @@ fun putCodeElementKey(
     } else {
         throw RuntimeException("already has key=$key")
     }
-    return setCodeElementMap(refactoring, category, map)
+    return setCodeElementHolderMap(refactoring, category, map)
 }
 
-fun removeCodeElementKey(category: String, key: String, refactoring: Refactoring, type: RefactoringType): Refactoring {
-    val map = getCodeElementMap(refactoring, category).toMutableMap()
+fun removeCodeElementKey(
+    refactoring: Refactoring,
+    type: RefactoringType,
+    category: String,
+    key: String
+): Refactoring {
+    val map = getCodeElementHolderMap(refactoring, category).toMutableMap()
     if (!map.containsKey(key)) {
         throw RuntimeException("doesn't have key=$key")
     }
-    val metadata = getMetadataMap(type, category)
+    val metadata = getCodeElementMetadataMap(type, category)
     if (metadata.containsKey(key)) {
         throw RuntimeException("should have key=$key")
     }
     map.remove(key)
-    return setCodeElementMap(refactoring, category, map)
+    return setCodeElementHolderMap(refactoring, category, map)
 }
 
-fun appendCodeElementValue(category: String, key: String, refactoring: Refactoring): Refactoring {
-    val map = getCodeElementMap(refactoring, category).toMutableMap()
+fun appendCodeElementValue(
+    refactoring: Refactoring,
+    category: String,
+    key: String
+): Refactoring {
+    val map = getCodeElementHolderMap(refactoring, category).toMutableMap()
     if (!map.containsKey(key)) {
         throw RuntimeException("doesn't have key=$key")
     }
@@ -153,17 +163,17 @@ fun appendCodeElementValue(category: String, key: String, refactoring: Refactori
         holder.multiple,
         holder.elements.toMutableList().also { it.add(holder.type.klass.createInstance()) }
     )
-    return setCodeElementMap(refactoring, category, map)
+    return setCodeElementHolderMap(refactoring, category, map)
 }
 
 fun updateCodeElementValue(
+    refactoring: Refactoring,
     category: String,
     key: String,
     index: Int,
-    element: CodeElement,
-    refactoring: Refactoring
+    element: CodeElement
 ): Refactoring {
-    val map = getCodeElementMap(refactoring, category).toMutableMap()
+    val map = getCodeElementHolderMap(refactoring, category).toMutableMap()
     if (!map.containsKey(key)) {
         throw RuntimeException("doesn't have key=$key")
     }
@@ -177,16 +187,16 @@ fun updateCodeElementValue(
     } catch (e: IndexOutOfBoundsException) {
         throw RuntimeException("key=$key doesn't have index=$index")
     }
-    return setCodeElementMap(refactoring, category, map)
+    return setCodeElementHolderMap(refactoring, category, map)
 }
 
 fun removeCodeElementValue(
+    refactoring: Refactoring,
     category: String,
     key: String,
-    index: Int,
-    refactoring: Refactoring
+    index: Int
 ): Refactoring {
-    val map = getCodeElementMap(refactoring, category).toMutableMap()
+    val map = getCodeElementHolderMap(refactoring, category).toMutableMap()
     if (!map.containsKey(key)) {
         throw RuntimeException("doesn't have key=$key")
     }
@@ -203,10 +213,13 @@ fun removeCodeElementValue(
     } catch (e: IndexOutOfBoundsException) {
         throw RuntimeException("key=$key doesn't have index=$index")
     }
-    return setCodeElementMap(refactoring, category, map)
+    return setCodeElementHolderMap(refactoring, category, map)
 }
 
-private fun getCodeElementMap(refactoring: Refactoring, category: String): Map<String, CodeElementHolder> {
+private fun getCodeElementHolderMap(
+    refactoring: Refactoring,
+    category: String
+): Map<String, CodeElementHolder> {
     return when (category) {
         "before" -> refactoring.data.before
         "after" -> refactoring.data.after
@@ -214,7 +227,10 @@ private fun getCodeElementMap(refactoring: Refactoring, category: String): Map<S
     }
 }
 
-private fun getMetadataMap(type: RefactoringType, category: String): Map<String, CodeElementMetadata> {
+private fun getCodeElementMetadataMap(
+    type: RefactoringType,
+    category: String
+): Map<String, CodeElementMetadata> {
     return when (category) {
         "before" -> type.before
         "after" -> type.after
@@ -222,7 +238,7 @@ private fun getMetadataMap(type: RefactoringType, category: String): Map<String,
     }
 }
 
-private fun setCodeElementMap(
+private fun setCodeElementHolderMap(
     refactoring: Refactoring,
     category: String,
     map: Map<String, CodeElementHolder>

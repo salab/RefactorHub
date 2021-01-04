@@ -80,7 +80,7 @@ class RefactoringDraftService : KoinComponent {
         val draft = getByOwner(id, userId)
         if (typeName != null) {
             val type = refactoringTypeService.getByName(typeName)
-            val refactoring = changeRefactoringType(type, draft)
+            val refactoring = changeRefactoringType(draft, type)
             return refactoringDraftRepository.update(
                 id,
                 refactoring.type,
@@ -107,7 +107,7 @@ class RefactoringDraftService : KoinComponent {
     ): RefactoringDraft {
         val draft = getByOwner(id, userId)
         val refactoring = try {
-            putCodeElementKey(category, key, typeName, multiple, draft)
+            putCodeElementKey(draft, category, key, typeName, multiple)
         } catch (e: Exception) {
             throw BadRequestException(e.message)
         }
@@ -129,7 +129,7 @@ class RefactoringDraftService : KoinComponent {
         val draft = getByOwner(id, userId)
         val type = refactoringTypeService.getByName(draft.type)
         val refactoring = try {
-            removeCodeElementKey(category, key, draft, type)
+            removeCodeElementKey(draft, type, category, key)
         } catch (e: Exception) {
             throw BadRequestException(e.message)
         }
@@ -150,7 +150,7 @@ class RefactoringDraftService : KoinComponent {
     ): RefactoringDraft {
         val draft = getByOwner(id, userId)
         val refactoring = try {
-            appendCodeElementValue(category, key, draft)
+            appendCodeElementValue(draft, category, key)
         } catch (e: Exception) {
             throw BadRequestException(e.message)
         }
@@ -173,7 +173,7 @@ class RefactoringDraftService : KoinComponent {
     ): RefactoringDraft {
         val draft = getByOwner(id, userId)
         val refactoring = try {
-            updateCodeElementValue(category, key, index, element, draft)
+            updateCodeElementValue(draft, category, key, index, element)
         } catch (e: Exception) {
             throw BadRequestException(e.message)
         }
@@ -195,7 +195,7 @@ class RefactoringDraftService : KoinComponent {
     ): RefactoringDraft {
         val draft = getByOwner(id, userId)
         val refactoring = try {
-            removeCodeElementValue(category, key, index, draft)
+            removeCodeElementValue(draft, category, key, index)
         } catch (e: Exception) {
             throw BadRequestException(e.message)
         }
