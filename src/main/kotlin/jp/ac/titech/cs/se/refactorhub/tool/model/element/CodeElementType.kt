@@ -3,6 +3,8 @@ package jp.ac.titech.cs.se.refactorhub.tool.model.element
 import kotlin.reflect.KClass
 
 enum class CodeElementType {
+    PackageDeclaration,
+
     TypeDeclaration,
     ClassDeclaration,
     InterfaceDeclaration,
@@ -31,6 +33,8 @@ enum class CodeElementType {
 
     val klass: KClass<out CodeElement>
         get() = when (this) {
+            PackageDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.PackageDeclaration::class
+
             TypeDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.TypeDeclaration::class
             ClassDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.ClassDeclaration::class
             InterfaceDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.InterfaceDeclaration::class

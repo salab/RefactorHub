@@ -34,6 +34,12 @@ class CodeElementVisitor(
     val elements: MutableList<CodeElement> = mutableListOf()
 ) : ASTVisitor() {
     override fun visit(node: PackageDeclaration): Boolean {
+        elements.add(
+            jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.PackageDeclaration(
+                node.name.fullyQualifiedName,
+                node.location
+            )
+        )
         return super.visit(node)
     }
 
