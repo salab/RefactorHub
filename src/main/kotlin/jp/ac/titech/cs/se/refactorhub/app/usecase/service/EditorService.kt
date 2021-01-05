@@ -8,9 +8,8 @@ class EditorService {
         sha: String,
         owner: String,
         repository: String,
-        path: String,
-        token: String? = null
+        path: String
     ): FileContent {
-        return jp.ac.titech.cs.se.refactorhub.tool.editor.getFileContent(sha, owner, repository, path, token)
+        return jp.ac.titech.cs.se.refactorhub.tool.editor.getFileContent(sha, owner, repository, path)
     }
 }

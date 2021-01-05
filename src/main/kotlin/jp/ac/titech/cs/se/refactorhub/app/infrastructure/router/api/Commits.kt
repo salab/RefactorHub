@@ -29,8 +29,7 @@ fun Route.commits() {
             call.respond(commitController.get(it.sha))
         }
         get<GetCommitDetail> {
-            val session = call.sessions.get<Session>()
-            call.respond(commitController.getDetail(it.sha, session?.accessToken))
+            call.respond(commitController.getDetail(it.sha))
         }
     }
 }

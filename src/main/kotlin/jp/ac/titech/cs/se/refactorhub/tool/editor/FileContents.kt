@@ -9,18 +9,19 @@ import org.kohsuke.github.GitHub
 import java.net.HttpURLConnection
 import java.net.URL
 
-fun getFileContent(sha: String, owner: String, repository: String, path: String, token: String? = null): FileContent {
-    return createFileContent(getGHContent(sha, owner, repository, path, token))
+val GITHUB_ACCESS_TOKEN = System.getenv("GITHUB_ACCESS_TOKEN") ?: ""
+
+fun getFileContent(sha: String, owner: String, repository: String, path: String): FileContent {
+    return createFileContent(getGHContent(sha, owner, repository, path))
 }
 
 private fun getGHContent(
     sha: String,
     owner: String,
     repository: String,
-    path: String,
-    token: String? = null
+    path: String
 ): GHContent {
-    val client = GitHub.connectUsingOAuth(token)
+    val client = GitHub.connectUsingOAuth(GITHUB_ACCESS_TOKEN)
     return client.getRepository("$owner/$repository").getFileContent(path, sha)
 }
 

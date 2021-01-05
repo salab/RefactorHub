@@ -14,9 +14,8 @@ class EditorController : KoinComponent {
         sha: String,
         owner: String,
         repository: String,
-        path: String,
-        token: String? = null
+        path: String
     ): FileContent {
-        return editorService.getFileContent(sha, owner, repository, path, token)
+        return editorService.getFileContent(sha, owner, repository, path)
     }
 }

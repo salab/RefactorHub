@@ -15,7 +15,7 @@ class CommitController : KoinComponent {
         return commitService.get(sha)
     }
 
-    fun getDetail(sha: String, token: String?): CommitDetail {
-        return commitService.getDetail(sha, token)
+    fun getDetail(sha: String): CommitDetail {
+        return commitService.getDetail(sha)
     }
 }
