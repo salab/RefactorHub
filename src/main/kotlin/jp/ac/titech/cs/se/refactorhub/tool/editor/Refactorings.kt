@@ -182,8 +182,11 @@ fun updateCodeElementValue(
         map[key] = CodeElementHolder(
             holder.type,
             holder.multiple,
-            holder.elements.toMutableList().also { it[index] = element }
+            holder.elements.toMutableList().also { it[index] = element },
+            CodeElementHolder.State.Manual
         )
+
+        // autofill
     } catch (e: IndexOutOfBoundsException) {
         throw RuntimeException("key=$key doesn't have index=$index")
     }
