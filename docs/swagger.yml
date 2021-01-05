@@ -838,14 +838,23 @@ components:
       type: string
       enum:
         [
+          PackageDeclaration,
+          TypeDeclaration,
           ClassDeclaration,
-          ConstructorDeclaration,
-          FieldDeclaration,
           InterfaceDeclaration,
+          EnumDeclaration,
+          FieldDeclaration,
+          FieldType,
           MethodDeclaration,
-          MethodInvocation,
+          ConstructorDeclaration,
+          ReturnType,
           ParameterDeclaration,
+          ParameterType,
+          MethodInvocation,
           VariableDeclaration,
+          VariableType,
+          SimpleName,
+          Statement,
           CodeFragment,
         ]
     CodeElementHolder:
@@ -859,10 +868,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CodeElement"
+        state:
+          $ref: "#/components/schemas/CodeElementHolderState"
       required:
         - type
         - multiple
         - elements
+        - state
+    CodeElementHolderState:
+      type: string
+      enum: [None, Autofill, Manual]
     CodeElementMetadata:
       type: object
       properties:
@@ -872,10 +887,15 @@ components:
           type: boolean
         required:
           type: boolean
+        autofills:
+          type: array
+          items:
+            $ref: "#/components/schemas/Autofill"
       required:
         - type
         - multiple
         - required
+        - autofills
 
     Location:
       type: object
@@ -902,6 +922,30 @@ components:
         - startColumn
         - endLine
         - endColumn
+
+    Autofill:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/AutofillType"
+        follows:
+          type: array
+          items:
+            $ref: "#/components/schemas/Follow"
+    AutofillType:
+      type: string
+      enum: [Reference, Surround, Package]
+    Follow:
+      type: object
+      properties:
+        category:
+          type: string
+          enum: [before, after]
+        key:
+          type: string
+      required:
+        - category
+        - key
 
     CreateRefactoringRequest:
       type: object
