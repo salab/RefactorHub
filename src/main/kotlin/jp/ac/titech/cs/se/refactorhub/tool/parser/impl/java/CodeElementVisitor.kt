@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.dom.FieldDeclaration
 import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.PackageDeclaration
+import org.eclipse.jdt.core.dom.SimpleName
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration
 import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment
@@ -192,6 +193,18 @@ class CodeElementVisitor(
                 node.type.location
             )
         )
+        return super.visit(node)
+    }
+
+    override fun visit(node: SimpleName): Boolean {
+        if (!node.isDeclaration) {
+            elements.add(
+                jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.SimpleName(
+                    node.identifier,
+                    node.location
+                )
+            )
+        }
         return super.visit(node)
     }
 

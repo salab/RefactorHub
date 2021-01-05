@@ -23,6 +23,8 @@ enum class CodeElementType {
     VariableDeclaration,
     VariableType,
 
+    SimpleName,
+
     Statement,
 
     CodeFragment;
@@ -48,6 +50,8 @@ enum class CodeElementType {
 
             VariableDeclaration -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.VariableDeclaration::class
             VariableType -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.VariableType::class
+
+            SimpleName -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.SimpleName::class
 
             Statement -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.Statement::class
 
