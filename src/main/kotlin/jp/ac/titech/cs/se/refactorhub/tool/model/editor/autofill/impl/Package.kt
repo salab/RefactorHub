@@ -9,5 +9,5 @@ import jp.ac.titech.cs.se.refactorhub.tool.model.editor.autofill.Follow
 data class Package(
     override val follows: List<Follow>
 ) : Autofill {
-    override val type: AutofillType get() = AutofillType.Reference
+    override val type: AutofillType get() = AutofillType.Package
 }
