@@ -22,6 +22,7 @@ class RefactoringDraftService : KoinComponent {
     private val refactoringDraftRepository: RefactoringDraftRepository by inject()
     private val refactoringService: RefactoringService by inject()
     private val refactoringTypeService: RefactoringTypeService by inject()
+    private val editorService: EditorService by inject()
 
     fun getRefactoringDrafts(refactoringId: Int): List<RefactoringDraft> {
         return refactoringDraftRepository.findByRefactoringId(refactoringId)
@@ -173,7 +174,10 @@ class RefactoringDraftService : KoinComponent {
     ): RefactoringDraft {
         val draft = getByOwner(id, userId)
         val refactoring = try {
-            updateCodeElementValue(draft, category, key, index, element)
+            val type = refactoringTypeService.getByName(draft.type)
+            val contents =
+                editorService.getCommitFileContents(draft.commit.sha, draft.commit.owner, draft.commit.repository)
+            updateCodeElementValue(draft, category, key, index, element, type, contents)
         } catch (e: Exception) {
             throw BadRequestException(e.message)
         }

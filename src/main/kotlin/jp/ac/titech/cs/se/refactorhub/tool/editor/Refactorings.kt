@@ -1,6 +1,8 @@
 package jp.ac.titech.cs.se.refactorhub.tool.editor
 
+import jp.ac.titech.cs.se.refactorhub.tool.editor.autofill.autofill
 import jp.ac.titech.cs.se.refactorhub.tool.model.Commit
+import jp.ac.titech.cs.se.refactorhub.tool.model.editor.CommitFileContents
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElement
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementHolder
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementMetadata
@@ -171,7 +173,9 @@ fun updateCodeElementValue(
     category: String,
     key: String,
     index: Int,
-    element: CodeElement
+    element: CodeElement,
+    type: RefactoringType,
+    contents: CommitFileContents
 ): Refactoring {
     val map = getCodeElementHolderMap(refactoring, category).toMutableMap()
     if (!map.containsKey(key)) {
@@ -185,12 +189,44 @@ fun updateCodeElementValue(
             holder.elements.toMutableList().also { it[index] = element },
             CodeElementHolder.State.Manual
         )
-
-        // autofill
     } catch (e: IndexOutOfBoundsException) {
         throw RuntimeException("key=$key doesn't have index=$index")
     }
-    return setCodeElementHolderMap(refactoring, category, map)
+    return setCodeElementHolderMap(refactoring, category, map).let {
+        processAutofill("before", it, category, key, element, type, contents)
+    }.let {
+        processAutofill("after", it, category, key, element, type, contents)
+    }
+}
+
+private fun processAutofill(
+    target: String,
+    refactoring: Refactoring,
+    category: String,
+    key: String,
+    element: CodeElement,
+    type: RefactoringType,
+    contents: CommitFileContents
+): Refactoring {
+    val map = getCodeElementHolderMap(refactoring, target).toMutableMap()
+    getCodeElementMetadataMap(type, target).entries.forEach {
+        it.value.autofills.forEach { autofill ->
+            autofill.follows.forEach(fun(follow) {
+                if (follow.category == category && follow.key == key) {
+                    val holder = map[it.key]
+                    if (holder != null && holder.state == CodeElementHolder.State.Manual) return
+                    val elements = autofill(autofill, element, contents)
+                    map[it.key] = CodeElementHolder(
+                        it.value.type,
+                        it.value.multiple,
+                        elements,
+                        CodeElementHolder.State.Autofill
+                    )
+                }
+            })
+        }
+    }
+    return setCodeElementHolderMap(refactoring, target, map)
 }
 
 fun removeCodeElementValue(
@@ -211,7 +247,8 @@ fun removeCodeElementValue(
         map[key] = CodeElementHolder(
             holder.type,
             holder.multiple,
-            holder.elements.toMutableList().also { it.removeAt(index) }
+            holder.elements.toMutableList().also { it.removeAt(index) },
+            CodeElementHolder.State.Manual
         )
     } catch (e: IndexOutOfBoundsException) {
         throw RuntimeException("key=$key doesn't have index=$index")

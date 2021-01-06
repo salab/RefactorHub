@@ -13,13 +13,12 @@ class EditorService : KoinComponent {
     private val fileContentRepository: FileContentRepository by inject()
     private val commitService: CommitService by inject()
 
-    fun getFileContent(
+    fun getCommitFileContents(
         sha: String,
         owner: String,
-        repository: String,
-        path: String
-    ): FileContent {
-        val contents = fileContentRepository.find(owner, repository, sha) ?: run {
+        repository: String
+    ): CommitFileContents {
+        return fileContentRepository.find(owner, repository, sha) ?: run {
             val commit = commitService.getDetail(sha, owner, repository)
             fileContentRepository.save(
                 CommitFileContents(
@@ -35,6 +34,15 @@ class EditorService : KoinComponent {
                 )
             )
         }
+    }
+
+    fun getFileContent(
+        sha: String,
+        owner: String,
+        repository: String,
+        path: String
+    ): FileContent {
+        val contents = getCommitFileContents(sha, owner, repository)
         return contents.files.find { it.name == path }?.content
             ?: throw NotFoundException("File(path=$path) is not found")
     }
