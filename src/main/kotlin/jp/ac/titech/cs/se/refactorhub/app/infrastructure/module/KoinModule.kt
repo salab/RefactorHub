@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.CommitRepositoryImpl
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.ExperimentRepositoryImpl
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.FileContentRepositoryImpl
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.RefactoringDraftRepositoryImpl
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.RefactoringRepositoryImpl
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.RefactoringTypeRepositoryImpl
@@ -18,6 +19,7 @@ import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringTypeC
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.UserController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.CommitRepository
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.ExperimentRepository
+import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.FileContentRepository
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringDraftRepository
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringRepository
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringTypeRepository
@@ -57,4 +59,5 @@ val koinModules = module {
     single<RefactoringTypeRepository> { RefactoringTypeRepositoryImpl() }
     single<RefactoringDraftRepository> { RefactoringDraftRepositoryImpl() }
     single<ExperimentRepository> { ExperimentRepositoryImpl() }
+    single<FileContentRepository> { FileContentRepositoryImpl() }
 }

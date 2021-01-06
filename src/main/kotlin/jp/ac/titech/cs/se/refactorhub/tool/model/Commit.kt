@@ -4,4 +4,5 @@ interface Commit {
     val sha: String
     val owner: String
     val repository: String
+    val parent: String
 }

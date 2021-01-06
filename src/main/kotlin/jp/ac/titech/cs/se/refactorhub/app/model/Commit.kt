@@ -5,8 +5,9 @@ import java.util.Date
 
 data class Commit(
     override val sha: String,
-    override var owner: String,
-    override var repository: String
+    override val owner: String,
+    override val repository: String,
+    override val parent: String
 ) : Commit
 
 data class CommitDetail(

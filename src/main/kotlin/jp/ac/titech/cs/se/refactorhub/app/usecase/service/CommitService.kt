@@ -23,8 +23,12 @@ class CommitService : KoinComponent {
 
     fun getDetail(sha: String): CommitDetail {
         val commit = get(sha)
+        return getDetail(commit.sha, commit.owner, commit.repository)
+    }
+
+    fun getDetail(sha: String, owner: String, repository: String): CommitDetail {
         val client = GitHub.connectUsingOAuth(GITHUB_ACCESS_TOKEN)
-        return client.getRepository("${commit.owner}/${commit.repository}").getCommit(commit.sha).let {
+        return client.getRepository("${owner}/${repository}").getCommit(sha).let {
             CommitDetail(
                 it.shA1,
                 it.owner.ownerName,
@@ -48,7 +52,9 @@ class CommitService : KoinComponent {
 
     fun createIfNotExist(sha: String, owner: String, repository: String): Commit {
         val commit = commitRepository.findBySha(sha)
-        return commit ?: commitRepository.save(Commit(sha, owner, repository))
+        if (commit != null) return commit
+        val detail = getDetail(sha, owner, repository)
+        return commitRepository.save(Commit(sha, owner, repository, detail.parent))
     }
 
     companion object {
