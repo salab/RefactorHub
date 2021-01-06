@@ -1,0 +1,268 @@
+[
+  {
+    "name": "Extract Method",
+    "description": "",
+    "before": {
+      "extracted code": {
+        "type": "CodeFragment",
+        "multiple": true,
+        "required": true
+      },
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true,
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "before",
+                "key": "extracted code"
+              }
+            ],
+            "element": "MethodDeclaration"
+          }
+        ]
+      }
+    },
+    "after": {
+      "invocation": {
+        "type": "MethodInvocation",
+        "required": true
+      },
+      "extracted code": {
+        "type": "CodeFragment",
+        "multiple": true,
+        "required": true
+      },
+      "extracted method": {
+        "type": "MethodDeclaration",
+        "required": true,
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "after",
+                "key": "extracted code"
+              }
+            ],
+            "element": "MethodDeclaration"
+          }
+        ]
+      },
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true,
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "after",
+                "key": "invocation"
+              }
+            ],
+            "element": "MethodDeclaration"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Move Attribute",
+    "description": "",
+    "before": {
+      "target field": {
+        "type": "FieldDeclaration",
+        "required": true
+      },
+      "references": {
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "before",
+                "key": "target field"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "after": {
+      "moved field": {
+        "type": "FieldDeclaration",
+        "required": true
+      },
+      "references": {
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "after",
+                "key": "moved field"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Move Class",
+    "description": "",
+    "before": {
+      "target class": {
+        "type": "ClassDeclaration",
+        "required": true
+      },
+      "package": {
+        "type": "PackageDeclaration",
+        "autofills": [
+          {
+            "type": "Package",
+            "follows": [
+              {
+                "category": "before",
+                "key": "target class"
+              }
+            ]
+          }
+        ]
+      },
+      "references": {
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "before",
+                "key": "target class"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "after": {
+      "moved class": {
+        "type": "ClassDeclaration",
+        "required": true
+      },
+      "package": {
+        "type": "PackageDeclaration",
+        "autofills": [
+          {
+            "type": "Package",
+            "follows": [
+              {
+                "category": "after",
+                "key": "moved class"
+              }
+            ]
+          }
+        ]
+      },
+      "references": {
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "after",
+                "key": "moved class"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Rename Variable",
+    "description": "",
+    "before": {
+      "target variable": {
+        "type": "VariableDeclaration",
+        "required": true
+      },
+      "method": {
+        "type": "MethodDeclaration",
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "before",
+                "key": "target variable"
+              }
+            ],
+            "element": "MethodDeclaration"
+          }
+        ]
+      },
+      "references": {
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "before",
+                "key": "target variable"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "after": {
+      "renamed variable": {
+        "type": "VariableDeclaration",
+        "required": true
+      },
+      "method": {
+        "type": "MethodDeclaration",
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "after",
+                "key": "moved variable"
+              }
+            ],
+            "element": "MethodDeclaration"
+          }
+        ]
+      },
+      "references": {
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "after",
+                "key": "moved variable"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]
