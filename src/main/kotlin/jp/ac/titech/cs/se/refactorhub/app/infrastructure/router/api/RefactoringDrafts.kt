@@ -17,6 +17,7 @@ import io.ktor.sessions.sessions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringDraftController
 import jp.ac.titech.cs.se.refactorhub.tool.model.DiffCategory
+import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
@@ -55,6 +56,7 @@ data class UpdateDraftElementValue(val id: Int, val category: DiffCategory, val 
 @Location("/{id}/{category}/{key}/{index}")
 data class RemoveDraftElementValue(val id: Int, val category: DiffCategory, val key: String, val index: Int)
 
+@KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.drafts() {
     route("/drafts") {

@@ -8,9 +8,8 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.route
 import io.ktor.sessions.get
-import io.ktor.sessions.sessions
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.CommitController
+import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
@@ -21,6 +20,7 @@ data class GetCommit(val sha: String)
 @Location("/{sha}/detail")
 data class GetCommitDetail(val sha: String)
 
+@KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.commits() {
     route("/commits") {

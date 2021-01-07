@@ -9,6 +9,7 @@ import io.ktor.routing.Route
 import io.ktor.routing.route
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.EditorController
 import jp.ac.titech.cs.se.refactorhub.tool.model.DiffCategory
+import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
@@ -21,6 +22,7 @@ data class GetFileContent(
     val path: String
 )
 
+@KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.editor() {
     route("/editor") {
