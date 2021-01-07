@@ -128,12 +128,14 @@ export const actions = actionTree(
         owner,
         repository,
         sha,
+        category,
         path,
         uri,
       }: {
         owner: string
         repository: string
         sha: string
+        category: DiffCategory
         path: string
         uri: string
       }
@@ -142,7 +144,7 @@ export const actions = actionTree(
         return state.fileContentCache.get(uri)!!
       }
       const content = (
-        await apis.editor.getFileContent(sha, owner, repository, path)
+        await apis.editor.getFileContent(sha, owner, repository, category, path)
       ).data
       await commit('cacheFileContent', {
         uri,

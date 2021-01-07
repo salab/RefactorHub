@@ -82,7 +82,8 @@ async function getTextModelOfFile(
   const content = await $accessor.draft.getFileContent({
     owner: commit.owner,
     repository: commit.repository,
-    sha,
+    sha: commit.sha,
+    category,
     path,
     uri: getCommitFileUri(commit.owner, commit.repository, sha, path),
   })
@@ -140,7 +141,8 @@ async function setupElementWidgetsOnDiffEditor(
   const content = await $accessor.draft.getFileContent({
     owner: commit.owner,
     repository: commit.repository,
-    sha,
+    sha: commit.sha,
+    category,
     path,
     uri: getCommitFileUri(commit.owner, commit.repository, sha, path),
   })

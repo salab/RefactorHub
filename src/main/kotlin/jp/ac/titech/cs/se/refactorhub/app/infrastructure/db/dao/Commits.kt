@@ -10,7 +10,6 @@ object Commits : IntIdTable("commits") {
     val sha = varchar("sha", 40).uniqueIndex()
     val owner = varchar("owner", 100)
     val repository = varchar("repository", 100)
-    val parent = varchar("parent", 40).uniqueIndex()
 }
 
 class CommitDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Commit> {
@@ -19,14 +18,12 @@ class CommitDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Commit> {
     var sha by Commits.sha
     var owner by Commits.owner
     var repository by Commits.repository
-    var parent by Commits.parent
 
     override fun asModel(): Commit {
         return Commit(
             this.sha,
             this.owner,
-            this.repository,
-            this.parent
+            this.repository
         )
     }
 }

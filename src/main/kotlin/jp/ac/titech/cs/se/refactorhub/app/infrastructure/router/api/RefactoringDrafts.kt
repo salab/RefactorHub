@@ -16,6 +16,7 @@ import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringDraftController
+import jp.ac.titech.cs.se.refactorhub.tool.model.DiffCategory
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
@@ -36,23 +37,23 @@ data class UpdateDraft(val id: Int)
 
 @KtorExperimentalLocationsAPI
 @Location("/{id}/{category}")
-data class PutDraftElementKey(val id: Int, val category: String)
+data class PutDraftElementKey(val id: Int, val category: DiffCategory)
 
 @KtorExperimentalLocationsAPI
 @Location("/{id}/{category}/{key}")
-data class RemoveDraftElementKey(val id: Int, val category: String, val key: String)
+data class RemoveDraftElementKey(val id: Int, val category: DiffCategory, val key: String)
 
 @KtorExperimentalLocationsAPI
 @Location("/{id}/{category}/{key}")
-data class AppendDraftElementValue(val id: Int, val category: String, val key: String)
+data class AppendDraftElementValue(val id: Int, val category: DiffCategory, val key: String)
 
 @KtorExperimentalLocationsAPI
 @Location("/{id}/{category}/{key}/{index}")
-data class UpdateDraftElementValue(val id: Int, val category: String, val key: String, val index: Int)
+data class UpdateDraftElementValue(val id: Int, val category: DiffCategory, val key: String, val index: Int)
 
 @KtorExperimentalLocationsAPI
 @Location("/{id}/{category}/{key}/{index}")
-data class RemoveDraftElementValue(val id: Int, val category: String, val key: String, val index: Int)
+data class RemoveDraftElementValue(val id: Int, val category: DiffCategory, val key: String, val index: Int)
 
 @KtorExperimentalLocationsAPI
 fun Route.drafts() {

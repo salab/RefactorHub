@@ -2,6 +2,7 @@ package jp.ac.titech.cs.se.refactorhub.tool.editor
 
 import jp.ac.titech.cs.se.refactorhub.tool.editor.autofill.autofill
 import jp.ac.titech.cs.se.refactorhub.tool.model.Commit
+import jp.ac.titech.cs.se.refactorhub.tool.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.tool.model.editor.CommitFileContents
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElement
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementHolder
@@ -110,7 +111,7 @@ private fun putDefaultCodeElementHolders(
 
 fun putCodeElementKey(
     refactoring: Refactoring,
-    category: String,
+    category: DiffCategory,
     key: String,
     typeName: String,
     multiple: Boolean
@@ -132,7 +133,7 @@ fun putCodeElementKey(
 fun removeCodeElementKey(
     refactoring: Refactoring,
     type: RefactoringType,
-    category: String,
+    category: DiffCategory,
     key: String
 ): Refactoring {
     val map = getCodeElementHolderMap(refactoring, category).toMutableMap()
@@ -149,7 +150,7 @@ fun removeCodeElementKey(
 
 fun appendCodeElementValue(
     refactoring: Refactoring,
-    category: String,
+    category: DiffCategory,
     key: String
 ): Refactoring {
     val map = getCodeElementHolderMap(refactoring, category).toMutableMap()
@@ -170,7 +171,7 @@ fun appendCodeElementValue(
 
 fun updateCodeElementValue(
     refactoring: Refactoring,
-    category: String,
+    category: DiffCategory,
     key: String,
     index: Int,
     element: CodeElement,
@@ -193,16 +194,16 @@ fun updateCodeElementValue(
         throw RuntimeException("key=$key doesn't have index=$index")
     }
     return setCodeElementHolderMap(refactoring, category, map).let {
-        processAutofill("before", it, category, key, element, type, contents)
+        processAutofill(DiffCategory.before, it, category, key, element, type, contents)
     }.let {
-        processAutofill("after", it, category, key, element, type, contents)
+        processAutofill(DiffCategory.after, it, category, key, element, type, contents)
     }
 }
 
 private fun processAutofill(
-    target: String,
+    target: DiffCategory,
     refactoring: Refactoring,
-    category: String,
+    category: DiffCategory,
     key: String,
     element: CodeElement,
     type: RefactoringType,
@@ -211,19 +212,21 @@ private fun processAutofill(
     val map = getCodeElementHolderMap(refactoring, target).toMutableMap()
     getCodeElementMetadataMap(type, target).entries.forEach {
         it.value.autofills.forEach { autofill ->
-            autofill.follows.forEach(fun(follow) {
-                if (follow.category == category && follow.key == key) {
-                    val holder = map[it.key]
-                    if (holder != null && holder.state == CodeElementHolder.State.Manual) return
-                    val elements = autofill(autofill, element, contents)
-                    map[it.key] = CodeElementHolder(
-                        it.value.type,
-                        it.value.multiple,
-                        elements,
-                        CodeElementHolder.State.Autofill
-                    )
+            autofill.follows.forEach(
+                fun(follow) {
+                    if (follow.category == category && follow.key == key) {
+                        val holder = map[it.key]
+                        if (holder != null && holder.state == CodeElementHolder.State.Manual) return
+                        val elements = autofill(autofill, element, category, contents)
+                        map[it.key] = CodeElementHolder(
+                            it.value.type,
+                            it.value.multiple,
+                            elements,
+                            CodeElementHolder.State.Autofill
+                        )
+                    }
                 }
-            })
+            )
         }
     }
     return setCodeElementHolderMap(refactoring, target, map)
@@ -231,7 +234,7 @@ private fun processAutofill(
 
 fun removeCodeElementValue(
     refactoring: Refactoring,
-    category: String,
+    category: DiffCategory,
     key: String,
     index: Int
 ): Refactoring {
@@ -258,29 +261,27 @@ fun removeCodeElementValue(
 
 private fun getCodeElementHolderMap(
     refactoring: Refactoring,
-    category: String
+    category: DiffCategory
 ): Map<String, CodeElementHolder> {
     return when (category) {
-        "before" -> refactoring.data.before
-        "after" -> refactoring.data.after
-        else -> throw RuntimeException("should be either 'before' or 'after' but category=$category")
+        DiffCategory.before -> refactoring.data.before
+        DiffCategory.after -> refactoring.data.after
     }
 }
 
 private fun getCodeElementMetadataMap(
     type: RefactoringType,
-    category: String
+    category: DiffCategory
 ): Map<String, CodeElementMetadata> {
     return when (category) {
-        "before" -> type.before
-        "after" -> type.after
-        else -> throw RuntimeException("should be either 'before' or 'after' but category=$category")
+        DiffCategory.before -> type.before
+        DiffCategory.after -> type.after
     }
 }
 
 private fun setCodeElementHolderMap(
     refactoring: Refactoring,
-    category: String,
+    category: DiffCategory,
     map: Map<String, CodeElementHolder>
 ): Refactoring {
     return object : Refactoring {
@@ -288,9 +289,9 @@ private fun setCodeElementHolderMap(
         override val commit: Commit = refactoring.commit
         override val data: Refactoring.Data = object : Refactoring.Data {
             override val before: Map<String, CodeElementHolder> =
-                if (category == "before") map else refactoring.data.before
+                if (category == DiffCategory.before) map else refactoring.data.before
             override val after: Map<String, CodeElementHolder> =
-                if (category == "after") map else refactoring.data.after
+                if (category == DiffCategory.after) map else refactoring.data.after
         }
         override val description: String = refactoring.description
     }

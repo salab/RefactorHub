@@ -21,7 +21,6 @@ class CommitRepositoryImpl : CommitRepository {
                 this.sha = commit.sha
                 this.owner = commit.owner
                 this.repository = commit.repository
-                this.parent = commit.parent
             }.asModel()
         }
     }

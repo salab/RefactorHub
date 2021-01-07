@@ -1,6 +1,7 @@
 package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.EditorService
+import jp.ac.titech.cs.se.refactorhub.tool.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.tool.model.editor.FileContent
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -14,8 +15,9 @@ class EditorController : KoinComponent {
         sha: String,
         owner: String,
         repository: String,
+        category: DiffCategory,
         path: String
     ): FileContent {
-        return editorService.getFileContent(sha, owner, repository, path)
+        return editorService.getFileContent(sha, owner, repository, category, path)
     }
 }

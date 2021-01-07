@@ -6,6 +6,4 @@ data class Commit(
     override val sha: String,
     override var owner: String,
     override var repository: String
-) : Commit {
-    override val parent: String = ""
-}
+) : Commit

@@ -6,8 +6,7 @@ import java.util.Date
 data class Commit(
     override val sha: String,
     override val owner: String,
-    override val repository: String,
-    override val parent: String
+    override val repository: String
 ) : Commit
 
 data class CommitDetail(
@@ -24,7 +23,11 @@ data class CommitDetail(
 
 data class CommitFile(
     val sha: String,
-    val status: String,
+    val status: CommitFileStatus,
     val name: String,
     val previousName: String
 )
+
+enum class CommitFileStatus {
+    modified, added, removed, renamed
+}

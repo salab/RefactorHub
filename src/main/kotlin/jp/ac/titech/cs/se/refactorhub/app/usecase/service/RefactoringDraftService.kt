@@ -12,6 +12,7 @@ import jp.ac.titech.cs.se.refactorhub.tool.editor.putCodeElementKey
 import jp.ac.titech.cs.se.refactorhub.tool.editor.removeCodeElementKey
 import jp.ac.titech.cs.se.refactorhub.tool.editor.removeCodeElementValue
 import jp.ac.titech.cs.se.refactorhub.tool.editor.updateCodeElementValue
+import jp.ac.titech.cs.se.refactorhub.tool.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElement
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -100,7 +101,7 @@ class RefactoringDraftService : KoinComponent {
 
     fun putElementKey(
         id: Int,
-        category: String,
+        category: DiffCategory,
         key: String,
         typeName: String,
         multiple: Boolean,
@@ -123,7 +124,7 @@ class RefactoringDraftService : KoinComponent {
 
     fun removeElementKey(
         id: Int,
-        category: String,
+        category: DiffCategory,
         key: String,
         userId: Int?
     ): RefactoringDraft {
@@ -145,7 +146,7 @@ class RefactoringDraftService : KoinComponent {
 
     fun appendElementValue(
         id: Int,
-        category: String,
+        category: DiffCategory,
         key: String,
         userId: Int?
     ): RefactoringDraft {
@@ -166,7 +167,7 @@ class RefactoringDraftService : KoinComponent {
 
     fun updateElementValue(
         id: Int,
-        category: String,
+        category: DiffCategory,
         key: String,
         index: Int,
         element: CodeElement,
@@ -192,7 +193,7 @@ class RefactoringDraftService : KoinComponent {
 
     fun removeElementValue(
         id: Int,
-        category: String,
+        category: DiffCategory,
         key: String,
         index: Int,
         userId: Int?

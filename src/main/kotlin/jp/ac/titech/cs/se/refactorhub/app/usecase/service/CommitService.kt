@@ -6,6 +6,7 @@ import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.CommitRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.CommitDetail
 import jp.ac.titech.cs.se.refactorhub.app.model.CommitFile
+import jp.ac.titech.cs.se.refactorhub.app.model.CommitFileStatus
 import org.kohsuke.github.GitHub
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -28,7 +29,7 @@ class CommitService : KoinComponent {
 
     fun getDetail(sha: String, owner: String, repository: String): CommitDetail {
         val client = GitHub.connectUsingOAuth(GITHUB_ACCESS_TOKEN)
-        return client.getRepository("${owner}/${repository}").getCommit(sha).let {
+        return client.getRepository("$owner/$repository").getCommit(sha).let {
             CommitDetail(
                 it.shA1,
                 it.owner.ownerName,
@@ -40,7 +41,7 @@ class CommitService : KoinComponent {
                 it.files.map { file ->
                     CommitFile(
                         file.sha,
-                        file.status,
+                        CommitFileStatus.valueOf(file.status),
                         file.fileName,
                         file.previousFilename ?: file.fileName
                     )
@@ -53,8 +54,7 @@ class CommitService : KoinComponent {
     fun createIfNotExist(sha: String, owner: String, repository: String): Commit {
         val commit = commitRepository.findBySha(sha)
         if (commit != null) return commit
-        val detail = getDetail(sha, owner, repository)
-        return commitRepository.save(Commit(sha, owner, repository, detail.parent))
+        return commitRepository.save(Commit(sha, owner, repository))
     }
 
     companion object {

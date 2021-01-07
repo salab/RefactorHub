@@ -35,12 +35,12 @@ class FileContentDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<CommitFi
     }
 }
 
-private fun stringify(files: List<CommitFileContents.File>): String {
+private fun stringify(files: CommitFileContents.Files): String {
     val mapper by inject(ObjectMapper::class.java)
     return mapper.writeValueAsString(files)
 }
 
-private fun parse(src: String): List<CommitFileContents.File> {
+private fun parse(src: String): CommitFileContents.Files {
     val mapper by inject(ObjectMapper::class.java)
     return mapper.readValue(src)
 }

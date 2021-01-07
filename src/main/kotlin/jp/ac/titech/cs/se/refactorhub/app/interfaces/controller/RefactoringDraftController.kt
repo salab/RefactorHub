@@ -3,6 +3,7 @@ package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringDraftService
+import jp.ac.titech.cs.se.refactorhub.tool.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElement
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -43,21 +44,21 @@ class RefactoringDraftController : KoinComponent {
         return refactoringDraftService.update(id, body.description, body.type, userId)
     }
 
-    fun putElementKey(id: Int, category: String, body: PutDraftElementKeyBody, userId: Int?): RefactoringDraft {
+    fun putElementKey(id: Int, category: DiffCategory, body: PutDraftElementKeyBody, userId: Int?): RefactoringDraft {
         return refactoringDraftService.putElementKey(id, category, body.key, body.type, body.multiple, userId)
     }
 
-    fun removeElementKey(id: Int, category: String, key: String, userId: Int?): RefactoringDraft {
+    fun removeElementKey(id: Int, category: DiffCategory, key: String, userId: Int?): RefactoringDraft {
         return refactoringDraftService.removeElementKey(id, category, key, userId)
     }
 
-    fun appendElementValue(id: Int, category: String, key: String, userId: Int?): RefactoringDraft {
+    fun appendElementValue(id: Int, category: DiffCategory, key: String, userId: Int?): RefactoringDraft {
         return refactoringDraftService.appendElementValue(id, category, key, userId)
     }
 
     fun updateElementValue(
         id: Int,
-        category: String,
+        category: DiffCategory,
         key: String,
         index: Int,
         body: UpdateDraftElementValueBody,
@@ -66,7 +67,7 @@ class RefactoringDraftController : KoinComponent {
         return refactoringDraftService.updateElementValue(id, category, key, index, body.element, userId)
     }
 
-    fun removeElementValue(id: Int, category: String, key: String, index: Int, userId: Int?): RefactoringDraft {
+    fun removeElementValue(id: Int, category: DiffCategory, key: String, index: Int, userId: Int?): RefactoringDraft {
         return refactoringDraftService.removeElementValue(id, category, key, index, userId)
     }
 }
