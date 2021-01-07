@@ -241,7 +241,7 @@
             "follows": [
               {
                 "category": "after",
-                "key": "moved variable"
+                "key": "renamed variable"
               }
             ],
             "element": "MethodDeclaration"
@@ -257,7 +257,7 @@
             "follows": [
               {
                 "category": "after",
-                "key": "moved variable"
+                "key": "renamed variable"
               }
             ]
           }
