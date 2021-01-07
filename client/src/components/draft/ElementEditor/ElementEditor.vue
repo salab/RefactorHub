@@ -22,7 +22,10 @@ import { DiffCategory, FileMetadata } from 'refactorhub'
 import MonacoEditor from '@/components/common/editor/MonacoEditor.vue'
 import { useCodeFragmentDiff } from '@/components/draft/CodeFragmentDiff/CodeFragmentDiff.vue'
 import { logger } from '@/utils/logger'
-import { setupDisplayedFileOnDiffEditor } from './ts/displayedFile'
+import {
+  setupDisplayedFileOnDiffEditor,
+  setupElementDecorationsOnDiffEditor,
+} from './ts/displayedFile'
 import { setupEditingElement } from './ts/editingElement'
 
 export default defineComponent({
@@ -72,6 +75,35 @@ export default defineComponent({
     watch(
       () => $accessor.draft.editingElement.after,
       (value) => setupEditingElement('after', value)
+    )
+
+    watch(
+      () => $accessor.draft.draft,
+      () => {
+        const diffEditor = editorRef.value?.diffEditor
+        if (!diffEditor) {
+          logger.log('diffEditor is not loaded')
+          return
+        }
+        const before = $accessor.draft.displayedFile.before
+        if (before) {
+          setupElementDecorationsOnDiffEditor(
+            'before',
+            before,
+            diffEditor,
+            $accessor
+          )
+        }
+        const after = $accessor.draft.displayedFile.after
+        if (after) {
+          setupElementDecorationsOnDiffEditor(
+            'after',
+            after,
+            diffEditor,
+            $accessor
+          )
+        }
+      }
     )
 
     onMounted(() => {

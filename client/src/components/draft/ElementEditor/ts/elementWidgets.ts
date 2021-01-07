@@ -8,10 +8,6 @@ import {
 } from '@/components/common/editor/utils/range'
 import { accessorType } from '@/store'
 import apis, { CodeElement } from '@/apis'
-import {
-  setElementDecorationOnEditor,
-  deleteElementDecoration,
-} from './elementDecorations'
 
 interface ElementWidget extends monaco.editor.IContentWidget {
   type: string
@@ -65,7 +61,7 @@ export function setElementWidgetOnEditor(
   $accessor: typeof accessorType
 ) {
   const widget = createElementWidget(element, editor, () =>
-    updateEditingElement(category, element, editor, $accessor)
+    updateEditingElement(category, element, $accessor)
   )
   editor.addContentWidget(widget)
   widgets[category].push(widget)
@@ -110,7 +106,6 @@ function createElementWidget(
 async function updateEditingElement(
   category: DiffCategory,
   element: CodeElement,
-  editor: monaco.editor.ICodeEditor,
   $accessor: typeof accessorType
 ) {
   const draft = $accessor.draft.draft
@@ -130,15 +125,5 @@ async function updateEditingElement(
       )
     ).data
   )
-
-  deleteElementDecoration(category, metadata.key, metadata.index)
-  setElementDecorationOnEditor(
-    category,
-    metadata.key,
-    metadata.index,
-    element,
-    editor
-  )
-
   $accessor.draft.setEditingElement({ category })
 }

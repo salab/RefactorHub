@@ -97,7 +97,7 @@ async function getTextModelOfFile(
   )
 }
 
-function setupElementDecorationsOnDiffEditor(
+export function setupElementDecorationsOnDiffEditor(
   category: DiffCategory,
   metadata: FileMetadata,
   diffEditor: monaco.editor.IDiffEditor,

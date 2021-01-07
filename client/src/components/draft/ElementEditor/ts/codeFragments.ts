@@ -4,10 +4,6 @@ import { DiffCategory } from 'refactorhub'
 import { asRange, asMonacoRange } from '@/components/common/editor/utils/range'
 import { accessorType } from '@/store'
 import apis, { CodeElement } from '@/apis'
-import {
-  deleteElementDecoration,
-  setElementDecorationOnEditor,
-} from './elementDecorations'
 
 interface CodeFragmentCursor {
   setup(): void
@@ -63,12 +59,7 @@ export function prepareCodeFragmentCursor(
         listeners.push(
           editor.onDidChangeCursorSelection(
             debounce((e) => {
-              updateEditingCodeFragment(
-                category,
-                e.selection,
-                editor,
-                $accessor
-              )
+              updateEditingCodeFragment(category, e.selection, $accessor)
             }, 500)
           )
         )
@@ -85,7 +76,6 @@ export function prepareCodeFragmentCursor(
 export async function updateEditingCodeFragment(
   category: DiffCategory,
   range: monaco.Range,
-  editor: monaco.editor.ICodeEditor,
   $accessor: typeof accessorType
 ) {
   if (
@@ -118,14 +108,5 @@ export async function updateEditingCodeFragment(
         }
       )
     ).data
-  )
-
-  deleteElementDecoration(category, metadata.key, metadata.index)
-  setElementDecorationOnEditor(
-    category,
-    metadata.key,
-    metadata.index,
-    nextElement,
-    editor
   )
 }
