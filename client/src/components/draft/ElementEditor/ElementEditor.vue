@@ -1,15 +1,66 @@
 <template>
-  <div class="editor-wrapper">
+  <div class="d-flex flex-column fill-height">
     <code-fragment-diff />
-    <monaco-editor
-      ref="editorRef"
-      :is-loading="isLoading"
-      class="element-editor"
-    />
+    <div class="d-flex">
+      <v-row no-gutters class="pa-2">
+        <div class="mx-2">
+          <v-btn
+            depressed
+            small
+            width="60"
+            class="text-none"
+            :dark="lock.before"
+            @click="lockEditor('before')"
+          >
+            {{ lock.before ? 'Unlock' : 'Lock' }}
+          </v-btn>
+        </div>
+      </v-row>
+      <v-divider vertical />
+      <v-row no-gutters class="pa-2 flex-row-reverse">
+        <div class="mx-2">
+          <v-btn
+            depressed
+            small
+            width="60"
+            class="text-none"
+            :dark="lock.after"
+            @click="lockEditor('after')"
+          >
+            {{ lock.after ? 'Unlock' : 'Lock' }}
+          </v-btn>
+        </div>
+      </v-row>
+    </div>
+    <v-divider />
+    <div class="flex-grow-1 position-relative">
+      <div class="lock-editor-wrapper">
+        <div v-show="lock.before" class="lock-editor">
+          <div class="inner pa-2">
+            <v-card outlined class="wh-100">
+              <monaco-editor ref="beforeEditorRef" class="element-editor" />
+            </v-card>
+          </div>
+        </div>
+        <div v-show="lock.after" class="lock-editor">
+          <div class="inner x-50 pa-2">
+            <v-card outlined class="wh-100">
+              <monaco-editor ref="afterEditorRef" class="element-editor" />
+            </v-card>
+          </div>
+        </div>
+      </div>
+      <monaco-editor
+        ref="editorRef"
+        :is-loading="isLoading"
+        class="element-editor"
+      />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
+import * as monaco from 'monaco-editor'
 import {
   defineComponent,
   ref,
@@ -17,6 +68,7 @@ import {
   computed,
   onMounted,
   useContext,
+  reactive,
 } from '@nuxtjs/composition-api'
 import { DiffCategory, FileMetadata } from 'refactorhub'
 import MonacoEditor from '@/components/common/editor/MonacoEditor.vue'
@@ -35,8 +87,14 @@ export default defineComponent({
     } = useContext()
 
     const editorRef = ref<InstanceType<typeof MonacoEditor>>()
+    const beforeEditorRef = ref<InstanceType<typeof MonacoEditor>>()
+    const afterEditorRef = ref<InstanceType<typeof MonacoEditor>>()
     const pending = ref(0)
     const isLoading = computed(() => pending.value > 0)
+    const lock = reactive({
+      before: false,
+      after: false,
+    })
 
     async function onChangeDisplayedFileMetadata(
       category: DiffCategory,
@@ -138,18 +196,81 @@ export default defineComponent({
       })
     })
 
+    function lockEditor(category: DiffCategory) {
+      if (!lock[category]) {
+        const diffEditor = editorRef.value?.diffEditor
+        if (!diffEditor) {
+          logger.log('diffEditor is not loaded')
+          return
+        }
+
+        const target = category === 'before' ? beforeEditorRef : afterEditorRef
+        target.value?.diffEditor?.setModel({
+          original:
+            diffEditor.getOriginalEditor().getModel() ||
+            monaco.editor.createModel('', 'text/plain'),
+          modified:
+            diffEditor.getModifiedEditor().getModel() ||
+            monaco.editor.createModel('', 'text/plain'),
+        })
+        const state = diffEditor.saveViewState()
+        if (state) target.value?.diffEditor?.restoreViewState(state)
+        lock[category] = true
+      } else {
+        lock[category] = false
+      }
+    }
+
     return {
       editorRef,
+      beforeEditorRef,
+      afterEditorRef,
       isLoading,
+      lockEditor,
+      lock,
     }
   },
 })
 </script>
 
 <style lang="scss" scoped>
-.editor-wrapper {
+.position-relative {
+  position: relative;
+}
+.wh-100 {
   width: 100%;
   height: 100%;
+}
+
+.lock-editor-wrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  background: transparent;
+  pointer-events: none;
+
+  .lock-editor {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    background: transparent;
+    overflow-x: hidden;
+    pointer-events: auto;
+
+    &:nth-child(2) {
+      left: 50%;
+    }
+
+    .inner {
+      min-width: 200%;
+      height: 100%;
+    }
+
+    .x-50 {
+      transform: translateX(-50%);
+    }
+  }
 }
 
 .element-editor ::v-deep {
