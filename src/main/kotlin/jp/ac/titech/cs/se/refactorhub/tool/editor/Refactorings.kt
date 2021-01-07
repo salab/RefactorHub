@@ -37,7 +37,8 @@ private fun adjustCodeElementHolderMapToType(
                 holder.type,
                 it.value.multiple,
                 if (it.value.multiple) holder.elements
-                else listOf(holder.elements.singleOrNull() ?: it.value.type.klass.createInstance())
+                else listOf(holder.elements.singleOrNull() ?: it.value.type.klass.createInstance()),
+                holder.state
             )
         } else {
             map[it.key] = CodeElementHolder(
@@ -164,7 +165,8 @@ fun appendCodeElementValue(
     map[key] = CodeElementHolder(
         holder.type,
         holder.multiple,
-        holder.elements.toMutableList().also { it.add(holder.type.klass.createInstance()) }
+        holder.elements.toMutableList().also { it.add(holder.type.klass.createInstance()) },
+        holder.state
     )
     return setCodeElementHolderMap(refactoring, category, map)
 }

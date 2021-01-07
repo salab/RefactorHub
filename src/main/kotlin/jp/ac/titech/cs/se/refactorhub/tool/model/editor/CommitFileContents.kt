@@ -1,11 +1,10 @@
 package jp.ac.titech.cs.se.refactorhub.tool.model.editor
 
+import jp.ac.titech.cs.se.refactorhub.tool.model.Commit
 import jp.ac.titech.cs.se.refactorhub.tool.model.DiffCategory
 
 data class CommitFileContents(
-    val owner: String,
-    val repository: String,
-    val sha: String,
+    val commit: Commit,
     val files: Files
 ) {
     data class Files(

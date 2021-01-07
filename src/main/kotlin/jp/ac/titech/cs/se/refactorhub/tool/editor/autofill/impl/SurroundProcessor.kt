@@ -17,23 +17,25 @@ class SurroundProcessor : AutofillProcessor<Surround> {
         val file = contents.files.get(category).find { it.name == follow.location?.path } ?: return listOf()
         val range = follow.location?.range ?: return listOf()
         val elements = file.content.elements.filter {
-            it.location?.range?.contains(range) ?: false
+            it.type == autofill.element && it.location?.range?.contains(range) ?: false
         }
         return elements.filter {
             it.location?.range?.let { r ->
-                elements.all { other ->
+                elements.filter { e -> it != e }.all { other ->
                     other.location?.range?.contains(r) ?: false
                 }
             } ?: false
         }
     }
 
-    private fun Range.contains(range: Range): Boolean {
-        return !(
-            (range.startLine < startLine || range.endLine < startLine) ||
-                (range.startLine > endLine || range.endLine > endLine) ||
-                (range.startLine == startLine && range.startColumn <= startColumn) ||
-                (range.endLine == endLine || range.endColumn >= endColumn)
-            )
+    companion object {
+        private fun Range.contains(range: Range): Boolean {
+            return !(
+                (range.startLine < startLine || range.endLine < startLine) ||
+                    (range.startLine > endLine || range.endLine > endLine) ||
+                    (range.startLine == startLine && range.startColumn < startColumn) ||
+                    (range.endLine == endLine && range.endColumn > endColumn)
+                )
+        }
     }
 }

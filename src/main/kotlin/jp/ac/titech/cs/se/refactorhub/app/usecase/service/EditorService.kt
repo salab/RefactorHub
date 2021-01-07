@@ -2,6 +2,7 @@ package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 
 import jp.ac.titech.cs.se.refactorhub.app.exception.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.FileContentRepository
+import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.CommitFileStatus
 import jp.ac.titech.cs.se.refactorhub.tool.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.tool.model.editor.CommitFileContents
@@ -20,40 +21,38 @@ class EditorService : KoinComponent {
         owner: String,
         repository: String
     ): CommitFileContents {
-        return fileContentRepository.find(owner, repository, sha) ?: run {
-            val commit = commitService.getDetail(sha, owner, repository)
-            fileContentRepository.save(
-                CommitFileContents(
-                    commit.owner,
-                    commit.repository,
-                    commit.sha,
-                    CommitFileContents.Files(
-                        commit.files.filter { it.status != CommitFileStatus.added }.map {
-                            CommitFileContents.File(
-                                it.previousName,
-                                jp.ac.titech.cs.se.refactorhub.tool.editor.getFileContent(
-                                    commit.parent,
-                                    commit.owner,
-                                    commit.repository,
-                                    it.previousName
-                                )
+        val contents = fileContentRepository.find(sha)
+        if (contents != null) return contents
+        val commit = commitService.getDetail(sha, owner, repository)
+        return fileContentRepository.save(
+            CommitFileContents(
+                Commit(commit.sha, commit.owner, commit.repository),
+                CommitFileContents.Files(
+                    commit.files.filter { it.status != CommitFileStatus.added }.map {
+                        CommitFileContents.File(
+                            it.previousName,
+                            jp.ac.titech.cs.se.refactorhub.tool.editor.getFileContent(
+                                commit.parent,
+                                commit.owner,
+                                commit.repository,
+                                it.previousName
                             )
-                        },
-                        commit.files.filter { it.status != CommitFileStatus.removed }.map {
-                            CommitFileContents.File(
-                                it.name,
-                                jp.ac.titech.cs.se.refactorhub.tool.editor.getFileContent(
-                                    commit.sha,
-                                    commit.owner,
-                                    commit.repository,
-                                    it.name
-                                )
+                        )
+                    },
+                    commit.files.filter { it.status != CommitFileStatus.removed }.map {
+                        CommitFileContents.File(
+                            it.name,
+                            jp.ac.titech.cs.se.refactorhub.tool.editor.getFileContent(
+                                commit.sha,
+                                commit.owner,
+                                commit.repository,
+                                it.name
                             )
-                        }
-                    )
+                        )
+                    }
                 )
             )
-        }
+        )
     }
 
     fun getFileContent(
