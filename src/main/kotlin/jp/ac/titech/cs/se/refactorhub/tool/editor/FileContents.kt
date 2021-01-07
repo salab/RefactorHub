@@ -6,13 +6,18 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.IOUtils
 import org.kohsuke.github.GHContent
 import org.kohsuke.github.GitHub
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
 val GITHUB_ACCESS_TOKEN = System.getenv("GITHUB_ACCESS_TOKEN") ?: ""
 
 fun getFileContent(sha: String, owner: String, repository: String, path: String): FileContent {
-    return createFileContent(getGHContent(sha, owner, repository, path))
+    return try {
+        createFileContent(getGHContent(sha, owner, repository, path))
+    } catch (e: IOException) {
+        FileContent(e.localizedMessage, uri = "https://github.com/${owner}/${repository}/blob/${sha}/${path}")
+    }
 }
 
 private fun getGHContent(
