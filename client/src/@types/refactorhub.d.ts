@@ -3,6 +3,7 @@ declare module 'refactorhub' {
 
   interface FileMetadata {
     index: number
+    lineNumber?: number
   }
 
   interface ElementMetadata {

@@ -114,7 +114,10 @@ export default defineComponent({
       if (index !== undefined && index >= 0) {
         await $accessor.draft.setDisplayedFile({
           category: props.category,
-          file: { index },
+          file: {
+            index,
+            lineNumber: props.element.location?.range?.startLine,
+          },
         })
       }
     }

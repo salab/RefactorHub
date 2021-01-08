@@ -62,6 +62,7 @@ async function setTextModelOnDiffEditor(
       modified: textModel,
     })
   }
+  if (metadata.lineNumber) diffEditor.revealLineNearTop(metadata.lineNumber)
 }
 
 async function getTextModelOfFile(
