@@ -1,16 +1,18 @@
 [
   {
     "name": "Extract Method",
-    "description": "",
+    "description": "メソッドの一部を切り出して，別のメソッドにする",
+    "url": "https://refactoring.com/catalog/extractFunction.html",
     "before": {
       "extracted code": {
+        "description": "抽出されるコード片",
         "type": "CodeFragment",
         "multiple": true,
         "required": true
       },
       "target method": {
+        "description": "抽出が行われるメソッド",
         "type": "MethodDeclaration",
-        "required": true,
         "autofills": [
           {
             "type": "Surround",
@@ -27,17 +29,19 @@
     },
     "after": {
       "invocation": {
+        "description": "メソッド呼び出しに置き換わった箇所",
         "type": "MethodInvocation",
         "required": true
       },
       "extracted code": {
+        "description": "抽出されたコード片",
         "type": "CodeFragment",
         "multiple": true,
         "required": true
       },
       "extracted method": {
+        "description": "抽出して新たに定義されたメソッド",
         "type": "MethodDeclaration",
-        "required": true,
         "autofills": [
           {
             "type": "Surround",
@@ -52,8 +56,8 @@
         ]
       },
       "target method": {
+        "description": "抽出が行われたメソッド",
         "type": "MethodDeclaration",
-        "required": true,
         "autofills": [
           {
             "type": "Surround",
@@ -71,13 +75,16 @@
   },
   {
     "name": "Move Attribute",
-    "description": "",
+    "description": "フィールドを別のクラスに移動させる",
+    "url": "https://refactoring.com/catalog/moveField.html",
     "before": {
       "target field": {
+        "description": "移動させるフィールド",
         "type": "FieldDeclaration",
         "required": true
       },
       "references": {
+        "description": "フィールドの参照",
         "type": "SimpleName",
         "multiple": true,
         "autofills": [
@@ -95,10 +102,12 @@
     },
     "after": {
       "moved field": {
+        "description": "移動させたフィールド",
         "type": "FieldDeclaration",
         "required": true
       },
       "references": {
+        "description": "フィールドの参照",
         "type": "SimpleName",
         "multiple": true,
         "autofills": [
@@ -117,13 +126,16 @@
   },
   {
     "name": "Move Class",
-    "description": "",
+    "description": "クラスを別のパッケージに移動させる",
+    "url": "https://www.refactoring.com/catalog/moveClass.html",
     "before": {
       "target class": {
+        "description": "移動させるクラス",
         "type": "ClassDeclaration",
         "required": true
       },
       "package": {
+        "description": "移動元のパッケージ",
         "type": "PackageDeclaration",
         "autofills": [
           {
@@ -138,6 +150,7 @@
         ]
       },
       "references": {
+        "description": "クラスの参照",
         "type": "SimpleName",
         "multiple": true,
         "autofills": [
@@ -155,10 +168,12 @@
     },
     "after": {
       "moved class": {
+        "description": "移動させたクラス",
         "type": "ClassDeclaration",
         "required": true
       },
       "package": {
+        "description": "移動先のパッケージ",
         "type": "PackageDeclaration",
         "autofills": [
           {
@@ -173,6 +188,7 @@
         ]
       },
       "references": {
+        "description": "クラスの参照",
         "type": "SimpleName",
         "multiple": true,
         "autofills": [
@@ -191,13 +207,16 @@
   },
   {
     "name": "Rename Variable",
-    "description": "",
+    "description": "変数をリネームする",
+    "url": "https://refactoring.com/catalog/renameVariable.html",
     "before": {
       "target variable": {
+        "description": "リネームする変数",
         "type": "VariableDeclaration",
         "required": true
       },
       "method": {
+        "description": "リネームする変数を内包するメソッド",
         "type": "MethodDeclaration",
         "autofills": [
           {
@@ -213,6 +232,7 @@
         ]
       },
       "references": {
+        "description": "変数の参照",
         "type": "SimpleName",
         "multiple": true,
         "autofills": [
@@ -230,10 +250,12 @@
     },
     "after": {
       "renamed variable": {
+        "description": "リネームした変数",
         "type": "VariableDeclaration",
         "required": true
       },
       "method": {
+        "description": "リネームした変数を内包するメソッド",
         "type": "MethodDeclaration",
         "autofills": [
           {
@@ -249,6 +271,7 @@
         ]
       },
       "references": {
+        "description": "変数の参照",
         "type": "SimpleName",
         "multiple": true,
         "autofills": [

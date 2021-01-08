@@ -16,6 +16,7 @@ object RefactoringTypes : IntIdTable("refactoring_types") {
     val before = jsonb("before", ::stringify, ::parse)
     val after = jsonb("after", ::stringify, ::parse)
     val description = text("description")
+    val url = varchar("url", 500)
 }
 
 class RefactoringTypeDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<RefactoringType> {
@@ -25,6 +26,7 @@ class RefactoringTypeDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Refa
     var before by RefactoringTypes.before
     var after by RefactoringTypes.after
     var description by RefactoringTypes.description
+    var url by RefactoringTypes.url
 
     override fun asModel(): RefactoringType {
         return RefactoringType(
@@ -32,7 +34,8 @@ class RefactoringTypeDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Refa
             this.name,
             this.before,
             this.after,
-            this.description
+            this.description,
+            this.url
         )
     }
 }

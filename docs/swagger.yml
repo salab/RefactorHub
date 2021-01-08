@@ -759,12 +759,15 @@ components:
             $ref: "#/components/schemas/CodeElementMetadata"
         description:
           type: string
+        url:
+          type: string
       required:
         - id
         - name
         - before
         - after
         - description
+        - url
 
     RefactoringDraft:
       type: object
@@ -896,11 +899,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Autofill"
+        description:
+          type: string
       required:
         - type
         - multiple
         - required
         - autofills
+        - description
 
     Location:
       type: object

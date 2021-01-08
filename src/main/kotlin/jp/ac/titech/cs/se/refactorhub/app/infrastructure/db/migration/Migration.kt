@@ -113,6 +113,7 @@ private fun createRefactoringTypes() {
                 this.before = it.before
                 this.after = it.after
                 this.description = it.description
+                this.url = it.url
             }
         }
     }
@@ -172,7 +173,8 @@ data class RefactoringTypeBody(
     val name: String,
     val before: Map<String, CodeElementMetadata>,
     val after: Map<String, CodeElementMetadata>,
-    val description: String = ""
+    val description: String = "",
+    val url: String = ""
 )
 
 data class RefactoringBody(

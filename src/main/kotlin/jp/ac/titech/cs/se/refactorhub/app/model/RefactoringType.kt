@@ -8,5 +8,6 @@ data class RefactoringType(
     override val name: String,
     override val before: Map<String, CodeElementMetadata> = mapOf(),
     override val after: Map<String, CodeElementMetadata> = mapOf(),
-    override val description: String = ""
+    override val description: String = "",
+    override val url: String = ""
 ) : RefactoringType

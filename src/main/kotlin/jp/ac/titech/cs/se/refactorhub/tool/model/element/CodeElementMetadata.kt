@@ -6,5 +6,6 @@ data class CodeElementMetadata(
     val type: CodeElementType,
     val multiple: Boolean = false,
     val required: Boolean = false,
-    val autofills: List<Autofill> = listOf()
+    val autofills: List<Autofill> = listOf(),
+    val description: String = ""
 )
