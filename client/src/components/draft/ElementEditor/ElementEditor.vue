@@ -77,6 +77,7 @@ import { logger } from '@/utils/logger'
 import {
   setupDisplayedFileOnDiffEditor,
   setupElementDecorationsOnDiffEditor,
+  setupElementWidgetsOnDiffEditor,
 } from './ts/displayedFile'
 import { setupEditingElement } from './ts/editingElement'
 
@@ -95,6 +96,14 @@ export default defineComponent({
       before: false,
       after: false,
     })
+    const lockFile = reactive<
+      {
+        [category in DiffCategory]?: FileMetadata
+      }
+    >({
+      before: undefined,
+      after: undefined,
+    })
 
     async function onChangeDisplayedFileMetadata(
       category: DiffCategory,
@@ -112,7 +121,8 @@ export default defineComponent({
         category,
         metadata,
         diffEditor,
-        $accessor
+        $accessor,
+        !lock[category]
       )
       pending.value--
     }
@@ -145,21 +155,47 @@ export default defineComponent({
         }
         const before = $accessor.draft.displayedFile.before
         if (before) {
-          setupElementDecorationsOnDiffEditor(
-            'before',
-            before,
-            diffEditor,
-            $accessor
-          )
+          if (lock.before) {
+            const file = lockFile.before
+            const editor = beforeEditorRef.value?.diffEditor
+            if (file && editor) {
+              setupElementDecorationsOnDiffEditor(
+                'before',
+                file,
+                editor,
+                $accessor
+              )
+            }
+          } else {
+            setupElementDecorationsOnDiffEditor(
+              'before',
+              before,
+              diffEditor,
+              $accessor
+            )
+          }
         }
         const after = $accessor.draft.displayedFile.after
         if (after) {
-          setupElementDecorationsOnDiffEditor(
-            'after',
-            after,
-            diffEditor,
-            $accessor
-          )
+          if (lock.after) {
+            const file = lockFile.after
+            const editor = afterEditorRef.value?.diffEditor
+            if (file && editor) {
+              setupElementDecorationsOnDiffEditor(
+                'after',
+                file,
+                editor,
+                $accessor
+              )
+            }
+          } else {
+            setupElementDecorationsOnDiffEditor(
+              'after',
+              after,
+              diffEditor,
+              $accessor
+            )
+          }
         }
       }
     )
@@ -196,7 +232,7 @@ export default defineComponent({
       })
     })
 
-    function lockEditor(category: DiffCategory) {
+    async function lockEditor(category: DiffCategory) {
       if (!lock[category]) {
         const diffEditor = editorRef.value?.diffEditor
         if (!diffEditor) {
@@ -215,8 +251,50 @@ export default defineComponent({
         })
         const state = diffEditor.saveViewState()
         if (state) target.value?.diffEditor?.restoreViewState(state)
+        const metadata = $accessor.draft.displayedFile[category]
+        const editor = target.value?.diffEditor
+        if (metadata && editor) {
+          lockFile[category] = metadata
+          await setupElementDecorationsOnDiffEditor(
+            category,
+            metadata,
+            editor,
+            $accessor
+          )
+          await setupElementWidgetsOnDiffEditor(
+            category,
+            metadata,
+            editor,
+            $accessor
+          )
+          setupEditingElement(
+            category,
+            $accessor.draft.editingElement[category]
+          )
+        }
+
         lock[category] = true
       } else {
+        const metadata = $accessor.draft.displayedFile[category]
+        const diffEditor = editorRef.value?.diffEditor
+        if (metadata && diffEditor) {
+          await setupElementDecorationsOnDiffEditor(
+            category,
+            metadata,
+            diffEditor,
+            $accessor
+          )
+          await setupElementWidgetsOnDiffEditor(
+            category,
+            metadata,
+            diffEditor,
+            $accessor
+          )
+          setupEditingElement(
+            category,
+            $accessor.draft.editingElement[category]
+          )
+        }
         lock[category] = false
       }
     }

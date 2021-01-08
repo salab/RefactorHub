@@ -21,22 +21,25 @@ export async function setupDisplayedFileOnDiffEditor(
   category: DiffCategory,
   metadata: FileMetadata,
   diffEditor: monaco.editor.IDiffEditor,
-  $accessor: typeof accessorType
+  $accessor: typeof accessorType,
+  setup: boolean = true
 ) {
   await setTextModelOnDiffEditor(category, metadata, diffEditor, $accessor)
-  await setupElementDecorationsOnDiffEditor(
-    category,
-    metadata,
-    diffEditor,
-    $accessor
-  )
-  await setupElementWidgetsOnDiffEditor(
-    category,
-    metadata,
-    diffEditor,
-    $accessor
-  )
-  setupEditingElement(category, $accessor.draft.editingElement[category])
+  if (setup) {
+    await setupElementDecorationsOnDiffEditor(
+      category,
+      metadata,
+      diffEditor,
+      $accessor
+    )
+    await setupElementWidgetsOnDiffEditor(
+      category,
+      metadata,
+      diffEditor,
+      $accessor
+    )
+    setupEditingElement(category, $accessor.draft.editingElement[category])
+  }
 }
 
 async function setTextModelOnDiffEditor(
@@ -124,7 +127,7 @@ export function setupElementDecorationsOnDiffEditor(
   })
 }
 
-async function setupElementWidgetsOnDiffEditor(
+export async function setupElementWidgetsOnDiffEditor(
   category: DiffCategory,
   metadata: FileMetadata,
   diffEditor: monaco.editor.IDiffEditor,
