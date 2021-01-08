@@ -52,12 +52,24 @@ export default defineComponent({
     } = useContext()
 
     const title = capitalize(props.category)
-    const elementHolderMap = computed(() => props.draft.data[props.category])
     const elementMetadataMap = computed(() => {
       const type = $accessor.draft.refactoringTypes.find(
         (t) => t.name === props.draft.type
       )
       return type ? type[props.category] : {}
+    })
+    const elementHolderMap = computed(() => {
+      const entries = Object.entries(props.draft.data[props.category])
+      const map = elementMetadataMap.value
+      entries.sort((a, b) => {
+        if (a[0] in map && b[0] in map) {
+          if (map[a[0]].required && !map[b[0]].required) return -1
+          if (!map[a[0]].required && map[b[0]].required) return 1
+        } else if (a[0] in map) return -1
+        else if (b[0] in map) return 1
+        return a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0
+      })
+      return Object.fromEntries(entries)
     })
     const isRemovable = (key: string) =>
       !Object.keys(elementMetadataMap.value).includes(key)
