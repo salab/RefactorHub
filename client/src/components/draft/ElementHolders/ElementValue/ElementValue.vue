@@ -1,12 +1,17 @@
 <template>
   <div :class="{ [`element-value-${element.type}`]: isEditing }" class="d-flex">
     <div class="location flex-grow-1 d-flex flex-column justify-center pa-2">
+      <div
+        v-if="'name' in element && typeof element['name'] === 'string'"
+        class="d-flex justify-center"
+      >
+        <span class="caption text--primary">{{ element['name'] }}</span>
+      </div>
       <div class="path d-flex justify-center">
         <span ref="pathRef" class="caption text--secondary" :title="path">{{
           path
         }}</span>
       </div>
-      <element-range :range="range" />
     </div>
     <div class="pa-1 d-flex flex-column justify-center">
       <v-btn
@@ -187,6 +192,7 @@ $scrollbar-width: 4px;
     span {
       display: flex;
       overflow-x: scroll;
+      white-space: nowrap;
       // max-width: 100%;
       &::-webkit-scrollbar {
         height: $scrollbar-width;
