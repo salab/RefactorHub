@@ -246,17 +246,22 @@ fun removeCodeElementValue(
     }
     val holder = map[key]!!
     if (!holder.multiple) {
-        throw RuntimeException("key=$key doesn't have multiple elements")
-    }
-    try {
         map[key] = CodeElementHolder(
             holder.type,
             holder.multiple,
-            holder.elements.toMutableList().also { it.removeAt(index) },
-            CodeElementHolder.State.Manual
+            listOf(holder.type.klass.createInstance())
         )
-    } catch (e: IndexOutOfBoundsException) {
-        throw RuntimeException("key=$key doesn't have index=$index")
+    } else {
+        try {
+            map[key] = CodeElementHolder(
+                holder.type,
+                holder.multiple,
+                holder.elements.toMutableList().also { it.removeAt(index) },
+                CodeElementHolder.State.Manual
+            )
+        } catch (e: IndexOutOfBoundsException) {
+            throw RuntimeException("key=$key doesn't have index=$index")
+        }
     }
     return setCodeElementHolderMap(refactoring, category, map)
 }

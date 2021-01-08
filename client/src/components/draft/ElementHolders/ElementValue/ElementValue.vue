@@ -33,14 +33,7 @@
       >
         <v-icon x-small>fa-fw fa-pen</v-icon>
       </v-btn>
-      <v-btn
-        v-if="multiple"
-        x-small
-        icon
-        title="Delete"
-        color="error"
-        @click="deleteElement"
-      >
+      <v-btn x-small icon title="Delete" color="error" @click="deleteElement">
         <v-icon x-small>fa-fw fa-trash</v-icon>
       </v-btn>
     </div>
