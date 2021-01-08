@@ -18,7 +18,9 @@
             >fa-fw fa-asterisk</v-icon
           >
         </div>
-        <v-list-item-content>
+        <v-list-item-content
+          :title="elementMetadata && elementMetadata.description"
+        >
           <v-list-item-title>{{ elementKey }}</v-list-item-title>
           <v-list-item-subtitle>{{
             `${elementHolder.type}${elementHolder.multiple ? '[]' : ''}`
