@@ -465,6 +465,29 @@ paths:
           description: RefactoringDraft is not found
       tags:
         - drafts
+    patch:
+      summary: verify element on refactoring draft data[category][key]
+      operationId: verifyRefactoringDraftElement
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyRefactoringDraftElementRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefactoringDraft"
+        "400":
+          description: Bad Request
+        "404":
+          description: RefactoringDraft is not found
+      tags:
+        - drafts
   "/drafts/{draftId}/{diffCategory}/{elementKey}/{elementIndex}":
     parameters:
       - $ref: "#/components/parameters/draftIdInPath"
@@ -1013,6 +1036,13 @@ components:
       required:
         - key
         - type
+    VerifyRefactoringDraftElementRequest:
+      type: object
+      properties:
+        state:
+          type: boolean
+      required:
+        - state
     UpdateRefactoringDraftElementValueRequest:
       type: object
       properties:

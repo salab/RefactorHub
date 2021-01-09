@@ -149,6 +149,26 @@ fun removeCodeElementKey(
     return setCodeElementHolderMap(refactoring, category, map)
 }
 
+fun verifyCodeElement(
+    refactoring: Refactoring,
+    category: DiffCategory,
+    key: String,
+    state: Boolean
+): Refactoring {
+    val map = getCodeElementHolderMap(refactoring, category).toMutableMap()
+    if (!map.containsKey(key)) {
+        throw RuntimeException("doesn't have key=$key")
+    }
+    val holder = map[key]!!
+    map[key] = CodeElementHolder(
+        holder.type,
+        holder.multiple,
+        holder.elements,
+        if (state) CodeElementHolder.State.Manual else CodeElementHolder.State.None
+    )
+    return setCodeElementHolderMap(refactoring, category, map)
+}
+
 fun appendCodeElementValue(
     refactoring: Refactoring,
     category: DiffCategory,
@@ -257,7 +277,7 @@ fun removeCodeElementValue(
                 holder.type,
                 holder.multiple,
                 holder.elements.toMutableList().also { it.removeAt(index) },
-                CodeElementHolder.State.Manual
+                holder.state
             )
         } catch (e: IndexOutOfBoundsException) {
             throw RuntimeException("key=$key doesn't have index=$index")

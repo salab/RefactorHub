@@ -6,17 +6,31 @@
       :value="true"
     >
       <template #activator>
-        <div class="pl-2 pr-1">
-          <v-icon v-if="isCompleted" x-small color="success" title="Completed"
-            >fa-fw fa-check</v-icon
-          >
-          <v-icon
-            v-else-if="elementMetadata && elementMetadata.required"
-            x-small
-            color="error"
-            title="This element is required"
-            >fa-fw fa-asterisk</v-icon
-          >
+        <div class="px-1 d-flex flex-column align-center">
+          <div>
+            <v-icon
+              v-if="elementMetadata && elementMetadata.required"
+              x-small
+              color="error"
+              title="This element is required"
+              >fa-fw fa-asterisk</v-icon
+            >
+          </div>
+          <div>
+            <v-btn
+              x-small
+              icon
+              :title="
+                isCompleted ? 'This element is verified' : 'Verify this element'
+              "
+              @click.stop="verifyElement"
+            >
+              <v-icon v-if="isCompleted" small color="success"
+                >fa-check-circle</v-icon
+              >
+              <v-icon v-else small>far fa-circle</v-icon>
+            </v-btn>
+          </div>
         </div>
         <v-list-item-content
           :title="elementMetadata && elementMetadata.description"
@@ -93,11 +107,7 @@ export default defineComponent({
       app: { $accessor },
     } = useContext()
 
-    const isCompleted = computed(
-      () =>
-        props.elementHolder.elements.length > 0 &&
-        props.elementHolder.elements.every((e) => !!e.location)
-    )
+    const isCompleted = computed(() => props.elementHolder.state === 'Manual')
 
     const removeElementKey = async () => {
       if (!confirm('Are you sure you want to delete this element key?')) return
@@ -114,7 +124,20 @@ export default defineComponent({
         deleteElementDecoration(props.category, props.elementKey, i)
       })
     }
-    return { isCompleted, removeElementKey }
+
+    const verifyElement = async () => {
+      await $accessor.draft.setDraft(
+        (
+          await apis.drafts.verifyRefactoringDraftElement(
+            props.draftId,
+            props.category,
+            props.elementKey,
+            { state: !isCompleted.value }
+          )
+        ).data
+      )
+    }
+    return { isCompleted, verifyElement, removeElementKey }
   },
 })
 </script>

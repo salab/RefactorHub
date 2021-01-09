@@ -46,6 +46,10 @@ data class RemoveDraftElementKey(val id: Int, val category: DiffCategory, val ke
 
 @KtorExperimentalLocationsAPI
 @Location("/{id}/{category}/{key}")
+data class VerifyDraftElement(val id: Int, val category: DiffCategory, val key: String)
+
+@KtorExperimentalLocationsAPI
+@Location("/{id}/{category}/{key}")
 data class AppendDraftElementValue(val id: Int, val category: DiffCategory, val key: String)
 
 @KtorExperimentalLocationsAPI
@@ -85,6 +89,11 @@ fun Route.drafts() {
         delete<RemoveDraftElementKey> {
             val session = call.sessions.get<Session>()
             call.respond(refactoringDraftController.removeElementKey(it.id, it.category, it.key, session?.id))
+        }
+        patch<VerifyDraftElement> {
+            val session = call.sessions.get<Session>()
+            val body = call.receive<RefactoringDraftController.VerifyElementBody>()
+            call.respond(refactoringDraftController.verifyElement(it.id, it.category, it.key, body.state, session?.id))
         }
         post<AppendDraftElementValue> {
             val session = call.sessions.get<Session>()

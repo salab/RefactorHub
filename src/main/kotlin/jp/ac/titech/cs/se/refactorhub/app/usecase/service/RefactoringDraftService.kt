@@ -12,6 +12,7 @@ import jp.ac.titech.cs.se.refactorhub.tool.editor.putCodeElementKey
 import jp.ac.titech.cs.se.refactorhub.tool.editor.removeCodeElementKey
 import jp.ac.titech.cs.se.refactorhub.tool.editor.removeCodeElementValue
 import jp.ac.titech.cs.se.refactorhub.tool.editor.updateCodeElementValue
+import jp.ac.titech.cs.se.refactorhub.tool.editor.verifyCodeElement
 import jp.ac.titech.cs.se.refactorhub.tool.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElement
 import org.koin.core.component.KoinApiExtension
@@ -132,6 +133,28 @@ class RefactoringDraftService : KoinComponent {
         val type = refactoringTypeService.getByName(draft.type)
         val refactoring = try {
             removeCodeElementKey(draft, type, category, key)
+        } catch (e: Exception) {
+            throw BadRequestException(e.message)
+        }
+        return refactoringDraftRepository.update(
+            id,
+            data = Refactoring.Data(
+                refactoring.data.before,
+                refactoring.data.after
+            )
+        )
+    }
+
+    fun verifyElement(
+        id: Int,
+        category: DiffCategory,
+        key: String,
+        state: Boolean,
+        userId: Int?
+    ): RefactoringDraft {
+        val draft = getByOwner(id, userId)
+        val refactoring = try {
+            verifyCodeElement(draft, category, key, state)
         } catch (e: Exception) {
             throw BadRequestException(e.message)
         }

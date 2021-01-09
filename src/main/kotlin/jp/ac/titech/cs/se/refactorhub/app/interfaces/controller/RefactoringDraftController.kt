@@ -18,6 +18,10 @@ class RefactoringDraftController : KoinComponent {
         val type: String? = null
     )
 
+    data class VerifyElementBody(
+        val state: Boolean
+    )
+
     data class PutDraftElementKeyBody(
         val key: String,
         val type: String,
@@ -50,6 +54,10 @@ class RefactoringDraftController : KoinComponent {
 
     fun removeElementKey(id: Int, category: DiffCategory, key: String, userId: Int?): RefactoringDraft {
         return refactoringDraftService.removeElementKey(id, category, key, userId)
+    }
+
+    fun verifyElement(id: Int, category: DiffCategory, key: String, state: Boolean, userId: Int?): RefactoringDraft {
+        return refactoringDraftService.verifyElement(id, category, key, state, userId)
     }
 
     fun appendElementValue(id: Int, category: DiffCategory, key: String, userId: Int?): RefactoringDraft {
