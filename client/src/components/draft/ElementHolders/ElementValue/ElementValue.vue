@@ -51,7 +51,8 @@ import {
 import { DiffCategory } from 'refactorhub'
 import { trimFileName } from '@/components/common/editor/utils/trim'
 import { deleteElementDecoration } from '@/components/draft/ElementEditor/ts/elementDecorations'
-import apis, { CodeElement } from '@/apis'
+import apis, { CodeElement, LogEvent, LogType } from '@/apis'
+import { log } from '@/utils/log'
 
 export default defineComponent({
   props: {
@@ -105,6 +106,13 @@ export default defineComponent({
     const openLocation = async () => {
       const index = fileIndex.value
       if (index !== undefined && index >= 0) {
+        log(LogEvent.OpenElementLocation, LogType.Client, {
+          category: props.category,
+          file: {
+            index,
+            lineNumber: props.element.location?.range?.startLine,
+          },
+        })
         await $accessor.draft.setDisplayedFile({
           category: props.category,
           file: {
@@ -144,6 +152,14 @@ export default defineComponent({
 
     const toggleEditing = async () => {
       if (!isEditing.value) {
+        log(LogEvent.ToggleEditingElement, LogType.Client, {
+          category: props.category,
+          element: {
+            key: props.elementKey,
+            index: props.elementIndex,
+            type: props.element.type,
+          },
+        })
         await $accessor.draft.setEditingElement({
           category: props.category,
           element: {
@@ -153,6 +169,9 @@ export default defineComponent({
           },
         })
       } else {
+        log(LogEvent.ToggleEditingElement, LogType.Client, {
+          category: props.category,
+        })
         await $accessor.draft.setEditingElement({
           category: props.category,
         })

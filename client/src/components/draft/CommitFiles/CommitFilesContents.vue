@@ -29,8 +29,9 @@ import {
   useContext,
 } from '@nuxtjs/composition-api'
 import { DiffCategory } from 'refactorhub'
-import { CommitFile } from '@/apis'
+import { CommitFile, LogEvent, LogType } from '@/apis'
 import { trimFileName } from '@/components/common/editor/utils/trim'
+import { log } from '@/utils/log'
 
 export default defineComponent({
   props: {
@@ -51,6 +52,10 @@ export default defineComponent({
     const index = ref<number>()
 
     const onClickItem = (value: number) => {
+      log(LogEvent.SetDisplayedFile, LogType.Client, {
+        category: props.category,
+        file: { index: value },
+      })
       $accessor.draft.setDisplayedFile({
         category: props.category,
         file: { index: value },

@@ -8,6 +8,7 @@ import {
   EditorApi,
   ElementsApi,
   ExperimentsApi,
+  LogsApi,
   Configuration,
 } from '@/apis/generated'
 
@@ -28,6 +29,7 @@ const apis = {
   editor: new EditorApi(configuration, basePath, instance),
   elements: new ElementsApi(configuration, basePath, instance),
   experiments: new ExperimentsApi(configuration, basePath, instance),
+  logs: new LogsApi(configuration, basePath, instance),
 }
 
 export default apis

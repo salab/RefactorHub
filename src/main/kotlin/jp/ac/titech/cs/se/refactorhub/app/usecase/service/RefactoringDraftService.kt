@@ -1,5 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import jp.ac.titech.cs.se.refactorhub.app.exception.BadRequestException
 import jp.ac.titech.cs.se.refactorhub.app.exception.ForbiddenException
 import jp.ac.titech.cs.se.refactorhub.app.exception.NotFoundException
@@ -14,6 +15,8 @@ import jp.ac.titech.cs.se.refactorhub.tool.editor.removeCodeElementValue
 import jp.ac.titech.cs.se.refactorhub.tool.editor.updateCodeElementValue
 import jp.ac.titech.cs.se.refactorhub.tool.editor.verifyCodeElement
 import jp.ac.titech.cs.se.refactorhub.tool.model.DiffCategory
+import jp.ac.titech.cs.se.refactorhub.tool.model.LogEvent
+import jp.ac.titech.cs.se.refactorhub.tool.model.LogType
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElement
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -25,6 +28,8 @@ class RefactoringDraftService : KoinComponent {
     private val refactoringService: RefactoringService by inject()
     private val refactoringTypeService: RefactoringTypeService by inject()
     private val editorService: EditorService by inject()
+    private val logService: LogService by inject()
+    private val mapper: ObjectMapper by inject()
 
     fun getRefactoringDrafts(refactoringId: Int): List<RefactoringDraft> {
         return refactoringDraftRepository.findByRefactoringId(refactoringId)
@@ -45,6 +50,9 @@ class RefactoringDraftService : KoinComponent {
     }
 
     fun save(id: Int, userId: Int?): Refactoring {
+        logService.log(LogEvent.Save, LogType.Server, mapper.createObjectNode().apply {
+            put("id", id)
+        }, userId)
         val draft = getByOwner(id, userId)
         val origin = refactoringService.get(draft.originId)
         val refactoring = if (draft.isFork) {
@@ -70,6 +78,9 @@ class RefactoringDraftService : KoinComponent {
     }
 
     fun discard(id: Int, userId: Int?) {
+        logService.log(LogEvent.Discard, LogType.Server, mapper.createObjectNode().apply {
+            put("id", id)
+        }, userId)
         val draft = getByOwner(id, userId)
         refactoringDraftRepository.deleteById(draft.id)
     }
@@ -80,6 +91,11 @@ class RefactoringDraftService : KoinComponent {
         description: String?,
         userId: Int?
     ): RefactoringDraft {
+        logService.log(LogEvent.Update, LogType.Server, mapper.createObjectNode().apply {
+            put("id", id)
+            put("typeName", typeName)
+            put("description", description)
+        }, userId)
         val draft = getByOwner(id, userId)
         if (typeName != null) {
             val type = refactoringTypeService.getByName(typeName)
@@ -108,6 +124,13 @@ class RefactoringDraftService : KoinComponent {
         multiple: Boolean,
         userId: Int?
     ): RefactoringDraft {
+        logService.log(LogEvent.PutElementKey, LogType.Server, mapper.createObjectNode().apply {
+            put("id", id)
+            put("category", category.name)
+            put("key", key)
+            put("typeName", typeName)
+            put("multiple", multiple)
+        }, userId)
         val draft = getByOwner(id, userId)
         val refactoring = try {
             putCodeElementKey(draft, category, key, typeName, multiple)
@@ -129,6 +152,11 @@ class RefactoringDraftService : KoinComponent {
         key: String,
         userId: Int?
     ): RefactoringDraft {
+        logService.log(LogEvent.RemoveElementKey, LogType.Server, mapper.createObjectNode().apply {
+            put("id", id)
+            put("category", category.name)
+            put("key", key)
+        }, userId)
         val draft = getByOwner(id, userId)
         val type = refactoringTypeService.getByName(draft.type)
         val refactoring = try {
@@ -152,6 +180,12 @@ class RefactoringDraftService : KoinComponent {
         state: Boolean,
         userId: Int?
     ): RefactoringDraft {
+        logService.log(LogEvent.VerifyElement, LogType.Server, mapper.createObjectNode().apply {
+            put("id", id)
+            put("category", category.name)
+            put("key", key)
+            put("state", state)
+        }, userId)
         val draft = getByOwner(id, userId)
         val refactoring = try {
             verifyCodeElement(draft, category, key, state)
@@ -173,6 +207,11 @@ class RefactoringDraftService : KoinComponent {
         key: String,
         userId: Int?
     ): RefactoringDraft {
+        logService.log(LogEvent.AppendElementValue, LogType.Server, mapper.createObjectNode().apply {
+            put("id", id)
+            put("category", category.name)
+            put("key", key)
+        }, userId)
         val draft = getByOwner(id, userId)
         val refactoring = try {
             appendCodeElementValue(draft, category, key)
@@ -196,6 +235,13 @@ class RefactoringDraftService : KoinComponent {
         element: CodeElement,
         userId: Int?
     ): RefactoringDraft {
+        logService.log(LogEvent.UpdateElementValue, LogType.Server, mapper.createObjectNode().apply {
+            put("id", id)
+            put("category", category.name)
+            put("key", key)
+            put("index", index)
+            put("element", mapper.writeValueAsString(element))
+        }, userId)
         val draft = getByOwner(id, userId)
         val refactoring = try {
             val type = refactoringTypeService.getByName(draft.type)
@@ -221,6 +267,12 @@ class RefactoringDraftService : KoinComponent {
         index: Int,
         userId: Int?
     ): RefactoringDraft {
+        logService.log(LogEvent.RemoveElementValue, LogType.Server, mapper.createObjectNode().apply {
+            put("id", id)
+            put("category", category.name)
+            put("key", key)
+            put("index", index)
+        }, userId)
         val draft = getByOwner(id, userId)
         val refactoring = try {
             removeCodeElementValue(draft, category, key, index)
@@ -237,6 +289,9 @@ class RefactoringDraftService : KoinComponent {
     }
 
     fun fork(refactoring: Refactoring, userId: Int): RefactoringDraft {
+        logService.log(LogEvent.Fork, LogType.Server, mapper.createObjectNode().apply {
+            put("id", refactoring.id)
+        }, userId)
         return refactoringDraftRepository.create(
             refactoring.type,
             refactoring.commit.sha,
@@ -249,6 +304,9 @@ class RefactoringDraftService : KoinComponent {
     }
 
     fun edit(refactoring: Refactoring, userId: Int): RefactoringDraft {
+        logService.log(LogEvent.Edit, LogType.Server, mapper.createObjectNode().apply {
+            put("id", refactoring.id)
+        }, userId)
         val draft = refactoringDraftRepository.findByRefactoringIdAndOwnerIdAndIsFork(refactoring.id, userId, false)
         return draft ?: refactoringDraftRepository.create(
             refactoring.type,

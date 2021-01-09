@@ -29,7 +29,8 @@ import {
   watch,
   useContext,
 } from '@nuxtjs/composition-api'
-import { CommitFile } from '@/apis'
+import { CommitFile, LogEvent, LogType } from '@/apis'
+import { log } from '@/utils/log'
 
 export default defineComponent({
   props: {
@@ -47,12 +48,20 @@ export default defineComponent({
 
     const onClickItem = (value: number) => {
       if ($accessor.draft.displayedFile.before?.index !== value) {
+        log(LogEvent.SetDisplayedFile, LogType.Client, {
+          category: 'before',
+          file: { index: value },
+        })
         $accessor.draft.setDisplayedFile({
           category: 'before',
           file: { index: value },
         })
       }
       if ($accessor.draft.displayedFile.after?.index !== value) {
+        log(LogEvent.SetDisplayedFile, LogType.Client, {
+          category: 'after',
+          file: { index: value },
+        })
         $accessor.draft.setDisplayedFile({
           category: 'after',
           file: { index: value },

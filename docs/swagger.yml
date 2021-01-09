@@ -27,6 +27,8 @@ tags:
     description: Element
   - name: experiments
     description: Experiment
+  - name: logs
+    description: Log
 
 paths:
   "/users/{userId}":
@@ -640,6 +642,25 @@ paths:
       tags:
         - experiments
 
+  "/logs":
+    post:
+      summary: logging
+      operationId: postLog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LogRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Log"
+      tags:
+        - logs
+
 components:
   securitySchemes:
     cookieAuth:
@@ -981,6 +1002,49 @@ components:
         - category
         - key
 
+    Log:
+      type: object
+      properties:
+        event:
+          $ref: "#/components/schemas/LogEvent"
+        type:
+          $ref: "#/components/schemas/LogType"
+        user:
+          type: integer
+        time:
+          type: integer
+        data:
+          type: object
+      required:
+        - event
+        - type
+        - user
+        - time
+        - data
+    LogType:
+      type: string
+      enum: [Server, Client]
+    LogEvent:
+      type: string
+      enum:
+        [
+          Save,
+          Discard,
+          Update,
+          PutElementKey,
+          RemoveElementKey,
+          VerifyElement,
+          AppendElementValue,
+          UpdateElementValue,
+          RemoveElementValue,
+          Fork,
+          Edit,
+
+          OpenElementLocation,
+          ToggleEditingElement,
+          SetDisplayedFile,
+        ]
+
     CreateRefactoringRequest:
       type: object
       properties:
@@ -1050,6 +1114,19 @@ components:
           $ref: "#/components/schemas/CodeElement"
       required:
         - element
+    LogRequest:
+      type: object
+      properties:
+        event:
+          $ref: "#/components/schemas/LogEvent"
+        type:
+          $ref: "#/components/schemas/LogType"
+        data:
+          type: object
+      required:
+        - event
+        - type
+        - data
 
   parameters:
     userIdInPath:
