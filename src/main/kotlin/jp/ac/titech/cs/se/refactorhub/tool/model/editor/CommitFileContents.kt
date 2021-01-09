@@ -16,6 +16,7 @@ data class CommitFileContents(
 
     data class File(
         val name: String,
-        val content: FileContent
+        val content: FileContent,
+        val patch: String
     )
 }

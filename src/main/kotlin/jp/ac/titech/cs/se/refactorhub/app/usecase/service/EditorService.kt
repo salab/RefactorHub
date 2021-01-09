@@ -36,7 +36,8 @@ class EditorService : KoinComponent {
                                 commit.owner,
                                 commit.repository,
                                 it.previousName
-                            )
+                            ),
+                            it.patch
                         )
                     },
                     commit.files.filter { it.status != CommitFileStatus.removed }.map {
@@ -47,7 +48,8 @@ class EditorService : KoinComponent {
                                 commit.owner,
                                 commit.repository,
                                 it.name
-                            )
+                            ),
+                            it.patch
                         )
                     }
                 )

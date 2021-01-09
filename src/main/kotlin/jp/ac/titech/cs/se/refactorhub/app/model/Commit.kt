@@ -25,7 +25,8 @@ data class CommitFile(
     val sha: String,
     val status: CommitFileStatus,
     val name: String,
-    val previousName: String
+    val previousName: String,
+    val patch: String
 )
 
 enum class CommitFileStatus {
