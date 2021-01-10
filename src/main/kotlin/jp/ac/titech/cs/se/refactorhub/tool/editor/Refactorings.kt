@@ -124,7 +124,7 @@ fun putCodeElementKey(
         throw RuntimeException("CodeElementType(type=$typeName) is unsupported")
     }
     if (!map.containsKey(key)) {
-        map[key] = CodeElementHolder(type, multiple)
+        map[key] = CodeElementHolder(type, multiple, if (multiple) listOf() else listOf(type.klass.createInstance()))
     } else {
         throw RuntimeException("already has key=$key")
     }
