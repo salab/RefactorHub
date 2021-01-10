@@ -64,7 +64,7 @@ private fun createUsers() {
 }
 
 private fun createRefactoringTypes() {
-    val files = listOf("types/experiment.json")
+    val files = listOf("types/experiment.json", "types/experiment-wo-autofill.json")
 
     val admin = UserDao[1]
     for (file in files) {
@@ -102,6 +102,18 @@ private fun createExperiments() {
         "Experiment that input data does not have anything",
         "data/experiment-2.ndjson"
     )
+    (1..4).forEach {
+        createExperiment(
+            "Experiment 1-$it",
+            "Experiment that input data has refactoring type, description",
+            "data/experiment/1/$it.ndjson"
+        )
+        createExperiment(
+            "Experiment 2-$it",
+            "Experiment that input data does not have anything",
+            "data/experiment/2/$it.ndjson"
+        )
+    }
 }
 
 private fun createExperiment(title: String, description: String, input: String) {

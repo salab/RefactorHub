@@ -1,0 +1,143 @@
+[
+  {
+    "name": "Extract Method (w/o autofill)",
+    "description": "Extracting code fragments from existing method, and creating a new method based on the extracted code",
+    "url": "https://refactoring.com/catalog/extractFunction.html",
+    "before": {
+      "extracted code": {
+        "description": "Code fragments which is extracted",
+        "type": "CodeFragment",
+        "multiple": true,
+        "required": true
+      },
+      "target method": {
+        "description": "Method in which the extraction is performed",
+        "type": "MethodDeclaration"
+      }
+    },
+    "after": {
+      "invocation": {
+        "description": "Method invocation by which extracted code was replaced",
+        "type": "MethodInvocation",
+        "required": true
+      },
+      "extracted code": {
+        "description": "Code fragments which was extracted",
+        "type": "CodeFragment",
+        "multiple": true,
+        "required": true
+      },
+      "extracted method": {
+        "description": "Method which was newly created by the extraction",
+        "type": "MethodDeclaration"
+      },
+      "target method": {
+        "description": "Method in which the extraction was performed",
+        "type": "MethodDeclaration"
+      }
+    }
+  },
+  {
+    "name": "Move Attribute (w/o autofill)",
+    "description": "Moving field to the other class",
+    "url": "https://refactoring.com/catalog/moveField.html",
+    "before": {
+      "target field": {
+        "description": "Field which is moved",
+        "type": "FieldDeclaration",
+        "required": true
+      },
+      "references": {
+        "description": "References of target field",
+        "type": "SimpleName",
+        "multiple": true
+      }
+    },
+    "after": {
+      "moved field": {
+        "description": "Field which was moved",
+        "type": "FieldDeclaration",
+        "required": true
+      },
+      "references": {
+        "description": "References of moved field",
+        "type": "SimpleName",
+        "multiple": true
+      }
+    }
+  },
+  {
+    "name": "Move Class (w/o autofill)",
+    "description": "Moving class to the other package",
+    "url": "https://www.refactoring.com/catalog/moveClass.html",
+    "before": {
+      "target class": {
+        "description": "Class which is moved",
+        "type": "ClassDeclaration",
+        "required": true
+      },
+      "package": {
+        "description": "Package in which target class exists",
+        "type": "PackageDeclaration"
+      },
+      "references": {
+        "description": "References of target class",
+        "type": "QualifiedName",
+        "multiple": true
+      }
+    },
+    "after": {
+      "moved class": {
+        "description": "Class which was moved",
+        "type": "ClassDeclaration",
+        "required": true
+      },
+      "package": {
+        "description": "Package in which moved class exists",
+        "type": "PackageDeclaration"
+      },
+      "references": {
+        "description": "References of moved class",
+        "type": "QualifiedName",
+        "multiple": true
+      }
+    }
+  },
+  {
+    "name": "Rename Variable (w/o autofill)",
+    "description": "Renaming variable",
+    "url": "https://refactoring.com/catalog/renameVariable.html",
+    "before": {
+      "target variable": {
+        "description": "Variable which is renamed",
+        "type": "VariableDeclaration",
+        "required": true
+      },
+      "method": {
+        "description": "Method in which renaming variable is performed",
+        "type": "MethodDeclaration"
+      },
+      "references": {
+        "description": "References of target variable",
+        "type": "SimpleName",
+        "multiple": true
+      }
+    },
+    "after": {
+      "renamed variable": {
+        "description": "Variable which was renamed",
+        "type": "VariableDeclaration",
+        "required": true
+      },
+      "method": {
+        "description": "Method in which renaming variable was performed",
+        "type": "MethodDeclaration"
+      },
+      "references": {
+        "description": "References of renamed variable",
+        "type": "SimpleName",
+        "multiple": true
+      }
+    }
+  }
+]
