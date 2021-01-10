@@ -65,7 +65,14 @@ async function setTextModelOnDiffEditor(
       modified: textModel,
     })
   }
-  if (metadata.lineNumber) diffEditor.revealLineNearTop(metadata.lineNumber)
+  const disposables: monaco.IDisposable[] = []
+  disposables.push(
+    diffEditor.onDidUpdateDiff(() => {
+      if (metadata.lineNumber)
+        getEditor(category, diffEditor).revealLineNearTop(metadata.lineNumber)
+      disposables.forEach((it) => it.dispose())
+    })
+  )
 }
 
 async function getTextModelOfFile(

@@ -44,7 +44,7 @@ class CommitService : KoinComponent {
                         CommitFileStatus.valueOf(file.status),
                         file.fileName,
                         file.previousFilename ?: file.fileName,
-                        file.patch
+                        file.patch ?: ""
                     )
                 },
                 it.parentSHA1s.firstOrNull() ?: throw BadRequestException("First commit is not supported")

@@ -14,6 +14,7 @@ import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.CommitController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.EditorController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ElementController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ExperimentController
+import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.LogController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringDraftController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringTypeController
@@ -48,6 +49,7 @@ val koinModules = module {
     single { ElementController() }
     single { EditorController() }
     single { ExperimentController() }
+    single { LogController() }
     single { UserService() }
     single { CommitService() }
     single { RefactoringService() }

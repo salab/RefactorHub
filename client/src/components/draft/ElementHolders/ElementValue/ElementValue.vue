@@ -106,19 +106,21 @@ export default defineComponent({
     const openLocation = async () => {
       const index = fileIndex.value
       if (index !== undefined && index >= 0) {
+        const file = {
+          index,
+          lineNumber: props.element.location?.range?.startLine,
+        }
         log(LogEvent.OpenElementLocation, LogType.Client, {
           category: props.category,
-          file: {
-            index,
-            lineNumber: props.element.location?.range?.startLine,
-          },
+          file,
         })
         await $accessor.draft.setDisplayedFile({
-          category: props.category,
-          file: {
-            index,
-            lineNumber: props.element.location?.range?.startLine,
-          },
+          category: 'before',
+          file: props.category === 'before' ? file : { index },
+        })
+        await $accessor.draft.setDisplayedFile({
+          category: 'after',
+          file: props.category === 'after' ? file : { index },
         })
       }
     }
