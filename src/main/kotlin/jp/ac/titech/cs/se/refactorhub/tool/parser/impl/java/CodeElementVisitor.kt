@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.dom.ASTNode
 import org.eclipse.jdt.core.dom.ASTVisitor
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration
 import org.eclipse.jdt.core.dom.CompilationUnit
+import org.eclipse.jdt.core.dom.EnhancedForStatement
 import org.eclipse.jdt.core.dom.EnumDeclaration
 import org.eclipse.jdt.core.dom.FieldDeclaration
 import org.eclipse.jdt.core.dom.MethodDeclaration
@@ -176,6 +177,30 @@ class CodeElementVisitor(
                 node.location
             )
         )
+        return super.visit(node)
+    }
+
+    override fun visit(node: SingleVariableDeclaration): Boolean {
+        if (node.parent is EnhancedForStatement) {
+            val className = getFullyQualifiedClassName(node)
+            val methodName = getMethodName(node)
+            elements.add(
+                VariableDeclaration(
+                    node.name.identifier,
+                    methodName,
+                    className,
+                    node.name.location
+                )
+            )
+            elements.add(
+                VariableType(
+                    node.type.toString(),
+                    methodName,
+                    className,
+                    node.type.location
+                )
+            )
+        }
         return super.visit(node)
     }
 
