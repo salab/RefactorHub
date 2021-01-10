@@ -12,6 +12,7 @@
           path
         }}</span>
       </div>
+      <element-range :range="range" />
     </div>
     <div class="pa-1 d-flex flex-column justify-center">
       <v-btn
