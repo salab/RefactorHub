@@ -26,6 +26,7 @@ enum class CodeElementType {
     VariableType,
 
     SimpleName,
+    QualifiedName,
 
     Statement,
 
@@ -56,6 +57,7 @@ enum class CodeElementType {
             VariableType -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.VariableType::class
 
             SimpleName -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.SimpleName::class
+            QualifiedName -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.QualifiedName::class
 
             Statement -> jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.Statement::class
 

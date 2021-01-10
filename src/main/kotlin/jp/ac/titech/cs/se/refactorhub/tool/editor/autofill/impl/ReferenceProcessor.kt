@@ -7,7 +7,7 @@ import jp.ac.titech.cs.se.refactorhub.tool.model.editor.autofill.impl.Reference
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElement
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.ClassDeclaration
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.FieldDeclaration
-import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.SimpleName
+import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.Name
 import jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.VariableDeclaration
 import java.util.regex.Pattern
 
@@ -27,7 +27,7 @@ class ReferenceProcessor : AutofillProcessor<Reference> {
         // TODO
         return contents.files.get(category).map {
             it.content.elements.filter { e ->
-                e is SimpleName && e.name == name
+                e is Name && e.name == name
             }.filter { e ->
                 val start = e.location?.range?.startLine
                 val end = e.location?.range?.endLine
@@ -36,7 +36,7 @@ class ReferenceProcessor : AutofillProcessor<Reference> {
             }
         }
             .flatten()
-            .filter { it is SimpleName && it.name == name }
+            .filter { it is Name && it.name == name }
     }
 }
 

@@ -151,7 +151,7 @@
       },
       "references": {
         "description": "クラスの参照",
-        "type": "SimpleName",
+        "type": "QualifiedName",
         "multiple": true,
         "autofills": [
           {
@@ -189,7 +189,7 @@
       },
       "references": {
         "description": "クラスの参照",
-        "type": "SimpleName",
+        "type": "QualifiedName",
         "multiple": true,
         "autofills": [
           {

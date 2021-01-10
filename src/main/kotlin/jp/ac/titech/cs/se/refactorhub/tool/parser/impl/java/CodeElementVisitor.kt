@@ -22,9 +22,11 @@ import org.eclipse.jdt.core.dom.FieldDeclaration
 import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.PackageDeclaration
+import org.eclipse.jdt.core.dom.QualifiedName
 import org.eclipse.jdt.core.dom.SimpleName
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration
 import org.eclipse.jdt.core.dom.TypeDeclaration
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement
 
@@ -197,6 +199,41 @@ class CodeElementVisitor(
                 methodName,
                 className,
                 node.type.location
+            )
+        )
+        return super.visit(node)
+    }
+
+    override fun visit(node: VariableDeclarationExpression): Boolean {
+        val className = getFullyQualifiedClassName(node)
+        val methodName = getMethodName(node)
+        node.fragments().forEach {
+            it as VariableDeclarationFragment
+            elements.add(
+                VariableDeclaration(
+                    it.name.identifier,
+                    methodName,
+                    className,
+                    it.location
+                )
+            )
+        }
+        elements.add(
+            VariableType(
+                node.type.toString(),
+                methodName,
+                className,
+                node.type.location
+            )
+        )
+        return super.visit(node)
+    }
+
+    override fun visit(node: QualifiedName): Boolean {
+        elements.add(
+            jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.QualifiedName(
+                node.fullyQualifiedName,
+                node.location
             )
         )
         return super.visit(node)
