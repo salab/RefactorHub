@@ -9,13 +9,19 @@
         <v-btn href="/login" class="text-none">Login</v-btn>
       </div>
     </v-row>
-    <v-row justify="center" class="pa-5">
-      <div v-for="experiment in actives" :key="experiment.id" class="ma-3">
-        <v-btn :to="`/experiment/${experiment.id}`" class="text-none">
-          {{ experiment.title }}
-        </v-btn>
-      </div>
-    </v-row>
+    <template v-else>
+      <v-row justify="center" class="pa-5">
+        <v-btn to="/types" class="text-none">Refactoring Types</v-btn>
+      </v-row>
+      <v-divider />
+      <v-row justify="center" class="pa-5">
+        <div v-for="experiment in actives" :key="experiment.id" class="ma-3">
+          <v-btn :to="`/experiment/${experiment.id}`" class="text-none">
+            {{ experiment.title }}
+          </v-btn>
+        </div>
+      </v-row>
+    </template>
   </v-container>
 </template>
 
