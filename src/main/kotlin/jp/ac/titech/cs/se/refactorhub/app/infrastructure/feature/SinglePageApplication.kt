@@ -62,7 +62,11 @@ class SinglePageApplication(private val configuration: Configuration) {
                         uri.startsWith("/${feature.configuration.spaRoute}")
                 }
                 val isNotFound by lazy {
-                    it is HttpStatusCodeContent && it.status == HttpStatusCode.NotFound
+                    when (it) {
+                        is HttpStatusCode -> it == HttpStatusCode.NotFound
+                        is HttpStatusCodeContent -> it.status == HttpStatusCode.NotFound
+                        else -> false
+                    }
                 }
                 val isFolder by lazy {
                     if (it is JarFileContent) {
