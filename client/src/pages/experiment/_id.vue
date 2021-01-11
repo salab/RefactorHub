@@ -7,7 +7,7 @@
     <div class="py-2">
       <div>
         <v-card
-          v-for="refactoring in refactorings"
+          v-for="(refactoring, i) in refactorings"
           :key="refactoring.id"
           outlined
           class="my-4"
@@ -21,7 +21,7 @@
             </div>
             <div class="flex-grow-1 py-2">
               <div class="title">
-                {{ refactoring.type }} (id={{ refactoring.id }})
+                {{ i + 1 }}. {{ refactoring.type }} (id={{ refactoring.id }})
               </div>
               <div>
                 <div class="body-2">{{ refactoring.description }}</div>
