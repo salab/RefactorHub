@@ -10,6 +10,9 @@
         <v-btn to="/experiment" depressed class="text-none mx-3">
           Experiments
         </v-btn>
+        <v-btn to="/result" depressed class="text-none mx-3">
+          Result of Experiments
+        </v-btn>
         <v-btn to="/types" depressed class="text-none mx-3">
           Refactoring Types
         </v-btn>
