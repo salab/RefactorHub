@@ -45,7 +45,7 @@ class RefactoringDraftController : KoinComponent {
     }
 
     fun update(id: Int, body: UpdateDraftBody, userId: Int?): RefactoringDraft {
-        return refactoringDraftService.update(id, body.description, body.type, userId)
+        return refactoringDraftService.update(id, body.type, body.description, userId)
     }
 
     fun putElementKey(id: Int, category: DiffCategory, body: PutDraftElementKeyBody, userId: Int?): RefactoringDraft {
