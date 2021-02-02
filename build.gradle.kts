@@ -73,11 +73,6 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 }
 
-ktlint {
-    // See https://github.com/pinterest/ktlint/issues/527
-    disabledRules.set(setOf("import-ordering"))
-}
-
 flyway {
     url = System.getenv("DATABASE_JDBC_URL")
     user = System.getenv("DATABASE_USERNAME")

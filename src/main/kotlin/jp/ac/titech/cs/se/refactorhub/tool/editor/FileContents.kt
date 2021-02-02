@@ -16,7 +16,7 @@ fun getFileContent(sha: String, owner: String, repository: String, path: String)
     return try {
         createFileContent(getGHContent(sha, owner, repository, path))
     } catch (e: IOException) {
-        FileContent(e.localizedMessage, uri = "https://github.com/${owner}/${repository}/blob/${sha}/${path}")
+        FileContent(e.localizedMessage, uri = "https://github.com/$owner/$repository/blob/$sha/$path")
     }
 }
 
