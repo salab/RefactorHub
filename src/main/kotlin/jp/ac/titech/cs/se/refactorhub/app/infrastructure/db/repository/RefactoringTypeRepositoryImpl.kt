@@ -4,7 +4,7 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringTypeD
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringTypes
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringTypeRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringType
-import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementMetadata
+import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class RefactoringTypeRepositoryImpl : RefactoringTypeRepository {

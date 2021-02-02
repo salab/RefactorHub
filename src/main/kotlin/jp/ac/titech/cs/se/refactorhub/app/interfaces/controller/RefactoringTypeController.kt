@@ -2,7 +2,7 @@ package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringType
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringTypeService
-import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementMetadata
+import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

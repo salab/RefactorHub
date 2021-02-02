@@ -5,7 +5,7 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Commits
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.FileContentDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.FileContents
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.FileContentRepository
-import jp.ac.titech.cs.se.refactorhub.tool.model.editor.CommitFileContents
+import jp.ac.titech.cs.se.refactorhub.core.model.editor.CommitFileContents
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class FileContentRepositoryImpl : FileContentRepository {

@@ -3,8 +3,8 @@ package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringDraftService
-import jp.ac.titech.cs.se.refactorhub.tool.model.DiffCategory
-import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElement
+import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
+import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

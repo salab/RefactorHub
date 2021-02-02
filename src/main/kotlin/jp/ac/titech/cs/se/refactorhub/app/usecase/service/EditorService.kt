@@ -4,9 +4,9 @@ import jp.ac.titech.cs.se.refactorhub.app.exception.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.FileContentRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.CommitFileStatus
-import jp.ac.titech.cs.se.refactorhub.tool.model.DiffCategory
-import jp.ac.titech.cs.se.refactorhub.tool.model.editor.CommitFileContents
-import jp.ac.titech.cs.se.refactorhub.tool.model.editor.FileContent
+import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
+import jp.ac.titech.cs.se.refactorhub.core.model.editor.CommitFileContents
+import jp.ac.titech.cs.se.refactorhub.core.model.editor.FileContent
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -31,7 +31,7 @@ class EditorService : KoinComponent {
                     commit.files.filter { it.status != CommitFileStatus.added }.map {
                         CommitFileContents.File(
                             it.previousName,
-                            jp.ac.titech.cs.se.refactorhub.tool.editor.getFileContent(
+                            jp.ac.titech.cs.se.refactorhub.core.editor.getFileContent(
                                 commit.parent,
                                 commit.owner,
                                 commit.repository,
@@ -43,7 +43,7 @@ class EditorService : KoinComponent {
                     commit.files.filter { it.status != CommitFileStatus.removed }.map {
                         CommitFileContents.File(
                             it.name,
-                            jp.ac.titech.cs.se.refactorhub.tool.editor.getFileContent(
+                            jp.ac.titech.cs.se.refactorhub.core.editor.getFileContent(
                                 commit.sha,
                                 commit.owner,
                                 commit.repository,

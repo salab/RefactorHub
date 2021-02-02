@@ -3,8 +3,8 @@ package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 import com.fasterxml.jackson.databind.JsonNode
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.LogRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Log
-import jp.ac.titech.cs.se.refactorhub.tool.model.LogEvent
-import jp.ac.titech.cs.se.refactorhub.tool.model.LogType
+import jp.ac.titech.cs.se.refactorhub.core.model.LogEvent
+import jp.ac.titech.cs.se.refactorhub.core.model.LogType
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

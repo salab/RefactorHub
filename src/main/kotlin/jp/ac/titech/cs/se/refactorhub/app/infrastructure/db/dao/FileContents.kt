@@ -3,7 +3,7 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.extension.jsonb
-import jp.ac.titech.cs.se.refactorhub.tool.model.editor.CommitFileContents
+import jp.ac.titech.cs.se.refactorhub.core.model.editor.CommitFileContents
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

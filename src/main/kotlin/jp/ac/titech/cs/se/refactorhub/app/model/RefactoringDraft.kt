@@ -9,4 +9,4 @@ data class RefactoringDraft(
     override val type: String,
     override val data: Refactoring.Data = Refactoring.Data(),
     override val description: String = ""
-) : jp.ac.titech.cs.se.refactorhub.tool.model.refactoring.Refactoring
+) : jp.ac.titech.cs.se.refactorhub.core.model.refactoring.Refactoring

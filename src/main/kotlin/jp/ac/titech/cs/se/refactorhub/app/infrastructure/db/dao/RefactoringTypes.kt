@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.extension.jsonb
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringType
-import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementMetadata
+import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

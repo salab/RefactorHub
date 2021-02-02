@@ -19,8 +19,8 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.UserDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Users
 import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
-import jp.ac.titech.cs.se.refactorhub.tool.editor.adjustRefactoringDataToType
-import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementMetadata
+import jp.ac.titech.cs.se.refactorhub.core.editor.adjustRefactoringDataToType
+import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.SizedCollection

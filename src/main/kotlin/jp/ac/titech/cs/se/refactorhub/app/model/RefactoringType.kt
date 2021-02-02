@@ -1,7 +1,7 @@
 package jp.ac.titech.cs.se.refactorhub.app.model
 
-import jp.ac.titech.cs.se.refactorhub.tool.model.element.CodeElementMetadata
-import jp.ac.titech.cs.se.refactorhub.tool.model.refactoring.RefactoringType
+import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
+import jp.ac.titech.cs.se.refactorhub.core.model.refactoring.RefactoringType
 
 data class RefactoringType(
     val id: Int,

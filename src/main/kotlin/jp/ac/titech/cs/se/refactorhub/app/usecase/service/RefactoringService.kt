@@ -6,7 +6,7 @@ import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringRepos
 import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
-import jp.ac.titech.cs.se.refactorhub.tool.editor.adjustRefactoringDataToType
+import jp.ac.titech.cs.se.refactorhub.core.editor.adjustRefactoringDataToType
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

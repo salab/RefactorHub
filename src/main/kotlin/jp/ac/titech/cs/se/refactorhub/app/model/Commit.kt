@@ -1,6 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.app.model
 
-import jp.ac.titech.cs.se.refactorhub.tool.model.Commit
+import jp.ac.titech.cs.se.refactorhub.core.model.Commit
 import java.util.Date
 
 data class Commit(

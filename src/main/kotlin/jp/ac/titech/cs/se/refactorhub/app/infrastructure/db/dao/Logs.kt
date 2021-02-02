@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.extension.jsonb
 import jp.ac.titech.cs.se.refactorhub.app.model.Log
-import jp.ac.titech.cs.se.refactorhub.tool.model.LogEvent
-import jp.ac.titech.cs.se.refactorhub.tool.model.LogType
+import jp.ac.titech.cs.se.refactorhub.core.model.LogEvent
+import jp.ac.titech.cs.se.refactorhub.core.model.LogType
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
