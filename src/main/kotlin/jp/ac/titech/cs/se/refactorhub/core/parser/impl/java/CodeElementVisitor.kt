@@ -33,9 +33,10 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement
 
 class CodeElementVisitor(
     private val unit: CompilationUnit,
-    private val path: String,
-    val elements: MutableList<CodeElement> = mutableListOf()
+    private val path: String
 ) : ASTVisitor() {
+    val elements: MutableList<CodeElement> = mutableListOf()
+
     override fun visit(node: PackageDeclaration): Boolean {
         elements.add(
             jp.ac.titech.cs.se.refactorhub.core.model.element.impl.PackageDeclaration(

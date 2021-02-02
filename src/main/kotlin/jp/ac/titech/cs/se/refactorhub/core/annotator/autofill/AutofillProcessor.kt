@@ -1,14 +1,14 @@
-package jp.ac.titech.cs.se.refactorhub.core.editor.autofill
+package jp.ac.titech.cs.se.refactorhub.core.annotator.autofill
 
-import jp.ac.titech.cs.se.refactorhub.core.editor.autofill.impl.PackageProcessor
-import jp.ac.titech.cs.se.refactorhub.core.editor.autofill.impl.ReferenceProcessor
-import jp.ac.titech.cs.se.refactorhub.core.editor.autofill.impl.SurroundProcessor
+import jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.impl.PackageProcessor
+import jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.impl.ReferenceProcessor
+import jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.impl.SurroundProcessor
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
-import jp.ac.titech.cs.se.refactorhub.core.model.editor.CommitFileContents
-import jp.ac.titech.cs.se.refactorhub.core.model.editor.autofill.Autofill
-import jp.ac.titech.cs.se.refactorhub.core.model.editor.autofill.impl.Package
-import jp.ac.titech.cs.se.refactorhub.core.model.editor.autofill.impl.Reference
-import jp.ac.titech.cs.se.refactorhub.core.model.editor.autofill.impl.Surround
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.CommitFileContents
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.Autofill
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.impl.Package
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.impl.Reference
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.impl.Surround
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
 
 interface AutofillProcessor<T : Autofill> {

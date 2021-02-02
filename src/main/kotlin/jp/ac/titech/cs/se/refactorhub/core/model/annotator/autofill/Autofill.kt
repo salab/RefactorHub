@@ -1,4 +1,4 @@
-package jp.ac.titech.cs.se.refactorhub.core.model.editor.autofill
+package jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize

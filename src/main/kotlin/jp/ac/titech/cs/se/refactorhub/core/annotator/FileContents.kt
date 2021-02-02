@@ -1,6 +1,6 @@
-package jp.ac.titech.cs.se.refactorhub.core.editor
+package jp.ac.titech.cs.se.refactorhub.core.annotator
 
-import jp.ac.titech.cs.se.refactorhub.core.model.editor.FileContent
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileContent
 import jp.ac.titech.cs.se.refactorhub.core.parser.CodeElementParser
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.IOUtils

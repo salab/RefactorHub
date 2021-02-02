@@ -1,4 +1,4 @@
-package jp.ac.titech.cs.se.refactorhub.core.model.editor
+package jp.ac.titech.cs.se.refactorhub.core.model.annotator
 
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
 

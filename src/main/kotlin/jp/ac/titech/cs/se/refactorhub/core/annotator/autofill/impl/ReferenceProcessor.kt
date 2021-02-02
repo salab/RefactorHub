@@ -1,9 +1,9 @@
-package jp.ac.titech.cs.se.refactorhub.core.editor.autofill.impl
+package jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.impl
 
-import jp.ac.titech.cs.se.refactorhub.core.editor.autofill.AutofillProcessor
+import jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.AutofillProcessor
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
-import jp.ac.titech.cs.se.refactorhub.core.model.editor.CommitFileContents
-import jp.ac.titech.cs.se.refactorhub.core.model.editor.autofill.impl.Reference
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.CommitFileContents
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.impl.Reference
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
 import jp.ac.titech.cs.se.refactorhub.core.model.element.impl.ClassDeclaration
 import jp.ac.titech.cs.se.refactorhub.core.model.element.impl.FieldDeclaration
