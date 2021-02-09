@@ -13,6 +13,7 @@ import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringController
+import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
@@ -43,6 +44,7 @@ data class ForkRefactoring(val id: Int)
 @Location("/{id}/edit")
 data class EditRefactoring(val id: Int)
 
+@KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.refactorings() {
     route("/refactorings") {

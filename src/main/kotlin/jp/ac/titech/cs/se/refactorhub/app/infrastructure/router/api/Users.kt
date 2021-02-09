@@ -11,6 +11,7 @@ import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.UserController
+import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
@@ -29,6 +30,7 @@ data class GetUserRefactorings(val id: Int)
 @Location("/me")
 class GetMe
 
+@KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.users() {
     route("/users") {

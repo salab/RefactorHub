@@ -4,35 +4,35 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.extension.jsonb
-import jp.ac.titech.cs.se.refactorhub.app.model.Log
-import jp.ac.titech.cs.se.refactorhub.core.model.LogEvent
-import jp.ac.titech.cs.se.refactorhub.core.model.LogType
+import jp.ac.titech.cs.se.refactorhub.app.model.Action
+import jp.ac.titech.cs.se.refactorhub.core.model.ActionName
+import jp.ac.titech.cs.se.refactorhub.core.model.ActionType
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.koin.java.KoinJavaComponent.inject
 
-object Logs : IntIdTable("logs") {
-    val event = enumerationByName("event", 50, LogEvent::class)
-    val type = enumerationByName("type", 50, LogType::class)
+object Actions : IntIdTable("actions") {
+    val name = enumerationByName("name", 50, ActionName::class)
+    val type = enumerationByName("type", 50, ActionType::class)
     val user = integer("user")
     val time = long("time")
     val data = jsonb("data", ::stringify, ::parse)
 }
 
-class LogDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Log> {
-    companion object : IntEntityClass<LogDao>(Logs)
+class ActionDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Action> {
+    companion object : IntEntityClass<ActionDao>(Actions)
 
-    var event by Logs.event
-    var type by Logs.type
-    var user by Logs.user
-    var time by Logs.time
-    var data by Logs.data
+    var name by Actions.name
+    var type by Actions.type
+    var user by Actions.user
+    var time by Actions.time
+    var data by Actions.data
 
-    override fun asModel(): Log {
-        return Log(
-            this.event,
+    override fun asModel(): Action {
+        return Action(
+            this.name,
             this.type,
             this.user,
             this.time,

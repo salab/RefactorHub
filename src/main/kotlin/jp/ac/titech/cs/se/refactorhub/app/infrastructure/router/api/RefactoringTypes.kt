@@ -10,6 +10,7 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.route
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringTypeController
+import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
@@ -24,6 +25,7 @@ class GetAllRefactoringTypes
 @Location("/{name}")
 class GetRefactoringType(val name: String)
 
+@KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.refactoringTypes() {
     route("/refactoring_types") {

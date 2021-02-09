@@ -2,15 +2,16 @@ package jp.ac.titech.cs.se.refactorhub.core.model
 
 import com.fasterxml.jackson.databind.JsonNode
 
-interface Log {
-    val event: LogEvent
-    val type: LogType
+interface Action {
+    val name: ActionName
+    val type: ActionType
     val user: Int
     val time: Long
     val data: JsonNode
 }
 
-enum class LogEvent {
+enum class ActionName {
+    // Server
     Save,
     Discard,
     Update,
@@ -23,12 +24,13 @@ enum class LogEvent {
     Fork,
     Edit,
 
+    // Client
     OpenElementLocation,
     ToggleEditingElement,
     SetDisplayedFile
 }
 
-enum class LogType {
+enum class ActionType {
     Client,
     Server
 }

@@ -7,7 +7,7 @@ import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.route
-import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.EditorController
+import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.AnnotatorController
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
 import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
@@ -24,12 +24,12 @@ data class GetFileContent(
 
 @KoinApiExtension
 @KtorExperimentalLocationsAPI
-fun Route.editor() {
-    route("/editor") {
-        val editorController: EditorController by inject()
+fun Route.annotator() {
+    route("/annotator") {
+        val annotatorController: AnnotatorController by inject()
         get<GetFileContent> {
             call.respond(
-                editorController.getFileContent(
+                annotatorController.getFileContent(
                     it.sha,
                     it.owner,
                     it.repository,

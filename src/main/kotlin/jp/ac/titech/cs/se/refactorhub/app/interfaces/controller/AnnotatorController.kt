@@ -8,7 +8,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 @KoinApiExtension
-class EditorController : KoinComponent {
+class AnnotatorController : KoinComponent {
     private val editorService: EditorService by inject()
 
     fun getFileContent(

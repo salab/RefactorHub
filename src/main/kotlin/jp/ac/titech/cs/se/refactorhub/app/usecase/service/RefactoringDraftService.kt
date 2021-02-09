@@ -14,9 +14,9 @@ import jp.ac.titech.cs.se.refactorhub.core.annotator.removeCodeElementKey
 import jp.ac.titech.cs.se.refactorhub.core.annotator.removeCodeElementValue
 import jp.ac.titech.cs.se.refactorhub.core.annotator.updateCodeElementValue
 import jp.ac.titech.cs.se.refactorhub.core.annotator.verifyCodeElement
+import jp.ac.titech.cs.se.refactorhub.core.model.ActionName
+import jp.ac.titech.cs.se.refactorhub.core.model.ActionType
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
-import jp.ac.titech.cs.se.refactorhub.core.model.LogEvent
-import jp.ac.titech.cs.se.refactorhub.core.model.LogType
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -28,7 +28,7 @@ class RefactoringDraftService : KoinComponent {
     private val refactoringService: RefactoringService by inject()
     private val refactoringTypeService: RefactoringTypeService by inject()
     private val editorService: EditorService by inject()
-    private val logService: LogService by inject()
+    private val actionService: ActionService by inject()
     private val mapper: ObjectMapper by inject()
 
     fun getRefactoringDrafts(refactoringId: Int): List<RefactoringDraft> {
@@ -50,9 +50,9 @@ class RefactoringDraftService : KoinComponent {
     }
 
     fun save(id: Int, userId: Int?): Refactoring {
-        logService.log(
-            LogEvent.Save,
-            LogType.Server,
+        actionService.log(
+            ActionName.Save,
+            ActionType.Server,
             mapper.createObjectNode().apply {
                 put("id", id)
             },
@@ -83,9 +83,9 @@ class RefactoringDraftService : KoinComponent {
     }
 
     fun discard(id: Int, userId: Int?) {
-        logService.log(
-            LogEvent.Discard,
-            LogType.Server,
+        actionService.log(
+            ActionName.Discard,
+            ActionType.Server,
             mapper.createObjectNode().apply {
                 put("id", id)
             },
@@ -101,9 +101,9 @@ class RefactoringDraftService : KoinComponent {
         description: String?,
         userId: Int?
     ): RefactoringDraft {
-        logService.log(
-            LogEvent.Update,
-            LogType.Server,
+        actionService.log(
+            ActionName.Update,
+            ActionType.Server,
             mapper.createObjectNode().apply {
                 put("id", id)
                 put("typeName", typeName)
@@ -139,9 +139,9 @@ class RefactoringDraftService : KoinComponent {
         multiple: Boolean,
         userId: Int?
     ): RefactoringDraft {
-        logService.log(
-            LogEvent.PutElementKey,
-            LogType.Server,
+        actionService.log(
+            ActionName.PutElementKey,
+            ActionType.Server,
             mapper.createObjectNode().apply {
                 put("id", id)
                 put("category", category.name)
@@ -172,9 +172,9 @@ class RefactoringDraftService : KoinComponent {
         key: String,
         userId: Int?
     ): RefactoringDraft {
-        logService.log(
-            LogEvent.RemoveElementKey,
-            LogType.Server,
+        actionService.log(
+            ActionName.RemoveElementKey,
+            ActionType.Server,
             mapper.createObjectNode().apply {
                 put("id", id)
                 put("category", category.name)
@@ -205,9 +205,9 @@ class RefactoringDraftService : KoinComponent {
         state: Boolean,
         userId: Int?
     ): RefactoringDraft {
-        logService.log(
-            LogEvent.VerifyElement,
-            LogType.Server,
+        actionService.log(
+            ActionName.VerifyElement,
+            ActionType.Server,
             mapper.createObjectNode().apply {
                 put("id", id)
                 put("category", category.name)
@@ -237,9 +237,9 @@ class RefactoringDraftService : KoinComponent {
         key: String,
         userId: Int?
     ): RefactoringDraft {
-        logService.log(
-            LogEvent.AppendElementValue,
-            LogType.Server,
+        actionService.log(
+            ActionName.AppendElementValue,
+            ActionType.Server,
             mapper.createObjectNode().apply {
                 put("id", id)
                 put("category", category.name)
@@ -270,9 +270,9 @@ class RefactoringDraftService : KoinComponent {
         element: CodeElement,
         userId: Int?
     ): RefactoringDraft {
-        logService.log(
-            LogEvent.UpdateElementValue,
-            LogType.Server,
+        actionService.log(
+            ActionName.UpdateElementValue,
+            ActionType.Server,
             mapper.createObjectNode().apply {
                 put("id", id)
                 put("category", category.name)
@@ -307,9 +307,9 @@ class RefactoringDraftService : KoinComponent {
         index: Int,
         userId: Int?
     ): RefactoringDraft {
-        logService.log(
-            LogEvent.RemoveElementValue,
-            LogType.Server,
+        actionService.log(
+            ActionName.RemoveElementValue,
+            ActionType.Server,
             mapper.createObjectNode().apply {
                 put("id", id)
                 put("category", category.name)
@@ -334,9 +334,9 @@ class RefactoringDraftService : KoinComponent {
     }
 
     fun fork(refactoring: Refactoring, userId: Int): RefactoringDraft {
-        logService.log(
-            LogEvent.Fork,
-            LogType.Server,
+        actionService.log(
+            ActionName.Fork,
+            ActionType.Server,
             mapper.createObjectNode().apply {
                 put("id", refactoring.id)
             },
@@ -354,9 +354,9 @@ class RefactoringDraftService : KoinComponent {
     }
 
     fun edit(refactoring: Refactoring, userId: Int): RefactoringDraft {
-        logService.log(
-            LogEvent.Edit,
-            LogType.Server,
+        actionService.log(
+            ActionName.Edit,
+            ActionType.Server,
             mapper.createObjectNode().apply {
                 put("id", refactoring.id)
             },

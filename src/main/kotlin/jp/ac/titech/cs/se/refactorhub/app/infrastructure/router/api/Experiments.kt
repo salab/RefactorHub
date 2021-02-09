@@ -8,6 +8,7 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.route
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ExperimentController
+import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
@@ -22,6 +23,7 @@ data class GetExperiment(val id: Int)
 @Location("/{id}/refactorings")
 data class GetExperimentRefactorings(val id: Int)
 
+@KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.experiments() {
     route("/experiments") {

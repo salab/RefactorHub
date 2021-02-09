@@ -11,22 +11,24 @@ import io.ktor.routing.route
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
-import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.LogController
+import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ActionController
+import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
 @Location("")
-class PostLog
+class PostAction
 
+@KoinApiExtension
 @KtorExperimentalLocationsAPI
-fun Route.logs() {
-    route("/logs") {
-        val logController: LogController by inject()
+fun Route.actions() {
+    route("/actions") {
+        val actionController: ActionController by inject()
 
-        post<PostLog> {
+        post<PostAction> {
             val session = call.sessions.get<Session>()
-            val body = call.receive<LogController.LogBody>()
-            call.respond(logController.log(body.event, body.type, body.data, session?.id))
+            val body = call.receive<ActionController.ActionBody>()
+            call.respond(actionController.log(body.name, body.type, body.data, session?.id))
         }
     }
 }
