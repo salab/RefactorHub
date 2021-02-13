@@ -11,7 +11,7 @@ group = "jp.ac.titech.cs.se"
 version = "0.0.1-SNAPSHOT"
 
 application {
-    mainClassName = "io.ktor.server.netty.EngineMain"
+    mainClass.set("io.ktor.server.netty.EngineMain")
 }
 
 repositories {
@@ -61,7 +61,10 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.jackson}")
 
     // Test
+    testImplementation(kotlin("test-junit"))
     testImplementation("io.ktor:ktor-server-tests:${Versions.ktor}")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${Versions.junit}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${Versions.junit}")
 }
 
 tasks {
@@ -70,7 +73,7 @@ tasks {
         manifest {
             attributes(
                 mapOf(
-                    "Main-Class" to application.mainClassName
+                    "Main-Class" to application.mainClass.get()
                 )
             )
         }

@@ -29,6 +29,7 @@ data class CommitFile(
     val patch: String
 )
 
+@Suppress("EnumEntryName")
 enum class CommitFileStatus {
     modified, added, removed, renamed
 }

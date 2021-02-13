@@ -7,7 +7,6 @@ import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.route
-import io.ktor.sessions.get
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.CommitController
 import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject

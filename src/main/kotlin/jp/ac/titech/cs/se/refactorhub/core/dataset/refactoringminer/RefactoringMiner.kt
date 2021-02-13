@@ -1,5 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer
 
+import jp.ac.titech.cs.se.refactorhub.core.dataset.OUTPUTS_PATH
 import org.refactoringminer.api.Refactoring
 import org.refactoringminer.api.RefactoringHandler
 import org.refactoringminer.rm1.GitHistoryRefactoringMinerImpl

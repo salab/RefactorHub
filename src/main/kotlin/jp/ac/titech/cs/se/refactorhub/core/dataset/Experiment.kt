@@ -1,6 +1,8 @@
-package jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer
+package jp.ac.titech.cs.se.refactorhub.core.dataset
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.RefactoringMiner
+import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.RefactoringOracle
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.converter.refactoring.convert
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.model.Refactoring
 import java.io.BufferedWriter
