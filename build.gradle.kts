@@ -1,11 +1,10 @@
 plugins {
     application
-    kotlin("jvm") version "1.4.21"
-    kotlin("plugin.serialization") version "1.4.21"
-    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
-    id("org.jlleitschuh.gradle.ktlint-idea") version "9.4.1"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
-    id("org.flywaydb.flyway") version "7.3.2"
+    kotlin("jvm") version Versions.kotlin
+    kotlin("plugin.serialization") version Versions.kotlin
+    id("org.jlleitschuh.gradle.ktlint") version Versions.ktlint
+    id("org.jlleitschuh.gradle.ktlint-idea") version Versions.ktlint
+    id("com.github.johnrengelman.shadow") version Versions.shadow
 }
 
 group = "jp.ac.titech.cs.se"
@@ -20,64 +19,49 @@ repositories {
     jcenter()
 }
 
-val ktor_version: String by project
-val koin_version: String by project
-val logback_version: String by project
-val exposed_version: String by project
-val h2_version: String by project
-val hikaricp_version: String by project
-val postgresql_version: String by project
-val refminer_version: String by project
-
 dependencies {
     // Kotlin
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.serialization}")
 
     // Ktor
-    implementation("io.ktor:ktor-server-core:$ktor_version")
-    implementation("io.ktor:ktor-server-netty:$ktor_version")
-    implementation("io.ktor:ktor-server-host-common:$ktor_version")
-    implementation("io.ktor:ktor-locations:$ktor_version")
-    implementation("io.ktor:ktor-client-apache:$ktor_version")
-    implementation("io.ktor:ktor-auth:$ktor_version")
-    implementation("io.ktor:ktor-jackson:$ktor_version")
+    implementation("io.ktor:ktor-server-core:${Versions.ktor}")
+    implementation("io.ktor:ktor-server-netty:${Versions.ktor}")
+    implementation("io.ktor:ktor-server-host-common:${Versions.ktor}")
+    implementation("io.ktor:ktor-locations:${Versions.ktor}")
+    implementation("io.ktor:ktor-client-apache:${Versions.ktor}")
+    implementation("io.ktor:ktor-auth:${Versions.ktor}")
+    implementation("io.ktor:ktor-jackson:${Versions.ktor}")
 
     // DI
-    implementation("org.koin:koin-ktor:$koin_version")
+    implementation("org.koin:koin-ktor:${Versions.koin}")
 
     // DB
-    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
-    implementation("com.zaxxer:HikariCP:$hikaricp_version")
-    implementation("org.postgresql:postgresql:$postgresql_version")
-    runtimeOnly("com.h2database:h2:$h2_version")
+    implementation("org.jetbrains.exposed:exposed-core:${Versions.exposed}")
+    implementation("org.jetbrains.exposed:exposed-dao:${Versions.exposed}")
+    implementation("org.jetbrains.exposed:exposed-jdbc:${Versions.exposed}")
+    implementation("com.zaxxer:HikariCP:${Versions.hikaricp}")
+    implementation("org.flywaydb:flyway-core:${Versions.flyway}")
+    implementation("org.postgresql:postgresql:${Versions.postgresql}")
+    runtimeOnly("com.h2database:h2:${Versions.h2}")
 
     // Log
-    implementation("ch.qos.logback:logback-classic:$logback_version")
-    implementation("org.codehaus.janino:janino:3.+")
+    implementation("ch.qos.logback:logback-classic:${Versions.logback}")
+    implementation("org.codehaus.janino:janino:${Versions.janino}")
 
     // Tools
-    implementation("org.eclipse.jdt:org.eclipse.jdt.core:3.+")
-    implementation("com.github.tsantalis:refactoring-miner:$refminer_version") {
+    implementation("org.eclipse.jdt:org.eclipse.jdt.core:${Versions.jdt}")
+    implementation("com.github.tsantalis:refactoring-miner:${Versions.refminer}") {
         exclude("org.slf4j")
     }
-    // implementation("com.github.tsantalis:RefactoringMiner:master-SNAPSHOT")
 
     // Other
-    implementation("org.kohsuke:github-api:1.+")
-    implementation("com.fasterxml.jackson.module:jackson-module-jsonSchema:2.+")
+    implementation("org.kohsuke:github-api:${Versions.github}")
+    implementation("com.fasterxml.jackson.module:jackson-module-jsonSchema:${Versions.jackson}")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.jackson}")
 
     // Test
-    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
-}
-
-flyway {
-    url = System.getenv("DATABASE_JDBC_URL")
-    user = System.getenv("DATABASE_USERNAME")
-    password = System.getenv("DATABASE_PASSWORD")
-    baselineOnMigrate = true
+    testImplementation("io.ktor:ktor-server-tests:${Versions.ktor}")
 }
 
 tasks {
@@ -92,7 +76,7 @@ tasks {
         }
     }
     register<Copy>("processClient") {
-        dependsOn(":client:build")
+        dependsOn(":client:generate")
         from("client/dist") {
             include("**/*.*")
         }

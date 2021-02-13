@@ -43,7 +43,7 @@ private fun getOutputFile(name: String): File {
 private fun writeToCsv(name: String, refactorings: Iterable<IndexedValue<RefactoringOracle.Refactoring>>) {
     val csv = getOutputFile(name)
     BufferedWriter(FileWriter(csv, true)).use { out ->
-        out.appendln(
+        out.appendLine(
             listOf(
                 "ID",
                 "Type",
@@ -54,7 +54,7 @@ private fun writeToCsv(name: String, refactorings: Iterable<IndexedValue<Refacto
             ).joinToString("\",\"", "\"", "\"")
         )
         for ((i, refactoring) in refactorings) {
-            out.appendln(
+            out.appendLine(
                 listOf(
                     "$i",
                     refactoring.type,
@@ -81,7 +81,7 @@ private fun writeToNdJson(
             try {
                 RefactoringMiner.reDetect(refactoring) {
                     BufferedWriter(FileWriter(json, true)).use { out ->
-                        out.appendln(
+                        out.appendLine(
                             jacksonObjectMapper().writeValueAsString(
                                 convert(it, refactoring)
                             )
@@ -93,7 +93,7 @@ private fun writeToNdJson(
             }
         } else {
             BufferedWriter(FileWriter(json, true)).use { out ->
-                out.appendln(
+                out.appendLine(
                     jacksonObjectMapper().writeValueAsString(
                         Refactoring(
                             refactoring.type,

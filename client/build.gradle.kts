@@ -1,16 +1,16 @@
-import com.moowork.gradle.node.npm.NpmTask
+import com.github.gradle.node.npm.task.NpmTask
 
 plugins {
-    id("com.github.node-gradle.node") version "2.2.4"
+    id("com.github.node-gradle.node") version "3.0.1"
 }
 
 node {
-    download = true
+    download.set(true)
 }
 
 tasks {
-    register<NpmTask>("build") {
+    register<NpmTask>("generate") {
         dependsOn("npmInstall")
-        setArgs(listOf("run", "generate:with-api"))
+        args.set(listOf("run", "generate:with-api"))
     }
 }

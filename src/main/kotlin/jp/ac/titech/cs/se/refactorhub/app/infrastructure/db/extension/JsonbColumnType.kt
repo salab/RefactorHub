@@ -3,7 +3,6 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.extension
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.extension.JsonbColumnType.Companion.JSONB
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import org.jetbrains.exposed.sql.BooleanColumnType
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType
@@ -68,8 +67,8 @@ fun <T : Any> Table.jsonb(name: String, stringify: (T) -> String, parse: (String
 fun <T : Any> Table.jsonb(
     name: String,
     serializer: KSerializer<T>,
-    json: Json = Json(JsonConfiguration.Stable)
-): Column<T> = jsonb(name, { json.stringify(serializer, it) }, { json.parse(serializer, it) })
+    json: Json = Json.Default
+): Column<T> = jsonb(name, { json.encodeToString(serializer, it) }, { json.decodeFromString(serializer, it) })
 
 class JsonValue<T>(
     private val expr: Expression<*>,
