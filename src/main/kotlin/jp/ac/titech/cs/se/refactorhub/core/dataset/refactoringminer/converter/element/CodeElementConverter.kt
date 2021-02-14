@@ -21,7 +21,7 @@ interface CodeElementConverter<T> {
     fun convert(element: T): CodeElement
 }
 
-fun convertElement(element: Any): CodeElement = when (element) {
+fun convertCodeElement(element: Any): CodeElement = when (element) {
     is AbstractCodeFragment -> CodeFragmentConverter().convert(element)
     is OperationInvocation -> OperationInvocationConverter().convert(element)
     is UMLOperation -> UMLOperationConverter().convert(element)

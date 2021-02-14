@@ -87,7 +87,7 @@ object RefactoringOracle {
             val result = REPOSITORY_URL_REGEX.matchEntire(this.repository)
                 ?: throw RuntimeException("repository url is invalid: ${this.repository}")
             val (owner, repository) = result.destructured
-            Commit(this.sha1, owner, repository)
+            Commit(owner, repository, this.sha1)
         }
 
         @JsonIgnoreProperties(ignoreUnknown = true)

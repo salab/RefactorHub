@@ -4,32 +4,58 @@ import jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.impl.PackageProces
 import jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.impl.ReferenceProcessor
 import jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.impl.SurroundProcessor
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
-import jp.ac.titech.cs.se.refactorhub.core.model.annotator.CommitFileContents
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.CommitContent
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.Autofill
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.impl.Package
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.impl.Reference
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.impl.Surround
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
+import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
 
 interface AutofillProcessor<T : Autofill> {
     fun process(
         autofill: T,
-        follow: CodeElement,
-        category: DiffCategory,
-        contents: CommitFileContents
+        sourceCategory: DiffCategory,
+        sourceElement: CodeElement,
+        targetCategory: DiffCategory,
+        targetMetadata: CodeElementMetadata,
+        content: CommitContent
     ): List<CodeElement>
 }
 
 fun autofill(
     autofill: Autofill,
-    follow: CodeElement,
-    category: DiffCategory,
-    contents: CommitFileContents
+    sourceCategory: DiffCategory,
+    sourceElement: CodeElement,
+    targetCategory: DiffCategory,
+    targetMetadata: CodeElementMetadata,
+    content: CommitContent
 ): List<CodeElement> {
     return when (autofill) {
-        is Package -> PackageProcessor().process(autofill, follow, category, contents)
-        is Reference -> ReferenceProcessor().process(autofill, follow, category, contents)
-        is Surround -> SurroundProcessor().process(autofill, follow, category, contents)
+        is Package -> PackageProcessor().process(
+            autofill,
+            sourceCategory,
+            sourceElement,
+            targetCategory,
+            targetMetadata,
+            content
+        )
+        is Reference -> ReferenceProcessor().process(
+            autofill,
+            sourceCategory,
+            sourceElement,
+            targetCategory,
+            targetMetadata,
+            content
+        )
+        is Surround -> SurroundProcessor().process(
+            autofill,
+            sourceCategory,
+            sourceElement,
+            targetCategory,
+            targetMetadata,
+            content
+        )
         else -> listOf()
     }
 }

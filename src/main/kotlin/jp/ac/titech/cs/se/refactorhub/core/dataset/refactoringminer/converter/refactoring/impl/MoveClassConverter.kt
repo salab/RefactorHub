@@ -2,7 +2,7 @@ package jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.converter.r
 
 import gr.uom.java.xmi.diff.MoveClassRefactoring
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.RefactoringOracle
-import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.converter.element.convertElement
+import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.converter.element.convertCodeElement
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.converter.refactoring.RefactoringConverter
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementHolder
@@ -18,16 +18,16 @@ class MoveClassConverter :
             refactoring.refactoringType.displayName,
             data.commit,
             Refactoring.Data(
-                mapOf(
+                mutableMapOf(
                     "target class" to CodeElementHolder(
                         type = CodeElementType.ClassDeclaration,
-                        elements = listOf(convertElement(refactoring.originalClass))
+                        elements = listOf(convertCodeElement(refactoring.originalClass))
                     )
                 ),
-                mapOf(
+                mutableMapOf(
                     "moved class" to CodeElementHolder(
                         type = CodeElementType.ClassDeclaration,
-                        elements = listOf(convertElement(refactoring.movedClass))
+                        elements = listOf(convertCodeElement(refactoring.movedClass))
                     )
                 )
             ),

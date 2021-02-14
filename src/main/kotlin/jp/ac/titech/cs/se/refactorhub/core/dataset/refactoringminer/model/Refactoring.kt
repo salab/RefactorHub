@@ -10,7 +10,7 @@ data class Refactoring(
     override val description: String = ""
 ) : Refactoring {
     data class Data(
-        override val before: Map<String, CodeElementHolder> = mapOf(),
-        override val after: Map<String, CodeElementHolder> = mapOf()
+        override val before: MutableMap<String, CodeElementHolder> = mutableMapOf(),
+        override val after: MutableMap<String, CodeElementHolder> = mutableMapOf()
     ) : Refactoring.Data
 }

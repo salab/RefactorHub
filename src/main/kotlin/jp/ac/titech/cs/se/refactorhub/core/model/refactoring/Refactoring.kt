@@ -10,7 +10,7 @@ interface Refactoring {
     val description: String
 
     interface Data {
-        val before: Map<String, CodeElementHolder>
-        val after: Map<String, CodeElementHolder>
+        val before: MutableMap<String, CodeElementHolder>
+        val after: MutableMap<String, CodeElementHolder>
     }
 }

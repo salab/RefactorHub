@@ -12,18 +12,18 @@ import java.net.URL
 
 val GITHUB_ACCESS_TOKEN = System.getenv("GITHUB_ACCESS_TOKEN") ?: ""
 
-fun getFileContent(sha: String, owner: String, repository: String, path: String): FileContent {
+fun getFileContent(owner: String, repository: String, sha: String, path: String): FileContent {
     return try {
-        createFileContent(getGHContent(sha, owner, repository, path))
+        createFileContent(getGHContent(owner, repository, sha, path))
     } catch (e: IOException) {
         FileContent(e.localizedMessage, uri = "https://github.com/$owner/$repository/blob/$sha/$path")
     }
 }
 
 private fun getGHContent(
-    sha: String,
     owner: String,
     repository: String,
+    sha: String,
     path: String
 ): GHContent {
     val client = GitHub.connectUsingOAuth(GITHUB_ACCESS_TOKEN)

@@ -2,7 +2,7 @@ package jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.converter.r
 
 import gr.uom.java.xmi.diff.ExtractOperationRefactoring
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.RefactoringOracle
-import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.converter.element.convertElement
+import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.converter.element.convertCodeElement
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.converter.refactoring.RefactoringConverter
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementHolder
@@ -18,34 +18,34 @@ class ExtractOperationConverter :
             refactoring.refactoringType.displayName,
             data.commit,
             Refactoring.Data(
-                mapOf(
+                mutableMapOf(
                     "target method" to CodeElementHolder(
                         type = CodeElementType.MethodDeclaration,
-                        elements = listOf(convertElement(refactoring.sourceOperationBeforeExtraction))
+                        elements = listOf(convertCodeElement(refactoring.sourceOperationBeforeExtraction))
                     ),
                     "extracted code" to CodeElementHolder(
                         type = CodeElementType.CodeFragment,
                         multiple = true,
-                        elements = refactoring.extractedCodeFragmentsFromSourceOperation.map { convertElement(it) }
+                        elements = refactoring.extractedCodeFragmentsFromSourceOperation.map { convertCodeElement(it) }
                     )
                 ),
-                mapOf(
+                mutableMapOf(
                     "target method" to CodeElementHolder(
                         type = CodeElementType.MethodDeclaration,
-                        elements = listOf(convertElement(refactoring.sourceOperationAfterExtraction))
+                        elements = listOf(convertCodeElement(refactoring.sourceOperationAfterExtraction))
                     ),
                     "extracted method" to CodeElementHolder(
                         type = CodeElementType.MethodDeclaration,
-                        elements = listOf(convertElement(refactoring.extractedOperation))
+                        elements = listOf(convertCodeElement(refactoring.extractedOperation))
                     ),
                     "invocation" to CodeElementHolder(
                         type = CodeElementType.MethodInvocation,
-                        elements = refactoring.extractedOperationInvocations.map { convertElement(it) }
+                        elements = refactoring.extractedOperationInvocations.map { convertCodeElement(it) }
                     ),
                     "extracted code" to CodeElementHolder(
                         type = CodeElementType.CodeFragment,
                         multiple = true,
-                        elements = refactoring.extractedCodeFragmentsToExtractedOperation.map { convertElement(it) }
+                        elements = refactoring.extractedCodeFragmentsToExtractedOperation.map { convertCodeElement(it) }
                     )
                 )
             ),

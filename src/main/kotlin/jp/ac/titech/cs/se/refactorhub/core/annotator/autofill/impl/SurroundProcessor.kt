@@ -2,22 +2,25 @@ package jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.impl
 
 import jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.AutofillProcessor
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
-import jp.ac.titech.cs.se.refactorhub.core.model.annotator.CommitFileContents
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.CommitContent
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.impl.Surround
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
+import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
 import jp.ac.titech.cs.se.refactorhub.core.model.element.data.Range
 
 class SurroundProcessor : AutofillProcessor<Surround> {
     override fun process(
         autofill: Surround,
-        follow: CodeElement,
-        category: DiffCategory,
-        contents: CommitFileContents
+        sourceCategory: DiffCategory,
+        sourceElement: CodeElement,
+        targetCategory: DiffCategory,
+        targetMetadata: CodeElementMetadata,
+        content: CommitContent
     ): List<CodeElement> {
-        val file = contents.files.get(category).find { it.name == follow.location?.path } ?: return listOf()
-        val range = follow.location?.range ?: return listOf()
+        val file = content.files.get(targetCategory).find { it.name == sourceElement.location?.path } ?: return listOf()
+        val range = sourceElement.location?.range ?: return listOf()
         val elements = file.content.elements.filter {
-            it.type == autofill.element && it.location?.range?.contains(range) ?: false
+            it.type == targetMetadata.type && it.location?.range?.contains(range) ?: false
         }
         return elements.filter {
             it.location?.range?.let { r ->

@@ -2,7 +2,7 @@ package jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.converter.r
 
 import gr.uom.java.xmi.diff.ChangeReturnTypeRefactoring
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.RefactoringOracle
-import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.converter.element.convertElement
+import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.converter.element.convertCodeElement
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.converter.refactoring.RefactoringConverter
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementHolder
@@ -19,16 +19,16 @@ class ChangeReturnTypeConverter :
             refactoring.refactoringType.displayName,
             data.commit,
             Refactoring.Data(
-                mapOf(
+                mutableMapOf(
                     "target method" to CodeElementHolder(
                         type = CodeElementType.MethodDeclaration,
-                        elements = listOf(convertElement(refactoring.operationBefore))
+                        elements = listOf(convertCodeElement(refactoring.operationBefore))
                     )
                 ),
-                mapOf(
+                mutableMapOf(
                     "target method" to CodeElementHolder(
                         type = CodeElementType.MethodDeclaration,
-                        elements = listOf(convertElement(refactoring.operationAfter))
+                        elements = listOf(convertCodeElement(refactoring.operationAfter))
                     )
                 )
             ),

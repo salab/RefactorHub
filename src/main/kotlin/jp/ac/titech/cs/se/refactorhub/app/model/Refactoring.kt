@@ -14,7 +14,7 @@ data class Refactoring(
     val isVerified: Boolean = false
 ) : Refactoring {
     data class Data(
-        override val before: Map<String, CodeElementHolder> = mapOf(),
-        override val after: Map<String, CodeElementHolder> = mapOf()
+        override val before: MutableMap<String, CodeElementHolder> = mutableMapOf(),
+        override val after: MutableMap<String, CodeElementHolder> = mutableMapOf()
     ) : Refactoring.Data
 }

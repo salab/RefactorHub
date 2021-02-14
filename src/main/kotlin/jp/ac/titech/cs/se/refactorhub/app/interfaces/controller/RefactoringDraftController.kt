@@ -18,17 +18,17 @@ class RefactoringDraftController : KoinComponent {
         val type: String? = null
     )
 
-    data class VerifyElementBody(
-        val state: Boolean
-    )
-
-    data class PutDraftElementKeyBody(
+    data class PutCodeElementHolderBody(
         val key: String,
         val type: String,
         val multiple: Boolean
     )
 
-    data class UpdateDraftElementValueBody(
+    data class VerifyCodeElementHolderBody(
+        val state: Boolean
+    )
+
+    data class UpdateCodeElementValueBody(
         val element: CodeElement
     )
 
@@ -48,34 +48,51 @@ class RefactoringDraftController : KoinComponent {
         return refactoringDraftService.update(id, body.type, body.description, userId)
     }
 
-    fun putElementKey(id: Int, category: DiffCategory, body: PutDraftElementKeyBody, userId: Int?): RefactoringDraft {
-        return refactoringDraftService.putElementKey(id, category, body.key, body.type, body.multiple, userId)
+    fun putCodeElementHolder(
+        id: Int,
+        category: DiffCategory,
+        body: PutCodeElementHolderBody,
+        userId: Int?
+    ): RefactoringDraft {
+        return refactoringDraftService.putCodeElementHolder(id, category, body.key, body.type, body.multiple, userId)
     }
 
-    fun removeElementKey(id: Int, category: DiffCategory, key: String, userId: Int?): RefactoringDraft {
-        return refactoringDraftService.removeElementKey(id, category, key, userId)
+    fun removeCodeElementHolder(id: Int, category: DiffCategory, key: String, userId: Int?): RefactoringDraft {
+        return refactoringDraftService.removeCodeElementHolder(id, category, key, userId)
     }
 
-    fun verifyElement(id: Int, category: DiffCategory, key: String, state: Boolean, userId: Int?): RefactoringDraft {
-        return refactoringDraftService.verifyElement(id, category, key, state, userId)
+    fun verifyCodeElementHolder(
+        id: Int,
+        category: DiffCategory,
+        key: String,
+        state: Boolean,
+        userId: Int?
+    ): RefactoringDraft {
+        return refactoringDraftService.verifyCodeElementHolder(id, category, key, state, userId)
     }
 
-    fun appendElementValue(id: Int, category: DiffCategory, key: String, userId: Int?): RefactoringDraft {
-        return refactoringDraftService.appendElementValue(id, category, key, userId)
+    fun appendCodeElementDefaultValue(id: Int, category: DiffCategory, key: String, userId: Int?): RefactoringDraft {
+        return refactoringDraftService.appendCodeElementDefaultValue(id, category, key, userId)
     }
 
-    fun updateElementValue(
+    fun updateCodeElementValue(
         id: Int,
         category: DiffCategory,
         key: String,
         index: Int,
-        body: UpdateDraftElementValueBody,
+        body: UpdateCodeElementValueBody,
         userId: Int?
     ): RefactoringDraft {
-        return refactoringDraftService.updateElementValue(id, category, key, index, body.element, userId)
+        return refactoringDraftService.updateCodeElementValue(id, category, key, index, body.element, userId)
     }
 
-    fun removeElementValue(id: Int, category: DiffCategory, key: String, index: Int, userId: Int?): RefactoringDraft {
-        return refactoringDraftService.removeElementValue(id, category, key, index, userId)
+    fun removeCodeElementValue(
+        id: Int,
+        category: DiffCategory,
+        key: String,
+        index: Int,
+        userId: Int?
+    ): RefactoringDraft {
+        return refactoringDraftService.removeCodeElementValue(id, category, key, index, userId)
     }
 }

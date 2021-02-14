@@ -38,27 +38,27 @@ data class UpdateDraft(val id: Int)
 
 @KtorExperimentalLocationsAPI
 @Location("/{id}/{category}")
-data class PutDraftElementKey(val id: Int, val category: DiffCategory)
+data class PutCodeElementHolder(val id: Int, val category: DiffCategory)
 
 @KtorExperimentalLocationsAPI
 @Location("/{id}/{category}/{key}")
-data class RemoveDraftElementKey(val id: Int, val category: DiffCategory, val key: String)
+data class RemoveCodeElementHolder(val id: Int, val category: DiffCategory, val key: String)
 
 @KtorExperimentalLocationsAPI
 @Location("/{id}/{category}/{key}")
-data class VerifyDraftElement(val id: Int, val category: DiffCategory, val key: String)
+data class VerifyCodeElementHolder(val id: Int, val category: DiffCategory, val key: String)
 
 @KtorExperimentalLocationsAPI
 @Location("/{id}/{category}/{key}")
-data class AppendDraftElementValue(val id: Int, val category: DiffCategory, val key: String)
+data class AppendCodeElementDefaultValue(val id: Int, val category: DiffCategory, val key: String)
 
 @KtorExperimentalLocationsAPI
 @Location("/{id}/{category}/{key}/{index}")
-data class UpdateDraftElementValue(val id: Int, val category: DiffCategory, val key: String, val index: Int)
+data class UpdateCodeElementValue(val id: Int, val category: DiffCategory, val key: String, val index: Int)
 
 @KtorExperimentalLocationsAPI
 @Location("/{id}/{category}/{key}/{index}")
-data class RemoveDraftElementValue(val id: Int, val category: DiffCategory, val key: String, val index: Int)
+data class RemoveCodeElementValue(val id: Int, val category: DiffCategory, val key: String, val index: Int)
 
 @KoinApiExtension
 @KtorExperimentalLocationsAPI
@@ -81,29 +81,44 @@ fun Route.drafts() {
             val body = call.receive<RefactoringDraftController.UpdateDraftBody>()
             call.respond(refactoringDraftController.update(it.id, body, session?.id))
         }
-        put<PutDraftElementKey> {
+        put<PutCodeElementHolder> {
             val session = call.sessions.get<Session>()
-            val body = call.receive<RefactoringDraftController.PutDraftElementKeyBody>()
-            call.respond(refactoringDraftController.putElementKey(it.id, it.category, body, session?.id))
+            val body = call.receive<RefactoringDraftController.PutCodeElementHolderBody>()
+            call.respond(refactoringDraftController.putCodeElementHolder(it.id, it.category, body, session?.id))
         }
-        delete<RemoveDraftElementKey> {
+        delete<RemoveCodeElementHolder> {
             val session = call.sessions.get<Session>()
-            call.respond(refactoringDraftController.removeElementKey(it.id, it.category, it.key, session?.id))
+            call.respond(refactoringDraftController.removeCodeElementHolder(it.id, it.category, it.key, session?.id))
         }
-        patch<VerifyDraftElement> {
+        patch<VerifyCodeElementHolder> {
             val session = call.sessions.get<Session>()
-            val body = call.receive<RefactoringDraftController.VerifyElementBody>()
-            call.respond(refactoringDraftController.verifyElement(it.id, it.category, it.key, body.state, session?.id))
-        }
-        post<AppendDraftElementValue> {
-            val session = call.sessions.get<Session>()
-            call.respond(refactoringDraftController.appendElementValue(it.id, it.category, it.key, session?.id))
-        }
-        patch<UpdateDraftElementValue> {
-            val session = call.sessions.get<Session>()
-            val body = call.receive<RefactoringDraftController.UpdateDraftElementValueBody>()
+            val body = call.receive<RefactoringDraftController.VerifyCodeElementHolderBody>()
             call.respond(
-                refactoringDraftController.updateElementValue(
+                refactoringDraftController.verifyCodeElementHolder(
+                    it.id,
+                    it.category,
+                    it.key,
+                    body.state,
+                    session?.id
+                )
+            )
+        }
+        post<AppendCodeElementDefaultValue> {
+            val session = call.sessions.get<Session>()
+            call.respond(
+                refactoringDraftController.appendCodeElementDefaultValue(
+                    it.id,
+                    it.category,
+                    it.key,
+                    session?.id
+                )
+            )
+        }
+        patch<UpdateCodeElementValue> {
+            val session = call.sessions.get<Session>()
+            val body = call.receive<RefactoringDraftController.UpdateCodeElementValueBody>()
+            call.respond(
+                refactoringDraftController.updateCodeElementValue(
                     it.id,
                     it.category,
                     it.key,
@@ -113,10 +128,10 @@ fun Route.drafts() {
                 )
             )
         }
-        delete<RemoveDraftElementValue> {
+        delete<RemoveCodeElementValue> {
             val session = call.sessions.get<Session>()
             call.respond(
-                refactoringDraftController.removeElementValue(
+                refactoringDraftController.removeCodeElementValue(
                     it.id,
                     it.category,
                     it.key,

@@ -19,7 +19,7 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.UserDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Users
 import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
-import jp.ac.titech.cs.se.refactorhub.core.annotator.adjustRefactoringDataToType
+import jp.ac.titech.cs.se.refactorhub.core.annotator.format
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -157,12 +157,12 @@ private fun createRefactorings(file: String): List<RefactoringDao> {
             this.repository = it.commit.repository
         }
         val type = RefactoringTypeDao.find { RefactoringTypes.name eq it.type }.single()
-        val fixed = adjustRefactoringDataToType(it.data, type.asModel())
+        val formatted = it.data.format(type.asModel())
         RefactoringDao.new {
             this.owner = admin
             this.commit = commit
             this.type = type
-            this.data = Refactoring.Data(fixed.before, fixed.after)
+            this.data = Refactoring.Data(formatted.before, formatted.after)
             this.description = it.description
             this.isVerified = false
         }

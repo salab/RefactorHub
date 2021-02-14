@@ -2,9 +2,10 @@ package jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.impl
 
 import jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.AutofillProcessor
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
-import jp.ac.titech.cs.se.refactorhub.core.model.annotator.CommitFileContents
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.CommitContent
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.impl.Reference
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
+import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
 import jp.ac.titech.cs.se.refactorhub.core.model.element.impl.ClassDeclaration
 import jp.ac.titech.cs.se.refactorhub.core.model.element.impl.FieldDeclaration
 import jp.ac.titech.cs.se.refactorhub.core.model.element.impl.Name
@@ -14,25 +15,27 @@ import java.util.regex.Pattern
 class ReferenceProcessor : AutofillProcessor<Reference> {
     override fun process(
         autofill: Reference,
-        follow: CodeElement,
-        category: DiffCategory,
-        contents: CommitFileContents
+        sourceCategory: DiffCategory,
+        sourceElement: CodeElement,
+        targetCategory: DiffCategory,
+        targetMetadata: CodeElementMetadata,
+        content: CommitContent
     ): List<CodeElement> {
-        val name = when (follow) {
-            is ClassDeclaration -> follow.name
-            is FieldDeclaration -> follow.name
-            is VariableDeclaration -> follow.name
+        val name = when (sourceElement) {
+            is ClassDeclaration -> sourceElement.name
+            is FieldDeclaration -> sourceElement.name
+            is VariableDeclaration -> sourceElement.name
             else -> return listOf() // TODO
         }
         // TODO
-        return contents.files.get(category).map {
+        return content.files.get(targetCategory).map {
             it.content.elements.filter { e ->
                 e is Name && e.name == name
             }.filter { e ->
                 val start = e.location?.range?.startLine
                 val end = e.location?.range?.endLine
                 val patch = parse(it.patch)
-                (start != null && start in patch.get(category)) || (end != null && end in patch.get(category))
+                (start != null && start in patch.get(targetCategory)) || (end != null && end in patch.get(targetCategory))
             }
         }
             .flatten()
