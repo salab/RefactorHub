@@ -12,6 +12,8 @@ version = "0.0.1-SNAPSHOT"
 
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
+    @Suppress("DEPRECATION")
+    mainClassName = mainClass.get()
 }
 
 repositories {
