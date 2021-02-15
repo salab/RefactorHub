@@ -13,10 +13,16 @@ import org.koin.core.component.inject
 class ActionService : KoinComponent {
     private val actionRepository: ActionRepository by inject()
 
-    fun log(name: ActionName, type: ActionType, data: JsonNode, user: Int?): Action {
-        val time = System.currentTimeMillis()
-        return actionRepository.save(
-            Action(name, type, user, time, data)
-        )
+    fun log(name: ActionName, type: ActionType, data: JsonNode, user: Int?) {
+        if (LOG_ACTION.toBoolean()) {
+            val time = System.currentTimeMillis()
+            actionRepository.save(
+                Action(name, type, user, time, data)
+            )
+        }
+    }
+
+    companion object {
+        private val LOG_ACTION = System.getenv("LOG_ACTION") ?: ""
     }
 }
