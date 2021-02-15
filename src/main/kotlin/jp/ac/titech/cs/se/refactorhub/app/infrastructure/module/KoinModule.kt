@@ -12,8 +12,8 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository.Ref
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository.UserRepositoryImpl
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ActionController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.AnnotatorController
+import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.CodeElementController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.CommitController
-import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ElementController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ExperimentController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringDraftController
@@ -29,8 +29,8 @@ import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringTypeR
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.UserRepository
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.ActionService
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.AnnotatorService
+import jp.ac.titech.cs.se.refactorhub.app.usecase.service.CodeElementService
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.CommitService
-import jp.ac.titech.cs.se.refactorhub.app.usecase.service.ElementService
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.ExperimentService
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringDraftService
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringService
@@ -51,7 +51,7 @@ object KoinModule {
                 single { RefactoringController() }
                 single { RefactoringTypeController() }
                 single { RefactoringDraftController() }
-                single { ElementController() }
+                single { CodeElementController() }
                 single { AnnotatorController() }
                 single { ExperimentController() }
                 single { ActionController() }
@@ -60,7 +60,7 @@ object KoinModule {
                 single { RefactoringService() }
                 single { RefactoringTypeService() }
                 single { RefactoringDraftService() }
-                single { ElementService() }
+                single { CodeElementService() }
                 single { AnnotatorService() }
                 single { ExperimentService() }
                 single { ActionService() }

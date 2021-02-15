@@ -8,7 +8,7 @@ import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 
 @KoinApiExtension
-class ElementService : KoinComponent {
+class CodeElementService : KoinComponent {
 
     fun getTypes(): List<String> {
         return CodeElementType.values().map { it.name }

@@ -5,18 +5,18 @@ import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
 
 data class CommitContent(
     val commit: Commit,
-    val files: Files
+    val files: List<FilePair>
 ) {
-    data class Files(
-        val before: List<File>,
-        val after: List<File>
+    data class FilePair(
+        val before: File,
+        val after: File,
+        val patch: String
     ) {
         fun get(category: DiffCategory) = if (category == DiffCategory.before) before else after
     }
 
     data class File(
         val name: String,
-        val content: FileContent,
-        val patch: String
+        val content: FileContent
     )
 }

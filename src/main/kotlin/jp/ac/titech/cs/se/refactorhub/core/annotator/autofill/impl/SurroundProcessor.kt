@@ -17,7 +17,8 @@ class SurroundProcessor : AutofillProcessor<Surround> {
         targetMetadata: CodeElementMetadata,
         content: CommitContent
     ): List<CodeElement> {
-        val file = content.files.get(targetCategory).find { it.name == sourceElement.location?.path } ?: return listOf()
+        val file = content.files.map { it.get(targetCategory) }.find { it.name == sourceElement.location?.path }
+            ?: return listOf()
         val range = sourceElement.location?.range ?: return listOf()
         val elements = file.content.elements.filter {
             it.type == targetMetadata.type && it.location?.range?.contains(range) ?: false

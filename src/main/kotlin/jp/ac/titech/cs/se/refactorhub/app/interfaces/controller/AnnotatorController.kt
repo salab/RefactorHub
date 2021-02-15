@@ -12,9 +12,9 @@ class AnnotatorController : KoinComponent {
     private val annotatorService: AnnotatorService by inject()
 
     fun getFileContent(
-        sha: String,
         owner: String,
         repository: String,
+        sha: String,
         category: DiffCategory,
         path: String
     ): FileContent {

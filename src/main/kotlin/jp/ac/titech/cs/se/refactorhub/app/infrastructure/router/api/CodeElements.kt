@@ -7,7 +7,7 @@ import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.route
-import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ElementController
+import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.CodeElementController
 import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
@@ -23,12 +23,12 @@ class GetElementSchemas
 @KtorExperimentalLocationsAPI
 fun Route.elements() {
     route("/elements") {
-        val elementController: ElementController by inject()
+        val codeElementController: CodeElementController by inject()
         get<GetElementTypes> {
-            call.respond(elementController.getTypes())
+            call.respond(codeElementController.getTypes())
         }
         get<GetElementSchemas> {
-            call.respond(elementController.getSchemas())
+            call.respond(codeElementController.getSchemas())
         }
     }
 }

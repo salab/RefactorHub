@@ -15,9 +15,9 @@ import org.koin.ktor.ext.inject
 @KtorExperimentalLocationsAPI
 @Location("/content")
 data class GetFileContent(
-    val sha: String,
     val owner: String,
     val repository: String,
+    val sha: String,
     val category: DiffCategory,
     val path: String
 )
@@ -30,9 +30,9 @@ fun Route.annotator() {
         get<GetFileContent> {
             call.respond(
                 annotatorController.getFileContent(
-                    it.sha,
                     it.owner,
                     it.repository,
+                    it.sha,
                     it.category,
                     it.path
                 )

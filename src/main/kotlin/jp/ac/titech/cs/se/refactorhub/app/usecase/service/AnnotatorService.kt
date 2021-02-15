@@ -3,7 +3,6 @@ package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 import jp.ac.titech.cs.se.refactorhub.app.exception.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.CommitContentRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Commit
-import jp.ac.titech.cs.se.refactorhub.app.model.CommitFileStatus
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.CommitContent
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileContent
@@ -27,8 +26,8 @@ class AnnotatorService : KoinComponent {
         return commitContentRepository.save(
             CommitContent(
                 Commit(commit.owner, commit.repository, commit.sha),
-                CommitContent.Files(
-                    commit.files.filter { it.status != CommitFileStatus.added }.map {
+                commit.files.map {
+                    CommitContent.FilePair(
                         CommitContent.File(
                             it.previousName,
                             jp.ac.titech.cs.se.refactorhub.core.annotator.getFileContent(
@@ -36,11 +35,8 @@ class AnnotatorService : KoinComponent {
                                 commit.repository,
                                 commit.parent,
                                 it.previousName
-                            ),
-                            it.patch
-                        )
-                    },
-                    commit.files.filter { it.status != CommitFileStatus.removed }.map {
+                            )
+                        ),
                         CommitContent.File(
                             it.name,
                             jp.ac.titech.cs.se.refactorhub.core.annotator.getFileContent(
@@ -48,11 +44,11 @@ class AnnotatorService : KoinComponent {
                                 commit.repository,
                                 commit.sha,
                                 it.name
-                            ),
-                            it.patch
-                        )
-                    }
-                )
+                            )
+                        ),
+                        it.patch
+                    )
+                }
             )
         )
     }
@@ -65,8 +61,7 @@ class AnnotatorService : KoinComponent {
         path: String
     ): FileContent {
         val content = getCommitContent(owner, repository, sha)
-        return (if (category == DiffCategory.before) content.files.before else content.files.after)
-            .find { it.name == path }?.content
+        return content.files.map { it.get(category) }.find { it.name == path }?.content
             ?: throw NotFoundException("File(path=$path) is not found")
     }
 }
