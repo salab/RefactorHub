@@ -22,6 +22,14 @@ class AnnotatorService : KoinComponent {
     ): CommitContent {
         val content = commitContentRepository.find(owner, repository, sha)
         if (content != null) return content
+        return createCommitContent(owner, repository, sha)
+    }
+
+    private fun createCommitContent(
+        owner: String,
+        repository: String,
+        sha: String
+    ): CommitContent {
         val commit = commitService.getDetail(owner, repository, sha)
         return commitContentRepository.save(
             CommitContent(
@@ -51,6 +59,13 @@ class AnnotatorService : KoinComponent {
                 }
             )
         )
+    }
+
+    fun createCommitContentIfNotExist(
+        commit: Commit
+    ) {
+        commitContentRepository.find(commit.owner, commit.repository, commit.sha)
+            ?: createCommitContent(commit.owner, commit.repository, commit.sha)
     }
 
     fun getFileContent(

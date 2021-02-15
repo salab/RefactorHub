@@ -18,9 +18,10 @@ class RefactoringService : KoinComponent {
     private val commitService: CommitService by inject()
     private val refactoringDraftService: RefactoringDraftService by inject()
     private val refactoringTypeService: RefactoringTypeService by inject()
+    private val annotatorService: AnnotatorService by inject()
 
     fun create(
-        commit: Commit,
+        _commit: Commit,
         typeName: String,
         data: Refactoring.Data,
         description: String,
@@ -30,8 +31,10 @@ class RefactoringService : KoinComponent {
     ): Refactoring {
         val user = userService.getMe(userId)
         val type = refactoringTypeService.getByName(typeName)
+        val commit = commitService.createIfNotExist(_commit.owner, _commit.repository, _commit.sha)
+        annotatorService.createCommitContentIfNotExist(commit)
         return refactoringRepository.create(
-            commitService.createIfNotExist(commit.owner, commit.repository, commit.sha),
+            commit,
             type.name,
             data.format(type).let { Refactoring.Data(it.before, it.after) },
             description,
