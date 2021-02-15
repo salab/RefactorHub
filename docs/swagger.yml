@@ -18,17 +18,17 @@ tags:
   - name: refactorings
     description: Refactoring
   - name: refactoringTypes
-    description: Refactoring Type
+    description: RefactoringType
   - name: drafts
-    description: Refactoring Draft
-  - name: editor
-    description: Editor
+    description: RefactoringDraft
+  - name: annotator
+    description: Annotator
   - name: elements
-    description: Element
+    description: CodeElement
   - name: experiments
     description: Experiment
-  - name: logs
-    description: Log
+  - name: actions
+    description: Action
 
 paths:
   "/users/{userId}":
@@ -102,8 +102,10 @@ paths:
       tags:
         - users
 
-  "/commits/{commitSha}":
+  "/commits/{commitOwner}/{commitRepository}/{commitSha}":
     parameters:
+      - $ref: "#/components/parameters/commitOwnerInPath"
+      - $ref: "#/components/parameters/commitRepositoryInPath"
       - $ref: "#/components/parameters/commitShaInPath"
     get:
       summary: get commit
@@ -119,8 +121,10 @@ paths:
           description: Commit is not found
       tags:
         - commits
-  "/commits/{commitSha}/detail":
+  "/commits/{commitOwner}/{commitRepository}/{commitSha}/detail":
     parameters:
+      - $ref: "#/components/parameters/commitOwnerInPath"
+      - $ref: "#/components/parameters/commitRepositoryInPath"
       - $ref: "#/components/parameters/commitShaInPath"
     get:
       summary: get commit detail
@@ -404,7 +408,7 @@ paths:
       - $ref: "#/components/parameters/draftIdInPath"
       - $ref: "#/components/parameters/diffCategoryInPath"
     put:
-      summary: put element key on refactoring draft data[category]
+      summary: put CodeElementHolder on refactoring draft data[category]
       operationId: putRefactoringDraftElementKey
       security:
         - cookieAuth: []
@@ -412,7 +416,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PutRefactoringDraftElementKeyRequest"
+              $ref: "#/components/schemas/PutCodeElementHolderRequest"
       responses:
         "200":
           description: OK
@@ -432,8 +436,8 @@ paths:
       - $ref: "#/components/parameters/diffCategoryInPath"
       - $ref: "#/components/parameters/elementKeyInPath"
     delete:
-      summary: remove element key on refactoring draft data[category]
-      operationId: removeRefactoringDraftElementKey
+      summary: remove CodeElementHolder on refactoring draft data[category]
+      operationId: removeCodeElementHolder
       security:
         - cookieAuth: []
       responses:
@@ -450,8 +454,8 @@ paths:
       tags:
         - drafts
     post:
-      summary: append element value on refactoring draft data[category][key].elements
-      operationId: appendRefactoringDraftElementValue
+      summary: append default CodeElement value on refactoring draft data[category][key].elements
+      operationId: appendCodeElementDefaultValue
       security:
         - cookieAuth: []
       responses:
@@ -468,15 +472,15 @@ paths:
       tags:
         - drafts
     patch:
-      summary: verify element on refactoring draft data[category][key]
-      operationId: verifyRefactoringDraftElement
+      summary: verify CodeElementHolder on refactoring draft data[category][key]
+      operationId: verifyCodeElementHolder
       security:
         - cookieAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifyRefactoringDraftElementRequest"
+              $ref: "#/components/schemas/VerifyCodeElementHolderRequest"
       responses:
         "200":
           description: OK
@@ -497,15 +501,15 @@ paths:
       - $ref: "#/components/parameters/elementKeyInPath"
       - $ref: "#/components/parameters/elementIndexInPath"
     patch:
-      summary: update element value of refactoring draft data[category][key].elements[index]
-      operationId: updateRefactoringDraftElementValue
+      summary: update CodeElement value of refactoring draft data[category][key].elements[index]
+      operationId: updateCodeElementValue
       security:
         - cookieAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateRefactoringDraftElementValueRequest"
+              $ref: "#/components/schemas/UpdateCodeElementValueRequest"
       responses:
         "200":
           description: OK
@@ -540,8 +544,8 @@ paths:
 
   "/elements/types":
     get:
-      summary: get all element types
-      operationId: getElementTypes
+      summary: get all CodeElement types
+      operationId: getCodeElementTypes
       responses:
         "200":
           description: OK
@@ -554,21 +558,21 @@ paths:
       tags:
         - elements
 
-  "/editor/content":
+  "/annotator/content":
     get:
-      summary: get file content with elements
+      summary: get FileContent with CodeElements
       operationId: getFileContent
       parameters:
-        - in: query
-          name: sha
-          schema:
-            type: string
         - in: query
           name: owner
           schema:
             type: string
         - in: query
           name: repository
+          schema:
+            type: string
+        - in: query
+          name: sha
           schema:
             type: string
         - in: query
@@ -588,7 +592,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/FileContent"
       tags:
-        - editor
+        - annotator
 
   "/experiments":
     get:
@@ -642,24 +646,24 @@ paths:
       tags:
         - experiments
 
-  "/logs":
+  "/actions":
     post:
-      summary: logging
-      operationId: postLog
+      summary: logging actions
+      operationId: postAction
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LogRequest"
+              $ref: "#/components/schemas/ActionRequest"
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Log"
+                $ref: "#/components/schemas/Action"
       tags:
-        - logs
+        - actions
 
 components:
   securitySchemes:
@@ -683,24 +687,24 @@ components:
     Commit:
       type: object
       properties:
-        sha:
-          type: string
         owner:
           type: string
         repository:
           type: string
+        sha:
+          type: string
       required:
-        - sha
         - owner
         - repository
+        - sha
     CommitDetail:
       type: object
       properties:
-        sha:
-          type: string
         owner:
           type: string
         repository:
+          type: string
+        sha:
           type: string
         url:
           type: string
@@ -718,9 +722,9 @@ components:
         parent:
           type: string
       required:
-        - sha
         - owner
         - repository
+        - sha
         - url
         - message
         - author
@@ -862,9 +866,9 @@ components:
     FileContent:
       type: object
       properties:
-        value:
+        text:
           type: string
-        language:
+        extension:
           type: string
         uri:
           type: string
@@ -873,7 +877,8 @@ components:
           items:
             $ref: "#/components/schemas/CodeElement"
       required:
-        - value
+        - text
+        - extension
         - uri
         - elements
 
@@ -996,19 +1001,19 @@ components:
         category:
           type: string
           enum: [before, after]
-        key:
+        name:
           type: string
       required:
         - category
-        - key
+        - name
 
-    Log:
+    Action:
       type: object
       properties:
-        event:
-          $ref: "#/components/schemas/LogEvent"
+        name:
+          $ref: "#/components/schemas/ActionName"
         type:
-          $ref: "#/components/schemas/LogType"
+          $ref: "#/components/schemas/ActionType"
         user:
           type: integer
         time:
@@ -1016,27 +1021,26 @@ components:
         data:
           type: object
       required:
-        - event
+        - name
         - type
-        - user
         - time
         - data
-    LogType:
+    ActionType:
       type: string
       enum: [Server, Client]
-    LogEvent:
+    ActionName:
       type: string
       enum:
         [
           Save,
           Discard,
           Update,
-          PutElementKey,
-          RemoveElementKey,
-          VerifyElement,
-          AppendElementValue,
-          UpdateElementValue,
-          RemoveElementValue,
+          PutCodeElementHolder,
+          RemoveCodeElementHolder,
+          VerifyCodeElementHolder,
+          AppendCodeElementDefaultValue,
+          UpdateCodeElementValue,
+          RemoveCodeElementValue,
           Fork,
           Edit,
 
@@ -1088,7 +1092,7 @@ components:
           type: string
         type:
           type: string
-    PutRefactoringDraftElementKeyRequest:
+    PutCodeElementHolderRequest:
       type: object
       properties:
         key:
@@ -1100,31 +1104,31 @@ components:
       required:
         - key
         - type
-    VerifyRefactoringDraftElementRequest:
+    VerifyCodeElementHolderRequest:
       type: object
       properties:
         state:
           type: boolean
       required:
         - state
-    UpdateRefactoringDraftElementValueRequest:
+    UpdateCodeElementValueRequest:
       type: object
       properties:
         element:
           $ref: "#/components/schemas/CodeElement"
       required:
         - element
-    LogRequest:
+    ActionRequest:
       type: object
       properties:
-        event:
-          $ref: "#/components/schemas/LogEvent"
+        name:
+          $ref: "#/components/schemas/ActionName"
         type:
-          $ref: "#/components/schemas/LogType"
+          $ref: "#/components/schemas/ActionType"
         data:
           type: object
       required:
-        - event
+        - name
         - type
         - data
 
@@ -1135,6 +1139,18 @@ components:
       required: true
       schema:
         type: integer
+    commitOwnerInPath:
+      name: commitOwner
+      in: path
+      required: true
+      schema:
+        type: string
+    commitRepositoryInPath:
+      name: commitRepository
+      in: path
+      required: true
+      schema:
+        type: string
     commitShaInPath:
       name: commitSha
       in: path
