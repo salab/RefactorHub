@@ -12,12 +12,12 @@ import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
-@Location("/{sha}")
-data class GetCommit(val sha: String)
+@Location("/{owner}/{repository}/{sha}")
+data class GetCommit(val owner: String, val repository: String, val sha: String)
 
 @KtorExperimentalLocationsAPI
-@Location("/{sha}/detail")
-data class GetCommitDetail(val sha: String)
+@Location("/{owner}/{repository}/{sha}/detail")
+data class GetCommitDetail(val owner: String, val repository: String, val sha: String)
 
 @KoinApiExtension
 @KtorExperimentalLocationsAPI
@@ -25,10 +25,10 @@ fun Route.commits() {
     route("/commits") {
         val commitController: CommitController by inject()
         get<GetCommit> {
-            call.respond(commitController.get(it.sha))
+            call.respond(commitController.get(it.owner, it.repository, it.sha))
         }
         get<GetCommitDetail> {
-            call.respond(commitController.getDetail(it.sha))
+            call.respond(commitController.getDetail(it.owner, it.repository, it.sha))
         }
     }
 }

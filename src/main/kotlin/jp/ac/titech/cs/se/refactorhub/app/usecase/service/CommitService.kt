@@ -16,24 +16,19 @@ import org.koin.core.component.inject
 class CommitService : KoinComponent {
     private val commitRepository: CommitRepository by inject()
 
-    fun get(sha: String): Commit {
-        val commit = commitRepository.findBySha(sha)
-        commit ?: throw NotFoundException("Commit(sha=$sha) is not found")
+    fun get(owner: String, repository: String, sha: String): Commit {
+        val commit = commitRepository.find(owner, repository, sha)
+        commit ?: throw NotFoundException("Commit(owner=$owner, repository=$repository, sha=$sha) is not found")
         return commit
     }
 
-    fun getDetail(sha: String): CommitDetail {
-        val commit = get(sha)
-        return getDetail(commit.sha, commit.owner, commit.repository)
-    }
-
-    fun getDetail(sha: String, owner: String, repository: String): CommitDetail {
+    fun getDetail(owner: String, repository: String, sha: String): CommitDetail {
         val client = GitHub.connectUsingOAuth(GITHUB_ACCESS_TOKEN)
         return client.getRepository("$owner/$repository").getCommit(sha).let {
             CommitDetail(
-                it.shA1,
                 it.owner.ownerName,
                 it.owner.name,
+                it.shA1,
                 it.htmlUrl.toExternalForm(),
                 it.commitShortInfo.message,
                 it.commitShortInfo.author.name,
@@ -52,10 +47,10 @@ class CommitService : KoinComponent {
         }
     }
 
-    fun createIfNotExist(sha: String, owner: String, repository: String): Commit {
-        val commit = commitRepository.findBySha(sha)
+    fun createIfNotExist(owner: String, repository: String, sha: String): Commit {
+        val commit = commitRepository.find(owner, repository, sha)
         if (commit != null) return commit
-        return commitRepository.save(Commit(sha, owner, repository))
+        return commitRepository.save(Commit(owner, repository, sha))
     }
 
     companion object {

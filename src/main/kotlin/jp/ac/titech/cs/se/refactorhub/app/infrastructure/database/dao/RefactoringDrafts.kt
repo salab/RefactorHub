@@ -1,8 +1,8 @@
-package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao
+package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.extension.jsonb
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.extension.jsonb
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
 import org.jetbrains.exposed.dao.IntEntity

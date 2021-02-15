@@ -1,7 +1,7 @@
-package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository
+package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository
 
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringTypeDao
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringTypes
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.RefactoringTypeDao
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.RefactoringTypes
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringTypeRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringType
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata

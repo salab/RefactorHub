@@ -4,15 +4,15 @@ import jp.ac.titech.cs.se.refactorhub.core.model.Commit
 import java.util.Date
 
 data class Commit(
-    override val sha: String,
     override val owner: String,
-    override val repository: String
+    override val repository: String,
+    override val sha: String
 ) : Commit
 
 data class CommitDetail(
-    val sha: String,
     val owner: String,
     val repository: String,
+    val sha: String,
     val url: String,
     val message: String,
     val author: String,

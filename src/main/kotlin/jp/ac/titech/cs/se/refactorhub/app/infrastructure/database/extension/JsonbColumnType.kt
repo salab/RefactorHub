@@ -1,6 +1,6 @@
-package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.extension
+package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.extension
 
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.extension.JsonbColumnType.Companion.JSONB
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.extension.JsonbColumnType.Companion.JSONB
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.BooleanColumnType

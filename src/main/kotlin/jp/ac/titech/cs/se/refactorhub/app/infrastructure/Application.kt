@@ -19,7 +19,7 @@ import io.ktor.sessions.cookie
 import io.ktor.util.KtorExperimentalAPI
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.github
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.connectDB
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.connectDB
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.feature.SinglePageApplication
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.feature.setExceptions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.module.koinModules

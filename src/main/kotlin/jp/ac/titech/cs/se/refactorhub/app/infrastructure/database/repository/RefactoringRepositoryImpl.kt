@@ -1,13 +1,13 @@
-package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository
+package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository
 
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.CommitDao
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Commits
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.ExperimentDao
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringDao
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringTypeDao
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.RefactoringTypes
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Refactorings
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.UserDao
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.CommitDao
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Commits
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.ExperimentDao
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.RefactoringDao
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.RefactoringTypeDao
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.RefactoringTypes
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Refactorings
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.UserDao
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
 import org.jetbrains.exposed.sql.transactions.transaction

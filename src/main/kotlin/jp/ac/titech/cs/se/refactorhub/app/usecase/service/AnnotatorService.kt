@@ -21,12 +21,12 @@ class AnnotatorService : KoinComponent {
         repository: String,
         sha: String
     ): CommitContent {
-        val content = commitContentRepository.find(sha)
+        val content = commitContentRepository.find(owner, repository, sha)
         if (content != null) return content
-        val commit = commitService.getDetail(sha, owner, repository)
+        val commit = commitService.getDetail(owner, repository, sha)
         return commitContentRepository.save(
             CommitContent(
-                Commit(commit.sha, commit.owner, commit.repository),
+                Commit(commit.owner, commit.repository, commit.sha),
                 CommitContent.Files(
                     commit.files.filter { it.status != CommitFileStatus.added }.map {
                         CommitContent.File(

@@ -11,11 +11,11 @@ import org.koin.core.component.inject
 class CommitController : KoinComponent {
     private val commitService: CommitService by inject()
 
-    fun get(sha: String): Commit {
-        return commitService.get(sha)
+    fun get(owner: String, repository: String, sha: String): Commit {
+        return commitService.get(owner, repository, sha)
     }
 
-    fun getDetail(sha: String): CommitDetail {
-        return commitService.getDetail(sha)
+    fun getDetail(owner: String, repository: String, sha: String): CommitDetail {
+        return commitService.getDetail(owner, repository, sha)
     }
 }

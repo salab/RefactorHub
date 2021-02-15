@@ -2,14 +2,14 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.module
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.locations.KtorExperimentalLocationsAPI
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.ActionRepositoryImpl
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.CommitContentRepositoryImpl
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.CommitRepositoryImpl
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.ExperimentRepositoryImpl
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.RefactoringDraftRepositoryImpl
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.RefactoringRepositoryImpl
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.RefactoringTypeRepositoryImpl
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository.UserRepositoryImpl
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository.ActionRepositoryImpl
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository.CommitContentRepositoryImpl
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository.CommitRepositoryImpl
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository.ExperimentRepositoryImpl
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository.RefactoringDraftRepositoryImpl
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository.RefactoringRepositoryImpl
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository.RefactoringTypeRepositoryImpl
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository.UserRepositoryImpl
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ActionController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.AnnotatorController
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.CommitController

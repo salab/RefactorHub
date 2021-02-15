@@ -30,7 +30,7 @@ class RefactoringService : KoinComponent {
     ): Refactoring {
         val user = userService.getMe(userId)
         val type = refactoringTypeService.getByName(typeName)
-        val sha = commitService.createIfNotExist(commit.sha, commit.owner, commit.repository).sha
+        val sha = commitService.createIfNotExist(commit.owner, commit.repository, commit.sha).sha
         val formatted = data.format(type)
         return refactoringRepository.create(
             sha,

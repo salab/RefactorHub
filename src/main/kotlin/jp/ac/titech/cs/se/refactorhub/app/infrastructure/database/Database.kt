@@ -1,4 +1,4 @@
-package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db
+package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource

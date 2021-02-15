@@ -1,9 +1,9 @@
-package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao
+package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.extension.jsonb
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.extension.jsonb
 import jp.ac.titech.cs.se.refactorhub.app.model.Action
 import jp.ac.titech.cs.se.refactorhub.core.model.ActionName
 import jp.ac.titech.cs.se.refactorhub.core.model.ActionType
@@ -16,7 +16,7 @@ import org.koin.java.KoinJavaComponent.inject
 object Actions : IntIdTable("actions") {
     val name = enumerationByName("name", 50, ActionName::class)
     val type = enumerationByName("type", 50, ActionType::class)
-    val user = integer("user")
+    val user = integer("user").nullable()
     val time = long("time")
     val data = jsonb("data", ::stringify, ::parse)
 }

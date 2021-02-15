@@ -1,4 +1,4 @@
-package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao
+package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao
 
 import jp.ac.titech.cs.se.refactorhub.app.model.Experiment
 import org.jetbrains.exposed.dao.IntEntity

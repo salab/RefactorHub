@@ -1,7 +1,7 @@
-package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository
+package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository
 
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.UserDao
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Users
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.UserDao
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Users
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.UserRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.User
 import org.jetbrains.exposed.sql.transactions.transaction

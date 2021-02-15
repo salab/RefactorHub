@@ -8,7 +8,7 @@ import jp.ac.titech.cs.se.refactorhub.core.model.ActionType
 data class Action(
     override val name: ActionName,
     override val type: ActionType,
-    override val user: Int,
+    override val user: Int?,
     override val time: Long,
     override val data: JsonNode
 ) : Action

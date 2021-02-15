@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode
 interface Action {
     val name: ActionName
     val type: ActionType
-    val user: Int
+    val user: Int?
     val time: Long
     val data: JsonNode
 }

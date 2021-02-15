@@ -1,17 +1,19 @@
-package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository
+package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository
 
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.CommitDao
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.Commits
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.CommitDao
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Commits
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.CommitRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CommitRepositoryImpl : CommitRepository {
-    override fun findBySha(sha: String): Commit? {
+    override fun find(owner: String, repository: String, sha: String): Commit? {
         return transaction {
             CommitDao.find {
+                Commits.owner eq owner
+                Commits.repository eq repository
                 Commits.sha eq sha
-            }.singleOrNull()?.asModel()
+            }.firstOrNull()?.asModel()
         }
     }
 

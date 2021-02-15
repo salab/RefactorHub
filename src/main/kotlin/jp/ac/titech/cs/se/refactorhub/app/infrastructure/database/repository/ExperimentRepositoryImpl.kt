@@ -1,6 +1,6 @@
-package jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.repository
+package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository
 
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.db.dao.ExperimentDao
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.ExperimentDao
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.ExperimentRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Experiment
 import org.jetbrains.exposed.sql.transactions.transaction
