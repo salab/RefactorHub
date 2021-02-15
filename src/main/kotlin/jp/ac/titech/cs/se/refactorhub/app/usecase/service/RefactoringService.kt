@@ -30,12 +30,10 @@ class RefactoringService : KoinComponent {
     ): Refactoring {
         val user = userService.getMe(userId)
         val type = refactoringTypeService.getByName(typeName)
-        val sha = commitService.createIfNotExist(commit.owner, commit.repository, commit.sha).sha
-        val formatted = data.format(type)
         return refactoringRepository.create(
-            sha,
+            commitService.createIfNotExist(commit.owner, commit.repository, commit.sha),
             type.name,
-            Refactoring.Data(formatted.before, formatted.after),
+            data.format(type).let { Refactoring.Data(it.before, it.after) },
             description,
             user.id,
             parentId,
@@ -62,7 +60,7 @@ class RefactoringService : KoinComponent {
     }
 
     fun update(id: Int, typeName: String?, data: Refactoring.Data?, description: String?): Refactoring {
-        return refactoringRepository.update(id, typeName, data, description)
+        return refactoringRepository.updateById(id, typeName, data, description)
     }
 
     fun fork(id: Int, userId: Int?): RefactoringDraft {

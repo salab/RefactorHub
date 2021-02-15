@@ -22,7 +22,7 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.github
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.connectDB
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.feature.SinglePageApplication
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.feature.setExceptions
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.module.koinModules
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.module.KoinModule
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.root
 import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.Koin
@@ -57,7 +57,7 @@ fun Application.module() {
     }
 
     install(Koin) {
-        modules(koinModules)
+        modules(KoinModule.modules)
     }
 
     connectDB()

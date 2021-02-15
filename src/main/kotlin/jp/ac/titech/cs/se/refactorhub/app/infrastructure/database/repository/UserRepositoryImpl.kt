@@ -18,7 +18,7 @@ class UserRepositoryImpl : UserRepository {
         return transaction {
             UserDao.find {
                 Users.subId eq subId
-            }.singleOrNull()?.asModel()
+            }.firstOrNull()?.asModel()
         }
     }
 

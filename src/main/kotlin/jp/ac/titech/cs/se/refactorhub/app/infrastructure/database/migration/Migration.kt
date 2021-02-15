@@ -151,12 +151,12 @@ private fun createRefactorings(file: String): List<RefactoringDao> {
     return refactorings.map {
         val commit = CommitDao.find {
             Commits.sha eq it.commit.sha
-        }.singleOrNull() ?: CommitDao.new {
+        }.firstOrNull() ?: CommitDao.new {
             this.sha = it.commit.sha
             this.owner = it.commit.owner
             this.repository = it.commit.repository
         }
-        val type = RefactoringTypeDao.find { RefactoringTypes.name eq it.type }.single()
+        val type = RefactoringTypeDao.find { RefactoringTypes.name eq it.type }.first()
         val formatted = it.data.format(type.asModel())
         RefactoringDao.new {
             this.owner = admin

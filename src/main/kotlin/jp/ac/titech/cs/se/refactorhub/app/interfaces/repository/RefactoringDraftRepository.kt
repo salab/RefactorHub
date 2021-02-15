@@ -1,5 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.app.interfaces.repository
 
+import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
 
@@ -8,9 +9,10 @@ interface RefactoringDraftRepository {
     fun findByOwnerId(ownerId: Int): List<RefactoringDraft>
     fun findByRefactoringId(refactoringId: Int): List<RefactoringDraft>
     fun findByRefactoringIdAndOwnerIdAndIsFork(refactoringId: Int, ownerId: Int, isFork: Boolean): RefactoringDraft?
+
     fun create(
+        commit: Commit,
         typeName: String,
-        commitSha: String,
         data: Refactoring.Data,
         description: String,
         userId: Int,
@@ -18,7 +20,7 @@ interface RefactoringDraftRepository {
         isFork: Boolean
     ): RefactoringDraft
 
-    fun update(
+    fun updateById(
         id: Int,
         typeName: String? = null,
         data: Refactoring.Data? = null,

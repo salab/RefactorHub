@@ -33,8 +33,7 @@ class SinglePageApplication(private val configuration: Configuration) {
         ): SinglePageApplication {
 
             val feature = SinglePageApplication(
-                Configuration()
-                    .apply(configure)
+                Configuration().apply(configure)
             )
 
             pipeline.routing {
@@ -69,10 +68,6 @@ class SinglePageApplication(private val configuration: Configuration) {
                     }
                 }
                 val isFolder by lazy {
-                    if (it is JarFileContent) {
-                        println("type: ${it.contentType}")
-                        println("match: ${ContentType.Application.OctetStream.match(it.contentType)}")
-                    }
                     it is JarFileContent && ContentType.Application.OctetStream.match(it.contentType)
                 }
                 val acceptsHtml by lazy {

@@ -26,7 +26,7 @@ class RefactoringTypeRepositoryImpl : RefactoringTypeRepository {
         return transaction {
             RefactoringTypeDao.find {
                 RefactoringTypes.name eq name
-            }.singleOrNull()?.asModel()
+            }.firstOrNull()?.asModel()
         }
     }
 

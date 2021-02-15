@@ -9,7 +9,9 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Refactorin
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Refactorings
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.UserDao
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringRepository
+import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class RefactoringRepositoryImpl : RefactoringRepository {
@@ -52,7 +54,7 @@ class RefactoringRepositoryImpl : RefactoringRepository {
     }
 
     override fun create(
-        commitSha: String,
+        commit: Commit,
         typeName: String,
         data: Refactoring.Data,
         description: String,
@@ -63,8 +65,12 @@ class RefactoringRepositoryImpl : RefactoringRepository {
         return transaction {
             val dao = RefactoringDao.new {
                 this.owner = UserDao.findById(userId)!!
-                this.commit = CommitDao.find { Commits.sha eq commitSha }.single()
-                this.type = RefactoringTypeDao.find { RefactoringTypes.name eq typeName }.single()
+                this.commit = CommitDao.find {
+                    (Commits.owner eq commit.owner) and
+                        (Commits.repository eq commit.repository) and
+                        (Commits.sha eq commit.sha)
+                }.first()
+                this.type = RefactoringTypeDao.find { RefactoringTypes.name eq typeName }.first()
                 this.data = data
                 this.description = description
                 this.isVerified = isVerified
@@ -74,11 +80,11 @@ class RefactoringRepositoryImpl : RefactoringRepository {
         }
     }
 
-    override fun update(id: Int, typeName: String?, data: Refactoring.Data?, description: String?): Refactoring {
+    override fun updateById(id: Int, typeName: String?, data: Refactoring.Data?, description: String?): Refactoring {
         return transaction {
             val dao = RefactoringDao.findById(id)!!
             if (typeName != null) {
-                val type = RefactoringTypeDao.find { RefactoringTypes.name eq typeName }.singleOrNull()
+                val type = RefactoringTypeDao.find { RefactoringTypes.name eq typeName }.firstOrNull()
                 if (type != null) dao.type = type
             }
             if (data != null) dao.data = data

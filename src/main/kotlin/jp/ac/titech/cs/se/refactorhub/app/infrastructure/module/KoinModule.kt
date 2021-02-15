@@ -36,35 +36,43 @@ import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringDraftServic
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringService
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringTypeService
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.UserService
+import org.koin.core.component.KoinApiExtension
 import org.koin.dsl.module
 
+@KoinApiExtension
 @KtorExperimentalLocationsAPI
-val koinModules = module {
-    single { jacksonObjectMapper() }
-    single { UserController() }
-    single { CommitController() }
-    single { RefactoringController() }
-    single { RefactoringTypeController() }
-    single { RefactoringDraftController() }
-    single { ElementController() }
-    single { AnnotatorController() }
-    single { ExperimentController() }
-    single { ActionController() }
-    single { UserService() }
-    single { CommitService() }
-    single { RefactoringService() }
-    single { RefactoringTypeService() }
-    single { RefactoringDraftService() }
-    single { ElementService() }
-    single { AnnotatorService() }
-    single { ExperimentService() }
-    single { ActionService() }
-    single<UserRepository> { UserRepositoryImpl() }
-    single<CommitRepository> { CommitRepositoryImpl() }
-    single<RefactoringRepository> { RefactoringRepositoryImpl() }
-    single<RefactoringTypeRepository> { RefactoringTypeRepositoryImpl() }
-    single<RefactoringDraftRepository> { RefactoringDraftRepositoryImpl() }
-    single<ExperimentRepository> { ExperimentRepositoryImpl() }
-    single<CommitContentRepository> { CommitContentRepositoryImpl() }
-    single<ActionRepository> { ActionRepositoryImpl() }
+object KoinModule {
+    val modules by lazy {
+        listOf(
+            module {
+                single { jacksonObjectMapper() }
+                single { UserController() }
+                single { CommitController() }
+                single { RefactoringController() }
+                single { RefactoringTypeController() }
+                single { RefactoringDraftController() }
+                single { ElementController() }
+                single { AnnotatorController() }
+                single { ExperimentController() }
+                single { ActionController() }
+                single { UserService() }
+                single { CommitService() }
+                single { RefactoringService() }
+                single { RefactoringTypeService() }
+                single { RefactoringDraftService() }
+                single { ElementService() }
+                single { AnnotatorService() }
+                single { ExperimentService() }
+                single { ActionService() }
+                single<UserRepository> { UserRepositoryImpl() }
+                single<CommitRepository> { CommitRepositoryImpl() }
+                single<RefactoringRepository> { RefactoringRepositoryImpl() }
+                single<RefactoringTypeRepository> { RefactoringTypeRepositoryImpl() }
+                single<RefactoringDraftRepository> { RefactoringDraftRepositoryImpl() }
+                single<ExperimentRepository> { ExperimentRepositoryImpl() }
+                single<CommitContentRepository> { CommitContentRepositoryImpl() }
+                single<ActionRepository> { ActionRepositoryImpl() }
+            }
+        )
+    }
 }

@@ -41,7 +41,7 @@ class RefactoringDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Refactor
         return Refactoring(
             this.id.value,
             this.owner.id.value,
-            this.parents.singleOrNull()?.id?.value,
+            this.parents.firstOrNull()?.id?.value,
             this.commit.asModel(),
             this.type.name,
             this.data,

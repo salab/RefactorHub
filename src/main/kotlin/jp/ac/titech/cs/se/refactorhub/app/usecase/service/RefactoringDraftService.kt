@@ -118,7 +118,7 @@ class RefactoringDraftService : KoinComponent {
         if (typeName != null) {
             val type = refactoringTypeService.getByName(typeName)
             val refactoring = draft.changeType(type)
-            return refactoringDraftRepository.update(
+            return refactoringDraftRepository.updateById(
                 id,
                 refactoring.type,
                 Refactoring.Data(
@@ -129,7 +129,7 @@ class RefactoringDraftService : KoinComponent {
             )
         }
         if (description != null) {
-            return refactoringDraftRepository.update(id, description = description)
+            return refactoringDraftRepository.updateById(id, description = description)
         }
         return draft
     }
@@ -161,7 +161,7 @@ class RefactoringDraftService : KoinComponent {
         } catch (e: Exception) {
             throw BadRequestException(e.message)
         }
-        return refactoringDraftRepository.update(
+        return refactoringDraftRepository.updateById(
             id,
             data = Refactoring.Data(
                 refactoring.data.before,
@@ -186,6 +186,7 @@ class RefactoringDraftService : KoinComponent {
             },
             userId
         )
+
         val draft = getByOwner(id, userId)
         val type = refactoringTypeService.getByName(draft.type)
         val refactoring = try {
@@ -193,7 +194,7 @@ class RefactoringDraftService : KoinComponent {
         } catch (e: Exception) {
             throw BadRequestException(e.message)
         }
-        return refactoringDraftRepository.update(
+        return refactoringDraftRepository.updateById(
             id,
             data = Refactoring.Data(
                 refactoring.data.before,
@@ -220,13 +221,14 @@ class RefactoringDraftService : KoinComponent {
             },
             userId
         )
+
         val draft = getByOwner(id, userId)
         val refactoring = try {
             draft.verifyCodeElementHolder(category, key, state)
         } catch (e: Exception) {
             throw BadRequestException(e.message)
         }
-        return refactoringDraftRepository.update(
+        return refactoringDraftRepository.updateById(
             id,
             data = Refactoring.Data(
                 refactoring.data.before,
@@ -251,13 +253,14 @@ class RefactoringDraftService : KoinComponent {
             },
             userId
         )
+
         val draft = getByOwner(id, userId)
         val refactoring = try {
             draft.appendCodeElementDefaultValue(category, key)
         } catch (e: Exception) {
             throw BadRequestException(e.message)
         }
-        return refactoringDraftRepository.update(
+        return refactoringDraftRepository.updateById(
             id,
             data = Refactoring.Data(
                 refactoring.data.before,
@@ -286,6 +289,7 @@ class RefactoringDraftService : KoinComponent {
             },
             userId
         )
+
         val draft = getByOwner(id, userId)
         val refactoring = try {
             val type = refactoringTypeService.getByName(draft.type)
@@ -295,7 +299,7 @@ class RefactoringDraftService : KoinComponent {
         } catch (e: Exception) {
             throw BadRequestException(e.message)
         }
-        return refactoringDraftRepository.update(
+        return refactoringDraftRepository.updateById(
             id,
             data = Refactoring.Data(
                 refactoring.data.before,
@@ -322,13 +326,14 @@ class RefactoringDraftService : KoinComponent {
             },
             userId
         )
+
         val draft = getByOwner(id, userId)
         val refactoring = try {
             draft.removeCodeElementValue(category, key, index)
         } catch (e: Exception) {
             throw BadRequestException(e.message)
         }
-        return refactoringDraftRepository.update(
+        return refactoringDraftRepository.updateById(
             id,
             data = Refactoring.Data(
                 refactoring.data.before,
@@ -346,9 +351,10 @@ class RefactoringDraftService : KoinComponent {
             },
             userId
         )
+
         return refactoringDraftRepository.create(
+            refactoring.commit,
             refactoring.type,
-            refactoring.commit.sha,
             refactoring.data,
             refactoring.description,
             userId,
@@ -366,10 +372,11 @@ class RefactoringDraftService : KoinComponent {
             },
             userId
         )
+
         val draft = refactoringDraftRepository.findByRefactoringIdAndOwnerIdAndIsFork(refactoring.id, userId, false)
         return draft ?: refactoringDraftRepository.create(
+            refactoring.commit,
             refactoring.type,
-            refactoring.commit.sha,
             refactoring.data,
             refactoring.description,
             userId,

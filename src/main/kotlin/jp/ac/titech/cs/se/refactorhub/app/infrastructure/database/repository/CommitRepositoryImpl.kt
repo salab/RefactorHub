@@ -4,15 +4,16 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.CommitDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Commits
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.CommitRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Commit
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CommitRepositoryImpl : CommitRepository {
     override fun find(owner: String, repository: String, sha: String): Commit? {
         return transaction {
             CommitDao.find {
-                Commits.owner eq owner
-                Commits.repository eq repository
-                Commits.sha eq sha
+                (Commits.owner eq owner) and
+                    (Commits.repository eq repository) and
+                    (Commits.sha eq sha)
             }.firstOrNull()?.asModel()
         }
     }

@@ -10,6 +10,7 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Refactorin
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Refactorings
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.UserDao
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringDraftRepository
+import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
 import org.jetbrains.exposed.sql.and
@@ -52,13 +53,13 @@ class RefactoringDraftRepositoryImpl : RefactoringDraftRepository {
                 (RefactoringDrafts.origin eq refactoringId) and
                     (RefactoringDrafts.owner eq ownerId) and
                     (RefactoringDrafts.isFork eq isFork)
-            }.singleOrNull()?.asModel()
+            }.firstOrNull()?.asModel()
         }
     }
 
     override fun create(
+        commit: Commit,
         typeName: String,
-        commitSha: String,
         data: Refactoring.Data,
         description: String,
         userId: Int,
@@ -68,21 +69,30 @@ class RefactoringDraftRepositoryImpl : RefactoringDraftRepository {
         return transaction {
             RefactoringDraftDao.new {
                 this.owner = UserDao.findById(userId)!!
-                this.origin = RefactoringDao.find { Refactorings.id eq originId }.single()
+                this.origin = RefactoringDao.find { Refactorings.id eq originId }.first()
                 this.isFork = isFork
-                this.commit = CommitDao.find { Commits.sha eq commitSha }.single()
-                this.type = RefactoringTypeDao.find { RefactoringTypes.name eq typeName }.single()
+                this.commit = CommitDao.find {
+                    (Commits.owner eq commit.owner) and
+                        (Commits.repository eq commit.repository) and
+                        (Commits.sha eq commit.sha)
+                }.first()
+                this.type = RefactoringTypeDao.find { RefactoringTypes.name eq typeName }.first()
                 this.data = data
                 this.description = description
             }.asModel()
         }
     }
 
-    override fun update(id: Int, typeName: String?, data: Refactoring.Data?, description: String?): RefactoringDraft {
+    override fun updateById(
+        id: Int,
+        typeName: String?,
+        data: Refactoring.Data?,
+        description: String?
+    ): RefactoringDraft {
         return transaction {
             val dao = RefactoringDraftDao.findById(id)!!
             if (typeName != null) {
-                val type = RefactoringTypeDao.find { RefactoringTypes.name eq typeName }.singleOrNull()
+                val type = RefactoringTypeDao.find { RefactoringTypes.name eq typeName }.firstOrNull()
                 if (type != null) dao.type = type
             }
             if (data != null) dao.data = data
