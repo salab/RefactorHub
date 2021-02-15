@@ -16,7 +16,7 @@ class ActionService : KoinComponent {
     fun log(name: ActionName, type: ActionType, data: JsonNode, user: Int?): Action {
         val time = System.currentTimeMillis()
         return actionRepository.save(
-            Action(name, type, user ?: 0, time, data)
+            Action(name, type, user, time, data)
         )
     }
 }

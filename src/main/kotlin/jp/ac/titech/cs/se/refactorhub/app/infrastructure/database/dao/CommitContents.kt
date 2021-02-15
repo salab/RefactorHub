@@ -10,16 +10,16 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.koin.java.KoinJavaComponent.inject
 
-object FileContents : IntIdTable("file_contents") {
+object CommitContents : IntIdTable("commit_contents") {
     val commit = reference("commit", Commits)
     val files = jsonb("files", ::stringify, ::parse)
 }
 
-class FileContentDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<CommitContent> {
-    companion object : IntEntityClass<FileContentDao>(FileContents)
+class CommitContentDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<CommitContent> {
+    companion object : IntEntityClass<CommitContentDao>(CommitContents)
 
-    var commit by CommitDao referencedOn FileContents.commit
-    var files by FileContents.files
+    var commit by CommitDao referencedOn CommitContents.commit
+    var files by CommitContents.files
 
     override fun asModel(): CommitContent {
         return CommitContent(

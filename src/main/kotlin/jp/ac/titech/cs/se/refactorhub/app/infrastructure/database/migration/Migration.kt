@@ -4,6 +4,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Actions
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.CommitContents
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.CommitDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Commits
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.ExperimentDao
@@ -77,7 +79,9 @@ private fun dropTables() {
         RefactoringTypes,
         RefactoringDrafts,
         Experiments,
-        ExperimentRefactorings
+        ExperimentRefactorings,
+        CommitContents,
+        Actions
     )
 }
 
@@ -90,7 +94,9 @@ private fun createTables() {
         RefactoringTypes,
         RefactoringDrafts,
         Experiments,
-        ExperimentRefactorings
+        ExperimentRefactorings,
+        CommitContents,
+        Actions
     )
 }
 
