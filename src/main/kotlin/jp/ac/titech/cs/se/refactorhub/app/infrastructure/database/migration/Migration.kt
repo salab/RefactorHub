@@ -108,7 +108,7 @@ private fun createUsers() {
 }
 
 private fun createRefactoringTypes() {
-    val files = listOf("types/refminer.json")
+    val files = listOf("types/experiment.json")
 
     for (file in files) {
         val stream = object {}.javaClass.classLoader.getResourceAsStream(file) ?: return
@@ -125,16 +125,24 @@ private fun createRefactoringTypes() {
     }
 }
 
+private fun createTutorial() {
+    createExperiment(
+        "Tutorial",
+        "Tutorial",
+        "data/tutorial.ndjson"
+    )
+}
+
 private fun createExperiments() {
     createExperiment(
-        "Experiment (type)",
-        "Experiment that input data has only refactoring type",
-        "data/type.ndjson"
+        "Experiment 1",
+        "Experiment that input data has refactoring type, description",
+        "data/experiment-1.ndjson"
     )
     createExperiment(
-        "Experiment (description)",
-        "Experiment that input data has refactoring type, description",
-        "data/description.ndjson"
+        "Experiment 2",
+        "Experiment that input data does not have anything",
+        "data/experiment-2.ndjson"
     )
 }
 

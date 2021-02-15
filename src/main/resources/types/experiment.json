@@ -1,17 +1,17 @@
 [
   {
     "name": "Extract Method",
-    "description": "メソッドの一部を切り出して，別のメソッドにする",
+    "description": "Extracting code fragments from existing method, and creating a new method based on the extracted code",
     "url": "https://refactoring.com/catalog/extractFunction.html",
     "before": {
       "extracted code": {
-        "description": "抽出されるコード片",
+        "description": "Code fragments which is extracted",
         "type": "CodeFragment",
         "multiple": true,
         "required": true
       },
       "target method": {
-        "description": "抽出が行われるメソッド",
+        "description": "Method in which the extraction is performed",
         "type": "MethodDeclaration",
         "autofills": [
           {
@@ -19,7 +19,7 @@
             "follows": [
               {
                 "category": "before",
-                "key": "extracted code"
+                "name": "extracted code"
               }
             ],
             "element": "MethodDeclaration"
@@ -29,18 +29,18 @@
     },
     "after": {
       "invocation": {
-        "description": "メソッド呼び出しに置き換わった箇所",
+        "description": "Method invocation by which extracted code was replaced",
         "type": "MethodInvocation",
         "required": true
       },
       "extracted code": {
-        "description": "抽出されたコード片",
+        "description": "Code fragments which was extracted",
         "type": "CodeFragment",
         "multiple": true,
         "required": true
       },
       "extracted method": {
-        "description": "抽出して新たに定義されたメソッド",
+        "description": "Method which was newly created by the extraction",
         "type": "MethodDeclaration",
         "autofills": [
           {
@@ -48,7 +48,7 @@
             "follows": [
               {
                 "category": "after",
-                "key": "extracted code"
+                "name": "extracted code"
               }
             ],
             "element": "MethodDeclaration"
@@ -56,7 +56,7 @@
         ]
       },
       "target method": {
-        "description": "抽出が行われたメソッド",
+        "description": "Method in which the extraction was performed",
         "type": "MethodDeclaration",
         "autofills": [
           {
@@ -64,7 +64,7 @@
             "follows": [
               {
                 "category": "after",
-                "key": "invocation"
+                "name": "invocation"
               }
             ],
             "element": "MethodDeclaration"
@@ -75,16 +75,16 @@
   },
   {
     "name": "Move Attribute",
-    "description": "フィールドを別のクラスに移動させる",
+    "description": "Moving field to the other class",
     "url": "https://refactoring.com/catalog/moveField.html",
     "before": {
       "target field": {
-        "description": "移動させるフィールド",
+        "description": "Field which is moved",
         "type": "FieldDeclaration",
         "required": true
       },
       "references": {
-        "description": "フィールドの参照",
+        "description": "References of target field",
         "type": "SimpleName",
         "multiple": true,
         "autofills": [
@@ -93,7 +93,7 @@
             "follows": [
               {
                 "category": "before",
-                "key": "target field"
+                "name": "target field"
               }
             ]
           }
@@ -102,12 +102,12 @@
     },
     "after": {
       "moved field": {
-        "description": "移動させたフィールド",
+        "description": "Field which was moved",
         "type": "FieldDeclaration",
         "required": true
       },
       "references": {
-        "description": "フィールドの参照",
+        "description": "References of moved field",
         "type": "SimpleName",
         "multiple": true,
         "autofills": [
@@ -116,7 +116,7 @@
             "follows": [
               {
                 "category": "after",
-                "key": "moved field"
+                "name": "moved field"
               }
             ]
           }
@@ -126,16 +126,16 @@
   },
   {
     "name": "Move Class",
-    "description": "クラスを別のパッケージに移動させる",
+    "description": "Moving class to the other package",
     "url": "https://www.refactoring.com/catalog/moveClass.html",
     "before": {
       "target class": {
-        "description": "移動させるクラス",
+        "description": "Class which is moved",
         "type": "ClassDeclaration",
         "required": true
       },
       "package": {
-        "description": "移動元のパッケージ",
+        "description": "Package in which target class exists",
         "type": "PackageDeclaration",
         "autofills": [
           {
@@ -143,14 +143,14 @@
             "follows": [
               {
                 "category": "before",
-                "key": "target class"
+                "name": "target class"
               }
             ]
           }
         ]
       },
       "references": {
-        "description": "クラスの参照",
+        "description": "References of target class",
         "type": "QualifiedName",
         "multiple": true,
         "autofills": [
@@ -159,7 +159,7 @@
             "follows": [
               {
                 "category": "before",
-                "key": "target class"
+                "name": "target class"
               }
             ]
           }
@@ -168,12 +168,12 @@
     },
     "after": {
       "moved class": {
-        "description": "移動させたクラス",
+        "description": "Class which was moved",
         "type": "ClassDeclaration",
         "required": true
       },
       "package": {
-        "description": "移動先のパッケージ",
+        "description": "Package in which moved class exists",
         "type": "PackageDeclaration",
         "autofills": [
           {
@@ -181,14 +181,14 @@
             "follows": [
               {
                 "category": "after",
-                "key": "moved class"
+                "name": "moved class"
               }
             ]
           }
         ]
       },
       "references": {
-        "description": "クラスの参照",
+        "description": "References of moved class",
         "type": "QualifiedName",
         "multiple": true,
         "autofills": [
@@ -197,7 +197,7 @@
             "follows": [
               {
                 "category": "after",
-                "key": "moved class"
+                "name": "moved class"
               }
             ]
           }
@@ -207,16 +207,16 @@
   },
   {
     "name": "Rename Variable",
-    "description": "変数をリネームする",
+    "description": "Renaming variable",
     "url": "https://refactoring.com/catalog/renameVariable.html",
     "before": {
       "target variable": {
-        "description": "リネームする変数",
+        "description": "Variable which is renamed",
         "type": "VariableDeclaration",
         "required": true
       },
       "method": {
-        "description": "リネームする変数を内包するメソッド",
+        "description": "Method in which renaming variable is performed",
         "type": "MethodDeclaration",
         "autofills": [
           {
@@ -224,7 +224,7 @@
             "follows": [
               {
                 "category": "before",
-                "key": "target variable"
+                "name": "target variable"
               }
             ],
             "element": "MethodDeclaration"
@@ -232,7 +232,7 @@
         ]
       },
       "references": {
-        "description": "変数の参照",
+        "description": "References of target variable",
         "type": "SimpleName",
         "multiple": true,
         "autofills": [
@@ -241,7 +241,7 @@
             "follows": [
               {
                 "category": "before",
-                "key": "target variable"
+                "name": "target variable"
               }
             ]
           }
@@ -250,12 +250,12 @@
     },
     "after": {
       "renamed variable": {
-        "description": "リネームした変数",
+        "description": "Variable which was renamed",
         "type": "VariableDeclaration",
         "required": true
       },
       "method": {
-        "description": "リネームした変数を内包するメソッド",
+        "description": "Method in which renaming variable was performed",
         "type": "MethodDeclaration",
         "autofills": [
           {
@@ -263,7 +263,7 @@
             "follows": [
               {
                 "category": "after",
-                "key": "renamed variable"
+                "name": "renamed variable"
               }
             ],
             "element": "MethodDeclaration"
@@ -271,7 +271,7 @@
         ]
       },
       "references": {
-        "description": "変数の参照",
+        "description": "References of renamed variable",
         "type": "SimpleName",
         "multiple": true,
         "autofills": [
@@ -280,12 +280,19 @@
             "follows": [
               {
                 "category": "after",
-                "key": "renamed variable"
+                "name": "renamed variable"
               }
             ]
           }
         ]
       }
     }
+  },
+  {
+    "name": "Any",
+    "description": "Any refactoring",
+    "url": "",
+    "before": {},
+    "after": {}
   }
 ]

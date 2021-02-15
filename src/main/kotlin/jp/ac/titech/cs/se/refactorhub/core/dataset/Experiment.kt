@@ -29,10 +29,8 @@ fun main() {
             .shuffled().take(4).sortedBy { it.index }
     }.flatten()
 
-    writeToCsv("experiment.csv", experiment)
-    writeToNdJson("type.ndjson", experiment, withDescription = false)
-    writeToNdJson("description.ndjson", experiment, withDescription = true)
-    writeToNdJson("refminer.ndjson", experiment, withReDetection = true)
+    writeToCsv("experiment-1.csv", experiment)
+    writeToNdJson("experiment-1.ndjson", experiment, withDescription = true)
 }
 
 private fun getOutputFile(name: String): File {
