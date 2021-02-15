@@ -29,8 +29,8 @@ import {
   watch,
   useContext,
 } from '@nuxtjs/composition-api'
-import { CommitFile, LogEvent, LogType } from '@/apis'
-import { log } from '@/utils/log'
+import { CommitFile, ActionName, ActionType } from '@/apis'
+import { log } from '@/utils/action'
 
 export default defineComponent({
   props: {
@@ -48,7 +48,7 @@ export default defineComponent({
 
     const onClickItem = (value: number) => {
       if ($accessor.draft.displayedFile.before?.index !== value) {
-        log(LogEvent.SetDisplayedFile, LogType.Client, {
+        log(ActionName.SetDisplayedFile, ActionType.Client, {
           category: 'before',
           file: { index: value },
         })
@@ -58,7 +58,7 @@ export default defineComponent({
         })
       }
       if ($accessor.draft.displayedFile.after?.index !== value) {
-        log(LogEvent.SetDisplayedFile, LogType.Client, {
+        log(ActionName.SetDisplayedFile, ActionType.Client, {
           category: 'after',
           file: { index: value },
         })

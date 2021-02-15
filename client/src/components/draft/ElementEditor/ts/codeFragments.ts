@@ -98,7 +98,7 @@ export async function updateEditingCodeFragment(
 
   $accessor.draft.setDraft(
     (
-      await apis.drafts.updateRefactoringDraftElementValue(
+      await apis.drafts.updateCodeElementValue(
         draft.id,
         category,
         metadata.key,

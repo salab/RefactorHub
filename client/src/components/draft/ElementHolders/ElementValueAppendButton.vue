@@ -30,7 +30,7 @@ export default defineComponent({
       if (draft.value) {
         await $accessor.draft.setDraft(
           (
-            await apis.drafts.appendRefactoringDraftElementValue(
+            await apis.drafts.appendCodeElementDefaultValue(
               draft.value.id,
               props.category,
               props.elementKey

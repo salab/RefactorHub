@@ -50,6 +50,8 @@ export default defineComponent({
         file: { index: 0 },
       })
     })
+
+    return {}
   },
 })
 </script>

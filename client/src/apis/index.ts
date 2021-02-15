@@ -5,10 +5,10 @@ import {
   RefactoringsApi,
   RefactoringTypesApi,
   DraftsApi,
-  EditorApi,
+  AnnotatorApi,
   ElementsApi,
   ExperimentsApi,
-  LogsApi,
+  ActionsApi,
   Configuration,
 } from '@/apis/generated'
 
@@ -26,10 +26,10 @@ const apis = {
   refactorings: new RefactoringsApi(configuration, basePath, instance),
   refactoringTypes: new RefactoringTypesApi(configuration, basePath, instance),
   drafts: new DraftsApi(configuration, basePath, instance),
-  editor: new EditorApi(configuration, basePath, instance),
+  annotator: new AnnotatorApi(configuration, basePath, instance),
   elements: new ElementsApi(configuration, basePath, instance),
   experiments: new ExperimentsApi(configuration, basePath, instance),
-  logs: new LogsApi(configuration, basePath, instance),
+  actions: new ActionsApi(configuration, basePath, instance),
 }
 
 export default apis

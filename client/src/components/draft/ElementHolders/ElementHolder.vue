@@ -113,7 +113,7 @@ export default defineComponent({
       if (!confirm('Are you sure you want to delete this element key?')) return
       await $accessor.draft.setDraft(
         (
-          await apis.drafts.removeRefactoringDraftElementKey(
+          await apis.drafts.removeCodeElementHolder(
             props.draftId,
             props.category,
             props.elementKey
@@ -128,7 +128,7 @@ export default defineComponent({
     const verifyElement = async () => {
       await $accessor.draft.setDraft(
         (
-          await apis.drafts.verifyRefactoringDraftElement(
+          await apis.drafts.verifyCodeElementHolder(
             props.draftId,
             props.category,
             props.elementKey,

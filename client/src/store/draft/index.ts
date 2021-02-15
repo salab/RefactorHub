@@ -50,7 +50,7 @@ export const mutations = mutationTree(state, {
     state.refactoringTypes = types
   },
 
-  setElementTypes: (state, types: string[]) => {
+  setCodeElementTypes: (state, types: string[]) => {
     state.elementTypes = types
   },
 
@@ -110,15 +110,21 @@ export const actions = actionTree(
       await commit('setDraft', draft)
       await commit(
         'setCommit',
-        (await apis.commits.getCommitDetail(draft.commit.sha)).data
+        (
+          await apis.commits.getCommitDetail(
+            draft.commit.owner,
+            draft.commit.repository,
+            draft.commit.sha
+          )
+        ).data
       )
       await commit(
         'setRefactoringTypes',
         (await apis.refactoringTypes.getAllRefactoringTypes()).data
       )
       await commit(
-        'setElementTypes',
-        (await apis.elements.getElementTypes()).data
+        'setCodeElementTypes',
+        (await apis.elements.getCodeElementTypes()).data
       )
     },
 
@@ -144,7 +150,13 @@ export const actions = actionTree(
         return state.fileContentCache.get(uri)!!
       }
       const content = (
-        await apis.editor.getFileContent(sha, owner, repository, category, path)
+        await apis.annotator.getFileContent(
+          owner,
+          repository,
+          sha,
+          category,
+          path
+        )
       ).data
       await commit('cacheFileContent', {
         uri,

@@ -1,14 +1,14 @@
-import apis, { LogEvent, LogType } from '@/apis'
+import apis, { ActionName, ActionType } from '@/apis'
 import { logger } from '@/utils/logger'
 
 export const log = async (
-  event: LogEvent,
-  type: LogType,
+  name: ActionName,
+  type: ActionType,
   data: object = {}
 ) => {
   try {
-    await apis.logs.postLog({
-      event,
+    await apis.actions.postAction({
+      name,
       type,
       data,
     })

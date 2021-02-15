@@ -101,8 +101,8 @@ async function getTextModelOfFile(
   return (
     monaco.editor.getModel(monaco.Uri.parse(content.uri)) ||
     monaco.editor.createModel(
-      content.value,
-      content.language,
+      content.text,
+      content.extension,
       monaco.Uri.parse(content.uri)
     )
   )
