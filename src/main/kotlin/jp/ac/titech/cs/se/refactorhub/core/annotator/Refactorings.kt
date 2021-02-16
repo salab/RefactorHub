@@ -14,7 +14,7 @@ import kotlin.reflect.full.createInstance
 fun Refactoring.Data.format(type: RefactoringType): Refactoring.Data {
     return this.copy().apply {
         before.putDefaultCodeElementHolders(type.before)
-        after.putDefaultCodeElementHolders(type.before)
+        after.putDefaultCodeElementHolders(type.after)
     }
 }
 
