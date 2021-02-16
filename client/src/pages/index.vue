@@ -1,27 +1,33 @@
 <template>
   <v-container>
-    <div class="pa-5 text-center">
-      <h1 class="display-3">RefactorHub</h1>
+    <div class="py-10 text-center">
+      <v-img src="/logo.png" contain max-height="100"></v-img>
+      <div class="mt-6 text-h5">A Commit Annotator for Refactoring</div>
     </div>
-    <v-divider />
-    <v-row v-if="!authenticated" justify="center" class="pa-5">
-      <div class="ma-3">
-        <v-btn href="/login" class="text-none">Login</v-btn>
-      </div>
-    </v-row>
-    <template v-else>
-      <v-row justify="center" class="pa-5">
-        <v-btn to="/types" class="text-none">Refactoring Types</v-btn>
-      </v-row>
+    <template v-if="isAuthenticated">
       <v-divider />
-      <v-row justify="center" class="pa-5">
-        <div v-for="experiment in actives" :key="experiment.id" class="ma-3">
-          <v-btn :to="`/experiment/${experiment.id}`" class="text-none">
-            {{ experiment.title }}
-          </v-btn>
-        </div>
-      </v-row>
+      <div class="d-flex justify-center pa-6">
+        <v-btn to="/experiment" depressed class="text-none mx-3">
+          Experiments
+        </v-btn>
+        <v-btn to="/types" depressed class="text-none mx-3">
+          Refactoring Types
+        </v-btn>
+      </div>
     </template>
+    <v-divider />
+    <div class="py-8 text-center">
+      <h2 class="text-h4">Demonstration</h2>
+      <iframe
+        class="mt-4"
+        width="560"
+        height="315"
+        src="https://www.youtube.com/embed/Ew1wVBZkpro"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
   </v-container>
 </template>
 
@@ -31,25 +37,27 @@ import {
   defineComponent,
   ref,
   useAsync,
+  useContext,
 } from '@nuxtjs/composition-api'
 import apis, { Experiment } from '@/apis'
 
 export default defineComponent({
   setup() {
-    const authenticated = ref(true)
+    const {
+      app: { $accessor },
+    } = useContext()
+    const isAuthenticated = computed(() => $accessor.isAuthenticated)
+
     const experiments = ref<Experiment[]>([])
     useAsync(async () => {
       try {
-        await apis.users.getMe()
         experiments.value = (await apis.experiments.getAllExperiments()).data
-      } catch {
-        authenticated.value = false
-      }
+      } catch {}
     })
 
     const actives = computed(() => experiments.value.filter((e) => e.isActive))
 
-    return { authenticated, experiments, actives }
+    return { experiments, actives, isAuthenticated }
   },
 })
 </script>
