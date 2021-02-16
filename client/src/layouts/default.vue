@@ -6,7 +6,7 @@
           <v-img src="/icon.png" width="32" height="32"></v-img>
         </a>
         <v-spacer />
-        <v-btn v-if="!isAuthenticated" depressed>
+        <v-btn v-if="!isAuthenticated" href="/login" depressed>
           <v-icon left>fab fa-github</v-icon>
           Sign in
         </v-btn>

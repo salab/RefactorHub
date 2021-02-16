@@ -35,7 +35,6 @@ import {
   defineComponent,
   ref,
   useAsync,
-  useContext,
 } from '@nuxtjs/composition-api'
 import apis, { Experiment } from '@/apis'
 
