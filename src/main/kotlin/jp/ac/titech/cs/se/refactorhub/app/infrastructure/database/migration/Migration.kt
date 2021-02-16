@@ -67,6 +67,7 @@ fun initialize() {
 
     createRefactoringTypes()
     createUsers()
+    createTutorial()
     createExperiments()
 }
 
