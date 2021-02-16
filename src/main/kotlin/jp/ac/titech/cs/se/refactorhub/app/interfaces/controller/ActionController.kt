@@ -1,7 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 
 import com.fasterxml.jackson.databind.JsonNode
-import jp.ac.titech.cs.se.refactorhub.app.model.Action
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.ActionService
 import jp.ac.titech.cs.se.refactorhub.core.model.ActionName
 import jp.ac.titech.cs.se.refactorhub.core.model.ActionType
@@ -20,7 +19,7 @@ class ActionController : KoinComponent {
 
     private val actionService: ActionService by inject()
 
-    fun log(name: ActionName, type: ActionType, data: JsonNode, user: Int?): Action {
+    fun log(name: ActionName, type: ActionType, data: JsonNode, user: Int?) {
         return actionService.log(name, type, data, user)
     }
 }
