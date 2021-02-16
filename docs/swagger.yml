@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: RefactorHub
   description: RefactorHub API
-  version: 0.0.1-SNAPSHOT
+  version: 1.0.0
 
 servers:
   - url: "https://refactorhub.com/api"
@@ -891,24 +891,24 @@ components:
       type: string
       enum:
         [
-          PackageDeclaration,
-          TypeDeclaration,
-          ClassDeclaration,
-          InterfaceDeclaration,
-          EnumDeclaration,
-          FieldDeclaration,
-          FieldType,
-          MethodDeclaration,
-          ConstructorDeclaration,
-          ReturnType,
-          ParameterDeclaration,
-          ParameterType,
-          MethodInvocation,
-          VariableDeclaration,
-          VariableType,
-          SimpleName,
-          Statement,
-          CodeFragment,
+            PackageDeclaration,
+            TypeDeclaration,
+            ClassDeclaration,
+            InterfaceDeclaration,
+            EnumDeclaration,
+            FieldDeclaration,
+            FieldType,
+            MethodDeclaration,
+            ConstructorDeclaration,
+            ReturnType,
+            ParameterDeclaration,
+            ParameterType,
+            MethodInvocation,
+            VariableDeclaration,
+            VariableType,
+            SimpleName,
+            Statement,
+            CodeFragment,
         ]
     CodeElementHolder:
       type: object
@@ -1028,21 +1028,21 @@ components:
       type: string
       enum:
         [
-          Save,
-          Discard,
-          Update,
-          PutCodeElementHolder,
-          RemoveCodeElementHolder,
-          VerifyCodeElementHolder,
-          AppendCodeElementDefaultValue,
-          UpdateCodeElementValue,
-          RemoveCodeElementValue,
-          Fork,
-          Edit,
+            Save,
+            Discard,
+            Update,
+            PutCodeElementHolder,
+            RemoveCodeElementHolder,
+            VerifyCodeElementHolder,
+            AppendCodeElementDefaultValue,
+            UpdateCodeElementValue,
+            RemoveCodeElementValue,
+            Fork,
+            Edit,
 
-          OpenElementLocation,
-          ToggleEditingElement,
-          SetDisplayedFile,
+            OpenElementLocation,
+            ToggleEditingElement,
+            SetDisplayedFile,
         ]
 
     CreateRefactoringRequest:
