@@ -1,7 +1,9 @@
 # RefactorHub
 
-RefactorHub is a dataset creation support tool for empirical studies on refactoring activity.
+![logo](/client/src/static/logo.png)
 
-## Usage
+RefactorHub is a commit annotator for refactoring.
 
-TBD
+## Demonstration
+
+[![demo](https://img.youtube.com/vi/Ew1wVBZkpro/sddefault.jpg)](https://www.youtube.com/watch?v=Ew1wVBZkpro)
