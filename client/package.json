@@ -1,7 +1,7 @@
 {
   "name": "refactorhub",
   "version": "1.0.0",
-  "description": "Dataset creation support tool for empirical studies on refactoring activity.",
+  "description": "A Commit Annotator for Refactoring.",
   "author": "Ryo Kuramoto <kuramoto@se.cs.titech.ac.jp>",
   "private": true,
   "scripts": {
