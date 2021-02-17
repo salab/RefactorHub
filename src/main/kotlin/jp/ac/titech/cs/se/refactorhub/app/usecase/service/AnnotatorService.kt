@@ -31,34 +31,34 @@ class AnnotatorService : KoinComponent {
         sha: String
     ): CommitContent {
         val commit = commitService.getDetail(owner, repository, sha)
-        return commitContentRepository.save(
-            CommitContent(
-                Commit(commit.owner, commit.repository, commit.sha),
-                commit.files.map {
-                    CommitContent.FilePair(
-                        CommitContent.File(
-                            it.previousName,
-                            jp.ac.titech.cs.se.refactorhub.core.annotator.getFileContent(
-                                commit.owner,
-                                commit.repository,
-                                commit.parent,
-                                it.previousName
-                            )
-                        ),
-                        CommitContent.File(
-                            it.name,
-                            jp.ac.titech.cs.se.refactorhub.core.annotator.getFileContent(
-                                commit.owner,
-                                commit.repository,
-                                commit.sha,
-                                it.name
-                            )
-                        ),
-                        it.patch
-                    )
-                }
-            )
+        val content = CommitContent(
+            Commit(commit.owner, commit.repository, commit.sha),
+            commit.files.map {
+                CommitContent.FilePair(
+                    CommitContent.File(
+                        it.previousName,
+                        jp.ac.titech.cs.se.refactorhub.core.annotator.getFileContent(
+                            commit.owner,
+                            commit.repository,
+                            commit.parent,
+                            it.previousName
+                        )
+                    ),
+                    CommitContent.File(
+                        it.name,
+                        jp.ac.titech.cs.se.refactorhub.core.annotator.getFileContent(
+                            commit.owner,
+                            commit.repository,
+                            commit.sha,
+                            it.name
+                        )
+                    ),
+                    it.patch
+                )
+            }
         )
+        return commitContentRepository.find(commit.owner, commit.repository, commit.sha)
+            ?: commitContentRepository.save(content)
     }
 
     fun createCommitContentIfNotExist(
