@@ -1,0 +1,5 @@
+/.vscode/
+/.nuxt/
+/.gradle/
+/node_modules/
+/dist/
