@@ -22,7 +22,13 @@ export default {
   components: true,
   build: {
     extend(config) {
-      if (config.plugins) config.plugins.push(new MonacoEditorWebpackPlugin())
+      if (config.plugins) {
+        config.plugins.push(
+          new MonacoEditorWebpackPlugin({
+            languages: ['java'],
+          })
+        )
+      }
     },
   },
   buildModules: [
