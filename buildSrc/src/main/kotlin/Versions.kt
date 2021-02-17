@@ -19,5 +19,6 @@ object Versions {
     const val refminer = "2.0.3"
     const val github = "1.122"
     const val jackson = "2.12.1"
+    const val ktorFlyway = "1.2.2"
     const val junit = "5.7.1"
 }

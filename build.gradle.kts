@@ -61,6 +61,7 @@ dependencies {
     implementation("org.kohsuke:github-api:${Versions.github}")
     implementation("com.fasterxml.jackson.module:jackson-module-jsonSchema:${Versions.jackson}")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.jackson}")
+    implementation("com.viartemev:ktor-flyway-feature:${Versions.ktorFlyway}")
 
     // Test
     testImplementation(kotlin("test-junit"))
