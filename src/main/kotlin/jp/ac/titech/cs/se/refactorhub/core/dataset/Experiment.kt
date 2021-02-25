@@ -12,23 +12,37 @@ import java.io.FileWriter
 const val OUTPUTS_PATH = "outputs"
 
 fun main() {
-    val types = listOf(
-        "Extract Method",
-        "Move Attribute",
-        "Move Class",
-        "Rename Variable"
+    generateDataset(
+        types = listOf(
+            "Extract Method",
+            "Move Attribute",
+            "Move Class",
+            "Rename Variable"
+        ),
+        size = 4,
+        sizePerCommit = 1..5,
+        validation = "TP",
+        tools = listOf("RefactoringMiner")
     )
+}
 
-    val refactorings = types.map { RefactoringOracle.getRefactorings(it) }.flatten().withIndex()
+private fun generateDataset(
+    types: List<String>,
+    size: Int,
+    sizePerCommit: IntRange,
+    validation: String,
+    tools: List<String>
+) {
+    val refactorings =
+        types.map { RefactoringOracle.getRefactorings(it, Int.MAX_VALUE, sizePerCommit, validation, tools) }
+            .flatten().withIndex()
     writeToCsv("refactorings.csv", refactorings)
 
     val experiment = types.map { type ->
         refactorings
             .filter { it.value.type == type }
-            .filter { it.value.others.size in 2..4 }
-            .shuffled().take(4).sortedBy { it.index }
+            .shuffled().take(size).sortedBy { it.index }
     }.flatten()
-
     writeToCsv("experiment-1.csv", experiment)
     writeToNdJson("experiment-1.ndjson", experiment, withDescription = true)
 }

@@ -88,4 +88,8 @@ tasks {
         }
         into("${project.buildDir}/resources/main/static")
     }
+    register<JavaExec>("generateDataset") {
+        main = "jp.ac.titech.cs.se.refactorhub.core.dataset.ExperimentKt"
+        classpath = sourceSets["main"].runtimeClasspath
+    }
 }

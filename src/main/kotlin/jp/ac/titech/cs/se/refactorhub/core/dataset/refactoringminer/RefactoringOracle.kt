@@ -32,11 +32,11 @@ object RefactoringOracle {
 
     fun getRefactorings(
         type: String,
-        size: Int = Int.MAX_VALUE,
-        sizePerCommit: IntRange = 1..5,
-        random: Boolean = false,
-        validation: String = "TP",
-        tools: List<String> = listOf("RefactoringMiner")
+        size: Int,
+        sizePerCommit: IntRange,
+        validation: String,
+        tools: List<String>,
+        random: Boolean = false
     ): List<Refactoring> {
         val commits = getRefactoringCommits().map {
             RefactoringCommit(
