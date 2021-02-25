@@ -7,16 +7,20 @@ import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.util.KtorExperimentalAPI
 import org.jetbrains.exposed.sql.Database
+import java.net.URI
 
 @KtorExperimentalAPI
 fun Application.connectDB() {
+    val uri = URI(environment.config.property("ktor.database.url").getString())
+    val (username, password) = uri.userInfo.split(":")
+    val jdbcUrl = "jdbc:postgresql://${uri.host}:${uri.port}${uri.path}"
     val dataSource =
         HikariDataSource(
             HikariConfig().apply {
-                driverClassName = environment.config.property("ktor.database.driver").getString()
-                jdbcUrl = environment.config.property("ktor.database.url").getString()
-                username = environment.config.property("ktor.database.username").getString()
-                password = environment.config.property("ktor.database.password").getString()
+                this.driverClassName = "org.postgresql.Driver"
+                this.jdbcUrl = jdbcUrl
+                this.username = username
+                this.password = password
                 validate()
             }
         )

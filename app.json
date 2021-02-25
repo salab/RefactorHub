@@ -1,6 +1,30 @@
 {
   "name": "RefactorHub",
   "description": "A Commit Annotator for Refactoring.",
+  "keywords": ["refactoring", "annotation", "commit"],
   "image": "heroku/java",
-  "addons": ["heroku-postgresql"]
+  "addons": ["heroku-postgresql"],
+  "env": {
+    "GRADLE_TASK": {
+      "description": "Gradle task which executed on deployment",
+      "value": "shadowJar"
+    },
+    "CLIENT_ID": {
+      "description": "Client ID of GitHub OAuth App"
+    },
+    "CLIENT_SECRET": {
+      "description": "Client secret of GitHub OAuth App"
+    },
+    "GITHUB_ACCESS_TOKEN": {
+      "description": "Personal access token for GitHub API"
+    },
+    "APP_ENV": {
+      "description": "Application environment: 'dev' or 'prod'",
+      "required": false
+    },
+    "LOG_ACTION": {
+      "description": "Logging annotate actions: 'true' or 'false'",
+      "required": false
+    }
+  }
 }

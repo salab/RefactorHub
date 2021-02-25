@@ -9,11 +9,9 @@ services:
       CLIENT_ID: $CLIENT_ID
       CLIENT_SECRET: $CLIENT_SECRET
       GITHUB_ACCESS_TOKEN: $GITHUB_ACCESS_TOKEN
-      APP_ENV: $APP_ENV
-      DATABASE_USERNAME: rhuser
-      DATABASE_PASSWORD: rhpass
-      DATABASE_JDBC_URL: jdbc:postgresql://db:5432/refactorhub
-      DATABASE_DRIVER: org.postgresql.Driver
+      APP_ENV: ${APP_ENV:-}
+      LOG_ACTION: ${LOG_ACTION:-}
+      DATABASE_URL: postgres://rhuser:rhpass@db:5432/refactorhub
     depends_on:
       - db
 

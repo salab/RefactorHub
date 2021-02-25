@@ -15,3 +15,7 @@ RefactorHub is a commit annotator for refactoring.
 3. Set `CLIENT_ID`, `CLIENT_SECRET`, and `GITHUB_ACCESS_TOKEN` on `.env` file.
 4. `docker-compose up`
 5. Open http://localhost:8080
+
+## Deploy
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/salab/RefactorHub)
