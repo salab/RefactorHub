@@ -30,17 +30,18 @@ class AnnotatorService : KoinComponent {
         repository: String,
         sha: String
     ): CommitContent {
-        val commit = commitService.getDetail(owner, repository, sha)
+        val detail = commitService.getDetail(owner, repository, sha)
+        val commit = commitService.createIfNotExist(detail.owner, detail.repository, detail.sha)
         val content = CommitContent(
-            Commit(commit.owner, commit.repository, commit.sha),
-            commit.files.map {
+            commit,
+            detail.files.map {
                 CommitContent.FilePair(
                     CommitContent.File(
                         it.previousName,
                         jp.ac.titech.cs.se.refactorhub.core.annotator.getFileContent(
                             commit.owner,
                             commit.repository,
-                            commit.parent,
+                            detail.parent,
                             it.previousName
                         )
                     ),
@@ -49,7 +50,7 @@ class AnnotatorService : KoinComponent {
                         jp.ac.titech.cs.se.refactorhub.core.annotator.getFileContent(
                             commit.owner,
                             commit.repository,
-                            commit.sha,
+                            detail.sha,
                             it.name
                         )
                     ),
@@ -78,5 +79,22 @@ class AnnotatorService : KoinComponent {
         val content = getCommitContent(owner, repository, sha)
         return content.files.map { it.get(category) }.find { it.name == path }?.content
             ?: throw NotFoundException("File(path=$path) is not found")
+    }
+
+    private var pending: Boolean = false
+
+    fun prepareCommitContents(): Boolean {
+        if (!pending) {
+            pending = true
+            try {
+                commitService.getAll().forEach {
+                    createCommitContentIfNotExist(it)
+                }
+            } finally {
+                pending = false
+                return true
+            }
+        }
+        return false
     }
 }

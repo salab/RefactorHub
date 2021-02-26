@@ -20,4 +20,8 @@ class AnnotatorController : KoinComponent {
     ): FileContent {
         return annotatorService.getFileContent(owner, repository, sha, category, path)
     }
+
+    fun prepareCommitContents(): Boolean {
+        return annotatorService.prepareCommitContents()
+    }
 }

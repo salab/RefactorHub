@@ -18,6 +18,12 @@ class CommitRepositoryImpl : CommitRepository {
         }
     }
 
+    override fun findAll(): List<Commit> {
+        return transaction {
+            CommitDao.all().map { it.asModel() }
+        }
+    }
+
     override fun save(commit: Commit): Commit {
         return transaction {
             CommitDao.new {

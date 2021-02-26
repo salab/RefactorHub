@@ -4,6 +4,7 @@ import io.ktor.application.call
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import io.ktor.locations.get
+import io.ktor.locations.post
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.route
@@ -22,6 +23,10 @@ data class GetFileContent(
     val path: String
 )
 
+@KtorExperimentalLocationsAPI
+@Location("/content/prepare")
+class PrepareCommitContents
+
 @KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.annotator() {
@@ -37,6 +42,9 @@ fun Route.annotator() {
                     it.path
                 )
             )
+        }
+        post<PrepareCommitContents> {
+            call.respond(annotatorController.prepareCommitContents())
         }
     }
 }

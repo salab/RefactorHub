@@ -22,6 +22,10 @@ class CommitService : KoinComponent {
         return commit
     }
 
+    fun getAll(): List<Commit> {
+        return commitRepository.findAll()
+    }
+
     fun getDetail(owner: String, repository: String, sha: String): CommitDetail {
         val client = GitHub.connectUsingOAuth(GITHUB_ACCESS_TOKEN)
         return client.getRepository("$owner/$repository").getCommit(sha).let {

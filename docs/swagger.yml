@@ -594,6 +594,20 @@ paths:
       tags:
         - annotator
 
+  "/annotator/content/prepare":
+    post:
+      summary: prepare CommitContents
+      operationId: prepareCommitContents
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+      tags:
+        - annotator
+
   "/experiments":
     get:
       summary: get all experiments

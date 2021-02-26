@@ -4,7 +4,7 @@
 {"type":"Any","commit":{"sha":"a24b51639ab8aee5c52eb5702f95966e06e8dc5e","owner":"spring-projects","repository":"spring-roo"},"data":{"before":{},"after":{}},"description":""}
 {"type":"Any","commit":{"sha":"ed280ebd0bb2ad9ea37897ab13c9b9279aa9ad11","owner":"checkstyle","repository":"checkstyle"},"data":{"before":{},"after":{}},"description":""}
 {"type":"Any","commit":{"sha":"2c72088e3f7d362eb73929784478605b9d1e5273","owner":"JetBrains","repository":"MPS"},"data":{"before":{},"after":{}},"description":""}
-{"type":"Any","commit":{"sha":"2e513c63833656735ec654f866478765da93da56","owner":"mrniko","repository":"redisson"},"data":{"before":{},"after":{}},"description":""}
+{"type":"Any","commit":{"sha":"2e513c63833656735ec654f866478765da93da56","owner":"redisson","repository":"redisson"},"data":{"before":{},"after":{}},"description":""}
 {"type":"Any","commit":{"sha":"2bb075e7521e5c1fbc3be233d4d001f020bc46a8","owner":"spring-projects","repository":"spring-roo"},"data":{"before":{},"after":{}},"description":""}
 {"type":"Any","commit":{"sha":"2e96e8c2ac0da1176197ac4307c2be88647ee87e","owner":"languagetool-org","repository":"languagetool"},"data":{"before":{},"after":{}},"description":""}
 {"type":"Any","commit":{"sha":"59fb580c40734b5703fcb027f81e5291a7b37da7","owner":"wordpress-mobile","repository":"WordPress-Android"},"data":{"before":{},"after":{}},"description":""}

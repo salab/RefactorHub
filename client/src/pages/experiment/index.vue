@@ -1,7 +1,18 @@
 <template>
   <v-container>
     <div class="py-3">
-      <h1>Experiments</h1>
+      <div class="d-flex align-center justify-space-between">
+        <h1>Experiments</h1>
+        <v-btn
+          depressed
+          small
+          class="text-none"
+          :disabled="state === 'Pending'"
+          @click="prepare"
+        >
+          {{ state }}
+        </v-btn>
+      </div>
       <v-divider />
     </div>
     <div class="py-2">
@@ -49,7 +60,17 @@ export default defineComponent({
 
     const actives = computed(() => experiments.value.filter((e) => e.isActive))
 
-    return { experiments, actives }
+    const state = ref<'Prepare' | 'Pending' | 'Completed'>('Prepare')
+    const prepare = async () => {
+      state.value = 'Pending'
+      try {
+        await apis.annotator.prepareCommitContents()
+      } finally {
+        state.value = 'Completed'
+      }
+    }
+
+    return { experiments, actives, state, prepare }
   },
 })
 </script>
