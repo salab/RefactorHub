@@ -1,13 +1,13 @@
 package jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer
 
-import jp.ac.titech.cs.se.refactorhub.core.dataset.OUTPUTS_PATH
+import jp.ac.titech.cs.se.refactorhub.core.dataset.OUTPUT_PATH
 import org.refactoringminer.api.Refactoring
 import org.refactoringminer.api.RefactoringHandler
 import org.refactoringminer.rm1.GitHistoryRefactoringMinerImpl
 import org.refactoringminer.util.GitServiceImpl
 
 object RefactoringMiner {
-    private const val REPOS_PATH = "$OUTPUTS_PATH/repos"
+    private const val REPOS_PATH = "$OUTPUT_PATH/repos"
 
     private fun detectAtCommit(owner: String, repository: String, sha: String, callback: (List<Refactoring>) -> Unit) {
         GitServiceImpl().cloneIfNotExists("$REPOS_PATH/$repository/repo", "https://github.com/$owner/$repository.git")

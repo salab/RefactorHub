@@ -3,7 +3,7 @@ package jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import jp.ac.titech.cs.se.refactorhub.core.dataset.OUTPUTS_PATH
+import jp.ac.titech.cs.se.refactorhub.core.dataset.OUTPUT_PATH
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.model.Commit
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -14,7 +14,7 @@ object RefactoringOracle {
     private val REPOSITORY_URL_REGEX = Regex("""https://github.com/([\w\-]+)/([\w\-.]+)\.git""")
 
     private fun getDataJsonAsText(): String {
-        val file = File("$OUTPUTS_PATH/oracle/data.json")
+        val file = File("$OUTPUT_PATH/oracle/data.json")
         if (!file.exists()) {
             file.parentFile.mkdirs()
             FileUtils.copyURLToFile(URL("$API_URL?json"), file)

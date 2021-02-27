@@ -19,12 +19,14 @@ application {
 repositories {
     mavenCentral()
     jcenter()
+    maven("https://kotlin.bintray.com/kotlinx")
 }
 
 dependencies {
     // Kotlin
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.serialization}")
+    implementation("org.jetbrains.kotlinx:kotlinx-cli:${Versions.cli}")
 
     // Ktor
     implementation("io.ktor:ktor-server-core:${Versions.ktor}")

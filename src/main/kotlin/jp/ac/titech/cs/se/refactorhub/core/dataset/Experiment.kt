@@ -5,25 +5,39 @@ import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.RefactoringM
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.RefactoringOracle
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.converter.refactoring.convertRefactoring
 import jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.model.Refactoring
+import kotlinx.cli.ArgParser
+import kotlinx.cli.ArgType
+import kotlinx.cli.default
+import kotlinx.cli.delimiter
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 
-const val OUTPUTS_PATH = "outputs"
+const val OUTPUT_PATH = "dataset"
 
-fun main() {
-    generateDataset(
-        types = listOf(
+fun main(args: Array<String>) {
+    val parser = ArgParser("generate dataset")
+    val types by parser.option(ArgType.String, "types", "t", "Target refactoring types").delimiter(",").default(
+        listOf(
             "Extract Method",
             "Move Attribute",
             "Move Class",
             "Rename Variable"
-        ),
-        size = 4,
-        sizePerCommit = 1..5,
-        validation = "TP",
-        tools = listOf("RefactoringMiner")
+        )
     )
+    val size by parser.option(ArgType.Int, "size", "s", "Size of refactoring list").default(4)
+    val sizePerCommitStr by parser.option(ArgType.String, "size-per-commit", "spc", "Size of refactoring / commit")
+        .default("1..5")
+    val validation by parser.option(ArgType.String, "validation", "v", "Validation of refactoring instance")
+        .default("TP")
+    val tools by parser.option(ArgType.String, "tools", description = "Detection tools of refactoring instance")
+        .delimiter(",").default(listOf("RefactoringMiner"))
+
+    parser.parse(args)
+
+    val sizePerCommit = sizePerCommitStr.split("..").map { it.toInt() }.let { it[0]..it[1] }
+
+    generateDataset(types, size, sizePerCommit, validation, tools)
 }
 
 private fun generateDataset(
@@ -48,9 +62,10 @@ private fun generateDataset(
 }
 
 private fun getOutputFile(name: String): File {
-    val file = File("$OUTPUTS_PATH/$name")
+    val file = File("$OUTPUT_PATH/$name")
     file.parentFile.mkdirs()
-    if (!file.exists()) file.createNewFile()
+    file.delete()
+    file.createNewFile()
     return file
 }
 

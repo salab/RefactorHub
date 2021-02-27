@@ -6,6 +6,7 @@ object Versions {
 
     // dependency
     const val serialization = "1.0.1"
+    const val cli = "0.3.2"
     const val ktor = "1.5.1"
     const val koin = "2.2.1"
     const val exposed = "0.28.1"
