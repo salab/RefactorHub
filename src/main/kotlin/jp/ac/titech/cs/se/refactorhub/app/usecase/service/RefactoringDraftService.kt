@@ -285,7 +285,7 @@ class RefactoringDraftService : KoinComponent {
                 put("category", category.name)
                 put("key", key)
                 put("index", index)
-                put("element", mapper.writeValueAsString(element))
+                replace("element", mapper.valueToTree(element))
             },
             userId
         )
