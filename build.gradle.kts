@@ -93,4 +93,8 @@ tasks {
         main = "jp.ac.titech.cs.se.refactorhub.core.dataset.ExperimentKt"
         classpath = sourceSets["main"].runtimeClasspath
     }
+    register<JavaExec>("analyze") {
+        main = "jp.ac.titech.cs.se.refactorhub.core.analysis.AnalysisKt"
+        classpath = sourceSets["main"].runtimeClasspath
+    }
 }
