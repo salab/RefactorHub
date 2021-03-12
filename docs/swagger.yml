@@ -805,6 +805,8 @@ components:
       properties:
         id:
           type: integer
+        ownerId:
+          type: integer
         name:
           type: string
         before:
@@ -821,6 +823,7 @@ components:
           type: string
       required:
         - id
+        - ownerId
         - name
         - before
         - after
@@ -861,6 +864,8 @@ components:
       properties:
         id:
           type: integer
+        ownerId:
+          type: integer
         title:
           type: string
         description:
@@ -869,6 +874,7 @@ components:
           type: boolean
       required:
         - id
+        - ownerId
         - title
         - description
         - isActive
