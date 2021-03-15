@@ -18,3 +18,10 @@ data class Refactoring(
         override val after: MutableMap<String, CodeElementHolder> = mutableMapOf()
     ) : Refactoring.Data
 }
+
+data class CreateRefactoringBody(
+    override val commit: Commit,
+    override val type: String,
+    override val data: jp.ac.titech.cs.se.refactorhub.app.model.Refactoring.Data,
+    override val description: String
+) : Refactoring

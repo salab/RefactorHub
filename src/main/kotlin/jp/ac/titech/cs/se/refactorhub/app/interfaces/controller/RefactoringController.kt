@@ -1,6 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 
-import jp.ac.titech.cs.se.refactorhub.app.model.Commit
+import jp.ac.titech.cs.se.refactorhub.app.model.CreateRefactoringBody
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.RefactoringService
@@ -11,13 +11,6 @@ import org.koin.core.component.inject
 @KoinApiExtension
 class RefactoringController : KoinComponent {
     private val refactoringService: RefactoringService by inject()
-
-    data class CreateRefactoringBody(
-        val commit: Commit,
-        val type: String,
-        val data: Refactoring.Data,
-        val description: String
-    )
 
     fun create(body: CreateRefactoringBody, userId: Int?): Refactoring {
         return refactoringService.create(body.commit, body.type, body.data, body.description, userId)

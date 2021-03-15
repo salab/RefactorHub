@@ -13,6 +13,7 @@ import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.RefactoringController
+import jp.ac.titech.cs.se.refactorhub.app.model.CreateRefactoringBody
 import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
@@ -50,7 +51,7 @@ fun Route.refactorings() {
     route("/refactorings") {
         val refactoringController: RefactoringController by inject()
         post<CreateRefactoring> {
-            val body = call.receive<RefactoringController.CreateRefactoringBody>()
+            val body = call.receive<CreateRefactoringBody>()
             val session = call.sessions.get<Session>()
             call.respond(refactoringController.create(body, session?.id))
         }

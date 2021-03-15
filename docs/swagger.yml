@@ -623,6 +623,27 @@ paths:
                   $ref: "#/components/schemas/Experiment"
       tags:
         - experiments
+    post:
+      summary: create a new experiment
+      operationId: createExperiment
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateExperimentRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Experiment"
+        "401":
+          description: You are not logged in
+      tags:
+        - experiments
   "/experiments/{experimentId}":
     parameters:
       - $ref: "#/components/parameters/experimentIdInPath"
@@ -1101,6 +1122,21 @@ components:
         - before
         - after
         - description
+    CreateExperimentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        refactorings:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateRefactoringRequest"
+      required:
+        - title
+        - description
+        - refactorings
     UpdateRefactoringDraftRequest:
       type: object
       properties:
