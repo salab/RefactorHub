@@ -18,8 +18,8 @@ class RefactoringTypeController : KoinComponent {
         val description: String = ""
     )
 
-    fun create(body: CreateRefactoringTypeBody): RefactoringType {
-        return refactoringTypeService.create(body.name, body.before, body.after, body.description)
+    fun create(body: CreateRefactoringTypeBody, userId: Int?): RefactoringType {
+        return refactoringTypeService.create(body.name, body.before, body.after, body.description, userId)
     }
 
     fun getAll(): List<RefactoringType> {

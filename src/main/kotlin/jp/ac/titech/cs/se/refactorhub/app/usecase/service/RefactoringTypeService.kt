@@ -12,16 +12,19 @@ import org.koin.core.component.inject
 @KoinApiExtension
 class RefactoringTypeService : KoinComponent {
     private val refactoringTypeRepository: RefactoringTypeRepository by inject()
+    private val userService: UserService by inject()
 
     fun create(
         name: String,
         before: Map<String, CodeElementMetadata>,
         after: Map<String, CodeElementMetadata>,
-        description: String
+        description: String,
+        userId: Int?
     ): RefactoringType {
+        val user = userService.getMe(userId)
         val type = refactoringTypeRepository.findByName(name)
         if (type != null) throw BadRequestException("RefactoringType(name=$name) already exists")
-        return refactoringTypeRepository.create(name, before, after, description)
+        return refactoringTypeRepository.create(name, before, after, description, user.id)
     }
 
     fun getAll(): List<RefactoringType> {

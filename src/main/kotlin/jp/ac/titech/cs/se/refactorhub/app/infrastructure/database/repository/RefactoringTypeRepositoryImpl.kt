@@ -2,6 +2,7 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository
 
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.RefactoringTypeDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.RefactoringTypes
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.UserDao
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.RefactoringTypeRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringType
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
@@ -40,10 +41,12 @@ class RefactoringTypeRepositoryImpl : RefactoringTypeRepository {
         name: String,
         before: Map<String, CodeElementMetadata>,
         after: Map<String, CodeElementMetadata>,
-        description: String
+        description: String,
+        userId: Int,
     ): RefactoringType {
         return transaction {
             RefactoringTypeDao.new {
+                this.owner = UserDao.findById(userId)!!
                 this.name = name
                 this.before = before
                 this.after = after
