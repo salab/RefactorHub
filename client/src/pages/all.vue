@@ -1,12 +1,12 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col>
-        <h1>All Refactorings</h1>
-        <v-divider class="mb-5" />
-        <refactoring-items :refactorings="refactorings" />
-      </v-col>
-    </v-row>
+    <div class="py-3">
+      <h1 class="text-h4">All Refactorings</h1>
+    </div>
+    <v-divider />
+    <div class="py-2">
+      <refactoring-items :refactorings="refactorings" />
+    </div>
   </v-container>
 </template>
 

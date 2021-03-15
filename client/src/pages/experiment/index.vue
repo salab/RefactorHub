@@ -2,7 +2,7 @@
   <v-container>
     <div class="py-3">
       <div class="d-flex align-center justify-space-between">
-        <h1>Experiments</h1>
+        <h1 class="text-h4">Experiments</h1>
         <v-btn
           depressed
           small
@@ -13,8 +13,8 @@
           {{ state }}
         </v-btn>
       </div>
-      <v-divider />
     </div>
+    <v-divider />
     <div class="py-2">
       <div>
         <v-card
@@ -63,11 +63,8 @@ export default defineComponent({
     const state = ref<'Prepare' | 'Pending' | 'Completed'>('Prepare')
     const prepare = async () => {
       state.value = 'Pending'
-      try {
-        await apis.annotator.prepareCommitContents()
-      } finally {
-        state.value = 'Completed'
-      }
+      const res = await apis.annotator.prepareCommitContents()
+      if (res) state.value = 'Completed'
     }
 
     return { experiments, actives, state, prepare }

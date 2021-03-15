@@ -3,6 +3,7 @@
     <div class="py-3">
       <h1 class="text-h4">Refactoring Types</h1>
     </div>
+    <v-divider />
     <div class="py-2">
       <div>
         <v-card

@@ -1,9 +1,10 @@
 <template>
-  <v-container>
+  <v-container v-if="experiment">
     <div class="py-3">
-      <h1>Experiment</h1>
-      <v-divider />
+      <h1 class="text-h4">{{ experiment.title }}</h1>
+      <p class="py-1 mb-0 text-body-1">{{ experiment.description }}</p>
     </div>
+    <v-divider />
     <div class="py-2">
       <div>
         <v-card
@@ -47,7 +48,7 @@ import {
   useAsync,
   useContext,
 } from '@nuxtjs/composition-api'
-import apis, { Refactoring, RefactoringDraft } from '@/apis'
+import apis, { Experiment, Refactoring, RefactoringDraft } from '@/apis'
 
 export default defineComponent({
   middleware: 'authenticated',
@@ -57,11 +58,15 @@ export default defineComponent({
       app: { router },
     } = useContext()
 
+    const experiment = ref<Experiment>()
     const refactorings = ref<Refactoring[]>([])
     const myRefactorings = ref<Refactoring[]>([])
     const myDrafts = ref<RefactoringDraft[]>([])
 
     useAsync(async () => {
+      experiment.value = (
+        await apis.experiments.getExperiment(parseInt(params.value.id))
+      ).data
       refactorings.value = (
         await apis.experiments.getExperimentRefactorings(
           parseInt(params.value.id)
@@ -101,7 +106,7 @@ export default defineComponent({
       router?.push(`/draft/${draft.id}`)
     }
 
-    return { refactorings, isCompleted, start }
+    return { experiment, refactorings, isCompleted, start }
   },
 })
 </script>
