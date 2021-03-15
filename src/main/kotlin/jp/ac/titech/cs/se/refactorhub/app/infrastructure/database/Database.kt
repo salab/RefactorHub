@@ -1,11 +1,11 @@
 package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database
 
-import com.viartemev.ktor.flyway.FlywayFeature
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.Application
-import io.ktor.application.install
 import io.ktor.util.KtorExperimentalAPI
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.migration.initializeDatabase
+import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database
 import java.net.URI
 
@@ -26,8 +26,17 @@ fun Application.connectDB() {
         )
     Database.connect(dataSource)
 
-    install(FlywayFeature) {
-        this.dataSource = dataSource
-        this.locations = arrayOf("jp/ac/titech/cs/se/refactorhub/app/infrastructure/database/migration")
+    val flyway = Flyway
+        .configure()
+        .dataSource(dataSource)
+        .locations("jp/ac/titech/cs/se/refactorhub/app/infrastructure/database/migration")
+        .baselineVersion("1.0") // latest
+        .load()
+
+    val info = flyway.info()
+    if (info.current() == null) {
+        initializeDatabase()
+        flyway.baseline()
     }
+    flyway.migrate()
 }

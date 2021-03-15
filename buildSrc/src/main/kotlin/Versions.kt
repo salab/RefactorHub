@@ -11,7 +11,7 @@ object Versions {
     const val koin = "2.2.1"
     const val exposed = "0.28.1"
     const val hikaricp = "3.4.5"
-    const val flyway = "6.1.0"
+    const val flyway = "7.7.0"
     const val postgresql = "42.2.18"
     const val h2 = "1.4.200"
     const val logback = "1.2.3"
@@ -20,6 +20,5 @@ object Versions {
     const val refminer = "2.0.3"
     const val github = "1.122"
     const val jackson = "2.12.1"
-    const val ktorFlyway = "1.2.2"
     const val junit = "5.7.1"
 }

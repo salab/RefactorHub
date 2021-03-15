@@ -2,31 +2,58 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.migration
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Actions
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.CommitContents
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.CommitDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Commits
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.ExperimentDao
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.ExperimentRefactorings
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Experiments
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.RefactoringDao
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.RefactoringDrafts
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.RefactoringToRefactorings
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.RefactoringTypeDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.RefactoringTypes
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Refactorings
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.UserDao
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Users
 import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
 import jp.ac.titech.cs.se.refactorhub.core.annotator.format
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
-import org.flywaydb.core.api.migration.BaseJavaMigration
-import org.flywaydb.core.api.migration.Context
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class V2__Create_initial_data : BaseJavaMigration() {
-    override fun migrate(context: Context) {
-        transaction {
-            createRefactoringTypes()
-            createUsers()
-            createTutorial()
-            createExperiments()
-        }
+fun initializeDatabase() {
+    transaction {
+        createTables()
+        createInitialData()
     }
+}
+
+private val tables = arrayOf(
+    Commits,
+    Users,
+    Refactorings,
+    RefactoringToRefactorings,
+    RefactoringTypes,
+    RefactoringDrafts,
+    Experiments,
+    ExperimentRefactorings,
+    CommitContents,
+    Actions
+)
+
+private fun createTables() {
+    SchemaUtils.create(*tables)
+}
+
+private fun createInitialData() {
+    createUsers()
+    createRefactoringTypes()
+    createTutorial()
+    createExperiments()
 }
 
 private fun createUsers() {
@@ -39,6 +66,7 @@ private fun createUsers() {
 private fun createRefactoringTypes() {
     val files = listOf("types/experiment.json")
 
+    val admin = UserDao[1]
     for (file in files) {
         val stream = object {}.javaClass.classLoader.getResourceAsStream(file) ?: return
         val types = jacksonObjectMapper().readValue<List<RefactoringTypeBody>>(stream)
@@ -49,6 +77,7 @@ private fun createRefactoringTypes() {
                 this.after = it.after
                 this.description = it.description
                 this.url = it.url
+                this.owner = admin
             }
         }
     }
@@ -76,10 +105,12 @@ private fun createExperiments() {
 }
 
 private fun createExperiment(title: String, description: String, input: String) {
+    val admin = UserDao[1]
     ExperimentDao.new {
         this.title = title
         this.description = description
         this.isActive = true
+        this.owner = admin
     }.apply {
         this.refactorings = SizedCollection(createRefactorings(input))
     }
@@ -112,7 +143,7 @@ private fun createRefactorings(file: String): List<RefactoringDao> {
     }
 }
 
-data class RefactoringTypeBody(
+private data class RefactoringTypeBody(
     val name: String,
     val before: Map<String, CodeElementMetadata>,
     val after: Map<String, CodeElementMetadata>,
@@ -120,7 +151,7 @@ data class RefactoringTypeBody(
     val url: String = ""
 )
 
-data class RefactoringBody(
+private data class RefactoringBody(
     val commit: Commit,
     val type: String,
     val data: Refactoring.Data,
