@@ -46,16 +46,135 @@
         </v-card>
       </div>
     </div>
+    <v-divider />
+    <div class="py-3">
+      <h2 class="text-h5">Create a new RefactoringType</h2>
+      <v-card outlined class="my-3 pa-4">
+        <v-textarea
+          v-model="form.type"
+          label="refactoring type (JSON)"
+          rows="3"
+          hide-details
+          required
+          class="mt-4 mb-2"
+        />
+        <details class="mb-4">
+          <summary class="text-caption">examples for refactoring type</summary>
+          <pre
+            v-for="example in examples"
+            :key="example"
+            class="example px-3 py-2 mt-2"
+          ><code>{{ example }}</code></pre>
+        </details>
+        <div>{{ message }}</div>
+        <div class="d-flex justify-center">
+          <v-btn :disabled="pending" depressed color="primary" @click="create">
+            Create
+          </v-btn>
+        </div>
+      </v-card>
+    </div>
   </v-container>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, useAsync } from '@nuxtjs/composition-api'
-import apis, { CodeElementMetadata, RefactoringType } from '@/apis'
+import {
+  defineComponent,
+  reactive,
+  ref,
+  useAsync,
+} from '@nuxtjs/composition-api'
+import apis, {
+  CodeElementMetadata,
+  CreateRefactoringTypeRequest,
+  RefactoringType,
+} from '@/apis'
+
+const examples = [
+  `{
+  "name": "Extract Method",
+  "description": "Extracting code fragments from existing method, and creating a new method based on the extracted code",
+  "url": "https://refactoring.com/catalog/extractFunction.html",
+  "before": {
+    "extracted code": {
+      "description": "Code fragments which is extracted",
+      "type": "CodeFragment",
+      "multiple": true,
+      "required": true
+    },
+    "target method": {
+      "description": "Method in which the extraction is performed",
+      "type": "MethodDeclaration",
+      "autofills": [
+        {
+          "type": "Surround",
+          "follows": [
+            {
+              "category": "before",
+              "name": "extracted code"
+            }
+          ],
+          "element": "MethodDeclaration"
+        }
+      ]
+    }
+  },
+  "after": {
+    "invocation": {
+      "description": "Method invocation by which extracted code was replaced",
+      "type": "MethodInvocation",
+      "required": true
+    },
+    "extracted code": {
+      "description": "Code fragments which was extracted",
+      "type": "CodeFragment",
+      "multiple": true,
+      "required": true
+    },
+    "extracted method": {
+      "description": "Method which was newly created by the extraction",
+      "type": "MethodDeclaration",
+      "autofills": [
+        {
+          "type": "Surround",
+          "follows": [
+            {
+              "category": "after",
+              "name": "extracted code"
+            }
+          ],
+          "element": "MethodDeclaration"
+        }
+      ]
+    },
+    "target method": {
+      "description": "Method in which the extraction was performed",
+      "type": "MethodDeclaration",
+      "autofills": [
+        {
+          "type": "Surround",
+          "follows": [
+            {
+              "category": "after",
+              "name": "invocation"
+            }
+          ],
+          "element": "MethodDeclaration"
+        }
+      ]
+    }
+  }
+}`,
+]
 
 export default defineComponent({
   setup() {
     const types = ref<RefactoringType[]>([])
+    const form = reactive({
+      type: '',
+    })
+    const message = ref('')
+    const pending = ref(false)
 
     useAsync(async () => {
       types.value = (await apis.refactoringTypes.getAllRefactoringTypes()).data
@@ -70,7 +189,38 @@ export default defineComponent({
       })
       return Object.fromEntries(entries)
     }
-    return { types, sorted }
+
+    const create = async () => {
+      if (form.type === '') return
+      pending.value = true
+      try {
+        const request: CreateRefactoringTypeRequest = JSON.parse(
+          form.type.trim()
+        )
+        const type = (
+          await apis.refactoringTypes.createRefactoringType(request)
+        ).data
+        types.value.push(type)
+        form.type = ''
+        message.value = `RefactoringType added: ${type.name}`
+      } catch (e) {
+        message.value = `Failed: ${e}`
+      } finally {
+        pending.value = false
+      }
+    }
+    return { types, sorted, form, message, pending, examples, create }
   },
 })
 </script>
+
+<style lang="scss" scoped>
+.example {
+  overflow-x: auto;
+  background: whitesmoke;
+  code {
+    padding: 0;
+    background: transparent;
+  }
+}
+</style>

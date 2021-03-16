@@ -15,11 +15,12 @@ class RefactoringTypeController : KoinComponent {
         val name: String,
         val before: Map<String, CodeElementMetadata>,
         val after: Map<String, CodeElementMetadata>,
-        val description: String = ""
+        val description: String = "",
+        val url: String = ""
     )
 
     fun create(body: CreateRefactoringTypeBody, userId: Int?): RefactoringType {
-        return refactoringTypeService.create(body.name, body.before, body.after, body.description, userId)
+        return refactoringTypeService.create(body.name, body.before, body.after, body.description, body.url, userId)
     }
 
     fun getAll(): List<RefactoringType> {

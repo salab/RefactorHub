@@ -19,12 +19,13 @@ class RefactoringTypeService : KoinComponent {
         before: Map<String, CodeElementMetadata>,
         after: Map<String, CodeElementMetadata>,
         description: String,
+        url: String,
         userId: Int?
     ): RefactoringType {
         val user = userService.getMe(userId)
         val type = refactoringTypeRepository.findByName(name)
         if (type != null) throw BadRequestException("RefactoringType(name=$name) already exists")
-        return refactoringTypeRepository.create(name, before, after, description, user.id)
+        return refactoringTypeRepository.create(name, before, after, description, url, user.id)
     }
 
     fun getAll(): List<RefactoringType> {

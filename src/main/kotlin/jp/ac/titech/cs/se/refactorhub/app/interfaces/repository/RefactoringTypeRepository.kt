@@ -13,6 +13,7 @@ interface RefactoringTypeRepository {
         before: Map<String, CodeElementMetadata>,
         after: Map<String, CodeElementMetadata>,
         description: String,
+        url: String,
         userId: Int
     ): RefactoringType
 }

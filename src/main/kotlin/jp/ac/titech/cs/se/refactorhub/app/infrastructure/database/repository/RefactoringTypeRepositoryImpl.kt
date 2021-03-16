@@ -42,6 +42,7 @@ class RefactoringTypeRepositoryImpl : RefactoringTypeRepository {
         before: Map<String, CodeElementMetadata>,
         after: Map<String, CodeElementMetadata>,
         description: String,
+        url: String,
         userId: Int,
     ): RefactoringType {
         return transaction {
@@ -51,6 +52,7 @@ class RefactoringTypeRepositoryImpl : RefactoringTypeRepository {
                 this.before = before
                 this.after = after
                 this.description = description
+                this.url = url
             }.asModel()
         }
     }
