@@ -1,7 +1,16 @@
 <template>
   <v-container v-if="experiment">
     <div class="py-3">
-      <h1 class="text-h4">{{ experiment.title }}</h1>
+      <div class="d-flex align-center justify-space-between">
+        <h1 class="text-h4">{{ experiment.title }}</h1>
+        <v-btn
+          depressed
+          class="text-none"
+          :href="`/api/experiments/${experiment.id}/result`"
+        >
+          Get All Result
+        </v-btn>
+      </div>
       <p class="py-1 mb-0 text-body-1">{{ experiment.description }}</p>
     </div>
     <v-divider />

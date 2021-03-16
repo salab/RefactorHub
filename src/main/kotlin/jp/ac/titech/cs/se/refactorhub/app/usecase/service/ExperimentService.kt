@@ -46,6 +46,13 @@ class ExperimentService : KoinComponent {
         return experiment
     }
 
+    fun getResult(id: Int): List<Refactoring> {
+        val refactorings = getRefactorings(id)
+        return refactorings.map {
+            refactoringRepository.findByParentId(it.id)
+        }.flatten()
+    }
+
     fun getRefactorings(id: Int): List<Refactoring> {
         val experiment = get(id)
         return refactoringRepository.findByExperimentId(experiment.id).sortedBy { it.id }

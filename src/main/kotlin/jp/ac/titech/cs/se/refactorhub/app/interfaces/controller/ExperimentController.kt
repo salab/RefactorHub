@@ -30,6 +30,10 @@ class ExperimentController : KoinComponent {
         return experimentService.get(id)
     }
 
+    fun getResult(id: Int): List<Refactoring> {
+        return experimentService.getResult(id)
+    }
+
     fun getRefactorings(id: Int): List<Refactoring> {
         return experimentService.getRefactorings(id)
     }

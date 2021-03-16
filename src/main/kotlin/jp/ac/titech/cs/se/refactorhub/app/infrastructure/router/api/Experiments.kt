@@ -29,6 +29,10 @@ class GetAllExperiments
 data class GetExperiment(val id: Int)
 
 @KtorExperimentalLocationsAPI
+@Location("/{id}/result")
+data class GetExperimentResult(val id: Int)
+
+@KtorExperimentalLocationsAPI
 @Location("/{id}/refactorings")
 data class GetExperimentRefactorings(val id: Int)
 
@@ -47,6 +51,9 @@ fun Route.experiments() {
         }
         get<GetExperiment> {
             call.respond(experimentController.get(it.id))
+        }
+        get<GetExperimentResult> {
+            call.respond(experimentController.getResult(it.id))
         }
         get<GetExperimentRefactorings> {
             call.respond(experimentController.getRefactorings(it.id))

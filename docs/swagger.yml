@@ -661,6 +661,25 @@ paths:
           description: Experiment is not found
       tags:
         - experiments
+  "/experiments/{experimentId}/result":
+    parameters:
+      - $ref: "#/components/parameters/experimentIdInPath"
+    get:
+      summary: get experiment result
+      operationId: getExperimentResult
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Refactoring"
+        "404":
+          description: Experiment is not found
+      tags:
+        - experiments
   "/experiments/{experimentId}/refactorings":
     parameters:
       - $ref: "#/components/parameters/experimentIdInPath"
