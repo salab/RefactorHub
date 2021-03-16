@@ -19,7 +19,7 @@ class ExperimentController : KoinComponent {
     )
 
     fun create(body: CreateExperimentBody, userId: Int?): Experiment {
-        return experimentService.create(body.title, body.description, body.refactorings, userId)
+        return experimentService.create(body.title, body.description, body.refactorings, true, userId)
     }
 
     fun getAll(): List<Experiment> {

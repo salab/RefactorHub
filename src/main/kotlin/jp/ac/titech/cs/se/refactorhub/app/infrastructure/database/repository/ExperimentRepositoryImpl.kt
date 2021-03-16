@@ -10,12 +10,19 @@ import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class ExperimentRepositoryImpl : ExperimentRepository {
-    override fun create(title: String, description: String, refactorings: List<Refactoring>, userId: Int): Experiment {
+    override fun create(
+        title: String,
+        description: String,
+        refactorings: List<Refactoring>,
+        isActive: Boolean,
+        userId: Int
+    ): Experiment {
         return transaction {
             ExperimentDao.new {
                 this.owner = UserDao[userId]
                 this.title = title
                 this.description = description
+                this.isActive = isActive
             }.apply {
                 this.refactorings = SizedCollection(refactorings.map { RefactoringDao[it.id] })
             }.asModel()

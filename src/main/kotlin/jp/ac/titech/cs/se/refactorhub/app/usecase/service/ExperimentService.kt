@@ -21,6 +21,7 @@ class ExperimentService : KoinComponent {
         title: String,
         description: String,
         refactorings: List<CreateRefactoringBody>,
+        isActive: Boolean,
         userId: Int?
     ): Experiment {
         val user = userService.getMe(userId)
@@ -30,6 +31,7 @@ class ExperimentService : KoinComponent {
             refactorings.map {
                 refactoringService.create(it.commit, it.type, it.data, it.description, user.id)
             },
+            isActive,
             user.id
         )
     }

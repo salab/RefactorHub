@@ -32,7 +32,7 @@ class RefactoringService : KoinComponent {
         val user = userService.getMe(userId)
         val type = refactoringTypeService.getByName(typeName)
         val commit = commitService.createIfNotExist(_commit.owner, _commit.repository, _commit.sha)
-        annotatorService.createCommitContentIfNotExist(commit)
+        // annotatorService.createCommitContentIfNotExist(commit)
         return refactoringRepository.create(
             commit,
             type.name,

@@ -8,6 +8,7 @@ interface ExperimentRepository {
         title: String,
         description: String,
         refactorings: List<Refactoring>,
+        isActive: Boolean,
         userId: Int
     ): Experiment
 
