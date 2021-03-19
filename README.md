@@ -6,7 +6,7 @@ RefactorHub is a commit annotator for refactoring.
 
 ## Demonstration
 
-[![demo](https://img.youtube.com/vi/Ew1wVBZkpro/sddefault.jpg)](https://www.youtube.com/watch?v=Ew1wVBZkpro)
+[![demo](https://img.youtube.com/vi/-aoREGs5zaI/sddefault.jpg)](https://www.youtube.com/watch?v=-aoREGs5zaI)
 
 ## How to Run
 
@@ -134,3 +134,36 @@ Open the new created Experiment, and annotate refactorings.
 ### Get all result as JSON
 
 After annotation, click "Get All Result" button on the Experiment page.
+
+## Supported Refactoring Types
+
+<details>
+<summary>RefactorHub supports the following 25 refactoring types:</summary>
+
+* Extract Method
+* Move Attribute
+* Move Class
+* Rename Variable
+* Inline Method
+* Extract Interface
+* Push Down Method
+* Push Down Attribute
+* Pull Up Method
+* Pull Up Attribute
+* Move Method
+* Extract And Move Method
+* Rename Method
+* Extract Superclass
+* Rename Parameter
+* Rename Class
+* Move And Rename Class
+* Parameterize Variable
+* Move And Inline Method
+* Move And Rename Method
+* Extract Variable
+* Change Return Type
+* Rename Attribute
+* Change Parameter Type
+* Change Variable Type
+
+</details>
