@@ -64,7 +64,7 @@ private fun createUsers() {
 }
 
 private fun createRefactoringTypes() {
-    val files = listOf("types/experiment.json")
+    val files = listOf("types/default.json")
 
     val admin = UserDao[1]
     for (file in files) {

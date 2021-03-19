@@ -1,0 +1,729 @@
+[
+  {
+    "name": "Any",
+    "description": "Any refactoring",
+    "url": "",
+    "before": {},
+    "after": {}
+  },
+  {
+    "name": "Extract Method",
+    "description": "Extracting code fragments from existing method, and creating a new method based on the extracted code",
+    "url": "https://refactoring.com/catalog/extractFunction.html",
+    "before": {
+      "extracted code": {
+        "description": "Code fragments which is extracted",
+        "type": "CodeFragment",
+        "multiple": true,
+        "required": true
+      },
+      "target method": {
+        "description": "Method in which the extraction is performed",
+        "type": "MethodDeclaration",
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "before",
+                "name": "extracted code"
+              }
+            ],
+            "element": "MethodDeclaration"
+          }
+        ]
+      }
+    },
+    "after": {
+      "invocation": {
+        "description": "Method invocation by which extracted code was replaced",
+        "type": "MethodInvocation",
+        "required": true
+      },
+      "extracted code": {
+        "description": "Code fragments which was extracted",
+        "type": "CodeFragment",
+        "multiple": true,
+        "required": true
+      },
+      "extracted method": {
+        "description": "Method which was newly created by the extraction",
+        "type": "MethodDeclaration",
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "after",
+                "name": "extracted code"
+              }
+            ],
+            "element": "MethodDeclaration"
+          }
+        ]
+      },
+      "target method": {
+        "description": "Method in which the extraction was performed",
+        "type": "MethodDeclaration",
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "after",
+                "name": "invocation"
+              }
+            ],
+            "element": "MethodDeclaration"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Move Attribute",
+    "description": "Moving field to the other class",
+    "url": "https://refactoring.com/catalog/moveField.html",
+    "before": {
+      "target field": {
+        "description": "Field which is moved",
+        "type": "FieldDeclaration",
+        "required": true
+      },
+      "references": {
+        "description": "References of target field",
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "before",
+                "name": "target field"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "after": {
+      "moved field": {
+        "description": "Field which was moved",
+        "type": "FieldDeclaration",
+        "required": true
+      },
+      "references": {
+        "description": "References of moved field",
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "after",
+                "name": "moved field"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Move Class",
+    "description": "Moving class to the other package",
+    "url": "https://www.refactoring.com/catalog/moveClass.html",
+    "before": {
+      "target class": {
+        "description": "Class which is moved",
+        "type": "ClassDeclaration",
+        "required": true
+      },
+      "package": {
+        "description": "Package in which target class exists",
+        "type": "PackageDeclaration",
+        "autofills": [
+          {
+            "type": "Package",
+            "follows": [
+              {
+                "category": "before",
+                "name": "target class"
+              }
+            ]
+          }
+        ]
+      },
+      "references": {
+        "description": "References of target class",
+        "type": "QualifiedName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "before",
+                "name": "target class"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "after": {
+      "moved class": {
+        "description": "Class which was moved",
+        "type": "ClassDeclaration",
+        "required": true
+      },
+      "package": {
+        "description": "Package in which moved class exists",
+        "type": "PackageDeclaration",
+        "autofills": [
+          {
+            "type": "Package",
+            "follows": [
+              {
+                "category": "after",
+                "name": "moved class"
+              }
+            ]
+          }
+        ]
+      },
+      "references": {
+        "description": "References of moved class",
+        "type": "QualifiedName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "after",
+                "name": "moved class"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Rename Variable",
+    "description": "Renaming variable",
+    "url": "https://refactoring.com/catalog/renameVariable.html",
+    "before": {
+      "target variable": {
+        "description": "Variable which is renamed",
+        "type": "VariableDeclaration",
+        "required": true
+      },
+      "method": {
+        "description": "Method in which renaming variable is performed",
+        "type": "MethodDeclaration",
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "before",
+                "name": "target variable"
+              }
+            ],
+            "element": "MethodDeclaration"
+          }
+        ]
+      },
+      "references": {
+        "description": "References of target variable",
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "before",
+                "name": "target variable"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "after": {
+      "renamed variable": {
+        "description": "Variable which was renamed",
+        "type": "VariableDeclaration",
+        "required": true
+      },
+      "method": {
+        "description": "Method in which renaming variable was performed",
+        "type": "MethodDeclaration",
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "after",
+                "name": "renamed variable"
+              }
+            ],
+            "element": "MethodDeclaration"
+          }
+        ]
+      },
+      "references": {
+        "description": "References of renamed variable",
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "after",
+                "name": "renamed variable"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Inline Method",
+    "description": "",
+    "before": {
+      "invocation": {
+        "type": "MethodInvocation",
+        "required": true
+      },
+      "inlined code": {
+        "type": "CodeFragment",
+        "multiple": true,
+        "required": true
+      },
+      "inlined method": {
+        "type": "MethodDeclaration"
+      },
+      "target method": {
+        "type": "MethodDeclaration"
+      }
+    },
+    "after": {
+      "inlined code": {
+        "type": "CodeFragment",
+        "multiple": true,
+        "required": true
+      },
+      "target method": {
+        "type": "MethodDeclaration"
+      }
+    }
+  },
+  {
+    "name": "Extract Interface",
+    "description": "",
+    "before": {
+      "target class": {
+        "type": "ClassDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "extracted interface": {
+        "type": "InterfaceDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Push Down Method",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Push Down Attribute",
+    "description": "",
+    "before": {
+      "target field": {
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved field": {
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Pull Up Method",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Pull Up Attribute",
+    "description": "",
+    "before": {
+      "target field": {
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved field": {
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Move Method",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Extract And Move Method",
+    "description": "",
+    "before": {
+      "extracted code": {
+        "type": "CodeFragment",
+        "multiple": true,
+        "required": true
+      },
+      "target method": {
+        "type": "MethodDeclaration"
+      }
+    },
+    "after": {
+      "invocation": {
+        "type": "MethodInvocation",
+        "required": true
+      },
+      "extracted code": {
+        "type": "CodeFragment",
+        "multiple": true,
+        "required": true
+      },
+      "target method": {
+        "type": "MethodDeclaration"
+      },
+      "extracted method": {
+        "type": "MethodDeclaration"
+      }
+    }
+  },
+  {
+    "name": "Rename Method",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "references": {
+        "type": "MethodInvocation",
+        "multiple": true
+      }
+    },
+    "after": {
+      "renamed method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "references": {
+        "type": "MethodInvocation",
+        "multiple": true
+      }
+    }
+  },
+  {
+    "name": "Extract Superclass",
+    "description": "",
+    "before": {
+      "target class": {
+        "type": "ClassDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "extracted class": {
+        "type": "ClassDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Rename Parameter",
+    "description": "",
+    "before": {
+      "target parameter": {
+        "type": "ParameterDeclaration",
+        "required": true
+      },
+      "method": {
+        "type": "MethodDeclaration"
+      },
+      "references": {
+        "type": "SimpleName",
+        "multiple": true
+      }
+    },
+    "after": {
+      "renamed parameter": {
+        "type": "ParameterDeclaration",
+        "required": true
+      },
+      "method": {
+        "type": "MethodDeclaration"
+      },
+      "references": {
+        "type": "SimpleName",
+        "multiple": true
+      }
+    }
+  },
+  {
+    "name": "Rename Class",
+    "description": "",
+    "before": {
+      "target class": {
+        "type": "ClassDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "renamed class": {
+        "type": "ClassDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Move And Rename Class",
+    "description": "",
+    "before": {
+      "target class": {
+        "type": "ClassDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved class": {
+        "type": "ClassDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Parameterize Variable",
+    "description": "",
+    "before": {
+      "target variable": {
+        "type": "VariableDeclaration",
+        "required": true
+      },
+      "method": {
+        "type": "MethodDeclaration"
+      }
+    },
+    "after": {
+      "renamed parameter": {
+        "type": "ParameterDeclaration",
+        "required": true
+      },
+      "method": {
+        "type": "MethodDeclaration"
+      }
+    }
+  },
+  {
+    "name": "Move And Inline Method",
+    "description": "",
+    "before": {
+      "invocation": {
+        "type": "MethodInvocation",
+        "required": true
+      },
+      "inlined code": {
+        "type": "CodeFragment",
+        "multiple": true,
+        "required": true
+      },
+      "inlined method": {
+        "type": "MethodDeclaration"
+      },
+      "target method": {
+        "type": "MethodDeclaration"
+      }
+    },
+    "after": {
+      "inlined code": {
+        "type": "CodeFragment",
+        "multiple": true,
+        "required": true
+      },
+      "target method": {
+        "type": "MethodDeclaration"
+      }
+    }
+  },
+  {
+    "name": "Move And Rename Method",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "moved method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Extract Variable",
+    "description": "",
+    "before": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "target method": {
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "extracted variable": {
+        "type": "VariableDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Change Return Type",
+    "description": "",
+    "before": {
+      "target type": {
+        "type": "ReturnType",
+        "required": true
+      },
+      "target method": {
+        "type": "MethodDeclaration"
+      }
+    },
+    "after": {
+      "changed type": {
+        "type": "ReturnType",
+        "required": true
+      },
+      "target method": {
+        "type": "MethodDeclaration"
+      }
+    }
+  },
+  {
+    "name": "Rename Attribute",
+    "description": "",
+    "before": {
+      "target field": {
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "renamed field": {
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Change Parameter Type",
+    "description": "",
+    "before": {
+      "target type": {
+        "type": "ParameterType",
+        "required": true
+      },
+      "target method": {
+        "type": "MethodDeclaration"
+      }
+    },
+    "after": {
+      "changed type": {
+        "type": "ParameterType",
+        "required": true
+      },
+      "target method": {
+        "type": "MethodDeclaration"
+      }
+    }
+  },
+  {
+    "name": "Change Variable Type",
+    "description": "",
+    "before": {
+      "target type": {
+        "type": "VariableType",
+        "required": true
+      },
+      "target method": {
+        "type": "MethodDeclaration"
+      }
+    },
+    "after": {
+      "changed type": {
+        "type": "VariableType",
+        "required": true
+      },
+      "target method": {
+        "type": "MethodDeclaration"
+      }
+    }
+  }
+]
