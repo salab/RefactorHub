@@ -167,3 +167,18 @@ After annotation, click "Get All Result" button on the Experiment page.
 * Change Variable Type
 
 </details>
+
+## Related Publication
+If you use or mention this tool in a scientific publication, we would appreciate citations to the following paper:
+
+Ryo Kuramoto, Motoshi Saeki, Shinpei Hayashi: "RefactorHub: A Commit Annotator for Refactoring". In Proceedings of the 29th IEEE/ACM International Conference on Program Comprehension (ICPC 2021), pp. 495-499, 2021. DOI: https://doi.org/10.1109/ICPC52881.2021.00058 / Preprint: https://arxiv.org/abs/2103.11563
+```
+@inproceedings{kuramoto-icpc2021,
+    author = {Ryo Kuramoto and Motoshi Saeki and Shinpei Hayashi},
+    title = {{RefactorHub}: A Commit Annotator for Refactoring},
+    booktitle = {Proceedings of the 29th IEEE/ACM International Conference on Program Comprehension (ICPC 2021)},
+    pages = {495--499},
+    year = 2021,
+    doi = {10.1109/ICPC52881.2021.00058}
+}
+```
