@@ -108,16 +108,14 @@ export const actions = actionTree(
 
       const draft = (await apis.drafts.getRefactoringDraft(id)).data
       await commit('setDraft', draft)
-      await commit(
-        'setCommit',
-        (
-          await apis.commits.getCommitDetail(
-            draft.commit.owner,
-            draft.commit.repository,
-            draft.commit.sha
-          )
-        ).data
-      )
+      const commitDetail = (
+        await apis.commits.getCommitDetail(
+          draft.commit.owner,
+          draft.commit.repository,
+          draft.commit.sha
+        )
+      ).data
+      await commit('setCommit', commitDetail)
       await commit(
         'setRefactoringTypes',
         (await apis.refactoringTypes.getAllRefactoringTypes()).data
@@ -126,6 +124,32 @@ export const actions = actionTree(
         'setCodeElementTypes',
         (await apis.elements.getCodeElementTypes()).data
       )
+      // cache all file contents
+      // const categories: DiffCategory[] = ['before', 'after']
+      // for (const file of commitDetail.files) {
+      //   for (const category of categories) {
+      //     const path = category === 'before' ? file.previousName : file.name
+      //     const sha =
+      //       category === 'before' ? commitDetail.parent : commitDetail.sha
+      //     console.log(`initStates: ${sha}, ${category}, ${path}`)
+      //     const content = (
+      //       await apis.annotator.getFileContent(
+      //         commitDetail.owner,
+      //         commitDetail.repository,
+      //         sha,
+      //         category,
+      //         path
+      //       )
+      //     ).data
+      //     const uri = getCommitFileUri(
+      //       commitDetail.owner,
+      //       commitDetail.repository,
+      //       sha,
+      //       path
+      //     )
+      //     await commit('cacheFileContent', { uri, content })
+      //   }
+      // }
     },
 
     async getFileContent(

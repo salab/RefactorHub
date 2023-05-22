@@ -6,5 +6,14 @@ data class FileContent(
     val text: String = "",
     val extension: String = "",
     val uri: String,
-    val elements: List<CodeElement> = listOf()
+    val elements: List<CodeElement> = listOf(),
+    val tokens: List<Token> = listOf()
+)
+
+data class Token(
+    val raw: String,
+    val start: Int,
+    val end: Int,
+    val isSymbol: Boolean, // e.g. ";", "(", "+=", "."
+    val isComment: Boolean
 )

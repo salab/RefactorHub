@@ -37,6 +37,8 @@
     "object-hash": "^2.1.1"
   },
   "devDependencies": {
+    "@mdi/font": "^7.2.96",
+    "@mdi/js": "^7.2.96",
     "@nuxt/types": "^2.14.12",
     "@nuxt/typescript-build": "^2.0.4",
     "@nuxtjs/eslint-config": "^5.0.0",

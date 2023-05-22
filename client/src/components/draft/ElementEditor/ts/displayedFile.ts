@@ -4,6 +4,11 @@ import { accessorType } from '@/store'
 import { logger } from '@/utils/logger'
 import { CommitDetail } from '@/apis'
 import {
+  clearCommonTokensDecorations,
+  initCommonTokensMap,
+  setCommonTokensDecorationOnEditor,
+} from '@/components/draft/ElementEditor/ts/commonTokensDecorations'
+import {
   setElementDecorationOnEditor,
   clearElementDecorations,
 } from './elementDecorations'
@@ -22,6 +27,7 @@ export async function setupDisplayedFileOnDiffEditor(
   metadata: FileMetadata,
   diffEditor: monaco.editor.IDiffEditor,
   $accessor: typeof accessorType,
+  showCommonTokens: boolean,
   setup: boolean = true
 ) {
   await setTextModelOnDiffEditor(category, metadata, diffEditor, $accessor)
@@ -39,10 +45,18 @@ export async function setupDisplayedFileOnDiffEditor(
       $accessor
     )
     setupEditingElement(category, $accessor.draft.editingElement[category])
+    await initCommonTokensMap($accessor)
+    if (showCommonTokens)
+      await setupCommonTokensDecorationsOnDiffEditor(
+        category,
+        metadata,
+        diffEditor,
+        $accessor
+      )
   }
 }
 
-async function setTextModelOnDiffEditor(
+export async function setTextModelOnDiffEditor(
   category: DiffCategory,
   metadata: FileMetadata,
   diffEditor: monaco.editor.IDiffEditor,
@@ -168,6 +182,47 @@ export async function setupElementWidgetsOnDiffEditor(
       setElementWidgetOnEditor(category, element, editor, $accessor)
     }
   })
+}
+
+export function setupCommonTokensDecorationsOnBothDiffEditor(
+  diffEditor: monaco.editor.IDiffEditor,
+  $accessor: typeof accessorType
+) {
+  const categories: DiffCategory[] = ['before', 'after']
+  categories.forEach((category) => {
+    const metadata = $accessor.draft.displayedFile[category]
+    if (metadata === undefined) return
+    setupCommonTokensDecorationsOnDiffEditor(
+      category,
+      metadata,
+      diffEditor,
+      $accessor
+    )
+  })
+}
+export function clearCommonTokensDecorationsOnBothDiffEditor() {
+  const categories: DiffCategory[] = ['before', 'after']
+  categories.forEach((category) => clearCommonTokensDecorations(category))
+}
+
+function setupCommonTokensDecorationsOnDiffEditor(
+  category: DiffCategory,
+  metadata: FileMetadata,
+  diffEditor: monaco.editor.IDiffEditor,
+  $accessor: typeof accessorType
+) {
+  const draft = $accessor.draft.draft
+  const commit = $accessor.draft.commit
+  if (!draft || !commit) {
+    logger.log('draft or commit is not loaded')
+    return
+  }
+  if (!isExistFile(category, commit, metadata)) return
+
+  clearCommonTokensDecorations(category)
+  const path = getCommitFileName(category, commit, metadata)
+  const editor = getEditor(category, diffEditor)
+  setCommonTokensDecorationOnEditor(path, category, editor)
 }
 
 function getEditor(

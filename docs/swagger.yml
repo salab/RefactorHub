@@ -793,11 +793,36 @@ components:
           type: string
         previousName:
           type: string
+        patch:
+          type: string
+        diffHunks:
+          type: array
+          items:
+            $ref: "#/components/schemas/DiffHunk"
       required:
         - sha
         - status
         - name
         - previousName
+        - patch
+        - diffHunks
+    DiffHunk:
+      type: object
+      properties:
+        before:
+          $ref: "#/components/schemas/Hunk"
+        after:
+          $ref: "#/components/schemas/Hunk"
+    Hunk:
+      type: object
+      properties:
+        startLine:
+          type: integer
+        endLine:
+          type: integer
+      required:
+        - startLine
+        - endLine
 
     Refactoring:
       type: object
@@ -932,11 +957,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CodeElement"
+        tokens:
+          type: array
+          items:
+            $ref: "#/components/schemas/Token"
       required:
         - text
         - extension
         - uri
         - elements
+        - tokens
 
     CodeElement:
       type: object
@@ -1062,6 +1092,31 @@ components:
       required:
         - category
         - name
+
+    Token:
+      type: object
+      properties:
+        raw:
+          type: string
+          description: the raw string of this token
+        start:
+          type: integer
+          description: where raw[0] is in the file text (0-indexed)
+        end:
+          type: integer
+          description: where raw[raw.length-1] is in the file text (0-indexed)
+        isSymbol:
+          type: boolean
+          description: whether this token is a symbol such as ";", ".", "+=", "("......
+        isComment:
+          type: boolean
+          description: whether this token is a comment such as "// comment", "/* block comment */", "/** JavaDoc */"
+      required:
+        - raw
+        - start
+        - end
+        - isSymbol
+        - isComment
 
     Action:
       type: object

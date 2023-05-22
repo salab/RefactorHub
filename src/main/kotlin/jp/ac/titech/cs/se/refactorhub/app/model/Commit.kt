@@ -1,6 +1,7 @@
 package jp.ac.titech.cs.se.refactorhub.app.model
 
 import jp.ac.titech.cs.se.refactorhub.core.model.Commit
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.DiffHunk
 import java.util.Date
 
 data class Commit(
@@ -26,7 +27,8 @@ data class CommitFile(
     val status: CommitFileStatus,
     val name: String,
     val previousName: String,
-    val patch: String
+    val patch: String,
+    val diffHunks: List<DiffHunk>
 )
 
 @Suppress("EnumEntryName")

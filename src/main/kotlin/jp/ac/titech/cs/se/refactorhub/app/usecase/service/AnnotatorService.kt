@@ -54,7 +54,8 @@ class AnnotatorService : KoinComponent {
                             it.name
                         )
                     ),
-                    it.patch
+                    it.patch,
+                    it.diffHunks
                 )
             }
         )

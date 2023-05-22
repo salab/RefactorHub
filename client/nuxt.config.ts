@@ -1,7 +1,7 @@
 import { NuxtConfig } from '@nuxt/types'
 import MonacoEditorWebpackPlugin from 'monaco-editor-webpack-plugin'
 
-export default {
+const config: NuxtConfig = {
   srcDir: 'src',
   ssr: false,
   target: 'static',
@@ -54,4 +54,8 @@ export default {
     '/api': process.env.API_URL || 'http://localhost:8080',
     '/login': 'http://localhost:8080',
   },
-} as NuxtConfig
+  generate: {
+    devtools: true,
+  },
+}
+export default config

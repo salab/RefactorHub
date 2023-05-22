@@ -10,7 +10,8 @@ data class CommitContent(
     data class FilePair(
         val before: File,
         val after: File,
-        val patch: String
+        val patch: String,
+        val diffHunks: List<DiffHunk>
     ) {
         fun get(category: DiffCategory) = if (category == DiffCategory.before) before else after
     }
@@ -18,5 +19,15 @@ data class CommitContent(
     data class File(
         val name: String,
         val content: FileContent
+    )
+}
+
+data class DiffHunk(
+    val before: Hunk?,
+    val after: Hunk?
+) {
+    data class Hunk(
+        val startLine: Int,
+        val endLine: Int
     )
 }
