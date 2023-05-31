@@ -554,3 +554,10 @@ export default defineComponent({
   // .commonTokens-decoration {}
 }
 </style>
+<style lang="scss">
+*,
+::before,
+::after {
+  background-repeat: repeat !important; // in order to display shaded area in diff editor
+}
+</style>
