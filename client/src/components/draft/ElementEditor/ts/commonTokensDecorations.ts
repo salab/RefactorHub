@@ -87,6 +87,12 @@ export class CommonTokens {
     return resultSet
   }
 
+  public get joinedRaw(): string {
+    return this.tokens
+      .map((token) => token.raw.replace('\r', '').replace('\n', ''))
+      .join(' ')
+  }
+
   public equals(other: CommonTokens): boolean {
     if (this.path !== other.path) return false
     if (this.category !== other.category) return false
@@ -148,13 +154,16 @@ class CommonTokensSetMap {
     return new Set(commonTokensSetEntry.commonTokensSet)
   }
 
-  public getCommonTokensSetWithRaws(raws: string[]): Set<CommonTokens> {
-    const commonTokensSetEntry = this.commonTokensSetMap.find((entry) =>
-      this.rawsMatches(
-        entry.tokens.map((t) => t.raw),
-        raws
+  public getCommonTokensSetWithRaws(
+    commonTokensRaw: string
+  ): Set<CommonTokens> {
+    const commonTokensSetEntry = this.commonTokensSetMap.find((entry) => {
+      return (
+        entry.tokens
+          .map((t) => t.raw.replace('\r', '').replace('\n', ''))
+          .join(' ') === commonTokensRaw
       )
-    )
+    })
     if (!commonTokensSetEntry) return new Set()
     return new Set(commonTokensSetEntry.commonTokensSet)
   }
@@ -187,14 +196,6 @@ class CommonTokensSetMap {
     if (tokens1.length !== tokens2.length) return false
     for (let i = 0; i < tokens1.length; i++) {
       if (!tokens1[i].matches(tokens2[i])) return false
-    }
-    return true
-  }
-
-  private rawsMatches(raws1: string[], raws2: string[]): boolean {
-    if (raws1.length !== raws2.length) return false
-    for (let i = 0; i < raws1.length; i++) {
-      if (raws1[i] !== raws2[i]) return false
     }
     return true
   }
@@ -405,8 +406,8 @@ export function clearCommonTokensDecorations(category: DiffCategory) {
   decorationMetadataMap[category].clear()
 }
 
-export function getCommonTokensSetOf(raws: string[]) {
-  return commonTokensSetMap.getCommonTokensSetWithRaws(raws)
+export function getCommonTokensSetOf(commonTokensRaw: string) {
+  return commonTokensSetMap.getCommonTokensSetWithRaws(commonTokensRaw)
 }
 
 function createCommonTokensDecoration(
@@ -418,9 +419,7 @@ function createCommonTokensDecoration(
   )
   const hoverMessage = [
     {
-      value: `**View Common Tokens: \`${commonTokens.tokens
-        .map((t) => t.raw)
-        .join(' ')}\`**`,
+      value: `**View Common Tokens: \`${commonTokens.joinedRaw}\`**`,
     },
     {
       value: `(total: ${commonTokensSet.size}, before: ${

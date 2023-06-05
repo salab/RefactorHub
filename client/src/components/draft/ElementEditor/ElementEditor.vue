@@ -349,8 +349,7 @@ export default defineComponent({
             const commonTokensRaw = content.substring(
               'View Common Tokens: '.length
             )
-            const raws = commonTokensRaw.split(' ')
-            const commonTokensSet = getCommonTokensSetOf(raws)
+            const commonTokensSet = getCommonTokensSetOf(commonTokensRaw)
 
             selectedCommonTokens.raw = commonTokensRaw
             selectedCommonTokens.count = commonTokensSet.size
