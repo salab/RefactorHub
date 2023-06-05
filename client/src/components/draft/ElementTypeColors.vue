@@ -20,6 +20,9 @@
     <template v-for="level in [1, 2]">
       .commonTokens-decoration-{{ level }} { border: {{ 3 - level }}px solid;
       border-color: {{ getCommonTokensColor(level, 0.7) }} !important; }
+      .commonTokens-decoration-hovered-{{ level }} { border: {{ 4 - level }}px
+      solid; border-color:
+      {{ getCommonTokensHoveredColor(level, 0.7) }} !important; }
     </template>
   </component>
 </template>
@@ -39,15 +42,24 @@ export default defineComponent({
       return `hsla(${(index * 360) / length}, 100%, 60%, ${alpha})`
     }
     const getCommonTokensColor = (level: number, alpha = 1.0) => {
+      // blue
       const max = 255
       const min = 50
       const value = min + (max - min) / level
       return `rgba(0,0,${value},${alpha})`
     }
+    const getCommonTokensHoveredColor = (level: number, alpha = 1.0) => {
+      // red
+      const max = 255
+      const min = 50
+      const value = min + (max - min) / level
+      return `rgba(${value},0,0,${alpha})`
+    }
     return {
       elementTypes,
       getTypeColor,
       getCommonTokensColor,
+      getCommonTokensHoveredColor,
     }
   },
 })

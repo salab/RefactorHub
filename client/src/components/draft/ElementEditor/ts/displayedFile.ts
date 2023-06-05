@@ -186,7 +186,8 @@ export async function setupElementWidgetsOnDiffEditor(
 
 export function setupCommonTokensDecorationsOnBothDiffEditor(
   diffEditor: monaco.editor.IDiffEditor,
-  $accessor: typeof accessorType
+  $accessor: typeof accessorType,
+  mousePosition?: [DiffCategory, monaco.Position]
 ) {
   const categories: DiffCategory[] = ['before', 'after']
   categories.forEach((category) => {
@@ -196,7 +197,8 @@ export function setupCommonTokensDecorationsOnBothDiffEditor(
       category,
       metadata,
       diffEditor,
-      $accessor
+      $accessor,
+      mousePosition
     )
   })
 }
@@ -209,7 +211,8 @@ function setupCommonTokensDecorationsOnDiffEditor(
   category: DiffCategory,
   metadata: FileMetadata,
   diffEditor: monaco.editor.IDiffEditor,
-  $accessor: typeof accessorType
+  $accessor: typeof accessorType,
+  mousePosition?: [DiffCategory, monaco.Position]
 ) {
   const draft = $accessor.draft.draft
   const commit = $accessor.draft.commit
@@ -222,7 +225,7 @@ function setupCommonTokensDecorationsOnDiffEditor(
   clearCommonTokensDecorations(category)
   const path = getCommitFileName(category, commit, metadata)
   const editor = getEditor(category, diffEditor)
-  setCommonTokensDecorationOnEditor(path, category, editor)
+  setCommonTokensDecorationOnEditor(path, category, editor, mousePosition)
 }
 
 function getEditor(

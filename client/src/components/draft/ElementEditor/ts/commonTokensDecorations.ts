@@ -376,7 +376,8 @@ const decorationMetadataMap: {
 export function setCommonTokensDecorationOnEditor(
   path: string,
   category: DiffCategory,
-  editor: monaco.editor.ICodeEditor
+  editor: monaco.editor.ICodeEditor,
+  mousePosition?: [DiffCategory, monaco.Position]
 ) {
   const model = editor.getModel()
   if (!model) return
@@ -387,7 +388,7 @@ export function setCommonTokensDecorationOnEditor(
   for (const commonTokens of commonTokensList) {
     const [id] = editor.deltaDecorations(
       [],
-      [createCommonTokensDecoration(commonTokens)]
+      [createCommonTokensDecoration(commonTokens, mousePosition)]
     )
     decorationMetadataMap[category].add({
       id,
@@ -409,7 +410,8 @@ export function getCommonTokensSetOf(raws: string[]) {
 }
 
 function createCommonTokensDecoration(
-  commonTokens: CommonTokens
+  commonTokens: CommonTokens,
+  mousePosition?: [DiffCategory, monaco.Position]
 ): monaco.editor.IModelDeltaDecoration {
   const commonTokensSet = commonTokensSetMap.getCommonTokensSet(
     commonTokens.tokens
@@ -430,10 +432,21 @@ function createCommonTokensDecoration(
   ]
   const count = commonTokensSet.size
   const level = count < 3 ? 1 : 2
+  let className = `commonTokens-decoration commonTokens-decoration-${level}`
+  if (mousePosition) {
+    const isHoveredCommonTokens = [...commonTokensSet].some(
+      (c) =>
+        c.category === mousePosition[0] &&
+        c.range.containsPosition(mousePosition[1])
+    )
+    if (isHoveredCommonTokens) {
+      className = `commonTokens-decoration-hovered commonTokens-decoration-hovered-${level}`
+    }
+  }
   return {
     range: commonTokens.range,
     options: {
-      className: `commonTokens-decoration commonTokens-decoration-${level}`,
+      className,
       hoverMessage,
     },
   }

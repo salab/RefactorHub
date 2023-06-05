@@ -367,6 +367,22 @@ export default defineComponent({
       }
       diffEditor.getOriginalEditor().onMouseDown((e) => onMouseDown(e))
       diffEditor.getModifiedEditor().onMouseDown((e) => onMouseDown(e))
+      function onMouseMove(
+        e: monaco.editor.IEditorMouseEvent,
+        diffCategory: DiffCategory
+      ) {
+        if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_TEXT) return
+        if (!showCommonTokens.value || !diffEditor) return
+        setupCommonTokensDecorationsOnBothDiffEditor(
+          diffEditor,
+          $accessor,
+          e.target.position ? [diffCategory, e.target.position] : undefined
+        )
+      }
+      diffEditor
+        .getOriginalEditor()
+        .onMouseMove((e) => onMouseMove(e, 'before'))
+      diffEditor.getModifiedEditor().onMouseMove((e) => onMouseMove(e, 'after'))
 
       diffEditor.addAction({
         id: 'compare_selections',
