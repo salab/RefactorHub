@@ -49,23 +49,51 @@ class TokenDetail implements Token {
     )
   }
 }
+class TokenDetailList {
+  public readonly tokenList: TokenDetail[]
+  public constructor(tokenList: TokenDetail[]) {
+    this.tokenList = tokenList
+  }
+
+  public get joinedRaw(): string {
+    return this.tokenList
+      .map((token) => token.raw.replace('\r', '').replace('\n', ''))
+      .join(' ')
+  }
+
+  public equals(other: TokenDetailList): boolean {
+    if (this.tokenList.length !== other.tokenList.length) return false
+    for (let i = 0; i < this.tokenList.length; i++) {
+      if (!this.tokenList[i].equals(other.tokenList[i])) return false
+    }
+    return true
+  }
+
+  public matches(other: TokenDetailList): boolean {
+    if (this.tokenList.length !== other.tokenList.length) return false
+    for (let i = 0; i < this.tokenList.length; i++) {
+      if (!this.tokenList[i].matches(other.tokenList[i])) return false
+    }
+    return true
+  }
+
+  public matchesJoinedRaw(joinedRaw: string): boolean {
+    return this.joinedRaw === joinedRaw
+  }
+}
 export class CommonTokens {
-  public readonly tokens: TokenDetail[]
+  public readonly tokens: TokenDetailList
   public readonly path: string
   public readonly category: DiffCategory
-  public constructor(
-    tokens: TokenDetail[],
-    path: string,
-    category: DiffCategory
-  ) {
+  public constructor(tokens: TokenDetailList, category: DiffCategory) {
     this.tokens = tokens
-    this.path = path
+    this.path = tokens.tokenList[0].path
     this.category = category
   }
 
   public get range(): Range {
-    const firstToken = this.tokens[0]
-    const lastToken = this.tokens[this.tokens.length - 1]
+    const firstToken = this.tokens.tokenList[0]
+    const lastToken = this.tokens.tokenList[this.tokens.tokenList.length - 1]
     return new Range(
       firstToken.startPosition.lineNumber,
       firstToken.startPosition.column,
@@ -74,48 +102,19 @@ export class CommonTokens {
     )
   }
 
-  public get tokensSubSequences(): Set<CommonTokens> {
-    const tokens = this.tokens
-    const resultSet = new Set<CommonTokens>()
-    for (let i = 0; i < tokens.length; i++) {
-      if (tokens[i].isSymbol) continue
-      for (let j = i; j < tokens.length; j++) {
-        if (tokens[j].isSymbol) continue
-        resultSet.add(this.slice(i, j + 1))
-      }
-    }
-    return resultSet
-  }
-
-  public get joinedRaw(): string {
-    return this.tokens
-      .map((token) => token.raw.replace('\r', '').replace('\n', ''))
-      .join(' ')
-  }
-
   public equals(other: CommonTokens): boolean {
     if (this.path !== other.path) return false
     if (this.category !== other.category) return false
-    for (let i = 0; i < this.tokens.length; i++)
-      if (!this.tokens[i].equals(other.tokens[i])) return false
-    return true
+    return this.tokens.equals(other.tokens)
   }
 
   public isIn(path: string, category: DiffCategory): boolean {
     return this.path === path && this.category === category
   }
-
-  private slice(start?: number, end?: number): CommonTokens {
-    return new CommonTokens(
-      this.tokens.slice(start, end),
-      this.path,
-      this.category
-    )
-  }
 }
 class CommonTokensSetMap {
   private readonly commonTokensSetMap: {
-    /* key */ tokens: TokenDetail[]
+    /* key */ tokens: TokenDetailList
     /* value */ commonTokensSet: CommonTokens[]
   }[] = []
 
@@ -127,10 +126,21 @@ class CommonTokensSetMap {
   }
 
   public add(commonTokens: CommonTokens) {
-    const tokensSubSequences = commonTokens.tokensSubSequences
-    tokensSubSequences.forEach((commonTokens) =>
-      this.addCommonTokens(commonTokens)
+    const commonTokensSetEntry = this.commonTokensSetMap.find(({ tokens }) =>
+      tokens.matches(commonTokens.tokens)
     )
+    if (!commonTokensSetEntry) {
+      this.commonTokensSetMap.push({
+        tokens: commonTokens.tokens,
+        commonTokensSet: [commonTokens],
+      })
+      return
+    }
+    if (
+      commonTokensSetEntry.commonTokensSet.every((c) => !c.equals(commonTokens))
+    ) {
+      commonTokensSetEntry.commonTokensSet.push(commonTokens)
+    }
   }
 
   public getCommonTokensListIn(
@@ -146,9 +156,9 @@ class CommonTokensSetMap {
     return results
   }
 
-  public getCommonTokensSet(tokens: TokenDetail[]): Set<CommonTokens> {
+  public getCommonTokensSet(tokens: TokenDetailList): Set<CommonTokens> {
     const commonTokensSetEntry = this.commonTokensSetMap.find((entry) =>
-      this.tokensMatches(entry.tokens, tokens)
+      entry.tokens.matches(tokens)
     )
     if (!commonTokensSetEntry) return new Set()
     return new Set(commonTokensSetEntry.commonTokensSet)
@@ -157,13 +167,9 @@ class CommonTokensSetMap {
   public getCommonTokensSetWithRaws(
     commonTokensRaw: string
   ): Set<CommonTokens> {
-    const commonTokensSetEntry = this.commonTokensSetMap.find((entry) => {
-      return (
-        entry.tokens
-          .map((t) => t.raw.replace('\r', '').replace('\n', ''))
-          .join(' ') === commonTokensRaw
-      )
-    })
+    const commonTokensSetEntry = this.commonTokensSetMap.find(({ tokens }) =>
+      tokens.matchesJoinedRaw(commonTokensRaw)
+    )
     if (!commonTokensSetEntry) return new Set()
     return new Set(commonTokensSetEntry.commonTokensSet)
   }
@@ -171,33 +177,6 @@ class CommonTokensSetMap {
   public reset(sha: string) {
     this._sha = sha
     this.commonTokensSetMap.length = 0
-  }
-
-  private addCommonTokens(commonTokens: CommonTokens) {
-    const tokens = commonTokens.tokens
-    const commonTokensSetEntry = this.commonTokensSetMap.find((entry) =>
-      this.tokensMatches(entry.tokens, tokens)
-    )
-    if (!commonTokensSetEntry) {
-      this.commonTokensSetMap.push({ tokens, commonTokensSet: [commonTokens] })
-      return
-    }
-    if (
-      commonTokensSetEntry.commonTokensSet.every((c) => !c.equals(commonTokens))
-    ) {
-      commonTokensSetEntry.commonTokensSet.push(commonTokens)
-    }
-  }
-
-  private tokensMatches(
-    tokens1: TokenDetail[],
-    tokens2: TokenDetail[]
-  ): boolean {
-    if (tokens1.length !== tokens2.length) return false
-    for (let i = 0; i < tokens1.length; i++) {
-      if (!tokens1[i].matches(tokens2[i])) return false
-    }
-    return true
   }
 }
 
@@ -208,11 +187,16 @@ export async function initCommonTokensMap($accessor: typeof accessorType) {
   if (!commit) return
   const { owner, repository, files, sha } = commit
   if (sha === commonTokensSetMap.sha) return // no need for re-analyze
+  commonTokensSetMap.reset(sha)
+
   const diffHunkTokens: {
-    [category in DiffCategory]: (TokenDetail | 'diffHunkSeparator')[]
+    [category in DiffCategory]: {
+      token: TokenDetail | 'diffHunkSeparator'
+      isCommonToken: boolean
+    }[]
   } = {
-    before: [],
-    after: [],
+    before: [{ token: 'diffHunkSeparator', isCommonToken: false }],
+    after: [{ token: 'diffHunkSeparator', isCommonToken: false }],
   }
   for (const file of files) {
     const diffHunkRanges: { [category in DiffCategory]: Range[] } = {
@@ -276,95 +260,164 @@ export async function initCommonTokensMap($accessor: typeof accessorType) {
             endPosition.column + 1
           )
           if (diffHunkRange.intersectRanges(tokenRange)) {
-            diffHunkTokens[category].push(
-              new TokenDetail(token, path, startPosition, endPosition)
-            )
+            diffHunkTokens[category].push({
+              token: new TokenDetail(token, path, startPosition, endPosition),
+              isCommonToken: false,
+            })
           }
         })
-        diffHunkTokens[category].push('diffHunkSeparator')
+        diffHunkTokens[category].push({
+          token: 'diffHunkSeparator',
+          isCommonToken: false,
+        })
       })
     }
     addDiffHunkTokens('before')
     addDiffHunkTokens('after')
-    diffHunkTokens.before.push('diffHunkSeparator')
-    diffHunkTokens.after.push('diffHunkSeparator')
   }
 
-  commonTokensSetMap.reset(sha)
-  const chainScoreTable: number[][] = []
-  function checkCommonTokens(beforeI: number, afterI: number) {
-    const maxScore = chainScoreTable[beforeI][afterI]
-    if (maxScore === 0) return
-    let startIPair: { beforeI: number; afterI: number } | undefined
-    let endIPair: { beforeI: number; afterI: number } | undefined
-    let i = 1
+  const scoreTable: number[][] = [] // number[beforeIndex][afterIndex]
+  const detectedCommonTokensArray: TokenDetailList[] = []
+  function addDetectedCommonTokens(tokens: TokenDetailList) {
+    if (detectedCommonTokensArray.some((t) => t.matches(tokens))) return
+    detectedCommonTokensArray.push(tokens)
+  }
+
+  function registerCommonTokens(beforeI: number, afterI: number) {
+    if (scoreTable[beforeI][afterI] < 2) return
+    const commonTokenList: TokenDetail[] = []
+    let i = 0
     while (beforeI >= i && afterI >= i) {
-      const score = chainScoreTable[beforeI - i][afterI - i]
-      if (endIPair === undefined && maxScore !== score) {
-        endIPair = { beforeI: beforeI - i + 1, afterI: afterI - i + 1 }
-      }
-      if (score === 0) {
-        startIPair = { beforeI: beforeI - i + 1, afterI: afterI - i + 1 }
-        break
-      }
+      const token = diffHunkTokens.before[beforeI - i].token
+      const score = scoreTable[beforeI - i][afterI - i]
+      if (token === 'diffHunkSeparator' || score === 0) break
+      diffHunkTokens.before[beforeI - i].isCommonToken = true
+      diffHunkTokens.after[afterI - i].isCommonToken = true
+      commonTokenList.unshift(token)
       i++
     }
-    i = Math.min(beforeI, afterI)
-    if (!endIPair) endIPair = { beforeI: beforeI - i, afterI: afterI - i }
-    if (!startIPair) startIPair = { beforeI: beforeI - i, afterI: afterI - i }
-    const tokensBefore = diffHunkTokens.before.slice(
-      startIPair.beforeI,
-      endIPair.beforeI + 1
-    ) as TokenDetail[]
-    const commonTokensBefore = new CommonTokens(
-      tokensBefore,
-      tokensBefore[0].path,
-      'before'
-    )
-    commonTokensSetMap.add(commonTokensBefore)
-    const tokensAfter = diffHunkTokens.after.slice(
-      startIPair.afterI,
-      endIPair.afterI + 1
-    ) as TokenDetail[]
-    const commonTokensAfter = new CommonTokens(
-      tokensAfter,
-      tokensAfter[0].path,
-      'after'
-    )
-    commonTokensSetMap.add(commonTokensAfter)
+    addDetectedCommonTokens(new TokenDetailList(commonTokenList))
   }
   for (let beforeI = 0; beforeI < diffHunkTokens.before.length; beforeI++) {
-    chainScoreTable[beforeI] = []
+    scoreTable[beforeI] = []
+    const tokenBefore = diffHunkTokens.before[beforeI].token
     for (let afterI = 0; afterI < diffHunkTokens.after.length; afterI++) {
-      const tokenBefore = diffHunkTokens.before[beforeI]
-      const tokenAfter = diffHunkTokens.after[afterI]
+      const tokenAfter = diffHunkTokens.after[afterI].token
       if (beforeI === 0 || afterI === 0) {
         if (
-          tokenBefore === 'diffHunkSeparator' ||
-          tokenAfter === 'diffHunkSeparator' ||
-          !tokenBefore.matches(tokenAfter) ||
-          tokenBefore.isSymbol
+          tokenBefore !== 'diffHunkSeparator' &&
+          tokenAfter !== 'diffHunkSeparator'
         ) {
-          chainScoreTable[beforeI][afterI] = 0
-          continue
+          throw new Error(
+            `First row or column should be diffHunkSeparator; tokenBefore=${tokenBefore}, tokenAfter=${tokenAfter}`
+          )
         }
-        chainScoreTable[beforeI][afterI] = 1
+        scoreTable[beforeI][afterI] = 0
         continue
       }
+      const preScore = scoreTable[beforeI - 1][afterI - 1]
       if (
         tokenBefore === 'diffHunkSeparator' ||
         tokenAfter === 'diffHunkSeparator' ||
         !tokenBefore.matches(tokenAfter)
       ) {
-        checkCommonTokens(beforeI - 1, afterI - 1)
-        chainScoreTable[beforeI][afterI] = 0
+        scoreTable[beforeI][afterI] = 0
+        if (preScore >= 2) registerCommonTokens(beforeI - 1, afterI - 1)
         continue
       }
-      chainScoreTable[beforeI][afterI] =
-        chainScoreTable[beforeI - 1][afterI - 1] +
-        (!tokenBefore.isSymbol ? 1 : 0)
+      if (tokenBefore.isSymbol) {
+        scoreTable[beforeI][afterI] =
+          preScore % 2 === 0 ? preScore + 1 : preScore
+      } else {
+        scoreTable[beforeI][afterI] = preScore < 2 ? preScore + 2 : preScore
+      }
     }
   }
+
+  const commonTokens: {
+    [category in DiffCategory]: (TokenDetail | 'sequenceSeparator')[]
+  } = {
+    before: [],
+    after: [],
+  }
+  function addCommonTokens(category: DiffCategory) {
+    let alreadyAddedSequenceSeparator = false
+    for (const { token, isCommonToken } of diffHunkTokens[category]) {
+      if (token === 'diffHunkSeparator' || !isCommonToken) {
+        if (alreadyAddedSequenceSeparator) continue
+        commonTokens[category].push('sequenceSeparator')
+        alreadyAddedSequenceSeparator = true
+        continue
+      }
+      commonTokens[category].push(token)
+      alreadyAddedSequenceSeparator = false
+    }
+  }
+  addCommonTokens('before')
+  addCommonTokens('after')
+
+  const detectedCommonTokens: (TokenDetail | 'sequenceSeparator')[] = [
+    'sequenceSeparator',
+  ]
+  for (const tokens of detectedCommonTokensArray) {
+    detectedCommonTokens.push(...tokens.tokenList, 'sequenceSeparator')
+  }
+
+  function checkAndRegisterCommonTokens(category: DiffCategory) {
+    function checkCommonTokens(detectedI: number, tokenI: number) {
+      if (!flagTable[detectedI][tokenI]) return
+      const commonTokenList: TokenDetail[] = []
+      let i = 0
+      while (detectedI >= i && tokenI >= i) {
+        const token = commonTokens[category][tokenI - i]
+        const flag = flagTable[detectedI - i][tokenI - i]
+        if (token === 'sequenceSeparator' || !flag) break
+        commonTokenList.unshift(token)
+        i++
+      }
+      const detectedToken = detectedCommonTokens[detectedI - i]
+      if (detectedToken !== 'sequenceSeparator') return
+      commonTokensSetMap.add(
+        new CommonTokens(new TokenDetailList(commonTokenList), category)
+      )
+    }
+
+    const flagTable: boolean[][] = []
+    for (
+      let detectedI = 0;
+      detectedI < detectedCommonTokens.length;
+      detectedI++
+    ) {
+      flagTable[detectedI] = []
+      const detectedToken = detectedCommonTokens[detectedI]
+      for (let tokenI = 0; tokenI < commonTokens[category].length; tokenI++) {
+        const commonToken = commonTokens[category][tokenI]
+        if (detectedI === 0 || tokenI === 0) {
+          if (
+            detectedToken !== 'sequenceSeparator' &&
+            commonToken !== 'sequenceSeparator'
+          ) {
+            throw new Error(
+              `First row or column should be sequenceSeparator; detectedToken=${detectedToken}, commonToken=${commonToken}`
+            )
+          }
+          flagTable[detectedI][tokenI] = false
+          continue
+        }
+        const preFlag = flagTable[detectedI - 1][tokenI - 1]
+        if (detectedToken === 'sequenceSeparator') {
+          flagTable[detectedI][tokenI] = false
+          if (preFlag) checkCommonTokens(detectedI - 1, tokenI - 1)
+          continue
+        }
+        flagTable[detectedI][tokenI] =
+          commonToken !== 'sequenceSeparator' &&
+          detectedToken.matches(commonToken)
+      }
+    }
+  }
+  checkAndRegisterCommonTokens('before')
+  checkAndRegisterCommonTokens('after')
 }
 
 const currentDecorations: {
@@ -455,7 +508,7 @@ function createCommonTokensDecoration(
   )
   const hoverMessage = [
     {
-      value: `**View Common Tokens: \`${commonTokens.joinedRaw}\`**`,
+      value: `**View Common Tokens: \`${commonTokens.tokens.joinedRaw}\`**`,
     },
     {
       value: `(total: ${commonTokensSet.size}, before: ${
