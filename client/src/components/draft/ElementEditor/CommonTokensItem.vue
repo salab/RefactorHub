@@ -108,7 +108,11 @@ export default defineComponent({
             [],
             [createCommonTokensDecoration(props.count, props.commonTokens)]
           )
-          editor.revealRangeInCenter(props.commonTokens.range)
+          setTimeout(
+            () => editor.revealRangeInCenter(props.commonTokens.range),
+            100
+          )
+
           disposables.forEach((it) => it.dispose())
         })
       )

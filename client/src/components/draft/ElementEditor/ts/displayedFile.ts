@@ -82,8 +82,10 @@ export async function setTextModelOnDiffEditor(
   const disposables: monaco.IDisposable[] = []
   disposables.push(
     diffEditor.onDidUpdateDiff(() => {
-      if (metadata.lineNumber)
-        getEditor(category, diffEditor).revealLineNearTop(metadata.lineNumber)
+      setTimeout(() => {
+        if (metadata.lineNumber)
+          getEditor(category, diffEditor).revealLineNearTop(metadata.lineNumber)
+      }, 100)
       disposables.forEach((it) => it.dispose())
     })
   )
