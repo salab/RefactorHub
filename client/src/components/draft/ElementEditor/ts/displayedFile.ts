@@ -7,6 +7,7 @@ import {
   clearCommonTokensDecorations,
   initCommonTokensMap,
   setCommonTokensDecorationOnEditor,
+  updateCommonTokensDecorationOnEditor,
 } from '@/components/draft/ElementEditor/ts/commonTokensDecorations'
 import {
   setElementDecorationOnEditor,
@@ -202,6 +203,16 @@ export function setupCommonTokensDecorationsOnBothDiffEditor(
       $accessor,
       mousePosition
     )
+  })
+}
+export function updateCommonTokensDecorationsOnBothDiffEditor(
+  diffEditor: monaco.editor.IDiffEditor,
+  mousePosition?: [DiffCategory, monaco.Position]
+) {
+  const categories: DiffCategory[] = ['before', 'after']
+  categories.forEach((category) => {
+    const editor = getEditor(category, diffEditor)
+    updateCommonTokensDecorationOnEditor(category, editor, mousePosition)
   })
 }
 export function clearCommonTokensDecorationsOnBothDiffEditor() {

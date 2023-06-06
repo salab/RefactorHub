@@ -161,6 +161,7 @@ import {
   setupElementDecorationsOnDiffEditor,
   setupElementWidgetsOnDiffEditor,
   setupCommonTokensDecorationsOnBothDiffEditor,
+  updateCommonTokensDecorationsOnBothDiffEditor,
   clearCommonTokensDecorationsOnBothDiffEditor,
 } from './ts/displayedFile'
 import { setupEditingElement } from './ts/editingElement'
@@ -372,9 +373,8 @@ export default defineComponent({
       ) {
         if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_TEXT) return
         if (!showCommonTokens.value || !diffEditor) return
-        setupCommonTokensDecorationsOnBothDiffEditor(
+        updateCommonTokensDecorationsOnBothDiffEditor(
           diffEditor,
-          $accessor,
           e.target.position ? [diffCategory, e.target.position] : undefined
         )
       }

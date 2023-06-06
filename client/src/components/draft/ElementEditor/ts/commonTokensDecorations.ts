@@ -367,8 +367,12 @@ export async function initCommonTokensMap($accessor: typeof accessorType) {
   }
 }
 
-const decorationMetadataMap: {
-  [category in DiffCategory]: Set<DecorationMetadata>
+const currentDecorations: {
+  [category in DiffCategory]: Set<{
+    commonTokens: CommonTokens
+    isHovered: boolean
+    metadata: DecorationMetadata
+  }>
 } = {
   before: new Set(),
   after: new Set(),
@@ -387,23 +391,55 @@ export function setCommonTokensDecorationOnEditor(
     category
   )
   for (const commonTokens of commonTokensList) {
-    const [id] = editor.deltaDecorations(
-      [],
-      [createCommonTokensDecoration(commonTokens, mousePosition)]
+    const { decoration, isHovered } = createCommonTokensDecoration(
+      commonTokens,
+      mousePosition
     )
-    decorationMetadataMap[category].add({
-      id,
-      uri: model.uri.toString(),
+    const [id] = editor.deltaDecorations([], [decoration])
+    currentDecorations[category].add({
+      commonTokens,
+      isHovered,
+      metadata: {
+        id,
+        uri: model.uri.toString(),
+      },
+    })
+  }
+}
+export function updateCommonTokensDecorationOnEditor(
+  category: DiffCategory,
+  editor: monaco.editor.ICodeEditor,
+  mousePosition?: [DiffCategory, monaco.Position]
+) {
+  const model = editor.getModel()
+  if (!model) return
+  for (const decoration of [...currentDecorations[category]]) {
+    const { commonTokens, isHovered, metadata } = decoration
+    if (!mousePosition && !isHovered) continue
+    const {
+      decoration: updatedDecoration,
+      isHovered: updatedIsHovered,
+    } = createCommonTokensDecoration(commonTokens, mousePosition)
+    if (isHovered === updatedIsHovered) continue
+    const [id] = editor.deltaDecorations([metadata.id], [updatedDecoration])
+    currentDecorations[category].delete(decoration)
+    currentDecorations[category].add({
+      commonTokens,
+      isHovered: updatedIsHovered,
+      metadata: {
+        id,
+        uri: model.uri.toString(),
+      },
     })
   }
 }
 
 export function clearCommonTokensDecorations(category: DiffCategory) {
-  decorationMetadataMap[category].forEach((metadata) => {
+  currentDecorations[category].forEach(({ metadata }) => {
     const model = monaco.editor.getModel(monaco.Uri.parse(metadata.uri))
     if (model) model.deltaDecorations([metadata.id], [])
   })
-  decorationMetadataMap[category].clear()
+  currentDecorations[category].clear()
 }
 
 export function getCommonTokensSetOf(commonTokensRaw: string) {
@@ -413,7 +449,7 @@ export function getCommonTokensSetOf(commonTokensRaw: string) {
 function createCommonTokensDecoration(
   commonTokens: CommonTokens,
   mousePosition?: [DiffCategory, monaco.Position]
-): monaco.editor.IModelDeltaDecoration {
+): { decoration: monaco.editor.IModelDeltaDecoration; isHovered: boolean } {
   const commonTokensSet = commonTokensSetMap.getCommonTokensSet(
     commonTokens.tokens
   )
@@ -431,23 +467,25 @@ function createCommonTokensDecoration(
   ]
   const count = commonTokensSet.size
   const level = count < 3 ? 1 : 2
-  let className = `commonTokens-decoration commonTokens-decoration-${level}`
-  if (mousePosition) {
-    const isHoveredCommonTokens = [...commonTokensSet].some(
+  const isHoveredCommonTokens =
+    !!mousePosition &&
+    [...commonTokensSet].some(
       (c) =>
         c.category === mousePosition[0] &&
         c.range.containsPosition(mousePosition[1])
     )
-    if (isHoveredCommonTokens) {
-      className = `commonTokens-decoration-hovered commonTokens-decoration-hovered-${level}`
-    }
-  }
+  const className = isHoveredCommonTokens
+    ? `commonTokens-decoration-hovered commonTokens-decoration-hovered-${level}`
+    : `commonTokens-decoration commonTokens-decoration-${level}`
   return {
-    range: commonTokens.range,
-    options: {
-      className,
-      hoverMessage,
+    decoration: {
+      range: commonTokens.range,
+      options: {
+        className,
+        hoverMessage,
+      },
     },
+    isHovered: isHoveredCommonTokens,
   }
 }
 
