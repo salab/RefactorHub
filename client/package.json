@@ -32,7 +32,7 @@
     "crypto-random-string": "^3.3.0",
     "lodash-es": "^4.17.20",
     "monaco-editor": "^0.22.3",
-    "nuxt": "^2.14.12",
+    "nuxt": "^3.4.3",
     "nuxt-typed-vuex": "^0.1.22",
     "object-hash": "^2.1.1"
   },
