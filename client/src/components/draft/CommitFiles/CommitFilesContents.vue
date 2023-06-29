@@ -52,14 +52,34 @@ export default defineComponent({
     const index = ref<number>()
 
     const onClickItem = (value: number) => {
-      log(ActionName.SetDisplayedFile, ActionType.Client, {
-        category: props.category,
-        file: { index: value },
-      })
-      $accessor.draft.setDisplayedFile({
-        category: props.category,
-        file: { index: value },
-      })
+      // log(ActionName.SetDisplayedFile, ActionType.Client, {
+      //   category: props.category,
+      //   file: { index: value },
+      // })
+      // $accessor.draft.setDisplayedFile({
+      //   category: props.category,
+      //   file: { index: value },
+      // })
+      if ($accessor.draft.displayedFile.before?.index !== value) {
+        log(ActionName.SetDisplayedFile, ActionType.Client, {
+          category: 'before',
+          file: { index: value },
+        })
+        $accessor.draft.setDisplayedFile({
+          category: 'before',
+          file: { index: value },
+        })
+      }
+      if ($accessor.draft.displayedFile.after?.index !== value) {
+        log(ActionName.SetDisplayedFile, ActionType.Client, {
+          category: 'after',
+          file: { index: value },
+        })
+        $accessor.draft.setDisplayedFile({
+          category: 'after',
+          file: { index: value },
+        })
+      }
     }
 
     watch(

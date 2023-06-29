@@ -218,7 +218,8 @@ export default defineComponent({
       console.log('onChangeDisplayedFileMetadata')
       if (!metadata) return
       const diffEditor = editorRef.value?.diffEditor
-      if (!diffEditor) {
+      const computeDiffWrapper = editorRef.value?.computeDiffWrapper
+      if (!diffEditor || !computeDiffWrapper) {
         logger.log('diffEditor is not loaded')
         return
       }
@@ -228,6 +229,7 @@ export default defineComponent({
         category,
         metadata,
         diffEditor,
+        computeDiffWrapper,
         $accessor,
         showCommonTokens.value,
         !lock[category]

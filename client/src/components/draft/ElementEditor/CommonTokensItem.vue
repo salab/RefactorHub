@@ -80,7 +80,8 @@ export default defineComponent({
     const commonTokensEditorRef = ref<InstanceType<typeof MonacoEditor>>()
     onMounted(() => {
       const diffEditor = commonTokensEditorRef.value?.diffEditor
-      if (!diffEditor) {
+      const computeDiffWrapper = commonTokensEditorRef.value?.computeDiffWrapper
+      if (!diffEditor || !computeDiffWrapper) {
         logger.log('commonTokensEditor is not loaded')
         return
       }
@@ -90,8 +91,20 @@ export default defineComponent({
         return
       }
 
-      setTextModelOnDiffEditor('before', { index }, diffEditor, $accessor)
-      setTextModelOnDiffEditor('after', { index }, diffEditor, $accessor)
+      setTextModelOnDiffEditor(
+        'before',
+        { index },
+        diffEditor,
+        computeDiffWrapper,
+        $accessor
+      )
+      setTextModelOnDiffEditor(
+        'after',
+        { index },
+        diffEditor,
+        computeDiffWrapper,
+        $accessor
+      )
 
       if (props.commonTokens.category === 'after') {
         commonTokensEditorRef.value?.$el.classList.add('x-50')

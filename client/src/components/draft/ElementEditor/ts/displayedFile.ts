@@ -27,11 +27,20 @@ export async function setupDisplayedFileOnDiffEditor(
   category: DiffCategory,
   metadata: FileMetadata,
   diffEditor: monaco.editor.IDiffEditor,
+  computeDiffWrapper: {
+    computeDiff: () => monaco.editor.IDocumentDiff
+  },
   $accessor: typeof accessorType,
   showCommonTokens: boolean,
   setup: boolean = true
 ) {
-  await setTextModelOnDiffEditor(category, metadata, diffEditor, $accessor)
+  await setTextModelOnDiffEditor(
+    category,
+    metadata,
+    diffEditor,
+    computeDiffWrapper,
+    $accessor
+  )
   if (setup) {
     await setupElementDecorationsOnDiffEditor(
       category,
@@ -61,25 +70,70 @@ export async function setTextModelOnDiffEditor(
   category: DiffCategory,
   metadata: FileMetadata,
   diffEditor: monaco.editor.IDiffEditor,
+  computeDiffWrapper: {
+    computeDiff: () => monaco.editor.IDocumentDiff
+  },
   $accessor: typeof accessorType
 ) {
-  const textModel = await getTextModelOfFile(category, metadata, $accessor)
-  if (!textModel) return
-  if (category === 'before') {
-    diffEditor.setModel({
-      original: textModel,
-      modified:
-        diffEditor.getModifiedEditor().getModel() ||
-        monaco.editor.createModel('', 'text/plain'),
-    })
-  } else if (category === 'after') {
-    diffEditor.setModel({
-      original:
-        diffEditor.getOriginalEditor().getModel() ||
-        monaco.editor.createModel('', 'text/plain'),
-      modified: textModel,
-    })
+  const commit = $accessor.draft.commit
+  if (!commit) {
+    logger.log('commit is not loaded')
+    return
   }
+  const file = commit.files[metadata.index]
+
+  const changes: monaco.editor.LineRangeMapping[] = []
+  let beforeLineNumber = 0
+  let afterLineNumber = 0
+  for (const { before, after } of file.diffHunks) {
+    if (before) {
+      if (!after) afterLineNumber += before.startLine - beforeLineNumber
+      beforeLineNumber = before.startLine
+    }
+    if (after) {
+      if (!before) beforeLineNumber += after.startLine - afterLineNumber
+      afterLineNumber = after.startLine
+    }
+    const originalRange = before
+      ? new monaco.editor.LineRange(beforeLineNumber, before.endLine + 1)
+      : new monaco.editor.LineRange(beforeLineNumber, beforeLineNumber)
+    const modifiedRange = after
+      ? new monaco.editor.LineRange(afterLineNumber, after.endLine + 1)
+      : new monaco.editor.LineRange(afterLineNumber, afterLineNumber)
+    if (before) beforeLineNumber = before.endLine + 1
+    if (after) afterLineNumber = after.endLine + 1
+    changes.push(
+      new monaco.editor.LineRangeMapping(
+        originalRange,
+        modifiedRange,
+        undefined
+      )
+    )
+  }
+
+  computeDiffWrapper.computeDiff = () => ({
+    identical: file.diffHunks.length === 0,
+    quitEarly: false,
+    changes,
+  })
+
+  const originalTextModel = await getTextModelOfFile(
+    'before',
+    metadata,
+    $accessor,
+    commit
+  )
+  const modifiedTextModel = await getTextModelOfFile(
+    'after',
+    metadata,
+    $accessor,
+    commit
+  )
+  diffEditor.setModel({
+    original: originalTextModel,
+    modified: modifiedTextModel,
+  })
+
   const disposables: monaco.IDisposable[] = []
   disposables.push(
     diffEditor.onDidUpdateDiff(() => {
@@ -95,13 +149,9 @@ export async function setTextModelOnDiffEditor(
 async function getTextModelOfFile(
   category: DiffCategory,
   metadata: FileMetadata,
-  $accessor: typeof accessorType
+  $accessor: typeof accessorType,
+  commit: CommitDetail
 ) {
-  const commit = $accessor.draft.commit
-  if (!commit) {
-    logger.log('commit is not loaded')
-    return
-  }
   if (!isExistFile(category, commit, metadata))
     return monaco.editor.createModel('', 'text/plain')
 

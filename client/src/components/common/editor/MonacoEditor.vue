@@ -19,6 +19,15 @@ export default defineComponent({
   setup() {
     const id = cryptoRandomString({ length: 10 })
     const diffEditor = ref<monaco.editor.IStandaloneDiffEditor>()
+    const computeDiffWrapper: {
+      computeDiff: () => monaco.editor.IDocumentDiff
+    } = {
+      computeDiff: () => ({
+        identical: false,
+        quitEarly: false,
+        changes: [],
+      }),
+    }
 
     onMounted(() => {
       const container = document.getElementById(id)
@@ -28,6 +37,13 @@ export default defineComponent({
           automaticLayout: true,
           readOnly: true,
           scrollBeyondLastLine: false,
+          diffAlgorithm: {
+            onDidChange: () => ({ dispose: () => {} }),
+            computeDiff: () =>
+              new Promise((resolve) =>
+                resolve(computeDiffWrapper.computeDiff())
+              ),
+          },
         })
       }
     })
@@ -35,6 +51,7 @@ export default defineComponent({
     return {
       id,
       diffEditor,
+      computeDiffWrapper,
     }
   },
 })
