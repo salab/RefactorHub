@@ -18,11 +18,14 @@
       }
     </template>
     <template v-for="level in [1, 2]">
-      .commonTokens-decoration-{{ level }} { border: {{ 3 - level }}px solid;
-      border-color: {{ getCommonTokensColor(level, 0.7) }} !important; }
-      .commonTokens-decoration-hovered-{{ level }} { border: {{ 4 - level }}px
-      solid; border-color:
-      {{ getCommonTokensHoveredColor(level, 0.7) }} !important; }
+      <template v-for="colorType in [0, 1, 2, 3, 4]">
+        .commonTokens-decoration-{{ level }}-{{ colorType }} { border:
+        {{ 2 / (level * level) }}px solid; border-color:
+        {{ getColorfulCommonTokensColor(level, colorType, 0.7) }} !important; }
+        .commonTokens-decoration-hovered-{{ level }} { border:
+        {{ 2 / (level * level) + 2 }}px solid; border-color:
+        {{ getCommonTokensHoveredColor(level, 0.7) }} !important; }
+      </template>
     </template>
   </component>
 </template>
@@ -48,10 +51,20 @@ export default defineComponent({
       const value = min + (max - min) / level
       return `rgba(0,0,${value},${alpha})`
     }
+    const getColorfulCommonTokensColor = (
+      level: number,
+      colorType: number,
+      alpha = 1.0
+    ) => {
+      const hue = 20 + (360 / 5) * colorType
+      const saturation = 100
+      const lightness = 65 - 20 / level
+      return `hsl(${hue}, ${saturation}%, ${lightness}%, ${alpha})`
+    }
     const getCommonTokensHoveredColor = (level: number, alpha = 1.0) => {
       // red
       const max = 255
-      const min = 50
+      const min = 150
       const value = min + (max - min) / level
       return `rgba(${value},0,0,${alpha})`
     }
@@ -59,6 +72,7 @@ export default defineComponent({
       elementTypes,
       getTypeColor,
       getCommonTokensColor,
+      getColorfulCommonTokensColor,
       getCommonTokensHoveredColor,
     }
   },

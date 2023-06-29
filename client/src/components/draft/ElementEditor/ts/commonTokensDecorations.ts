@@ -174,6 +174,12 @@ class CommonTokensSetMap {
     return new Set(commonTokensSetEntry.commonTokensSet)
   }
 
+  public getCommonTokensSetId(tokens: TokenDetailList): number {
+    return this.commonTokensSetMap.findIndex((entry) =>
+      entry.tokens.matches(tokens)
+    )
+  }
+
   public reset(sha: string) {
     this._sha = sha
     this.commonTokensSetMap.length = 0
@@ -506,6 +512,9 @@ function createCommonTokensDecoration(
   const commonTokensSet = commonTokensSetMap.getCommonTokensSet(
     commonTokens.tokens
   )
+  const commonTokensSetId = commonTokensSetMap.getCommonTokensSetId(
+    commonTokens.tokens
+  )
   const hoverMessage = [
     {
       value: `**View Common Tokens: \`${commonTokens.tokens.joinedRaw}\`**`,
@@ -527,9 +536,15 @@ function createCommonTokensDecoration(
         c.category === mousePosition[0] &&
         c.range.containsPosition(mousePosition[1])
     )
-  const className = isHoveredCommonTokens
-    ? `commonTokens-decoration-hovered commonTokens-decoration-hovered-${level}`
-    : `commonTokens-decoration commonTokens-decoration-${level}`
+  const className =
+    // level !== 1
+    //   ? null
+    //   :
+    isHoveredCommonTokens
+      ? `commonTokens-decoration-hovered commonTokens-decoration-hovered-${level}`
+      : `commonTokens-decoration commonTokens-decoration-${level}-${
+          commonTokensSetId % 5
+        }`
   return {
     decoration: {
       range: commonTokens.range,
