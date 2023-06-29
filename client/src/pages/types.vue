@@ -178,7 +178,7 @@ export default defineComponent({
 
     useAsync(async () => {
       types.value = (await apis.refactoringTypes.getAllRefactoringTypes()).data
-    })
+    }, 'manualKey')
 
     const sorted = (map: { [k: string]: CodeElementMetadata }) => {
       const entries = Object.entries(map)

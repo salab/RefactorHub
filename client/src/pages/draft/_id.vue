@@ -49,7 +49,7 @@ export default defineComponent({
       initElementWidgets()
       initCodeFragmentCursor()
       await $accessor.draft.initStates(parseInt(params.value.id))
-    })
+    }, 'manualKey')
 
     async function save() {
       const id = draft.value?.id

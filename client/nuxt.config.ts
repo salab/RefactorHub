@@ -21,17 +21,19 @@ const config: NuxtConfig = {
   plugins: ['@/plugins/auth.ts'],
   components: true,
   build: {
-    extend(config) {
-      if (config.plugins) {
-        config.plugins.push(
-          new MonacoEditorWebpackPlugin({
-            languages: ['java'],
-          })
-        )
+    extend(config, { isDev }) {
+      config.plugins?.push(
+        new MonacoEditorWebpackPlugin({
+          languages: ['java'],
+        })
+      )
+      if (isDev) {
+        config.mode = 'development'
       }
     },
   },
   buildModules: [
+    'nuxt-esbuild',
     '@nuxt/typescript-build',
     '@nuxtjs/composition-api',
     '@nuxtjs/eslint-module',

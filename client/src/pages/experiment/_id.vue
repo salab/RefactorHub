@@ -84,7 +84,7 @@ export default defineComponent({
       const me = (await apis.users.getMe()).data
       myRefactorings.value = (await apis.users.getUserRefactorings(me.id)).data
       myDrafts.value = (await apis.users.getUserDrafts(me.id)).data
-    })
+    }, 'manualKey')
 
     onMounted(async () => {
       const me = (await apis.users.getMe()).data

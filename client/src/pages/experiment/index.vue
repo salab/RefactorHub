@@ -119,7 +119,7 @@ export default defineComponent({
       try {
         experiments.value = (await apis.experiments.getAllExperiments()).data
       } catch {}
-    })
+    }, 'manualKey')
 
     const actives = computed(() => experiments.value.filter((e) => e.isActive))
 

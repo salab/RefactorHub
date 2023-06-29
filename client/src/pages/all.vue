@@ -20,7 +20,7 @@ export default defineComponent({
 
     useAsync(async () => {
       refactorings.value = (await apis.refactorings.getAllRefactorings()).data
-    })
+    }, 'manualKey')
 
     return { refactorings }
   },
