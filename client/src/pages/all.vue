@@ -1,3 +1,12 @@
+<script setup lang="ts">
+import apis, { Refactoring } from '@/apis'
+
+const refactorings = ref<Refactoring[]>([])
+useAsyncData(async () => {
+  refactorings.value = (await apis.refactorings.getAllRefactorings()).data
+})
+</script>
+
 <template>
   <v-container>
     <div class="py-3">
@@ -9,20 +18,3 @@
     </div>
   </v-container>
 </template>
-
-<script lang="ts">
-import { defineComponent, ref, useAsync } from '@nuxtjs/composition-api'
-import apis, { Refactoring } from '@/apis'
-
-export default defineComponent({
-  setup() {
-    const refactorings = ref<Refactoring[]>([])
-
-    useAsync(async () => {
-      refactorings.value = (await apis.refactorings.getAllRefactorings()).data
-    }, 'manualKey')
-
-    return { refactorings }
-  },
-})
-</script>

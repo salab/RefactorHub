@@ -1,3 +1,27 @@
+<script setup lang="ts">
+import { CommitFile } from '@/apis'
+import { trimFileName } from '@/components/common/editor/utils/trim'
+
+const props = defineProps({
+  files: {
+    type: Array as () => CommitFile[],
+    required: true,
+  },
+})
+
+const displayedFile = computed(() => useDraft().displayedFile.value)
+const fileName = computed(() => ({
+  before: (() => {
+    const index = displayedFile.value?.before?.index
+    return index !== undefined ? props.files[index].previousName : ''
+  })(),
+  after: (() => {
+    const index = displayedFile.value?.after?.index
+    return index !== undefined ? props.files[index].name : ''
+  })(),
+}))
+</script>
+
 <template>
   <div class="files-header">
     <div class="content d-flex align-center pl-2">
@@ -16,43 +40,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
-import { CommitFile } from '@/apis'
-import { trimFileName } from '@/components/common/editor/utils/trim'
-
-export default defineComponent({
-  props: {
-    files: {
-      type: Array as () => CommitFile[],
-      required: true,
-    },
-  },
-  setup(props) {
-    const {
-      app: { $accessor },
-    } = useContext()
-
-    const displayedFile = computed(() => $accessor.draft.displayedFile)
-    const fileName = computed(() => ({
-      before: (() => {
-        const index = displayedFile.value?.before?.index
-        return index !== undefined ? props.files[index].previousName : ''
-      })(),
-      after: (() => {
-        const index = displayedFile.value?.after?.index
-        return index !== undefined ? props.files[index].name : ''
-      })(),
-    }))
-    return {
-      displayedFile,
-      fileName,
-      trimFileName,
-    }
-  },
-})
-</script>
 
 <style lang="scss" scoped>
 .files-header {

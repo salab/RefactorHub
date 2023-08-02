@@ -1,8 +1,7 @@
 import * as monaco from 'monaco-editor'
 import { DecorationMetadata, DiffCategory } from 'refactorhub'
-import { accessorType } from '@/store'
-import { Token } from '@/apis'
 import { Position, Range } from 'monaco-editor'
+import { Token } from '@/apis'
 
 class TokenDetail implements Token {
   public readonly raw: string
@@ -17,7 +16,7 @@ class TokenDetail implements Token {
     token: Token,
     path: string,
     startPosition: Position,
-    endPosition: Position
+    endPosition: Position,
   ) {
     const { raw, start, end, isSymbol, isComment } = token
     this.raw = raw
@@ -98,7 +97,7 @@ export class CommonTokens {
       firstToken.startPosition.lineNumber,
       firstToken.startPosition.column,
       lastToken.endPosition.lineNumber,
-      lastToken.endPosition.column + 1
+      lastToken.endPosition.column + 1,
     )
   }
 
@@ -127,7 +126,7 @@ class CommonTokensSetMap {
 
   public add(commonTokens: CommonTokens) {
     const commonTokensSetEntry = this.commonTokensSetMap.find(({ tokens }) =>
-      tokens.matches(commonTokens.tokens)
+      tokens.matches(commonTokens.tokens),
     )
     if (!commonTokensSetEntry) {
       this.commonTokensSetMap.push({
@@ -145,7 +144,7 @@ class CommonTokensSetMap {
 
   public getCommonTokensListIn(
     path: string,
-    category: DiffCategory
+    category: DiffCategory,
   ): CommonTokens[] {
     const results: CommonTokens[] = []
     for (const { commonTokensSet } of this.commonTokensSetMap) {
@@ -158,17 +157,17 @@ class CommonTokensSetMap {
 
   public getCommonTokensSet(tokens: TokenDetailList): Set<CommonTokens> {
     const commonTokensSetEntry = this.commonTokensSetMap.find((entry) =>
-      entry.tokens.matches(tokens)
+      entry.tokens.matches(tokens),
     )
     if (!commonTokensSetEntry) return new Set()
     return new Set(commonTokensSetEntry.commonTokensSet)
   }
 
   public getCommonTokensSetWithRaws(
-    commonTokensRaw: string
+    commonTokensRaw: string,
   ): Set<CommonTokens> {
     const commonTokensSetEntry = this.commonTokensSetMap.find(({ tokens }) =>
-      tokens.matchesJoinedRaw(commonTokensRaw)
+      tokens.matchesJoinedRaw(commonTokensRaw),
     )
     if (!commonTokensSetEntry) return new Set()
     return new Set(commonTokensSetEntry.commonTokensSet)
@@ -176,7 +175,7 @@ class CommonTokensSetMap {
 
   public getCommonTokensSetId(tokens: TokenDetailList): number {
     return this.commonTokensSetMap.findIndex((entry) =>
-      entry.tokens.matches(tokens)
+      entry.tokens.matches(tokens),
     )
   }
 
@@ -188,8 +187,8 @@ class CommonTokensSetMap {
 
 const commonTokensSetMap = new CommonTokensSetMap()
 
-export async function initCommonTokensMap($accessor: typeof accessorType) {
-  const commit = $accessor.draft.commit
+export async function initCommonTokensMap() {
+  const commit = useDraft().commit.value
   if (!commit) return
   const { owner, repository, files, sha } = commit
   if (sha === commonTokensSetMap.sha) return // no need for re-analyze
@@ -212,15 +211,15 @@ export async function initCommonTokensMap($accessor: typeof accessorType) {
     file.diffHunks.forEach(({ before, after }) => {
       if (before)
         diffHunkRanges.before.push(
-          new Range(before.startLine, 1, before.endLine + 1, 0)
+          new Range(before.startLine, 1, before.endLine + 1, 0),
         )
       if (after)
         diffHunkRanges.after.push(
-          new Range(after.startLine, 1, after.endLine + 1, 0)
+          new Range(after.startLine, 1, after.endLine + 1, 0),
         )
     })
     const fileContentPair = {
-      before: await $accessor.draft.getFileContent({
+      before: await useDraft().getFileContent({
         owner,
         repository,
         sha: commit.sha,
@@ -230,10 +229,10 @@ export async function initCommonTokensMap($accessor: typeof accessorType) {
           commit.owner,
           commit.repository,
           commit.parent,
-          file.previousName
+          file.previousName,
         ),
       }),
-      after: await $accessor.draft.getFileContent({
+      after: await useDraft().getFileContent({
         owner,
         repository,
         sha: commit.sha,
@@ -243,7 +242,7 @@ export async function initCommonTokensMap($accessor: typeof accessorType) {
           commit.owner,
           commit.repository,
           commit.sha,
-          file.name
+          file.name,
         ),
       }),
     }
@@ -253,17 +252,17 @@ export async function initCommonTokensMap($accessor: typeof accessorType) {
         fileContentPair[category].tokens.forEach((token) => {
           const startPosition = getPositionFromIndex(
             fileContentPair[category].text,
-            token.start
+            token.start,
           )
           const endPosition = getPositionFromIndex(
             fileContentPair[category].text,
-            token.end
+            token.end,
           )
           const tokenRange = new Range(
             startPosition.lineNumber,
             startPosition.column,
             endPosition.lineNumber,
-            endPosition.column + 1
+            endPosition.column + 1,
           )
           if (diffHunkRange.intersectRanges(tokenRange)) {
             diffHunkTokens[category].push({
@@ -315,7 +314,7 @@ export async function initCommonTokensMap($accessor: typeof accessorType) {
           tokenAfter !== 'diffHunkSeparator'
         ) {
           throw new Error(
-            `First row or column should be diffHunkSeparator; tokenBefore=${tokenBefore}, tokenAfter=${tokenAfter}`
+            `First row or column should be diffHunkSeparator; tokenBefore=${tokenBefore}, tokenAfter=${tokenAfter}`,
           )
         }
         scoreTable[beforeI][afterI] = 0
@@ -384,7 +383,7 @@ export async function initCommonTokensMap($accessor: typeof accessorType) {
       const detectedToken = detectedCommonTokens[detectedI - i]
       if (detectedToken !== 'sequenceSeparator') return
       commonTokensSetMap.add(
-        new CommonTokens(new TokenDetailList(commonTokenList), category)
+        new CommonTokens(new TokenDetailList(commonTokenList), category),
       )
     }
 
@@ -404,7 +403,7 @@ export async function initCommonTokensMap($accessor: typeof accessorType) {
             commonToken !== 'sequenceSeparator'
           ) {
             throw new Error(
-              `First row or column should be sequenceSeparator; detectedToken=${detectedToken}, commonToken=${commonToken}`
+              `First row or column should be sequenceSeparator; detectedToken=${detectedToken}, commonToken=${commonToken}`,
             )
           }
           flagTable[detectedI][tokenI] = false
@@ -441,18 +440,18 @@ export function setCommonTokensDecorationOnEditor(
   path: string,
   category: DiffCategory,
   editor: monaco.editor.ICodeEditor,
-  mousePosition?: [DiffCategory, monaco.Position]
+  mousePosition?: [DiffCategory, monaco.Position],
 ) {
   const model = editor.getModel()
   if (!model) return
   const commonTokensList = commonTokensSetMap.getCommonTokensListIn(
     path,
-    category
+    category,
   )
   for (const commonTokens of commonTokensList) {
     const { decoration, isHovered } = createCommonTokensDecoration(
       commonTokens,
-      mousePosition
+      mousePosition,
     )
     const [id] = editor.deltaDecorations([], [decoration])
     currentDecorations[category].add({
@@ -468,17 +467,15 @@ export function setCommonTokensDecorationOnEditor(
 export function updateCommonTokensDecorationOnEditor(
   category: DiffCategory,
   editor: monaco.editor.ICodeEditor,
-  mousePosition?: [DiffCategory, monaco.Position]
+  mousePosition?: [DiffCategory, monaco.Position],
 ) {
   const model = editor.getModel()
   if (!model) return
   for (const decoration of [...currentDecorations[category]]) {
     const { commonTokens, isHovered, metadata } = decoration
     if (!mousePosition && !isHovered) continue
-    const {
-      decoration: updatedDecoration,
-      isHovered: updatedIsHovered,
-    } = createCommonTokensDecoration(commonTokens, mousePosition)
+    const { decoration: updatedDecoration, isHovered: updatedIsHovered } =
+      createCommonTokensDecoration(commonTokens, mousePosition)
     if (isHovered === updatedIsHovered) continue
     const [id] = editor.deltaDecorations([metadata.id], [updatedDecoration])
     currentDecorations[category].delete(decoration)
@@ -507,13 +504,13 @@ export function getCommonTokensSetOf(commonTokensRaw: string) {
 
 function createCommonTokensDecoration(
   commonTokens: CommonTokens,
-  mousePosition?: [DiffCategory, monaco.Position]
+  mousePosition?: [DiffCategory, monaco.Position],
 ): { decoration: monaco.editor.IModelDeltaDecoration; isHovered: boolean } {
   const commonTokensSet = commonTokensSetMap.getCommonTokensSet(
-    commonTokens.tokens
+    commonTokens.tokens,
   )
   const commonTokensSetId = commonTokensSetMap.getCommonTokensSetId(
-    commonTokens.tokens
+    commonTokens.tokens,
   )
   const hoverMessage = [
     {
@@ -534,16 +531,15 @@ function createCommonTokensDecoration(
     [...commonTokensSet].some(
       (c) =>
         c.category === mousePosition[0] &&
-        c.range.containsPosition(mousePosition[1])
+        c.range.containsPosition(mousePosition[1]),
     )
   const className =
-    // level !== 1
-    //   ? null
-    //   :
-    isHoveredCommonTokens
+    level !== 1
+      ? null
+      : isHoveredCommonTokens
       ? `commonTokens-decoration-hovered commonTokens-decoration-hovered-${level}`
       : `commonTokens-decoration commonTokens-decoration-${level}-${
-          commonTokensSetId % 5
+          commonTokensSetId % 10
         }`
   return {
     decoration: {
@@ -580,7 +576,7 @@ function getCommitFileUri(
   owner: string,
   repository: string,
   sha: string,
-  path: string
+  path: string,
 ) {
   return `https://github.com/${owner}/${repository}/blob/${sha}/${path}`
 }

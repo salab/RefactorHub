@@ -1,14 +1,5 @@
-<template>
-  <v-dialog v-model="dialog" eager width="80%">
-    <div :class="$style.container">
-      <monaco-editor ref="editorRef" />
-    </div>
-  </v-dialog>
-</template>
-
-<script lang="ts">
+<script setup lang="ts">
 import * as monaco from 'monaco-editor'
-import { defineComponent, ref, watch } from '@nuxtjs/composition-api'
 import { DiffCategory } from 'refactorhub'
 import MonacoEditor from '@/components/common/editor/MonacoEditor.vue'
 
@@ -18,7 +9,7 @@ const contents = ref<{ [category in DiffCategory]: string }>({
   after: '',
 })
 
-export const useCodeFragmentDiff = () => {
+const useCodeFragmentDiff = () => {
   const open = () => {
     dialog.value = true
   }
@@ -28,27 +19,27 @@ export const useCodeFragmentDiff = () => {
   return { open, setContents }
 }
 
-export default defineComponent({
-  setup() {
-    const editorRef = ref<InstanceType<typeof MonacoEditor>>()
+const editorRef = ref<InstanceType<typeof MonacoEditor>>()
 
-    watch(contents, () => {
-      editorRef.value?.diffEditor?.setModel({
-        original: monaco.editor.createModel(
-          contents.value.before,
-          'text/plain'
-        ),
-        modified: monaco.editor.createModel(contents.value.after, 'text/plain'),
-      })
-    })
+watch(contents, () => {
+  editorRef.value?.getDiffEditor()?.setModel({
+    original: monaco.editor.createModel(contents.value.before, 'text/plain'),
+    modified: monaco.editor.createModel(contents.value.after, 'text/plain'),
+  })
+})
 
-    return {
-      editorRef,
-      dialog,
-    }
-  },
+defineExpose({
+  useCodeFragmentDiff,
 })
 </script>
+
+<template>
+  <v-dialog v-model="dialog" eager width="80%">
+    <div :class="$style.container">
+      <monaco-editor ref="editorRef" />
+    </div>
+  </v-dialog>
+</template>
 
 <style lang="scss" module>
 .container {

@@ -1,20 +1,17 @@
+<script setup lang="ts">
+defineProps({
+  active: {
+    type: Boolean,
+    default: false,
+  },
+})
+</script>
+
 <template>
   <div v-if="active" class="background d-flex align-center justify-center">
     <v-progress-circular indeterminate />
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
-export default defineComponent({
-  props: {
-    active: {
-      type: Boolean,
-      default: false,
-    },
-  },
-})
-</script>
 
 <style lang="scss" scoped>
 .background {

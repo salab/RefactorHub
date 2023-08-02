@@ -1,25 +1,6 @@
 {
+  "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "target": "es2020",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "lib": [
-      "esnext",
-      "esnext.asynciterable",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ],
-    "esModuleInterop": true,
-    "sourceMap": true,
-    "strict": true,
-    "noEmit": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-    "typeRoots": ["node_modules/@types", "src/@types"],
-    "types": ["@types/node", "@nuxt/types", "@nuxtjs/axios", "@nuxtjs/vuetify"]
-  },
-  "exclude": ["node_modules", ".nuxt", "dist"]
+    "typeRoots": ["node_modules/@types", "src/@types"]
+  }
 }

@@ -21,13 +21,13 @@ export function setElementDecorationOnEditor(
   key: string,
   index: number,
   element: CodeElement,
-  editor: monaco.editor.ICodeEditor
+  editor: monaco.editor.ICodeEditor,
 ) {
   const model = editor.getModel()
   if (model) {
     const [id] = editor.deltaDecorations(
       [],
-      [createElementDecoration(key, element)]
+      [createElementDecoration(key, element)],
     )
     decorationMetadataMap[category].set(hash({ key, index }), {
       id,
@@ -39,7 +39,7 @@ export function setElementDecorationOnEditor(
 export function deleteElementDecoration(
   category: DiffCategory,
   key: string,
-  index: number
+  index: number,
 ) {
   const metadata = decorationMetadataMap[category].get(hash({ key, index }))
   if (metadata) {
@@ -59,7 +59,7 @@ export function clearElementDecorations(category: DiffCategory) {
 
 function createElementDecoration(
   key: string,
-  element: CodeElement
+  element: CodeElement,
 ): monaco.editor.IModelDeltaDecoration {
   return {
     range: asMonacoRange(element.location?.range),

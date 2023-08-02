@@ -1,11 +1,29 @@
+<script setup lang="ts">
+import { CommitFile } from '@/apis'
+
+defineProps({
+  files: {
+    type: Array as () => CommitFile[],
+    required: true,
+  },
+})
+const { displayedFile } = useDraft()
+onMounted(() => {
+  displayedFile.value = {
+    before: { index: 0 },
+    after: { index: 0 },
+  }
+})
+</script>
+
 <template>
-  <v-card flat tile>
-    <v-expansion-panels focusable flat tile :value="0">
+  <v-card flat>
+    <v-expansion-panels>
       <v-expansion-panel class="files-panel">
-        <v-expansion-panel-header class="pa-0 pr-2">
+        <v-expansion-panel-title class="pa-0 pr-2">
           <commit-files-header :files="files" />
-        </v-expansion-panel-header>
-        <v-expansion-panel-content>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
           <v-divider />
           <div class="files-content d-flex">
             <div class="flex-grow-1">
@@ -18,53 +36,21 @@
               <commit-files-contents :files="files" category="after" />
             </div>
           </div>
-        </v-expansion-panel-content>
+        </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
   </v-card>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted, useContext } from '@nuxtjs/composition-api'
-import { CommitFile } from '@/apis'
-
-export default defineComponent({
-  props: {
-    files: {
-      type: Array as () => CommitFile[],
-      required: true,
-    },
-  },
-  setup() {
-    const {
-      app: { $accessor },
-    } = useContext()
-
-    onMounted(() => {
-      $accessor.draft.setDisplayedFile({
-        category: 'before',
-        file: { index: 0 },
-      })
-      $accessor.draft.setDisplayedFile({
-        category: 'after',
-        file: { index: 0 },
-      })
-    })
-
-    return {}
-  },
-})
-</script>
-
 <style lang="scss" scoped>
 .files-panel {
-  &::v-deep {
-    .v-expansion-panel-content__wrap {
+  ::v-deep(&) {
+    .v-expansion-panel-text__wrap {
       padding: 0;
     }
-    .v-expansion-panel-header {
+    .v-expansion-panel-title {
       min-height: 2.4rem;
-      .v-expansion-panel-header__icon {
+      .v-expansion-panel-title__icon {
         .v-icon {
           font-size: 1.2rem;
         }

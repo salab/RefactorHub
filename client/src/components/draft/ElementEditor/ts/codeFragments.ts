@@ -2,7 +2,6 @@ import * as monaco from 'monaco-editor'
 import { cloneDeep, debounce } from 'lodash-es'
 import { DiffCategory } from 'refactorhub'
 import { asRange, asMonacoRange } from '@/components/common/editor/utils/range'
-import { accessorType } from '@/store'
 import apis, { CodeElement } from '@/apis'
 
 interface CodeFragmentCursor {
@@ -48,7 +47,6 @@ export function prepareCodeFragmentCursor(
   category: DiffCategory,
   element: CodeElement,
   editor: monaco.editor.ICodeEditor,
-  $accessor: typeof accessorType
 ) {
   fragments[category].push(element)
 
@@ -59,9 +57,9 @@ export function prepareCodeFragmentCursor(
         listeners.push(
           editor.onDidChangeCursorSelection(
             debounce((e) => {
-              updateEditingCodeFragment(category, e.selection, $accessor)
-            }, 500)
-          )
+              updateEditingCodeFragment(category, e.selection)
+            }, 500),
+          ),
         )
       }
     },
@@ -76,7 +74,6 @@ export function prepareCodeFragmentCursor(
 export async function updateEditingCodeFragment(
   category: DiffCategory,
   range: monaco.Range,
-  $accessor: typeof accessorType
 ) {
   if (
     range.startLineNumber === range.endLineNumber &&
@@ -85,28 +82,26 @@ export async function updateEditingCodeFragment(
     return
 
   const element = fragments[category].find((it) =>
-    asMonacoRange(it.location?.range).containsRange(range)
+    asMonacoRange(it.location?.range).containsRange(range),
   )
   if (!element) return
 
-  const draft = $accessor.draft.draft
-  const metadata = $accessor.draft.editingElement[category]
+  const draft = useDraft().draft.value
+  const metadata = useDraft().editingElement.value[category]
   if (!draft || !metadata) return
 
   const nextElement = cloneDeep(element)
   nextElement.location!.range = asRange(range)
 
-  $accessor.draft.setDraft(
-    (
-      await apis.drafts.updateCodeElementValue(
-        draft.id,
-        category,
-        metadata.key,
-        metadata.index,
-        {
-          element: nextElement,
-        }
-      )
-    ).data
-  )
+  useDraft().draft.value = (
+    await apis.drafts.updateCodeElementValue(
+      draft.id,
+      category,
+      metadata.key,
+      metadata.index,
+      {
+        element: nextElement,
+      },
+    )
+  ).data
 }

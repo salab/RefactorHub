@@ -4,7 +4,7 @@ import { logger } from '@/utils/logger'
 export const log = async (
   name: ActionName,
   type: ActionType,
-  data: object = {}
+  data: object = {},
 ) => {
   try {
     await apis.actions.postAction({

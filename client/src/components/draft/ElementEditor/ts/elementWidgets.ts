@@ -6,7 +6,6 @@ import {
   getRangeWidthOnEditor,
   getRangeHeightOnEditor,
 } from '@/components/common/editor/utils/range'
-import { accessorType } from '@/store'
 import apis, { CodeElement } from '@/apis'
 
 interface ElementWidget extends monaco.editor.IContentWidget {
@@ -30,7 +29,7 @@ export function initElementWidgets() {
  */
 export function showElementWidgetsWithType(
   category: DiffCategory,
-  type: string
+  type: string,
 ) {
   widgets[category].forEach((widget) => {
     if (widget.type === type) widget.getDomNode().style.display = 'block'
@@ -46,7 +45,7 @@ export function hideElementWidgets(category: DiffCategory) {
 
 export function clearElementWidgetsOnEditor(
   category: DiffCategory,
-  editor: monaco.editor.ICodeEditor
+  editor: monaco.editor.ICodeEditor,
 ) {
   widgets[category].forEach((widget) => {
     editor.removeContentWidget(widget)
@@ -58,10 +57,9 @@ export function setElementWidgetOnEditor(
   category: DiffCategory,
   element: CodeElement,
   editor: monaco.editor.ICodeEditor,
-  $accessor: typeof accessorType
 ) {
   const widget = createElementWidget(element, editor, () =>
-    updateEditingElement(category, element, $accessor)
+    updateEditingElement(category, element),
   )
   editor.addContentWidget(widget)
   widgets[category].push(widget)
@@ -70,7 +68,7 @@ export function setElementWidgetOnEditor(
 function createElementWidget(
   element: CodeElement,
   editor: monaco.editor.ICodeEditor,
-  onClick: () => void
+  onClick: () => void,
 ): ElementWidget {
   const range = asMonacoRange(element.location?.range)
   const id = cryptoRandomString({ length: 10 })
@@ -106,24 +104,21 @@ function createElementWidget(
 async function updateEditingElement(
   category: DiffCategory,
   element: CodeElement,
-  $accessor: typeof accessorType
 ) {
-  const draft = $accessor.draft.draft
-  const metadata = $accessor.draft.editingElement[category]
+  const draft = useDraft().draft.value
+  const metadata = useDraft().editingElement.value[category]
   if (!draft || !metadata) return
 
-  $accessor.draft.setDraft(
-    (
-      await apis.drafts.updateCodeElementValue(
-        draft.id,
-        category,
-        metadata.key,
-        metadata.index,
-        {
-          element,
-        }
-      )
-    ).data
-  )
-  $accessor.draft.setEditingElement({ category })
+  useDraft().draft.value = (
+    await apis.drafts.updateCodeElementValue(
+      draft.id,
+      category,
+      metadata.key,
+      metadata.index,
+      {
+        element,
+      },
+    )
+  ).data
+  useDraft().editingElement.value[category] = undefined
 }

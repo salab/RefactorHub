@@ -1,14 +1,5 @@
 import * as monaco from 'monaco-editor'
 import { DiffCategory, FileMetadata } from 'refactorhub'
-import { accessorType } from '@/store'
-import { logger } from '@/utils/logger'
-import { CommitDetail } from '@/apis'
-import {
-  clearCommonTokensDecorations,
-  initCommonTokensMap,
-  setCommonTokensDecorationOnEditor,
-  updateCommonTokensDecorationOnEditor,
-} from '@/components/draft/ElementEditor/ts/commonTokensDecorations'
 import {
   setElementDecorationOnEditor,
   clearElementDecorations,
@@ -22,6 +13,14 @@ import {
   clearCodeFragmentCursors,
 } from './codeFragments'
 import { setupEditingElement } from './editingElement'
+import {
+  clearCommonTokensDecorations,
+  initCommonTokensMap,
+  setCommonTokensDecorationOnEditor,
+  updateCommonTokensDecorationOnEditor,
+} from '@/components/draft/ElementEditor/ts/commonTokensDecorations'
+import { CommitDetail } from '@/apis'
+import { logger } from '@/utils/logger'
 
 export async function setupDisplayedFileOnDiffEditor(
   category: DiffCategory,
@@ -30,39 +29,27 @@ export async function setupDisplayedFileOnDiffEditor(
   computeDiffWrapper: {
     computeDiff: () => monaco.editor.IDocumentDiff
   },
-  $accessor: typeof accessorType,
   showCommonTokens: boolean,
-  setup: boolean = true
+  setup = true,
 ) {
   await setTextModelOnDiffEditor(
     category,
     metadata,
     diffEditor,
     computeDiffWrapper,
-    $accessor
   )
   if (setup) {
-    await setupElementDecorationsOnDiffEditor(
-      category,
-      metadata,
-      diffEditor,
-      $accessor
-    )
-    await setupElementWidgetsOnDiffEditor(
-      category,
-      metadata,
-      diffEditor,
-      $accessor
-    )
-    setupEditingElement(category, $accessor.draft.editingElement[category])
-    await initCommonTokensMap($accessor)
-    if (showCommonTokens)
+    await setupElementDecorationsOnDiffEditor(category, metadata, diffEditor)
+    await setupElementWidgetsOnDiffEditor(category, metadata, diffEditor)
+    setupEditingElement(category, useDraft().editingElement.value[category])
+    await initCommonTokensMap()
+    if (showCommonTokens) {
       await setupCommonTokensDecorationsOnDiffEditor(
         category,
         metadata,
         diffEditor,
-        $accessor
       )
+    }
   }
 }
 
@@ -73,9 +60,8 @@ export async function setTextModelOnDiffEditor(
   computeDiffWrapper: {
     computeDiff: () => monaco.editor.IDocumentDiff
   },
-  $accessor: typeof accessorType
 ) {
-  const commit = $accessor.draft.commit
+  const commit = useDraft().commit.value
   if (!commit) {
     logger.log('commit is not loaded')
     return
@@ -106,29 +92,22 @@ export async function setTextModelOnDiffEditor(
       new monaco.editor.LineRangeMapping(
         originalRange,
         modifiedRange,
-        undefined
-      )
+        undefined,
+      ),
     )
   }
 
-  computeDiffWrapper.computeDiff = () => ({
-    identical: file.diffHunks.length === 0,
-    quitEarly: false,
-    changes,
-  })
+  computeDiffWrapper.computeDiff = () => {
+    return {
+      identical: file.diffHunks.length === 0,
+      quitEarly: false,
+      changes,
+      moves: [],
+    }
+  }
 
-  const originalTextModel = await getTextModelOfFile(
-    'before',
-    metadata,
-    $accessor,
-    commit
-  )
-  const modifiedTextModel = await getTextModelOfFile(
-    'after',
-    metadata,
-    $accessor,
-    commit
-  )
+  const originalTextModel = await getTextModelOfFile('before', metadata, commit)
+  const modifiedTextModel = await getTextModelOfFile('after', metadata, commit)
   diffEditor.setModel({
     original: originalTextModel,
     modified: modifiedTextModel,
@@ -142,22 +121,21 @@ export async function setTextModelOnDiffEditor(
           getEditor(category, diffEditor).revealLineNearTop(metadata.lineNumber)
       }, 100)
       disposables.forEach((it) => it.dispose())
-    })
+    }),
   )
 }
 
 async function getTextModelOfFile(
   category: DiffCategory,
   metadata: FileMetadata,
-  $accessor: typeof accessorType,
-  commit: CommitDetail
+  commit: CommitDetail,
 ) {
   if (!isExistFile(category, commit, metadata))
     return monaco.editor.createModel('', 'text/plain')
 
   const sha = getCommitSHA(category, commit)
   const path = getCommitFileName(category, commit, metadata)
-  const content = await $accessor.draft.getFileContent({
+  const content = await useDraft().getFileContent({
     owner: commit.owner,
     repository: commit.repository,
     sha: commit.sha,
@@ -169,8 +147,8 @@ async function getTextModelOfFile(
     monaco.editor.getModel(monaco.Uri.parse(content.uri)) ||
     monaco.editor.createModel(
       content.text,
-      content.extension,
-      monaco.Uri.parse(content.uri)
+      content.extension === 'java' ? 'java' : 'text/plain',
+      monaco.Uri.parse(content.uri),
     )
   )
 }
@@ -179,10 +157,9 @@ export function setupElementDecorationsOnDiffEditor(
   category: DiffCategory,
   metadata: FileMetadata,
   diffEditor: monaco.editor.IDiffEditor,
-  $accessor: typeof accessorType
 ) {
-  const draft = $accessor.draft.draft
-  const commit = $accessor.draft.commit
+  const draft = useDraft().draft.value
+  const commit = useDraft().commit.value
   if (!draft || !commit) {
     logger.log('draft or commit is not loaded')
     return
@@ -205,9 +182,8 @@ export async function setupElementWidgetsOnDiffEditor(
   category: DiffCategory,
   metadata: FileMetadata,
   diffEditor: monaco.editor.IDiffEditor,
-  $accessor: typeof accessorType
 ) {
-  const commit = $accessor.draft.commit
+  const commit = useDraft().commit.value
   if (!commit) {
     logger.log('commit is not loaded')
     return
@@ -216,7 +192,7 @@ export async function setupElementWidgetsOnDiffEditor(
 
   const sha = getCommitSHA(category, commit)
   const path = getCommitFileName(category, commit, metadata)
-  const content = await $accessor.draft.getFileContent({
+  const content = await useDraft().getFileContent({
     owner: commit.owner,
     repository: commit.repository,
     sha: commit.sha,
@@ -230,34 +206,32 @@ export async function setupElementWidgetsOnDiffEditor(
   clearCodeFragmentCursors(category)
   content.elements.forEach((element) => {
     if (element.type === 'CodeFragment') {
-      prepareCodeFragmentCursor(category, element, editor, $accessor)
+      prepareCodeFragmentCursor(category, element, editor)
     } else {
-      setElementWidgetOnEditor(category, element, editor, $accessor)
+      setElementWidgetOnEditor(category, element, editor)
     }
   })
 }
 
 export function setupCommonTokensDecorationsOnBothDiffEditor(
   diffEditor: monaco.editor.IDiffEditor,
-  $accessor: typeof accessorType,
-  mousePosition?: [DiffCategory, monaco.Position]
+  mousePosition?: [DiffCategory, monaco.Position],
 ) {
   const categories: DiffCategory[] = ['before', 'after']
   categories.forEach((category) => {
-    const metadata = $accessor.draft.displayedFile[category]
+    const metadata = useDraft().displayedFile.value[category]
     if (metadata === undefined) return
     setupCommonTokensDecorationsOnDiffEditor(
       category,
       metadata,
       diffEditor,
-      $accessor,
-      mousePosition
+      mousePosition,
     )
   })
 }
 export function updateCommonTokensDecorationsOnBothDiffEditor(
   diffEditor: monaco.editor.IDiffEditor,
-  mousePosition?: [DiffCategory, monaco.Position]
+  mousePosition?: [DiffCategory, monaco.Position],
 ) {
   const categories: DiffCategory[] = ['before', 'after']
   categories.forEach((category) => {
@@ -274,11 +248,10 @@ function setupCommonTokensDecorationsOnDiffEditor(
   category: DiffCategory,
   metadata: FileMetadata,
   diffEditor: monaco.editor.IDiffEditor,
-  $accessor: typeof accessorType,
-  mousePosition?: [DiffCategory, monaco.Position]
+  mousePosition?: [DiffCategory, monaco.Position],
 ) {
-  const draft = $accessor.draft.draft
-  const commit = $accessor.draft.commit
+  const draft = useDraft().draft.value
+  const commit = useDraft().commit.value
   if (!draft || !commit) {
     logger.log('draft or commit is not loaded')
     return
@@ -293,7 +266,7 @@ function setupCommonTokensDecorationsOnDiffEditor(
 
 function getEditor(
   category: DiffCategory,
-  diffEditor: monaco.editor.IDiffEditor
+  diffEditor: monaco.editor.IDiffEditor,
 ) {
   return category === 'before'
     ? diffEditor.getOriginalEditor()
@@ -303,7 +276,7 @@ function getEditor(
 function isExistFile(
   category: DiffCategory,
   commit: CommitDetail,
-  metadata: FileMetadata
+  metadata: FileMetadata,
 ) {
   const file = commit.files[metadata.index]
   return !(
@@ -319,7 +292,7 @@ function getCommitSHA(category: DiffCategory, commit: CommitDetail) {
 function getCommitFileName(
   category: DiffCategory,
   commit: CommitDetail,
-  metadata: FileMetadata
+  metadata: FileMetadata,
 ) {
   const file = commit.files[metadata.index]
   return category === 'before' ? file.previousName : file.name
@@ -329,7 +302,7 @@ function getCommitFileUri(
   owner: string,
   repository: string,
   sha: string,
-  path: string
+  path: string,
 ) {
   return `https://github.com/${owner}/${repository}/blob/${sha}/${path}`
 }

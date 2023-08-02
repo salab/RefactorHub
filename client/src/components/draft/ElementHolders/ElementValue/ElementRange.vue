@@ -1,3 +1,14 @@
+<script setup lang="ts">
+import { Range } from '@/apis'
+
+defineProps({
+  range: {
+    type: Object as () => Range | null,
+    default: null,
+  },
+})
+</script>
+
 <template>
   <div class="d-flex align-center justify-center text--secondary">
     <number-column :number="range ? range.startLine : undefined" />
@@ -9,17 +20,3 @@
     <number-column :number="range ? range.endColumn : undefined" />
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
-import { Range } from '@/apis'
-
-export default defineComponent({
-  props: {
-    range: {
-      type: Object as () => Range,
-      default: null,
-    },
-  },
-})
-</script>

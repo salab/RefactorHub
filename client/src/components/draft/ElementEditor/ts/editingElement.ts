@@ -10,7 +10,7 @@ import {
 
 export function setupEditingElement(
   category: DiffCategory,
-  metadata?: ElementMetadata
+  metadata?: ElementMetadata,
 ) {
   if (metadata !== undefined) {
     if (metadata.type === 'CodeFragment') {

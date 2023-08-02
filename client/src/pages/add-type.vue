@@ -1,3 +1,53 @@
+<script setup lang="ts">
+import apis, { CodeElementMetadata } from '@/apis'
+import { readAsText } from '@/utils/file'
+
+definePageMeta({
+  middleware: 'authenticated',
+})
+
+const messages = ref<string[]>([])
+const loading = ref(false)
+
+async function onInputFile(file: File) {
+  loading.value = true
+  const content = await readAsText(file)
+  if (!content) {
+    messages.value = ['Failed to load JSON file.']
+    loading.value = false
+    return
+  }
+
+  const types: {
+    name: string
+    before: { [key: string]: CodeElementMetadata }
+    after: { [key: string]: CodeElementMetadata }
+  }[] = JSON.parse(content)
+
+  try {
+    const addedTypes = await Promise.all(
+      types.map(
+        async (type) =>
+          (
+            await apis.refactoringTypes.createRefactoringType({
+              name: type.name,
+              before: type.before,
+              after: type.after,
+              description: '',
+            })
+          ).data,
+      ),
+    )
+    messages.value = [
+      'Added RefactoringTypes:',
+      ...addedTypes.map((type) => type.name),
+    ]
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+
 <template>
   <v-container>
     <h1>Add Refactoring type</h1>
@@ -18,61 +68,3 @@
     </v-row>
   </v-container>
 </template>
-
-<script lang="ts">
-import { defineComponent, ref } from '@nuxtjs/composition-api'
-import apis, { CodeElementMetadata } from '@/apis'
-import { readAsText } from '@/utils/file'
-
-export default defineComponent({
-  middleware: 'authenticated',
-  setup() {
-    const messages = ref<string[]>([])
-    const loading = ref(false)
-
-    async function onInputFile(file: File) {
-      loading.value = true
-      const content = await readAsText(file)
-      if (!content) {
-        messages.value = ['Failed to load JSON file.']
-        loading.value = false
-        return
-      }
-
-      const types: {
-        name: string
-        before: { [key: string]: CodeElementMetadata }
-        after: { [key: string]: CodeElementMetadata }
-      }[] = JSON.parse(content)
-
-      try {
-        const addedTypes = await Promise.all(
-          types.map(
-            async (type) =>
-              (
-                await apis.refactoringTypes.createRefactoringType({
-                  name: type.name,
-                  before: type.before,
-                  after: type.after,
-                  description: '',
-                })
-              ).data
-          )
-        )
-        messages.value = [
-          'Added RefactoringTypes:',
-          ...addedTypes.map((type) => type.name),
-        ]
-      } finally {
-        loading.value = false
-      }
-    }
-
-    return {
-      messages,
-      loading,
-      onInputFile,
-    }
-  },
-})
-</script>

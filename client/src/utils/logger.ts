@@ -1,7 +1,7 @@
-import consola, { LogLevel } from 'consola'
+import { consola } from 'consola'
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
 export const logger = consola.create({
-  level: isDevelopment ? LogLevel.Debug : LogLevel.Error,
+  level: isDevelopment ? 4 : 0,
 })

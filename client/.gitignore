@@ -71,6 +71,9 @@ typings/
 # nuxt.js build output
 .nuxt
 
+# nitro build folder
+.output
+
 # Nuxt generate
 dist
 

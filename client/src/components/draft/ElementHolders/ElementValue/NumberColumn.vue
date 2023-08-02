@@ -1,26 +1,23 @@
-<template>
-  <v-card
-    outlined
-    tile
-    :width="24"
-    class="d-flex justify-center overflow-x-scroll"
-  >
-    <span class="number-letter">{{ number }}</span>
-  </v-card>
-</template>
-
-<script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
-
-export default defineComponent({
-  props: {
-    number: {
-      type: Number,
-      default: null,
-    },
+<script setup lang="ts">
+defineProps({
+  number: {
+    type: Number,
+    default: null,
   },
 })
 </script>
+
+<template>
+  <v-card
+    variant="outlined"
+    color="grey"
+    :rounded="0"
+    :width="24"
+    class="d-flex justify-center overflow-x-scroll"
+  >
+    <span class="number-letter" style="color: black">{{ number }}</span>
+  </v-card>
+</template>
 
 <style lang="scss" scoped>
 .overflow-x-scroll {

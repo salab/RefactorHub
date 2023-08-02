@@ -1,31 +1,21 @@
-<template>
-  <v-btn outlined tile small class="text-none" @click="open">
-    {{ draft.type.name }} (id={{ draft.id
-    }}{{ draft.parent ? `, parent=${draft.parent.id}` : ''
-    }}{{ draft.origin ? `, origin=${draft.origin.id}` : '' }})
-  </v-btn>
-</template>
-
-<script lang="ts">
-import { defineComponent, useContext } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import { RefactoringDraft } from '@/apis'
 
-export default defineComponent({
-  props: {
-    draft: {
-      type: Object as () => RefactoringDraft,
-      required: true,
-    },
-  },
-  setup(props) {
-    const {
-      app: { router },
-    } = useContext()
-
-    const open = () => {
-      router?.push(`/draft/${props.draft.id}`)
-    }
-    return { open }
+const props = defineProps({
+  draft: {
+    type: Object as () => RefactoringDraft,
+    required: true,
   },
 })
+const open = () => {
+  navigateTo(`/draft/${props.draft.id}`)
+}
 </script>
+
+<template>
+  <v-btn outlined tile small class="text-none" @click="open">
+    {{ draft.type }} (id={{ draft.id
+    }}{{ draft.ownerId ? `, owner=${draft.ownerId}` : ''
+    }}{{ draft.originId ? `, origin=${draft.originId}` : '' }})
+  </v-btn>
+</template>

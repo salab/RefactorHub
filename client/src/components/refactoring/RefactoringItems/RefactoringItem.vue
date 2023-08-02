@@ -1,3 +1,38 @@
+<script setup lang="ts">
+import apis, { Refactoring, RefactoringDraft } from '@/apis'
+
+const props = defineProps({
+  refactoring: {
+    type: Object as () => Refactoring,
+    required: true,
+  },
+  fetchChildren: {
+    type: Boolean,
+    default: false,
+  },
+  fetchDrafts: {
+    type: Boolean,
+    default: false,
+  },
+})
+const children = ref<Refactoring[]>([])
+const drafts = ref<RefactoringDraft[]>([])
+
+onMounted(async () => {
+  if (props.fetchChildren) {
+    children.value = (
+      await apis.refactorings.getRefactoringChildren(props.refactoring.id)
+    ).data
+  }
+  // TODO: Fix API
+  if (props.fetchDrafts) {
+    drafts.value = (
+      await apis.refactorings.getRefactoringDrafts(props.refactoring.id)
+    ).data
+  }
+})
+</script>
+
 <template>
   <v-card outlined tile class="pa-2">
     <div class="d-flex justify-space-between align-center px-1">
@@ -27,45 +62,3 @@
     </div>
   </v-card>
 </template>
-
-<script lang="ts">
-import { defineComponent, ref, onMounted } from '@nuxtjs/composition-api'
-import apis, { Refactoring, RefactoringDraft } from '@/apis'
-
-export default defineComponent({
-  props: {
-    refactoring: {
-      type: Object as () => Refactoring,
-      required: true,
-    },
-    fetchChildren: {
-      type: Boolean,
-      default: false,
-    },
-    fetchDrafts: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  setup(props) {
-    const children = ref<Refactoring[]>([])
-    const drafts = ref<RefactoringDraft[]>([])
-
-    onMounted(async () => {
-      if (props.fetchChildren) {
-        children.value = (
-          await apis.refactorings.getRefactoringChildren(props.refactoring.id)
-        ).data
-      }
-      // TODO: Fix API
-      if (props.fetchDrafts) {
-        drafts.value = (
-          await apis.refactorings.getRefactoringDrafts(props.refactoring.id)
-        ).data
-      }
-    })
-
-    return { children, drafts }
-  },
-})
-</script>

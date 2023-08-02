@@ -1,3 +1,14 @@
+<script setup lang="ts">
+import { Refactoring } from '@/apis'
+
+defineProps({
+  refactorings: {
+    type: Array as () => Refactoring[],
+    required: true,
+  },
+})
+</script>
+
 <template>
   <div>
     <refactoring-item
@@ -8,17 +19,3 @@
     />
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
-import { Refactoring } from '@/apis'
-
-export default defineComponent({
-  props: {
-    refactorings: {
-      type: Array as () => Refactoring[],
-      required: true,
-    },
-  },
-})
-</script>

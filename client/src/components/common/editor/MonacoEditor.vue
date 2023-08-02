@@ -1,61 +1,55 @@
-<template>
-  <div :id="id" class="wh-100">
-    <loading :active="isLoading" />
-  </div>
-</template>
-
-<script lang="ts">
-import { defineComponent, ref, onMounted } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import * as monaco from 'monaco-editor'
 import cryptoRandomString from 'crypto-random-string'
 
-export default defineComponent({
-  props: {
-    isLoading: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  setup() {
-    const id = cryptoRandomString({ length: 10 })
-    const diffEditor = ref<monaco.editor.IStandaloneDiffEditor>()
-    const computeDiffWrapper: {
-      computeDiff: () => monaco.editor.IDocumentDiff
-    } = {
-      computeDiff: () => ({
-        identical: false,
-        quitEarly: false,
-        changes: [],
-      }),
-    }
-
-    onMounted(() => {
-      const container = document.getElementById(id)
-      if (container !== null) {
-        diffEditor.value = monaco.editor.createDiffEditor(container, {
-          enableSplitViewResizing: false,
-          automaticLayout: true,
-          readOnly: true,
-          scrollBeyondLastLine: false,
-          diffAlgorithm: {
-            onDidChange: () => ({ dispose: () => {} }),
-            computeDiff: () =>
-              new Promise((resolve) =>
-                resolve(computeDiffWrapper.computeDiff())
-              ),
-          },
-        })
-      }
-    })
-
-    return {
-      id,
-      diffEditor,
-      computeDiffWrapper,
-    }
+defineProps({
+  isLoading: {
+    type: Boolean,
+    default: false,
   },
 })
+const id = cryptoRandomString({ length: 10 })
+const computeDiffWrapper: {
+  computeDiff: () => monaco.editor.IDocumentDiff
+} = {
+  computeDiff: () => ({
+    identical: false,
+    quitEarly: false,
+    changes: [],
+    moves: [],
+  }),
+}
+
+let diffEditor: monaco.editor.IStandaloneDiffEditor | undefined
+onMounted(() => {
+  const container = document.getElementById(id)
+  if (container !== null) {
+    const editor = monaco.editor.createDiffEditor(container, {
+      enableSplitViewResizing: false,
+      automaticLayout: true,
+      readOnly: true,
+      scrollBeyondLastLine: false,
+      diffAlgorithm: {
+        onDidChange: () => ({ dispose: () => {} }),
+        computeDiff: () =>
+          new Promise((resolve) => resolve(computeDiffWrapper.computeDiff())),
+      },
+    })
+    diffEditor = editor
+  }
+})
+
+defineExpose({
+  getDiffEditor: () => diffEditor,
+  computeDiffWrapper,
+})
 </script>
+
+<template>
+  <div :id="id" class="wh-100">
+    <loading-circle :active="isLoading" />
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .wh-100 {
