@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import {
-  mdiArrowRightBoldBox,
-  mdiMinusBox,
-  mdiPencilBox,
-  mdiPlusBox,
-} from '@mdi/js'
 import { CommitFile, ActionName, ActionType } from '@/apis'
 import { log } from '@/utils/action'
 
@@ -61,25 +55,25 @@ watch(
         <v-icon
           v-if="file.status === 'modified'"
           size="small"
-          :icon="mdiPencilBox"
+          icon="$mdiPencilBox"
           color="amber"
         />
         <v-icon
           v-if="file.status === 'added'"
           size="small"
-          :icon="mdiPlusBox"
+          icon="$mdiPlusBox"
           color="green"
         />
         <v-icon
           v-if="file.status === 'removed'"
           size="small"
-          :icon="mdiMinusBox"
+          icon="$mdiMinusBox"
           color="red"
         />
         <v-icon
           v-if="file.status === 'renamed'"
           size="small"
-          :icon="mdiArrowRightBoldBox"
+          icon="$mdiArrowRightBoldBox"
           color="purple"
         />
       </v-list-item>

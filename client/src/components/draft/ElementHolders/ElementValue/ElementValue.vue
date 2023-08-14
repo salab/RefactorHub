@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { DiffCategory } from 'refactorhub'
-import { mdiDelete, mdiEyeOutline, mdiMarker } from '@mdi/js'
 import { deleteElementDecoration } from '@/components/draft/ElementEditor/ts/elementDecorations'
 import apis, { CodeElement, ActionName, ActionType } from '@/apis'
 import { log } from '@/utils/action'
@@ -143,7 +142,7 @@ const range = computed(() => props.element.location?.range)
         :disabled="!isExist"
         @click="openLocation"
       >
-        <v-icon :size="16" :icon="mdiEyeOutline" />
+        <v-icon :size="16" icon="$mdiEyeOutline" />
       </v-btn>
       <v-btn
         variant="text"
@@ -153,7 +152,7 @@ const range = computed(() => props.element.location?.range)
         color="primary"
         @click="toggleEditing"
       >
-        <v-icon :size="16" :icon="mdiMarker" />
+        <v-icon :size="16" icon="$mdiMarker" />
       </v-btn>
       <v-btn
         variant="text"
@@ -163,7 +162,7 @@ const range = computed(() => props.element.location?.range)
         color="error"
         @click="deleteElement"
       >
-        <v-icon :size="16" :icon="mdiDelete" />
+        <v-icon :size="16" icon="$mdiDelete" />
       </v-btn>
     </div>
   </div>

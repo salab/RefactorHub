@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import * as monaco from 'monaco-editor'
-import { mdiEyeOutline } from '@mdi/js'
 import { CommonTokens } from './ts/commonTokensDecorations'
 import { setTextModelOnDiffEditor } from './ts/displayedFile'
 import MonacoEditor from '@/components/common/editor/MonacoEditor.vue'
@@ -111,7 +110,7 @@ const openLocation = () => {
         title="Preview on editor"
         @click="openLocation"
       >
-        <v-icon size="x-large" :icon="mdiEyeOutline" />
+        <v-icon size="x-large" icon="$mdiEyeOutline" />
       </v-btn>
       {{ commonTokens.path }} {{ commonTokens.range.startLineNumber }}:{{
         commonTokens.range.startColumn

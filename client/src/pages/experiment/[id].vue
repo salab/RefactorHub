@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { mdiCheckCircle, mdiCircleOutline } from '@mdi/js'
 import apis, { Experiment, Refactoring, RefactoringDraft } from '@/apis'
 
 definePageMeta({
@@ -85,11 +84,11 @@ const start = async (id: number) => {
             <div class="px-4">
               <v-icon
                 v-if="isCompleted(refactoring.id)"
-                :icon="mdiCheckCircle"
+                icon="$mdiCheckCircle"
                 size="x-large"
                 color="success"
               />
-              <v-icon v-else :icon="mdiCircleOutline" size="x-large" />
+              <v-icon v-else icon="$mdiCircleOutline" size="x-large" />
             </div>
             <div class="flex-grow-1">
               <v-card-title>

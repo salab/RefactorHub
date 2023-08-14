@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import * as monaco from 'monaco-editor'
 import { DiffCategory, FileMetadata } from 'refactorhub'
-import { mdiCloseCircleOutline } from '@mdi/js'
 import CodeFragmentDiff from '../CodeFragmentDiff/CodeFragmentDiff.vue'
 import {
   setupDisplayedFileOnDiffEditor,
@@ -319,7 +318,7 @@ async function lockEditor(category: DiffCategory) {
                 <v-card-actions
                   ><v-icon
                     size="x-large"
-                    :icon="mdiCloseCircleOutline"
+                    icon="$mdiCloseCircleOutline"
                     @click="commonTokensSelected.before = false"
                   />
                 </v-card-actions>
@@ -357,7 +356,7 @@ async function lockEditor(category: DiffCategory) {
                 <v-card-actions
                   ><v-icon
                     size="x-large"
-                    :icon="mdiCloseCircleOutline"
+                    icon="$mdiCloseCircleOutline"
                     @click="commonTokensSelected.after = false"
                   />
                 </v-card-actions>

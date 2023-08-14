@@ -1,11 +1,5 @@
 <script setup lang="ts">
 import { DiffCategory } from 'refactorhub'
-import {
-  mdiAsterisk,
-  mdiCheckCircle,
-  mdiCircleOutline,
-  mdiDelete,
-} from '@mdi/js'
 import { deleteElementDecoration } from '@/components/draft/ElementEditor/ts/elementDecorations'
 import apis, { CodeElementHolder, CodeElementMetadata } from '@/apis'
 
@@ -80,7 +74,7 @@ const verifyElement = async () => {
                 :size="12"
                 color="error"
                 title="This element is required"
-                :icon="mdiAsterisk"
+                icon="$mdiAsterisk"
               />
               <v-btn
                 variant="text"
@@ -97,9 +91,9 @@ const verifyElement = async () => {
                   v-if="isCompleted"
                   :size="16"
                   color="success"
-                  :icon="mdiCheckCircle"
+                  icon="$mdiCheckCircle"
                 />
-                <v-icon v-else :size="16" :icon="mdiCircleOutline" />
+                <v-icon v-else :size="16" icon="$mdiCircleOutline" />
               </v-btn>
             </div>
             <v-container class="pa-0 ma-0 d-flex flex-column align-left">
@@ -123,7 +117,7 @@ const verifyElement = async () => {
                 color="error"
                 @click.stop="removeElementKey"
               >
-                <v-icon :size="16" :icon="mdiDelete" />
+                <v-icon :size="16" icon="$mdiDelete" />
               </v-btn>
             </div>
           </v-container>

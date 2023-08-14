@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { mdiGithub } from '@mdi/js'
 const isAuthenticated = useUser().isAuthenticated
 </script>
 
@@ -11,9 +10,10 @@ const isAuthenticated = useUser().isAuthenticated
           <v-img src="/icon.png" width="32" height="32"></v-img>
         </a>
         <v-spacer />
-        <v-btn v-if="!isAuthenticated" href="/login" depressed>
-          <v-icon :icon="mdiGithub" size="30" start />
-          Sign in
+        <v-btn v-if="!isAuthenticated" href="/login" text="Sign in">
+          <template #prepend>
+            <v-icon icon="$mdiGithub" :size="30" />
+          </template>
         </v-btn>
       </v-container>
     </v-app-bar>
