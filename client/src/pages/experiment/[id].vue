@@ -61,7 +61,6 @@ const start = async (id: number) => {
         <h1 class="text-h4">{{ experiment.title }}</h1>
         <v-btn
           flat
-          color="grey-lighten-4"
           class="text-none"
           :href="`/api/experiments/${experiment.id}/result`"
         >
@@ -99,7 +98,6 @@ const start = async (id: number) => {
               </v-card-text>
             </div>
             <v-btn
-              color="grey-lighten-4"
               flat
               class="text-none mx-2"
               @click="() => start(refactoring.id)"

@@ -72,7 +72,6 @@ const create = async () => {
         <v-btn
           flat
           size="small"
-          color="grey-lighten-4"
           class="text-none"
           :disabled="state === 'Pending'"
           @click="prepare"
@@ -137,9 +136,7 @@ const create = async () => {
         </details>
         <div>{{ message }}</div>
         <div class="d-flex justify-center">
-          <v-btn :disabled="pending" depressed color="primary" @click="create">
-            Create
-          </v-btn>
+          <v-btn :disabled="pending" flat @click="create"> Create </v-btn>
         </div>
       </v-card>
     </div>

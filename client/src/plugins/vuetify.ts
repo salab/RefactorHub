@@ -41,6 +41,15 @@ export default defineNuxtPlugin((nuxtApp) => {
       },
       sets: { mdi },
     },
+    theme: {
+      themes: {
+        light: {
+          dark: false,
+          colors,
+        },
+      },
+      defaultTheme: 'light',
+    },
   })
 
   nuxtApp.vueApp.use(vuetify)

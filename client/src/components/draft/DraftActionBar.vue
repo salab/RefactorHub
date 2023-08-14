@@ -13,13 +13,13 @@ defineProps({
 
 <template>
   <v-card :height="45">
-    <v-app-bar :height="45" color="grey-lighten-4" app flat>
+    <v-app-bar :height="45" color="primary" app flat>
       <v-spacer />
       <v-btn
         variant="flat"
         size="small"
         :rounded="false"
-        color="primary"
+        color="success"
         class="ml-2"
         @click="save"
       >

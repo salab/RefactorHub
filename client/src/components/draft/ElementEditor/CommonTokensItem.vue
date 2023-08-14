@@ -106,12 +106,10 @@ const openLocation = () => {
       <v-btn
         variant="text"
         size="x-small"
-        icon
+        icon="$mdiEyeOutline"
         title="Preview on editor"
         @click="openLocation"
-      >
-        <v-icon size="x-large" icon="$mdiEyeOutline" />
-      </v-btn>
+      />
       {{ commonTokens.path }} {{ commonTokens.range.startLineNumber }}:{{
         commonTokens.range.startColumn
       }}~{{ commonTokens.range.endLineNumber }}:{{

@@ -4,7 +4,7 @@ const isAuthenticated = useUser().isAuthenticated
 
 <template>
   <v-app>
-    <v-app-bar color="grey-lighten-4" app flat>
+    <v-app-bar color="primary" app flat>
       <v-container class="py-0 fill-height">
         <a href="/" class="d-inline-block">
           <v-img src="/icon.png" width="32" height="32"></v-img>

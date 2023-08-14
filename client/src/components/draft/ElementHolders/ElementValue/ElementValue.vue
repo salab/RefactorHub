@@ -149,7 +149,7 @@ const range = computed(() => props.element.location?.range)
         :size="16"
         icon
         title="Start to select on editor"
-        color="primary"
+        color="secondary"
         @click="toggleEditing"
       >
         <v-icon :size="16" icon="$mdiMarker" />

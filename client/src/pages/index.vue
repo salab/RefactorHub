@@ -11,15 +11,10 @@ const isAuthenticated = useUser().isAuthenticated
     <template v-if="isAuthenticated">
       <v-divider />
       <div class="d-flex justify-center pa-6">
-        <v-btn
-          to="/experiment"
-          color="grey-lighten-4"
-          flat
-          class="text-none mx-3"
-        >
+        <v-btn to="/experiment" flat class="text-none mx-3">
           Experiments
         </v-btn>
-        <v-btn to="/types" color="grey-lighten-4" flat class="text-none mx-3">
+        <v-btn to="/types" flat class="text-none mx-3">
           Refactoring Types
         </v-btn>
       </div>
