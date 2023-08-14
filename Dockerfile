@@ -8,6 +8,6 @@ RUN ./gradlew shadowJar --paralell --no-daemon --continue || true
 COPY . /app
 RUN [ "./gradlew", "shadowJar", "--parallel", "--no-daemon" ]
 
-FROM adoptopenjdk:11-jre-hotspot
+FROM openjdk:17
 COPY --from=build /app/build/libs/*.jar app.jar
 CMD [ "java", "-jar", "/app.jar" ]
