@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { capitalize } from 'lodash-es'
 import { DiffCategory } from 'refactorhub'
 import { RefactoringDraft } from '@/apis'
 
@@ -12,9 +11,12 @@ const props = defineProps({
     type: String as () => DiffCategory,
     required: true,
   },
+  isActive: {
+    type: Boolean,
+    required: true,
+  },
 })
 
-const title = capitalize(props.category)
 const elementMetadataMap = computed(() => {
   const type = useDraft().refactoringTypes.value.find(
     (t) => t.name === props.draft.type,
@@ -40,14 +42,15 @@ const isRemovable = (key: string) =>
 
 <template>
   <v-navigation-drawer
+    :model-value="isActive"
     :location="category === 'after' ? 'right' : 'left'"
     :width="200"
     permanent
   >
     <div class="d-flex flex-column fill-height">
-      <div class="d-flex justify-center py-1">
-        <span class="font-weight-medium">{{ title }} Elements</span>
-      </div>
+      <v-sheet :color="colors[category]" class="d-flex justify-center py-1">
+        <span class="text-button">{{ category }} Elements</span>
+      </v-sheet>
       <v-divider />
       <div class="flex-grow-1 list-container">
         <v-list :opened="Object.keys(elementHolderMap)" class="py-0">

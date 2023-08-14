@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { DiffCategory } from 'refactorhub'
 import apis from '@/apis'
 import { initElementDecorations } from '@/components/draft/ElementEditor/ts/elementDecorations'
 import { initElementWidgets } from '@/components/draft/ElementEditor/ts/elementWidgets'
@@ -22,6 +23,11 @@ initElementWidgets()
 initCodeFragmentCursor()
 useDraft().initStates(draftId)
 
+const isActiveOfElementHolders = reactive({
+  before: true,
+  after: true,
+})
+
 async function save() {
   const id = draft.value?.id
   if (id === undefined) return
@@ -42,9 +48,32 @@ async function discard() {
 <template>
   <v-app>
     <div class="app">
-      <draft-action-bar :save="save" :discard="discard" />
-      <element-holders v-if="draft" :draft="draft" category="before" />
-      <element-holders v-if="draft" :draft="draft" category="after" />
+      <draft-action-bar
+        :save="save"
+        :discard="discard"
+        :is-active-of-element-holders="{
+          before: isActiveOfElementHolders.before,
+          after: isActiveOfElementHolders.after,
+        }"
+        @toggle-element-holders="
+          (category: DiffCategory) => {
+            isActiveOfElementHolders[category] =
+              !isActiveOfElementHolders[category]
+          }
+        "
+      />
+      <element-holders
+        v-if="draft"
+        :is-active="isActiveOfElementHolders.before"
+        :draft="draft"
+        category="before"
+      />
+      <element-holders
+        v-if="draft"
+        :is-active="isActiveOfElementHolders.after"
+        :draft="draft"
+        category="after"
+      />
       <v-main
         v-if="draft && commit"
         class="d-flex flex-column fill-height pt-0"

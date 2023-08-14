@@ -15,6 +15,10 @@ import {
   mdiDelete,
   mdiMarker,
   mdiGithub,
+  mdiArrowExpandRight,
+  mdiArrowExpandLeft,
+  mdiArrowCollapseRight,
+  mdiArrowCollapseLeft,
 } from '@mdi/js'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -38,6 +42,10 @@ export default defineNuxtPlugin((nuxtApp) => {
         mdiDelete,
         mdiMarker,
         mdiGithub,
+        mdiArrowExpandRight,
+        mdiArrowExpandLeft,
+        mdiArrowCollapseRight,
+        mdiArrowCollapseLeft,
       },
       sets: { mdi },
     },
