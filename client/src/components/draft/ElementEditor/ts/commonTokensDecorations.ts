@@ -3,6 +3,11 @@ import { DecorationMetadata, DiffCategory } from 'refactorhub'
 import { Position, Range } from 'monaco-editor'
 import { Token } from '@/apis'
 
+export type CommonTokensType =
+  | 'oneToOne'
+  | 'oneToManyOrManyToOne'
+  | 'manyToMany'
+
 class TokenDetail implements Token {
   public readonly raw: string
   public readonly path: string
