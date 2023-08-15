@@ -18,9 +18,9 @@ const getColorfulCommonTokensColor = (
   alpha = 1.0,
 ) => {
   const hue = 20 + (360 / 10) * colorType
-  const saturation = 255
-  const lightness = 80 - 20 / level
-  return `hsl(${hue}, ${saturation}%, ${lightness}%, ${alpha})`
+  const saturation = 100
+  const lightness = 80 - 30 / level
+  return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`
 }
 const getCommonTokensHoveredColor = (level: number, alpha = 1.0) => {
   // red
