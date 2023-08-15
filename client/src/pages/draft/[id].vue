@@ -21,7 +21,12 @@ const commit = computed(() => useDraft().commit.value)
 initElementDecorations()
 initElementWidgets()
 initCodeFragmentCursor()
-useDraft().initStates(draftId)
+useDraft()
+  .initStates(draftId)
+  .then(() => {
+    const { init } = useViewer()
+    if (commit.value) init(commit.value)
+  })
 
 const isActiveOfElementHolders = reactive({
   before: true,
@@ -89,7 +94,8 @@ async function discard() {
             <draft-summary :draft="draft" :commit="commit" />
             <v-divider />
             <div class="flex-grow-1 flex-shrink-0">
-              <element-editor />
+              <!-- <element-editor /> -->
+              <main-viewers />
             </div>
             <v-divider />
             <commit-files :files="commit.files" />

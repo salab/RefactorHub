@@ -52,14 +52,12 @@ const updateCommonTokensTypes = (types: CommonTokensType[]) => {
   <v-expansion-panels>
     <v-expansion-panel :elevation="0" :rounded="0" class="info-panel">
       <v-expansion-panel-title>
-        <v-fade-transition>
-          <div class="d-flex">
-            <div class="flex-grow-0 d-flex align-center pr-3">
-              <h2>{{ draft.type }}</h2>
-            </div>
-            <div class="d-flex align-center">{{ draft.description }}</div>
+        <div class="d-flex">
+          <div class="flex-grow-0 d-flex align-center pr-3">
+            <h2>{{ draft.type }}</h2>
           </div>
-        </v-fade-transition>
+          <div class="d-flex align-center">{{ draft.description }}</div>
+        </div>
       </v-expansion-panel-title>
       <v-expansion-panel-text>
         <v-container fluid class="py-0">
