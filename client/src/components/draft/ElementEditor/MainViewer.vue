@@ -165,6 +165,28 @@ async function createFileViewer(
   })
   const textModel = await getTextModelOfFile(viewer.category, commit, file)
   fileViewer.setModel(textModel)
+
+  const changedRanges: monaco.Range[] = []
+  for (const { before, after } of file.diffHunks) {
+    if (viewer.category === 'before' && before) {
+      changedRanges.push(
+        new monaco.Range(before.startLine, 1, before.endLine, 1),
+      )
+    }
+    if (viewer.category === 'after' && after) {
+      changedRanges.push(new monaco.Range(after.startLine, 1, after.endLine, 1))
+    }
+  }
+  fileViewer.createDecorationsCollection(
+    changedRanges.map((range) => ({
+      range,
+      options: {
+        isWholeLine: true,
+        className: `file-changed-${viewer.category}`,
+      },
+    })),
+  )
+
   if (viewer.category === 'before')
     return {
       originalViewer: fileViewer,
@@ -255,6 +277,13 @@ onMounted(async () => {
 }
 
 ::v-deep(.element-editor) {
+  .file-changed-before {
+    background: rgba(255, 98, 88, 0.5);
+  }
+  .file-changed-after {
+    background: rgba(175, 208, 107, 0.5);
+  }
+
   .element-widget {
     cursor: pointer;
     border: 2px solid;
