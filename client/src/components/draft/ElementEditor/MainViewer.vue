@@ -15,7 +15,8 @@ const props = defineProps({
 const pending = ref(0)
 const isLoading = computed(() => pending.value > 0)
 
-const { id, navigator } = props.viewer
+const { id } = props.viewer
+const isOpeningFileList = ref(false)
 
 function isExistingFile(category: DiffCategory, file: CommitFile) {
   return !(
@@ -196,7 +197,7 @@ async function createFileViewer(
   }
 }
 
-onMounted(async () => {
+async function createViewer() {
   const container = document.getElementById(id)
   if (!container) {
     logger.error(`Cannot find the container element: id is ${id}`)
@@ -245,26 +246,87 @@ onMounted(async () => {
   modifiedViewer?.onMouseMove((e) => onMouseMove(e, 'after'))
 
   pending.value--
-})
+}
+
+onMounted(async () => await createViewer())
 </script>
 
 <template>
-  <div class="d-flex flex-column fill-height">
-    <div class="d-flex align-center">
-      {{ viewer.id }}
-      <!-- {{
-        viewer.type === 'file'
-          ? viewer.path
-          : `${viewer.beforePath} → ${viewer.afterPath}`
-      }} -->
+  <v-sheet
+    border
+    :color="useViewer().mainViewerId.value === id ? 'primary' : 'background'"
+    class="d-flex flex-column fill-height"
+    @click="() => (useViewer().mainViewerId.value = id)"
+  >
+    <div class="d-flex align-center flex-nowrap" style="max-width: 100%">
+      <span class="text-subtitle-2 text-weight-block mx-1"
+        >({{ viewer.type }})</span
+      >
+      <span
+        v-if="viewer.type === 'file'"
+        class="flex-shrink-1 mx-1 path text-subtitle-2"
+        :style="`background-color: ${colors[viewer.category]}; min-width: 0%`"
+      >
+        {{ getFileName(viewer.path) }}
+      </span>
+      <div
+        v-else
+        class="flex-shrink-1 mx-1 d-flex align-center flex-nowrap"
+        style="min-width: 0%"
+      >
+        <span
+          class="path text-subtitle-2"
+          :style="`background-color: ${colors.before}`"
+        >
+          {{ getPathDifference(viewer.beforePath, viewer.afterPath)[0] }}
+        </span>
+        <v-icon size="small" icon="$mdiArrowRightBoldBox" color="purple" />
+        <span
+          class="path text-subtitle-2"
+          :style="`background-color: ${colors.after}`"
+        >
+          {{ getPathDifference(viewer.beforePath, viewer.afterPath)[1] }}
+        </span>
+      </div>
+      <v-btn
+        variant="plain"
+        density="compact"
+        :icon="
+          isOpeningFileList
+            ? '$mdiArrowUpDropCircleOutline'
+            : '$mdiArrowDownDropCircleOutline'
+        "
+        flat
+        :title="`${isOpeningFileList ? `close` : `open`} file list`"
+        @click="() => (isOpeningFileList = !isOpeningFileList)"
+      />
     </div>
     <v-divider />
     <div class="flex-grow-1 position-relative">
+      <v-expand-transition style="position: absolute; z-index: 100">
+        <v-sheet v-if="isOpeningFileList" style="width: 100%; height: 100%">
+          <v-list :opened="[`${id}:(Project Root)`]"
+            ><file-list
+              :viewer-id="id"
+              :file-tree="
+                getFileTreeStructure(
+                  useDraft().commit.value?.files.map((file) =>
+                    file.status === 'added' ? file.name : file.previousName,
+                  ) ?? [],
+                  '(Project Root)',
+                )
+              "
+              former-path=""
+              :on-file-change="() => (isOpeningFileList = !isOpeningFileList)"
+            />
+          </v-list>
+        </v-sheet>
+      </v-expand-transition>
       <div :id="id" class="wh-100 element-editor">
         <loading-circle :active="isLoading" />
       </div>
     </div>
-  </div>
+  </v-sheet>
 </template>
 
 <style lang="scss" scoped>
@@ -274,6 +336,12 @@ onMounted(async () => {
 .wh-100 {
   width: 100%;
   height: 100%;
+}
+
+.path {
+  display: flex;
+  overflow-x: scroll;
+  white-space: nowrap;
 }
 
 ::v-deep(.element-editor) {

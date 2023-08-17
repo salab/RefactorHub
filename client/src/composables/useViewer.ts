@@ -30,6 +30,23 @@ export type Viewer = FileViewer | DiffViewer
 
 export const useViewer = () => {
   const viewers = useState<Viewer[]>('viewers', () => [])
+  const mainViewerId = useState<string>('mainViewerId', () => '')
+
+  function recreateViewer(id: string, viewer: Viewer) {
+    const index = viewers.value.findIndex((viewer) => viewer.id === id)
+    if (index === -1) {
+      logger.warn(`cannot find viewer: id=${id}`)
+      return
+    }
+    // change id in order to change key of element
+    const newId = cryptoRandomString({ length: 10 })
+    viewers.value[index] = {
+      ...viewer,
+      id: newId,
+    }
+    mainViewerId.value = newId
+  }
+
   const init = (commit: CommitDetail) => {
     viewers.value = []
     const file = commit.files[0]
@@ -43,9 +60,13 @@ export const useViewer = () => {
         navigations: [],
       },
     })
+    mainViewerId.value = viewers.value[0].id
   }
+
   return {
     viewers: computed(() => viewers),
+    mainViewerId,
     init,
+    recreateViewer,
   }
 }

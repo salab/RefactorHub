@@ -19,6 +19,8 @@ import {
   mdiArrowExpandLeft,
   mdiArrowCollapseRight,
   mdiArrowCollapseLeft,
+  mdiArrowDownDropCircleOutline,
+  mdiArrowUpDropCircleOutline,
 } from '@mdi/js'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -46,6 +48,8 @@ export default defineNuxtPlugin((nuxtApp) => {
         mdiArrowExpandLeft,
         mdiArrowCollapseRight,
         mdiArrowCollapseLeft,
+        mdiArrowDownDropCircleOutline,
+        mdiArrowUpDropCircleOutline,
       },
       sets: { mdi },
     },

@@ -97,8 +97,6 @@ async function discard() {
               <!-- <element-editor /> -->
               <main-viewers />
             </div>
-            <v-divider />
-            <commit-files :files="commit.files" />
           </v-container>
         </v-container>
         <element-type-colors />
