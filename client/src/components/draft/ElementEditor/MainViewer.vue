@@ -17,7 +17,8 @@ const isLoading = computed(() => pending.value > 0)
 
 const isOpeningFileList = ref(false)
 
-const { mainViewerId } = useViewer()
+const { mainViewerId, getNavigator } = useViewer()
+const navigator = getNavigator(props.viewer.id)
 
 function isExistingFile(category: DiffCategory, file: CommitFile) {
   return !(
@@ -77,11 +78,14 @@ async function createDiffViewer(
 }> {
   const commit = useDraft().commit.value
   if (!commit) throw new Error('commit is not loaded')
+  const { beforePath, afterPath, navigation } = viewer
   const file = commit.files.find(
-    (file) => file.previousName === viewer.beforePath,
+    (file) => file.previousName === beforePath || file.name === afterPath,
   )
   if (!file)
-    throw new Error(`commit file is not found: beforePath=${viewer.beforePath}`)
+    throw new Error(
+      `commit file is not found: beforePath=${beforePath}, afterPath=${afterPath}`,
+    )
 
   const changes: monaco.editor.LineRangeMapping[] = []
   let beforeLineNumber = 0
@@ -138,10 +142,24 @@ async function createDiffViewer(
     modified: modifiedTextModel,
   })
 
+  const originalViewer = diffViewer.getOriginalEditor()
+  const modifiedViewer = diffViewer.getModifiedEditor()
+  if (navigation) {
+    const { category, range } = navigation
+    setTimeout(
+      () =>
+        (category === 'before'
+          ? originalViewer
+          : modifiedViewer
+        ).revealRangeNearTop(range),
+      100,
+    )
+  }
+
   return {
     diffViewer,
-    originalViewer: diffViewer.getOriginalEditor(),
-    modifiedViewer: diffViewer.getModifiedEditor(),
+    originalViewer,
+    modifiedViewer,
   }
 }
 async function createFileViewer(
@@ -154,29 +172,28 @@ async function createFileViewer(
 }> {
   const commit = useDraft().commit.value
   if (!commit) throw new Error('commit is not loaded')
+  const { category, path, range } = viewer
   const file = commit.files.find((file) =>
-    viewer.category === 'before'
-      ? file.previousName === viewer.path
-      : file.name === viewer.path,
+    category === 'before' ? file.previousName === path : file.name === path,
   )
-  if (!file) throw new Error(`commit file is not found: path=${viewer.path}`)
+  if (!file) throw new Error(`commit file is not found: path=${path}`)
 
   const fileViewer = monaco.editor.create(container, {
     automaticLayout: true,
     readOnly: true,
     scrollBeyondLastLine: false,
   })
-  const textModel = await getTextModelOfFile(viewer.category, commit, file)
+  const textModel = await getTextModelOfFile(category, commit, file)
   fileViewer.setModel(textModel)
 
   const changedRanges: monaco.Range[] = []
   for (const { before, after } of file.diffHunks) {
-    if (viewer.category === 'before' && before) {
+    if (category === 'before' && before) {
       changedRanges.push(
         new monaco.Range(before.startLine, 1, before.endLine, 1),
       )
     }
-    if (viewer.category === 'after' && after) {
+    if (category === 'after' && after) {
       changedRanges.push(new monaco.Range(after.startLine, 1, after.endLine, 1))
     }
   }
@@ -185,12 +202,14 @@ async function createFileViewer(
       range,
       options: {
         isWholeLine: true,
-        className: `file-changed-${viewer.category}`,
+        className: `file-changed-${category}`,
       },
     })),
   )
 
-  if (viewer.category === 'before')
+  if (range) setTimeout(() => fileViewer.revealRangeNearTop(range), 100)
+
+  if (category === 'before')
     return {
       originalViewer: fileViewer,
     }
@@ -329,6 +348,47 @@ onMounted(async () => await createViewer())
         @click="() => (isOpeningFileList = !isOpeningFileList)"
       />
       <v-spacer />
+      <v-divider v-if="navigator" vertical />
+      <v-btn
+        v-if="navigator"
+        variant="plain"
+        density="compact"
+        :icon="'$mdiMenuLeftOutline'"
+        flat
+        :title="`show previous`"
+        @click="
+          (e: PointerEvent) => {
+            e.stopPropagation() // prevent @click of v-sheet in MainViewer
+            useViewer().navigate(viewer.id, 'prev')
+          }
+        "
+      />
+      <code
+        v-if="navigator"
+        class="path"
+        style="max-width: 20%; border: 1px solid black; background-color: beige"
+        >{{ navigator.label }}</code
+      >
+      <span v-if="navigator" class="text-body-2 ml-1">{{
+        `${navigator.currentDestinationIndex + 1}/${
+          navigator.destinations.length
+        }`
+      }}</span>
+      <v-btn
+        v-if="navigator"
+        variant="plain"
+        density="compact"
+        :icon="'$mdiMenuRightOutline'"
+        flat
+        :title="`show next`"
+        @click="
+          (e: PointerEvent) => {
+            e.stopPropagation() // prevent @click of v-sheet in MainViewer
+            useViewer().navigate(viewer.id, 'next')
+          }
+        "
+      />
+      <v-divider v-if="navigator" vertical />
       <v-btn
         v-if="useViewer().viewers.value.length > 1"
         variant="plain"

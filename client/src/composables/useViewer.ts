@@ -3,34 +3,45 @@ import { Range } from 'monaco-editor'
 import cryptoRandomString from 'crypto-random-string'
 import { CommitDetail } from 'apis'
 
-export interface Navigation {
+interface ViewerBase {
+  id: string
+}
+export interface FileViewer extends ViewerBase {
+  type: 'file'
+  category: DiffCategory
+  path: string
+  range?: Range
+}
+export interface DiffViewer extends ViewerBase {
+  type: 'diff'
+  beforePath: string
+  afterPath: string
+  navigation?: {
+    category: DiffCategory
+    range: Range
+  }
+}
+export type Viewer = FileViewer | DiffViewer
+
+export interface Destination {
   category: DiffCategory
   path: string
   range: Range
 }
 export interface Navigator {
   label: string
-  navigations: Navigation[]
+  currentDestinationIndex: number
+  destinations: Destination[]
 }
-interface ViewerBase {
-  id: string
-  navigator: Navigator
-}
-export interface FileViewer extends ViewerBase {
-  type: 'file'
-  category: DiffCategory
-  path: string
-}
-export interface DiffViewer extends ViewerBase {
-  type: 'diff'
-  beforePath: string
-  afterPath: string
-}
-export type Viewer = FileViewer | DiffViewer
 
 export const useViewer = () => {
   const viewers = useState<Viewer[]>('viewers', () => [])
   const mainViewerId = useState<string>('mainViewerId', () => '')
+
+  const viewerNavigationMap = useState<Map<string, Navigator>>(
+    'viewerNavigationMap',
+    () => new Map(),
+  )
 
   function recreateViewer(
     id: string,
@@ -48,6 +59,12 @@ export const useViewer = () => {
       ...viewer,
       id: newId,
     }
+    const navigator = viewerNavigationMap.value.get(id)
+    if (navigator) {
+      viewerNavigationMap.value.delete(id)
+      viewerNavigationMap.value.set(newId, navigator)
+    }
+    return viewers.value[index]
   }
   function duplicateViewer(id: string) {
     const index = viewers.value.findIndex((viewer) => viewer.id === id)
@@ -68,20 +85,65 @@ export const useViewer = () => {
     }
     mainViewerId.value = viewers.value[index ? index - 1 : 1].id
     viewers.value.splice(index, 1)
+    viewerNavigationMap.value.delete(id)
+  }
+
+  function setNavigator(navigator: Navigator, viewerId = mainViewerId.value) {
+    viewerNavigationMap.value.set(viewerId, navigator)
+  }
+  function getNavigator(viewerId: string) {
+    return computed(() => viewerNavigationMap.value.get(viewerId))
+  }
+  function navigate(viewerId: string, direction: 'next' | 'prev') {
+    const navigator = viewerNavigationMap.value.get(viewerId)
+    const viewer = viewers.value.find((viewer) => viewer.id === viewerId)
+    if (!navigator || !viewer) {
+      logger.warn(`cannot find navigator or viewer: id=${viewerId}`)
+      return
+    }
+    const destinationIndex =
+      (navigator.currentDestinationIndex +
+        navigator.destinations.length +
+        (direction === 'next' ? 1 : -1)) %
+      navigator.destinations.length
+    const destination = navigator.destinations[destinationIndex]
+    const file = useDraft().commit.value?.files.find((file) =>
+      destination.category === 'before'
+        ? file.previousName === destination.path
+        : file.name === destination.path,
+    )
+    if (!file) {
+      logger.warn(`cannot find file ${destination.path}`)
+      return
+    }
+    const newViewer: Viewer =
+      viewer.type === 'file'
+        ? {
+            ...viewer,
+            type: 'file',
+            ...destination,
+          }
+        : {
+            ...viewer,
+            type: 'diff',
+            beforePath: file.previousName,
+            afterPath: file.name,
+            navigation: { ...destination },
+          }
+    navigator.currentDestinationIndex = destinationIndex
+    viewerNavigationMap.value.set(viewerId, navigator)
+    recreateViewer(viewerId, newViewer)
   }
 
   function init(commit: CommitDetail) {
     viewers.value = []
+    viewerNavigationMap.value.clear()
     const file = commit.files[0]
     viewers.value.push({
       id: cryptoRandomString({ length: 10 }),
       type: 'diff',
       beforePath: file.previousName,
       afterPath: file.name,
-      navigator: {
-        label: '',
-        navigations: [],
-      },
     })
     mainViewerId.value = viewers.value[0].id
   }
@@ -93,5 +155,8 @@ export const useViewer = () => {
     recreateViewer,
     duplicateViewer,
     deleteViewer,
+    setNavigator,
+    getNavigator,
+    navigate,
   }
 }

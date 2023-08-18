@@ -104,10 +104,6 @@ function getFile(fileName: string): CommitFile {
                   type: 'file',
                   category: 'before',
                   path: file.previousName,
-                  navigator: {
-                    label: '',
-                    navigations: [],
-                  },
                 })
                 onFileChange()
               }
@@ -127,10 +123,6 @@ function getFile(fileName: string): CommitFile {
                   type: 'diff',
                   beforePath: file.previousName,
                   afterPath: file.name,
-                  navigator: {
-                    label: '',
-                    navigations: [],
-                  },
                 })
                 onFileChange()
               }
@@ -154,10 +146,6 @@ function getFile(fileName: string): CommitFile {
                   type: 'file',
                   category: 'after',
                   path: file.name,
-                  navigator: {
-                    label: '',
-                    navigations: [],
-                  },
                 })
                 onFileChange()
               }

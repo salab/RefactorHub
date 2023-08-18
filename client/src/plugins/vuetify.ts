@@ -24,6 +24,8 @@ import {
   mdiTabPlus,
   mdiTabRemove,
   mdiFolderOutline,
+  mdiMenuLeftOutline,
+  mdiMenuRightOutline,
 } from '@mdi/js'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -56,6 +58,8 @@ export default defineNuxtPlugin((nuxtApp) => {
         mdiTabPlus,
         mdiTabRemove,
         mdiFolderOutline,
+        mdiMenuLeftOutline,
+        mdiMenuRightOutline,
       },
       sets: { mdi },
     },
