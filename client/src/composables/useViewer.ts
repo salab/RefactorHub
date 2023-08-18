@@ -40,11 +40,11 @@ export const useViewer = () => {
     }
     // change id in order to change key of element
     const newId = cryptoRandomString({ length: 10 })
+    mainViewerId.value = newId
     viewers.value[index] = {
       ...viewer,
       id: newId,
     }
-    mainViewerId.value = newId
   }
 
   const init = (commit: CommitDetail) => {

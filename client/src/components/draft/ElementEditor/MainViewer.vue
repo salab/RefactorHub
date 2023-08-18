@@ -79,7 +79,8 @@ async function createDiffViewer(
   const file = commit.files.find(
     (file) => file.previousName === viewer.beforePath,
   )
-  if (!file) throw new Error('commit file is not found')
+  if (!file)
+    throw new Error(`commit file is not found: beforePath=${viewer.beforePath}`)
 
   const changes: monaco.editor.LineRangeMapping[] = []
   let beforeLineNumber = 0
@@ -157,7 +158,7 @@ async function createFileViewer(
       ? file.previousName === viewer.path
       : file.name === viewer.path,
   )
-  if (!file) throw new Error('commit file is not found')
+  if (!file) throw new Error(`commit file is not found: path=${viewer.path}`)
 
   const fileViewer = monaco.editor.create(container, {
     automaticLayout: true,
@@ -259,9 +260,30 @@ onMounted(async () => await createViewer())
     @click="() => (useViewer().mainViewerId.value = id)"
   >
     <div class="d-flex align-center flex-nowrap" style="max-width: 100%">
-      <span class="text-subtitle-2 text-weight-block mx-1"
-        >({{ viewer.type }})</span
-      >
+      <v-btn
+        v-if="viewer.type === 'file' && viewer.category === 'before'"
+        :color="colors.before"
+        flat
+        size="x-small"
+        text="before"
+        class="mx-1"
+      />
+      <v-btn
+        v-if="viewer.type === 'diff'"
+        color="secondary"
+        flat
+        size="x-small"
+        text="diff"
+        class="mx-1"
+      />
+      <v-btn
+        v-if="viewer.type === 'file' && viewer.category === 'after'"
+        :color="colors.after"
+        flat
+        size="x-small"
+        text="after"
+        class="mx-1"
+      />
       <span
         v-if="viewer.type === 'file'"
         class="flex-shrink-1 mx-1 path text-subtitle-2"
