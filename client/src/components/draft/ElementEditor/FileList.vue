@@ -42,11 +42,18 @@ function getFile(fileName: string): CommitFile {
   <v-list-group :value="`${viewerId}:${fileTree.collapsedName}`">
     <v-divider color="primary" />
     <template #activator="{ props: activatorProps }">
-      <v-list-item variant="tonal" density="compact" v-bind="activatorProps"
-        ><span class="text-body-2 font-weight-medium path">{{
-          fileTree.collapsedName
-        }}</span></v-list-item
-      >
+      <v-list-item variant="tonal" density="compact" v-bind="activatorProps">
+        <div class="d-flex align-center flex-nowrap" style="max-width: 100%">
+          <v-icon
+            size="small"
+            icon="$mdiFolderOutline"
+            style="min-width: max-content"
+          />
+          <span class="mx-2 text-body-2 font-weight-medium path">{{
+            fileTree.collapsedName
+          }}</span>
+        </div>
+      </v-list-item>
     </template>
     <template
       v-for="fileName in fileTree.fileNames"
@@ -59,18 +66,21 @@ function getFile(fileName: string): CommitFile {
             size="small"
             icon="$mdiPencilBox"
             color="amber"
+            style="min-width: max-content"
           />
           <v-icon
             v-if="getFile(fileName).status === 'added'"
             size="small"
             icon="$mdiPlusBox"
             color="green"
+            style="min-width: max-content"
           />
           <v-icon
             v-if="getFile(fileName).status === 'removed'"
             size="small"
             icon="$mdiMinusBox"
             color="red"
+            style="min-width: max-content"
           />
           <span class="text-body-2 font-weight-bold path mx-2">{{
             fileName
@@ -164,6 +174,7 @@ function getFile(fileName: string): CommitFile {
             size="small"
             icon="$mdiArrowRightBoldBox"
             color="purple"
+            style="min-width: max-content"
           />
           <span class="text-body-2 font-weight-bold ml-1 path">{{
             getFile(fileName).name

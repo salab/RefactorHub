@@ -23,6 +23,7 @@ import {
   mdiArrowUpDropCircleOutline,
   mdiTabPlus,
   mdiTabRemove,
+  mdiFolderOutline,
 } from '@mdi/js'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -54,6 +55,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         mdiArrowUpDropCircleOutline,
         mdiTabPlus,
         mdiTabRemove,
+        mdiFolderOutline,
       },
       sets: { mdi },
     },

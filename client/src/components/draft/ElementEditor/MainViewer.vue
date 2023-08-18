@@ -303,7 +303,12 @@ onMounted(async () => await createViewer())
         >
           {{ getPathDifference(viewer.beforePath, viewer.afterPath)[0] }}
         </span>
-        <v-icon size="small" icon="$mdiArrowRightBoldBox" color="purple" />
+        <v-icon
+          size="small"
+          icon="$mdiArrowRightBoldBox"
+          color="purple"
+          style="min-width: max-content"
+        />
         <span
           class="path text-subtitle-2"
           :style="`background-color: ${colors.after}`"
