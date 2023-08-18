@@ -356,7 +356,8 @@ onMounted(async () => await createViewer())
     <div class="flex-grow-1 position-relative">
       <v-expand-transition style="position: absolute; z-index: 100">
         <v-sheet v-if="isOpeningFileList" style="width: 100%; height: 100%">
-          <v-list :opened="[`${viewer.id}:(Project Root)`]"
+          <h2 class="mx-1">Changed File List</h2>
+          <v-list :opened="[`${viewer.id}:(Project Root)`]" class="py-0 mx-1"
             ><file-list
               :viewer-id="viewer.id"
               :file-tree="
