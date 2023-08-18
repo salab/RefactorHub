@@ -15,8 +15,9 @@ const props = defineProps({
 const pending = ref(0)
 const isLoading = computed(() => pending.value > 0)
 
-const { id } = props.viewer
 const isOpeningFileList = ref(false)
+
+const { mainViewerId } = useViewer()
 
 function isExistingFile(category: DiffCategory, file: CommitFile) {
   return !(
@@ -199,9 +200,9 @@ async function createFileViewer(
 }
 
 async function createViewer() {
-  const container = document.getElementById(id)
+  const container = document.getElementById(props.viewer.id)
   if (!container) {
-    logger.error(`Cannot find the container element: id is ${id}`)
+    logger.error(`Cannot find the container element: id is ${props.viewer.id}`)
     return
   }
   pending.value++
@@ -255,9 +256,9 @@ onMounted(async () => await createViewer())
 <template>
   <v-sheet
     border
-    :color="useViewer().mainViewerId.value === id ? 'primary' : 'background'"
+    :color="mainViewerId === viewer.id ? 'primary' : 'background'"
     class="d-flex flex-column fill-height"
-    @click="() => (useViewer().mainViewerId.value = id)"
+    @click="() => (useViewer().mainViewerId.value = viewer.id)"
   >
     <div class="d-flex align-center flex-nowrap" style="max-width: 100%">
       <v-btn
@@ -322,14 +323,42 @@ onMounted(async () => await createViewer())
         :title="`${isOpeningFileList ? `close` : `open`} file list`"
         @click="() => (isOpeningFileList = !isOpeningFileList)"
       />
+      <v-spacer />
+      <v-btn
+        v-if="useViewer().viewers.value.length > 1"
+        variant="plain"
+        density="compact"
+        :icon="'$mdiTabRemove'"
+        flat
+        :title="`delete this window`"
+        @click="
+          (e: PointerEvent) => {
+            e.stopPropagation() // prevent @click of v-sheet in MainViewer
+            useViewer().deleteViewer(viewer.id)
+          }
+        "
+      />
+      <v-btn
+        variant="plain"
+        density="compact"
+        :icon="'$mdiTabPlus'"
+        flat
+        :title="`duplicate this window`"
+        @click="
+          (e: PointerEvent) => {
+            e.stopPropagation() // prevent @click of v-sheet in MainViewer
+            useViewer().duplicateViewer(viewer.id)
+          }
+        "
+      />
     </div>
     <v-divider />
     <div class="flex-grow-1 position-relative">
       <v-expand-transition style="position: absolute; z-index: 100">
         <v-sheet v-if="isOpeningFileList" style="width: 100%; height: 100%">
-          <v-list :opened="[`${id}:(Project Root)`]"
+          <v-list :opened="[`${viewer.id}:(Project Root)`]"
             ><file-list
-              :viewer-id="id"
+              :viewer-id="viewer.id"
               :file-tree="
                 getFileTreeStructure(
                   useDraft().commit.value?.files.map((file) =>
@@ -344,7 +373,7 @@ onMounted(async () => await createViewer())
           </v-list>
         </v-sheet>
       </v-expand-transition>
-      <div :id="id" class="wh-100 element-editor">
+      <div :id="viewer.id" class="wh-100 element-editor">
         <loading-circle :active="isLoading" />
       </div>
     </div>

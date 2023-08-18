@@ -21,6 +21,8 @@ import {
   mdiArrowCollapseLeft,
   mdiArrowDownDropCircleOutline,
   mdiArrowUpDropCircleOutline,
+  mdiTabPlus,
+  mdiTabRemove,
 } from '@mdi/js'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -50,6 +52,8 @@ export default defineNuxtPlugin((nuxtApp) => {
         mdiArrowCollapseLeft,
         mdiArrowDownDropCircleOutline,
         mdiArrowUpDropCircleOutline,
+        mdiTabPlus,
+        mdiTabRemove,
       },
       sets: { mdi },
     },

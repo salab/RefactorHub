@@ -32,7 +32,10 @@ export const useViewer = () => {
   const viewers = useState<Viewer[]>('viewers', () => [])
   const mainViewerId = useState<string>('mainViewerId', () => '')
 
-  function recreateViewer(id: string, viewer: Viewer) {
+  function recreateViewer(
+    id: string,
+    viewer: Omit<FileViewer, 'id'> | Omit<DiffViewer, 'id'>,
+  ) {
     const index = viewers.value.findIndex((viewer) => viewer.id === id)
     if (index === -1) {
       logger.warn(`cannot find viewer: id=${id}`)
@@ -46,8 +49,28 @@ export const useViewer = () => {
       id: newId,
     }
   }
+  function duplicateViewer(id: string) {
+    const index = viewers.value.findIndex((viewer) => viewer.id === id)
+    if (index === -1) {
+      logger.warn(`cannot find viewer: id=${id}`)
+      return
+    }
+    const newId = cryptoRandomString({ length: 10 })
+    mainViewerId.value = newId
+    viewers.value.splice(index + 1, 0, { ...viewers.value[index], id: newId })
+  }
+  function deleteViewer(id: string) {
+    if (viewers.value.length <= 1) return
+    const index = viewers.value.findIndex((viewer) => viewer.id === id)
+    if (index === -1) {
+      logger.warn(`cannot find viewer: id=${id}`)
+      return
+    }
+    mainViewerId.value = viewers.value[index ? index - 1 : 1].id
+    viewers.value.splice(index, 1)
+  }
 
-  const init = (commit: CommitDetail) => {
+  function init(commit: CommitDetail) {
     viewers.value = []
     const file = commit.files[0]
     viewers.value.push({
@@ -64,9 +87,11 @@ export const useViewer = () => {
   }
 
   return {
-    viewers: computed(() => viewers),
+    viewers: computed(() => viewers.value),
     mainViewerId,
     init,
     recreateViewer,
+    duplicateViewer,
+    deleteViewer,
   }
 }

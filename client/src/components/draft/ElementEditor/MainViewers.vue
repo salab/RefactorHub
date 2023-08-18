@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const viewers = useViewer().viewers.value
+const { viewers } = useViewer()
 const windowCount = computed(() =>
   viewers.value.reduce((count, viewer) => {
     return count + (viewer.type === 'diff' ? 2 : 1)

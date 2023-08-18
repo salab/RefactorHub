@@ -87,10 +87,10 @@ function getFile(fileName: string): CommitFile {
             size="x-small"
             text="before"
             @click="
-              () => {
+              (e: PointerEvent) => {
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
                 const file = getFile(fileName)
                 useViewer().recreateViewer(viewerId, {
-                  id: viewerId,
                   type: 'file',
                   category: 'before',
                   path: file.previousName,
@@ -110,10 +110,10 @@ function getFile(fileName: string): CommitFile {
             size="x-small"
             text="diff"
             @click="
-              () => {
+              (e: PointerEvent) => {
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
                 const file = getFile(fileName)
                 useViewer().recreateViewer(viewerId, {
-                  id: viewerId,
                   type: 'diff',
                   beforePath: file.previousName,
                   afterPath: file.name,
@@ -137,10 +137,10 @@ function getFile(fileName: string): CommitFile {
             size="x-small"
             text="after"
             @click="
-              () => {
+              (e: PointerEvent) => {
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
                 const file = getFile(fileName)
                 useViewer().recreateViewer(viewerId, {
-                  id: viewerId,
                   type: 'file',
                   category: 'after',
                   path: file.name,
