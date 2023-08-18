@@ -18,15 +18,17 @@ const router = useRouter()
 const draft = computed(() => useDraft().draft.value)
 const commit = computed(() => useDraft().commit.value)
 
-initElementDecorations()
-initElementWidgets()
-initCodeFragmentCursor()
-useDraft()
-  .initStates(draftId)
-  .then(() => {
-    const { init } = useViewer()
-    if (commit.value) init(commit.value)
-  })
+async function init() {
+  initElementDecorations()
+  initElementWidgets()
+  initCodeFragmentCursor()
+  await useDraft().initStates(draftId)
+  const { init } = useViewer()
+  if (commit.value) init(commit.value)
+}
+const pending = ref(1)
+const isLoading = computed(() => pending.value > 0)
+init().then(() => pending.value--)
 
 const isActiveOfElementHolders = reactive({
   before: true,
@@ -68,19 +70,19 @@ async function discard() {
         "
       />
       <element-holders
-        v-if="draft"
+        v-if="!isLoading && draft"
         :is-active="isActiveOfElementHolders.before"
         :draft="draft"
         category="before"
       />
       <element-holders
-        v-if="draft"
+        v-if="!isLoading && draft"
         :is-active="isActiveOfElementHolders.after"
         :draft="draft"
         category="after"
       />
       <v-main
-        v-if="draft && commit"
+        v-if="!isLoading && draft && commit"
         class="d-flex flex-column fill-height pt-0"
       >
         <v-container
