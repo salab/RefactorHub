@@ -21,14 +21,10 @@ const props = defineProps({
   },
 })
 function getFile(fileName: string): CommitFile {
-  const path = (
-    props.fileTree.collapsedName.substring(0, '(Project Root)'.length) ===
-    '(Project Root)'
-      ? `${props.fileTree.collapsedName.substring(
-          '(Project Root)'.length,
-        )}/${fileName}`
-      : `${props.formerPath}/${props.fileTree.collapsedName}/${fileName}`
-  ).substring(1)
+  const path =
+    `${props.formerPath}/${props.fileTree.collapsedName}/${fileName}`.substring(
+      '(Project Root)/'.length + 1,
+    )
   const file = useDraft().commit.value?.files.find(
     (file) => file.previousName === path || file.name === path,
   )
@@ -183,11 +179,7 @@ function getFile(fileName: string): CommitFile {
       <file-list
         :viewer-id="viewerId"
         :file-tree="directory"
-        :former-path="
-          fileTree.collapsedName === '(Project Root)'
-            ? ''
-            : `${formerPath}/${fileTree.collapsedName}`
-        "
+        :former-path="`${formerPath}/${fileTree.collapsedName}`"
         :on-file-change="onFileChange"
       ></file-list>
       <v-divider color="primary" />
