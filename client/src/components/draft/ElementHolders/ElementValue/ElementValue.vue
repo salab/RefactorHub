@@ -3,6 +3,7 @@ import { DiffCategory } from 'refactorhub'
 import { deleteElementDecoration } from '@/components/draft/ElementEditor/ts/elementDecorations'
 import apis, { CodeElement, ActionName, ActionType } from '@/apis'
 import { log } from '@/utils/action'
+import { asMonacoRange } from '@/components/common/editor/utils/range'
 
 const props = defineProps({
   draftId: {
@@ -37,34 +38,50 @@ onMounted(() => {
 
 const path = computed(() => props.element.location?.path || '-')
 
-const fileIndex = computed(
+const file = computed(
   () =>
-    useDraft()
-      .commit.value?.files?.map((f) =>
-        props.category === 'before' ? f.previousName : f.name,
-      )
-      ?.indexOf(props.element.location?.path || ''),
+    useDraft().commit.value?.files.find((file) =>
+      props.category === 'before'
+        ? file.previousName === path.value
+        : file.name === path.value,
+    ),
 )
 
-const isExist = computed(
-  () => fileIndex.value !== undefined && fileIndex.value >= 0,
-)
+const isExisting = computed(() => file.value !== undefined)
 
 const openLocation = () => {
-  const index = fileIndex.value
-  if (index !== undefined && index >= 0) {
-    const file = {
-      index,
-      lineNumber: props.element.location?.range?.startLine,
-    }
+  const { viewers, recreateViewer, mainViewerId } = useViewer()
+  const mainViewer = viewers.value.find(
+    (viewer) => viewer.id === mainViewerId.value,
+  )
+  const range = props.element.location?.range
+  if (file.value && mainViewer) {
     log(ActionName.OpenElementLocation, ActionType.Client, {
       category: props.category,
-      file,
+      file: file.value,
     })
-    useDraft().displayedFile.value.before =
-      props.category === 'before' ? file : { index }
-    useDraft().displayedFile.value.after =
-      props.category === 'after' ? file : { index }
+    recreateViewer(
+      mainViewerId.value,
+      mainViewer.type === 'file'
+        ? {
+            type: 'file',
+            category: props.category,
+            path:
+              props.category === 'before'
+                ? file.value.previousName
+                : file.value.name,
+            range: asMonacoRange(range),
+          }
+        : {
+            type: 'diff',
+            beforePath: file.value.previousName,
+            afterPath: file.value.name,
+            navigation: {
+              category: props.category,
+              range: asMonacoRange(range),
+            },
+          },
+    )
   }
 }
 
@@ -139,7 +156,7 @@ const range = computed(() => props.element.location?.range)
         :size="16"
         icon
         title="Preview on editor"
-        :disabled="!isExist"
+        :disabled="!isExisting"
         @click="openLocation"
       >
         <v-icon :size="16" icon="$mdiEyeOutline" />

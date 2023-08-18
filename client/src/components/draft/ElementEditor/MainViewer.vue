@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import * as monaco from 'monaco-editor'
-import { DiffCategory } from 'refactorhub'
+import { DiffCategory, ElementMetadata } from 'refactorhub'
 import { getCommonTokensSetOf } from './ts/commonTokensDecorations'
+import { CodeFragmentsManager } from './ts/codeFragments'
+import { ElementDecorationsManager } from './ts/elementDecorations'
+import { ElementWidgetsManager } from './ts/elementWidgets'
 import { logger } from '@/utils/logger'
 import { DiffViewer, FileViewer, Viewer } from '@/composables/useViewer'
-import { CommitDetail, CommitFile } from '@/apis'
+import { CommitDetail, CommitFile, RefactoringDraft } from '@/apis'
 
 const props = defineProps({
   viewer: {
@@ -19,6 +22,10 @@ const isOpeningFileList = ref(false)
 
 const { mainViewerId, getNavigator } = useViewer()
 const navigator = getNavigator(props.viewer.id)
+
+const elementDecorationsManager = new ElementDecorationsManager()
+const elementWidgetsManager = new ElementWidgetsManager()
+const codeFragmentsManager = new CodeFragmentsManager()
 
 function isExistingFile(category: DiffCategory, file: CommitFile) {
   return !(
@@ -68,25 +75,95 @@ async function getTextModelOfFile(
   )
 }
 
+function setupElementDecorations(
+  fileViewer: monaco.editor.IStandaloneCodeEditor,
+  category: DiffCategory,
+  draft: RefactoringDraft,
+  file: CommitFile,
+) {
+  if (!isExistingFile(category, file)) return
+  elementDecorationsManager.clearElementDecorations(category)
+  const path = getCommitFileName(category, file)
+  Object.entries(draft.data[category]).forEach(([key, data]) => {
+    data.elements.forEach((element, index) => {
+      if (path === element.location?.path) {
+        elementDecorationsManager.setElementDecorationOnEditor(
+          category,
+          key,
+          index,
+          element,
+          fileViewer,
+        )
+      }
+    })
+  })
+}
+async function setupElementWidgets(
+  fileViewer: monaco.editor.IStandaloneCodeEditor,
+  category: DiffCategory,
+  commit: CommitDetail,
+  file: CommitFile,
+) {
+  if (!isExistingFile(category, file)) return
+  const sha = getCommitSHA(category, commit)
+  const path = getCommitFileName(category, file)
+  const content = await useDraft().getFileContent({
+    owner: commit.owner,
+    repository: commit.repository,
+    sha: commit.sha,
+    category,
+    path,
+    uri: getCommitFileUri(commit.owner, commit.repository, sha, path),
+  })
+
+  elementWidgetsManager.clearElementWidgetsOnEditor(category, fileViewer)
+  codeFragmentsManager.clearCodeFragmentCursors(category)
+  content.elements.forEach((element) => {
+    if (element.type === 'CodeFragment') {
+      codeFragmentsManager.prepareCodeFragmentCursor(
+        category,
+        element,
+        fileViewer,
+      )
+    } else {
+      elementWidgetsManager.setElementWidgetOnEditor(
+        category,
+        element,
+        fileViewer,
+      )
+    }
+  })
+}
+
+function setupEditingElement(
+  category: DiffCategory,
+  metadata?: ElementMetadata,
+) {
+  if (metadata !== undefined) {
+    if (metadata.type === 'CodeFragment') {
+      codeFragmentsManager.setupCodeFragmentCursor(category)
+      elementWidgetsManager.hideElementWidgets(category)
+    } else {
+      elementWidgetsManager.showElementWidgetsWithType(category, metadata.type)
+      codeFragmentsManager.disposeCodeFragmentCursor(category)
+    }
+  } else {
+    elementWidgetsManager.hideElementWidgets(category)
+    codeFragmentsManager.disposeCodeFragmentCursor(category)
+  }
+}
+
 async function createDiffViewer(
   container: HTMLElement,
   viewer: DiffViewer,
+  commit: CommitDetail,
+  file: CommitFile,
 ): Promise<{
   diffViewer: monaco.editor.IStandaloneDiffEditor
   originalViewer: monaco.editor.IStandaloneCodeEditor
   modifiedViewer: monaco.editor.IStandaloneCodeEditor
 }> {
-  const commit = useDraft().commit.value
-  if (!commit) throw new Error('commit is not loaded')
-  const { beforePath, afterPath, navigation } = viewer
-  const file = commit.files.find(
-    (file) => file.previousName === beforePath || file.name === afterPath,
-  )
-  if (!file)
-    throw new Error(
-      `commit file is not found: beforePath=${beforePath}, afterPath=${afterPath}`,
-    )
-
+  const { navigation } = viewer
   const changes: monaco.editor.LineRangeMapping[] = []
   let beforeLineNumber = 0
   let afterLineNumber = 0
@@ -165,19 +242,14 @@ async function createDiffViewer(
 async function createFileViewer(
   container: HTMLElement,
   viewer: FileViewer,
+  commit: CommitDetail,
+  file: CommitFile,
 ): Promise<{
   diffViewer?: undefined
   originalViewer?: monaco.editor.IStandaloneCodeEditor
   modifiedViewer?: monaco.editor.IStandaloneCodeEditor
 }> {
-  const commit = useDraft().commit.value
-  if (!commit) throw new Error('commit is not loaded')
-  const { category, path, range } = viewer
-  const file = commit.files.find((file) =>
-    category === 'before' ? file.previousName === path : file.name === path,
-  )
-  if (!file) throw new Error(`commit file is not found: path=${path}`)
-
+  const { category, range } = viewer
   const fileViewer = monaco.editor.create(container, {
     automaticLayout: true,
     readOnly: true,
@@ -218,17 +290,63 @@ async function createFileViewer(
   }
 }
 
-async function createViewer() {
-  const container = document.getElementById(props.viewer.id)
+let commitFile: CommitFile | undefined
+let diffViewer: monaco.editor.IStandaloneDiffEditor | undefined
+let originalViewer: monaco.editor.IStandaloneCodeEditor | undefined
+let modifiedViewer: monaco.editor.IStandaloneCodeEditor | undefined
+
+async function createViewer(viewer: Viewer) {
+  const container = document.getElementById(viewer.id)
   if (!container) {
-    logger.error(`Cannot find the container element: id is ${props.viewer.id}`)
+    logger.error(`Cannot find the container element: id is ${viewer.id}`)
     return
   }
-  pending.value++
-  const { diffViewer, originalViewer, modifiedViewer } =
+  const draft = useDraft().draft.value
+  if (!draft) {
+    logger.error('draft is not loaded')
+    return
+  }
+  const commit = useDraft().commit.value
+  if (!commit) {
+    logger.error('commit is not loaded')
+    return
+  }
+  const file =
+    viewer.type === 'file'
+      ? commit.files.find((file) =>
+          viewer.category === 'before'
+            ? file.previousName === viewer.path
+            : file.name === viewer.path,
+        )
+      : commit.files.find(
+          (file) =>
+            file.previousName === viewer.beforePath ||
+            file.name === viewer.afterPath,
+        )
+  if (!file) {
+    logger.error(`commit file is not found: viewer=${viewer}`)
+    return
+  }
+  commitFile = file
+
+  const viewers =
     props.viewer.type === 'diff'
-      ? await createDiffViewer(container, props.viewer)
-      : await createFileViewer(container, props.viewer)
+      ? await createDiffViewer(container, props.viewer, commit, file)
+      : await createFileViewer(container, props.viewer, commit, file)
+  diffViewer = viewers.diffViewer
+  originalViewer = viewers.originalViewer
+  modifiedViewer = viewers.modifiedViewer
+
+  if (originalViewer) {
+    setupElementDecorations(originalViewer, 'before', draft, file)
+    await setupElementWidgets(originalViewer, 'before', commit, file)
+  }
+  setupEditingElement('before', useDraft().editingElement.value.before)
+  if (modifiedViewer) {
+    setupElementDecorations(modifiedViewer, 'after', draft, file)
+    await setupElementWidgets(modifiedViewer, 'after', commit, file)
+  }
+  setupEditingElement('after', useDraft().editingElement.value.after)
 
   function onMouseDown(e: monaco.editor.IEditorMouseEvent) {
     if (e.target.type === monaco.editor.MouseTargetType.CONTENT_WIDGET) {
@@ -265,11 +383,38 @@ async function createViewer() {
   }
   originalViewer?.onMouseMove((e) => onMouseMove(e, 'before'))
   modifiedViewer?.onMouseMove((e) => onMouseMove(e, 'after'))
-
-  pending.value--
 }
 
-onMounted(async () => await createViewer())
+onMounted(async () => {
+  pending.value++
+  await createViewer(props.viewer)
+  pending.value--
+})
+
+watch(
+  () => useDraft().editingElement.value.before,
+  (elementMetadata) => setupEditingElement('before', elementMetadata),
+)
+watch(
+  () => useDraft().editingElement.value.after,
+  (elementMetadata) => setupEditingElement('after', elementMetadata),
+)
+watch(
+  () => useDraft().draft.value,
+  () => {
+    const draft = useDraft().draft.value
+    if (!draft) {
+      logger.error('draft is not loaded')
+      return
+    }
+    if (commitFile && originalViewer) {
+      setupElementDecorations(originalViewer, 'before', draft, commitFile)
+    }
+    if (commitFile && modifiedViewer) {
+      setupElementDecorations(modifiedViewer, 'after', draft, commitFile)
+    }
+  },
+)
 </script>
 
 <template>
