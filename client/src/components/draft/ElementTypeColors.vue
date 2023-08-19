@@ -15,10 +15,10 @@ function getCommonTokenSequenceBorderWidth(id: number) {
       width = 2.2
       break
     case 'oneToManyOrManyToOne':
-      width = 1.5
+      width = 1.7
       break
     case 'manyToMany':
-      width = 1
+      width = 1.3
       break
   }
   if (isHovered) width += 2
@@ -46,7 +46,7 @@ function getCommonTokenSequenceColor(id: number, alpha = 1.0) {
       lightness = 50
       break
     case 'oneToManyOrManyToOne':
-      lightness = 65
+      lightness = 60
       break
     case 'manyToMany':
       lightness = 70
