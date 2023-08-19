@@ -5,6 +5,48 @@ const getTypeColor = (type: string, alpha = 1.0) => {
   const index = elementTypes.value.indexOf(type)
   return `hsla(${(index * 360) / length}, 100%, 60%, ${alpha})`
 }
+
+const { maxId, getType } = useCommonTokenSequence()
+function getCommonTokenSequenceBorderWidth(id: number) {
+  const type = getType(id)
+  switch (type) {
+    case 'oneToOne':
+      return 2.2
+    case 'oneToManyOrManyToOne':
+      return 1.5
+    case 'manyToMany':
+      return 1
+  }
+}
+function calcHue(id: number) {
+  let hue = 0
+  let remain = id
+  let count = 0
+  while (remain !== 0) {
+    const flag = remain % 2 === 1
+    if (flag) hue += 180 / Math.pow(2, count)
+    remain = Math.floor(remain / 2)
+    count++
+  }
+  return hue
+}
+function getCommonTokenSequenceColor(id: number, alpha = 1.0) {
+  const hue = calcHue(id)
+  const saturation = 100
+  let lightness
+  switch (getType(id)) {
+    case 'oneToOne':
+      lightness = 50
+      break
+    case 'oneToManyOrManyToOne':
+      lightness = 65
+      break
+    case 'manyToMany':
+      lightness = 70
+      break
+  }
+  return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`
+}
 // const getCommonTokensColor = (level: number, alpha = 1.0) => {
 //   // blue
 //   const max = 255
@@ -62,6 +104,13 @@ const getCommonTokensHoveredColor = (level: number, alpha = 1.0) => {
           border-color: {{ getCommonTokensHoveredColor(level, 0.7) }} !important;
         }
       </template>
+    </template>
+    <!-- prettier-ignore -->
+    <template v-for="id in [...new Array(maxId + 1).keys()]">
+      .commonTokenSequence-decoration-{{ id }} {
+        border: {{ getCommonTokenSequenceBorderWidth(id) }}px solid;
+        border-color: {{ getCommonTokenSequenceColor(id) }} !important;
+      }
     </template>
   </component>
 </template>

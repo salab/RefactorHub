@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import * as monaco from 'monaco-editor'
 import { DiffCategory, ElementMetadata } from 'refactorhub'
-import { getCommonTokensSetOf } from './ts/commonTokensDecorations'
+import { CommonTokenSequenceDecorationManager } from './ts/commonTokensDecorations'
 import { CodeFragmentsManager } from './ts/codeFragments'
 import { ElementDecorationsManager } from './ts/elementDecorations'
 import { ElementWidgetsManager } from './ts/elementWidgets'
@@ -26,6 +26,8 @@ const navigator = getNavigator(props.viewer.id)
 const elementDecorationsManager = new ElementDecorationsManager()
 const elementWidgetsManager = new ElementWidgetsManager()
 const codeFragmentsManager = new CodeFragmentsManager()
+const commonTokenSequenceDecorationManager =
+  new CommonTokenSequenceDecorationManager()
 
 function isExistingFile(category: DiffCategory, file: CommitFile) {
   return !(
@@ -340,42 +342,84 @@ async function createViewer(viewer: Viewer) {
   if (originalViewer) {
     setupElementDecorations(originalViewer, 'before', draft, file)
     await setupElementWidgets(originalViewer, 'before', commit, file)
+    commonTokenSequenceDecorationManager.setCommonTokensDecorations(
+      file.previousName,
+      'before',
+      originalViewer,
+    )
   }
   setupEditingElement('before', useDraft().editingElement.value.before)
   if (modifiedViewer) {
     setupElementDecorations(modifiedViewer, 'after', draft, file)
     await setupElementWidgets(modifiedViewer, 'after', commit, file)
+    commonTokenSequenceDecorationManager.setCommonTokensDecorations(
+      file.name,
+      'after',
+      modifiedViewer,
+    )
   }
   setupEditingElement('after', useDraft().editingElement.value.after)
 
-  function onMouseDown(e: monaco.editor.IEditorMouseEvent) {
-    if (e.target.type === monaco.editor.MouseTargetType.CONTENT_WIDGET) {
-      const content = e.target.element?.textContent ?? ''
-      if (content.startsWith('View Common Tokens: ')) {
-        const commonTokensRaw = content.substring('View Common Tokens: '.length)
-        const commonTokensSet = getCommonTokensSetOf(commonTokensRaw)
+  function onMouseDown(
+    e: monaco.editor.IEditorMouseEvent,
+    category: DiffCategory,
+  ) {
+    if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_WIDGET) return
+    const content = e.target.element?.textContent ?? ''
+    if (!content.startsWith('View Common Token Sequence')) return
 
-        // selectedCommonTokens.raw = commonTokensRaw
-        // selectedCommonTokens.count = commonTokensSet.size
-        // selectedCommonTokens.before = [...commonTokensSet].filter(
-        //   (c) => c.category === 'before',
-        // )
-        // selectedCommonTokens.after = [...commonTokensSet].filter(
-        //   (c) => c.category === 'after',
-        // )
-        // commonTokensSelected.before = true
-        // commonTokensSelected.after = true
-      }
-    }
+    const firstIndex = content.indexOf('(id=') + '(id='.length
+    const lastIndex = content.indexOf(')')
+    const commonTokenSequenceId = Number.parseInt(
+      content.substring(firstIndex, lastIndex),
+    )
+    const { joinedRaw, tokenSequenceSet } = useCommonTokenSequence().getWithId(
+      commonTokenSequenceId,
+    )
+    const sequencesOnThisViewer = tokenSequenceSet.filterCategory(category)
+    useViewer().setNavigator({
+      label: joinedRaw,
+      currentDestinationIndex: 0,
+      destinations: sequencesOnThisViewer.map((sequence) => ({
+        category,
+        path: sequence.path,
+        range: sequence.range,
+      })),
+    })
+    const otherCategory = category === 'before' ? 'after' : 'before'
+    const sequencesOnOtherViewer =
+      tokenSequenceSet.filterCategory(otherCategory)
+    const { id: newViewerId } = useViewer().createViewer(
+      {
+        type: 'file',
+        category: otherCategory,
+        path: sequencesOnOtherViewer[0].path,
+        range: sequencesOnOtherViewer[0].range,
+      },
+      category === 'before' ? 'next' : 'prev',
+    )
+    useViewer().setNavigator(
+      {
+        label: joinedRaw,
+        currentDestinationIndex: 0,
+        destinations: sequencesOnOtherViewer.map((sequence) => ({
+          category: otherCategory,
+          path: sequence.path,
+          range: sequence.range,
+        })),
+      },
+      newViewerId,
+    )
   }
-  originalViewer?.onMouseDown((e) => onMouseDown(e))
-  modifiedViewer?.onMouseDown((e) => onMouseDown(e))
+  originalViewer?.onMouseDown((e) => onMouseDown(e, 'before'))
+  modifiedViewer?.onMouseDown((e) => onMouseDown(e, 'after'))
 
   function onMouseMove(
     e: monaco.editor.IEditorMouseEvent,
-    diffCategory: DiffCategory,
+    category: DiffCategory,
   ) {
     if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_TEXT) return
+    console.log(e.target.position)
     // updateCommonTokensDecorationsOnBothDiffEditor(
     //   diffEditor,
     //   e.target.position ? [diffCategory, e.target.position] : undefined,
@@ -412,6 +456,29 @@ watch(
     }
     if (commitFile && modifiedViewer) {
       setupElementDecorations(modifiedViewer, 'after', draft, commitFile)
+    }
+  },
+)
+watch(
+  () => useCommonTokenSequence().setting.value,
+  () => {
+    if (commitFile && originalViewer) {
+      commonTokenSequenceDecorationManager.clearCommonTokensDecorations(
+        'before',
+      )
+      commonTokenSequenceDecorationManager.setCommonTokensDecorations(
+        commitFile.previousName,
+        'before',
+        originalViewer,
+      )
+    }
+    if (commitFile && modifiedViewer) {
+      commonTokenSequenceDecorationManager.clearCommonTokensDecorations('after')
+      commonTokenSequenceDecorationManager.setCommonTokensDecorations(
+        commitFile.name,
+        'after',
+        modifiedViewer,
+      )
     }
   },
 )

@@ -19,12 +19,12 @@ const draft = computed(() => useDraft().draft.value)
 const commit = computed(() => useDraft().commit.value)
 
 async function init() {
-  initElementDecorations()
-  initElementWidgets()
-  initCodeFragmentCursor()
+  // initElementDecorations()
+  // initElementWidgets()
+  // initCodeFragmentCursor()
   await useDraft().initStates(draftId)
-  const { init } = useViewer()
-  if (commit.value) init(commit.value)
+  useCommonTokenSequence().init()
+  if (commit.value) useViewer().init(commit.value)
 }
 const pending = ref(1)
 const isLoading = computed(() => pending.value > 0)

@@ -43,6 +43,23 @@ export const useViewer = () => {
     () => new Map(),
   )
 
+  function createViewer(
+    viewer: Omit<FileViewer, 'id'> | Omit<DiffViewer, 'id'>,
+    direction: 'next' | 'prev',
+  ) {
+    const mainIndex = viewers.value.findIndex(
+      (viewer) => viewer.id === mainViewerId.value,
+    )
+    if (mainIndex === -1) {
+      throw new Error(`cannot find main viewer: id=${mainViewerId.value}`)
+    }
+
+    const id = cryptoRandomString({ length: 10 })
+    const index = mainIndex + (direction === 'next' ? 1 : 0)
+    mainViewerId.value = id
+    viewers.value.splice(index, 0, { ...viewer, id })
+    return viewers.value[index]
+  }
   function recreateViewer(
     id: string,
     viewer: Omit<FileViewer, 'id'> | Omit<DiffViewer, 'id'>,
@@ -152,6 +169,7 @@ export const useViewer = () => {
     viewers: computed(() => viewers.value),
     mainViewerId,
     init,
+    createViewer,
     recreateViewer,
     duplicateViewer,
     deleteViewer,

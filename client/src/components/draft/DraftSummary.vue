@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { debounce } from 'lodash-es'
-import { CommonTokensType } from './ElementEditor/ts/commonTokensDecorations'
 import apis, { CommitDetail, RefactoringDraft } from '@/apis'
+import { CommonTokenSequenceType } from 'composables/useCommonTokenSequence'
 
 const props = defineProps({
   draft: {
@@ -21,11 +21,12 @@ const messageLines = computed(() =>
   commit.value ? commit.value.message.split('\n') : [],
 )
 
-const commonTokensTypes = [
+const commonTokenSequenceSetting = useCommonTokenSequence().setting
+const commonTokenSequenceTypes = [
   'oneToOne',
   'oneToManyOrManyToOne',
-  'ManyToMany',
-] as CommonTokensType[]
+  'manyToMany',
+] satisfies CommonTokenSequenceType[]
 
 const updateDescription = debounce(async (value: string) => {
   useDraft().draft.value = (
@@ -42,9 +43,12 @@ const updateRefactoringType = debounce(async (value: string) => {
   ).data
 }, 100)
 
-const updateCommonTokensTypes = (types: CommonTokensType[]) => {
-  // TODO: apply to the highlights
-  console.log(types)
+const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
+  useCommonTokenSequence().updateSetting({
+    oneToOne: types.includes('oneToOne'),
+    oneToManyOrManyToOne: types.includes('oneToManyOrManyToOne'),
+    manyToMany: types.includes('manyToMany'),
+  })
 }
 </script>
 
@@ -131,13 +135,20 @@ const updateCommonTokensTypes = (types: CommonTokensType[]) => {
               <v-chip-group
                 filter
                 multiple
+                :model-value="
+                  commonTokenSequenceTypes.filter(
+                    (type) => commonTokenSequenceSetting[type],
+                  )
+                "
                 @update:model-value="updateCommonTokensTypes"
               >
-                <v-chip :value="commonTokensTypes[0]">one to one</v-chip>
-                <v-chip :value="commonTokensTypes[1]"
+                <v-chip :value="commonTokenSequenceTypes[0]">one to one</v-chip>
+                <v-chip :value="commonTokenSequenceTypes[1]"
                   >one to many / many to one</v-chip
                 >
-                <v-chip :value="commonTokensTypes[2]">many to many</v-chip>
+                <v-chip :value="commonTokenSequenceTypes[2]"
+                  >many to many</v-chip
+                >
               </v-chip-group>
             </v-col>
           </v-row>
