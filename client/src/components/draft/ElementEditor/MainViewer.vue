@@ -521,30 +521,92 @@ watch(
     @click="() => (useViewer().mainViewerId.value = viewer.id)"
   >
     <div class="d-flex align-center flex-nowrap" style="max-width: 100%">
-      <v-btn
-        v-if="viewer.type === 'file' && viewer.category === 'before'"
-        :color="colors.before"
-        flat
-        size="x-small"
-        text="before"
-        class="mx-1"
-      />
-      <v-btn
-        v-if="viewer.type === 'diff'"
-        color="secondary"
-        flat
-        size="x-small"
-        text="diff"
-        class="mx-1"
-      />
-      <v-btn
-        v-if="viewer.type === 'file' && viewer.category === 'after'"
-        :color="colors.after"
-        flat
-        size="x-small"
-        text="after"
-        class="mx-1"
-      />
+      <v-menu transition="slide-y-transition">
+        <template #activator="{ props: menuProps }">
+          <v-btn
+            v-if="viewer.type === 'file' && viewer.category === 'before'"
+            :color="colors.before"
+            flat
+            size="x-small"
+            text="before"
+            class="mx-1"
+            v-bind="menuProps"
+          />
+          <v-btn
+            v-if="viewer.type === 'diff'"
+            color="secondary"
+            flat
+            size="x-small"
+            text="diff"
+            class="mx-1"
+            v-bind="menuProps"
+          />
+          <v-btn
+            v-if="viewer.type === 'file' && viewer.category === 'after'"
+            :color="colors.after"
+            flat
+            size="x-small"
+            text="after"
+            class="mx-1"
+            v-bind="menuProps"
+          />
+        </template>
+        <v-btn-group variant="elevated" :elevation="5" density="compact">
+          <v-btn
+            v-if="commitFile?.status !== 'added'"
+            :color="colors.before"
+            size="small"
+            text="before"
+            @click="
+              (e: PointerEvent) => {
+                if (!commitFile) return
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                useViewer().recreateViewer(viewer.id, {
+                  type: 'file',
+                  category: 'before',
+                  path: commitFile.previousName,
+                })
+              }
+            "
+          />
+          <v-btn
+            v-if="
+              commitFile?.status !== 'added' && commitFile?.status !== 'removed'
+            "
+            color="secondary"
+            size="small"
+            text="diff"
+            @click="
+              (e: PointerEvent) => {
+                if (!commitFile) return
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                useViewer().recreateViewer(viewer.id, {
+                  type: 'diff',
+                  beforePath: commitFile.previousName,
+                  afterPath: commitFile.name,
+                })
+              }
+            "
+          />
+          <v-btn
+            v-if="commitFile?.status !== 'removed'"
+            :color="colors.after"
+            size="small"
+            text="after"
+            @click="
+              (e: PointerEvent) => {
+                if (!commitFile) return
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                useViewer().recreateViewer(viewer.id, {
+                  type: 'file',
+                  category: 'after',
+                  path: commitFile.name,
+                })
+              }
+            "
+          />
+        </v-btn-group>
+      </v-menu>
       <span
         v-if="viewer.type === 'file'"
         class="flex-shrink-1 mx-1 path text-subtitle-2"
