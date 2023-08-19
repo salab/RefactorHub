@@ -155,6 +155,8 @@ function setupEditingElement(
   }
 }
 
+let navigationDecoration: monaco.editor.IEditorDecorationsCollection | undefined
+
 async function createDiffViewer(
   container: HTMLElement,
   viewer: DiffViewer,
@@ -225,14 +227,16 @@ async function createDiffViewer(
   const modifiedViewer = diffViewer.getModifiedEditor()
   if (navigation) {
     const { category, range } = navigation
-    setTimeout(
-      () =>
-        (category === 'before'
-          ? originalViewer
-          : modifiedViewer
-        ).revealRangeNearTop(range),
-      100,
-    )
+    const fileViewer = category === 'before' ? originalViewer : modifiedViewer
+    navigationDecoration = fileViewer.createDecorationsCollection([
+      {
+        range,
+        options: {
+          className: `navigation-decoration`,
+        },
+      },
+    ])
+    setTimeout(() => fileViewer.revealRangeNearTop(range), 100)
   }
 
   return {
@@ -281,7 +285,17 @@ async function createFileViewer(
     })),
   )
 
-  if (range) setTimeout(() => fileViewer.revealRangeNearTop(range), 100)
+  if (range) {
+    navigationDecoration = fileViewer.createDecorationsCollection([
+      {
+        range,
+        options: {
+          className: `navigation-decoration`,
+        },
+      },
+    ])
+    setTimeout(() => fileViewer.revealRangeNearTop(range), 100)
+  }
 
   if (category === 'before')
     return {
@@ -363,6 +377,7 @@ async function createViewer(viewer: Viewer) {
   function onMouseDown(
     e: monaco.editor.IEditorMouseEvent,
     category: DiffCategory,
+    file: CommitFile,
   ) {
     if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_WIDGET) return
     const content = e.target.element?.textContent ?? ''
@@ -377,15 +392,28 @@ async function createViewer(viewer: Viewer) {
       commonTokenSequenceId,
     )
     const sequencesOnThisViewer = tokenSequenceSet.filterCategory(category)
-    useViewer().setNavigator({
-      label: joinedRaw,
-      currentDestinationIndex: 0,
-      destinations: sequencesOnThisViewer.map((sequence) => ({
-        category,
-        path: sequence.path,
-        range: sequence.range,
-      })),
-    })
+    const currentDestinationIndex = sequencesOnThisViewer.findIndex(
+      (sequence) =>
+        sequence.isIn(
+          category === 'before' ? file.previousName : file.name,
+          category,
+        ),
+    )
+    useViewer().setNavigator(
+      {
+        label: joinedRaw,
+        currentDestinationIndex:
+          currentDestinationIndex === -1 ? 0 : currentDestinationIndex,
+        destinations: sequencesOnThisViewer.map((sequence) => ({
+          category,
+          path: sequence.path,
+          range: sequence.range,
+        })),
+      },
+      props.viewer.id,
+    )
+    if (navigationDecoration) navigationDecoration.clear()
+
     const otherCategory = category === 'before' ? 'after' : 'before'
     const sequencesOnOtherViewer =
       tokenSequenceSet.filterCategory(otherCategory)
@@ -411,23 +439,23 @@ async function createViewer(viewer: Viewer) {
       newViewerId,
     )
   }
-  originalViewer?.onMouseDown((e) => onMouseDown(e, 'before'))
-  modifiedViewer?.onMouseDown((e) => onMouseDown(e, 'after'))
+  originalViewer?.onMouseDown((e) => onMouseDown(e, 'before', file))
+  modifiedViewer?.onMouseDown((e) => onMouseDown(e, 'after', file))
 
   function onMouseMove(
     e: monaco.editor.IEditorMouseEvent,
     category: DiffCategory,
+    file: CommitFile,
   ) {
     if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_TEXT) return
-    if (commitFile)
-      useCommonTokenSequence().updateIsHovered(
-        category === 'before' ? commitFile.previousName : commitFile.name,
-        category,
-        e.target.position,
-      )
+    useCommonTokenSequence().updateIsHovered(
+      category === 'before' ? file.previousName : file.name,
+      category,
+      e.target.position,
+    )
   }
-  originalViewer?.onMouseMove((e) => onMouseMove(e, 'before'))
-  modifiedViewer?.onMouseMove((e) => onMouseMove(e, 'after'))
+  originalViewer?.onMouseMove((e) => onMouseMove(e, 'before', file))
+  modifiedViewer?.onMouseMove((e) => onMouseMove(e, 'after', file))
 }
 
 onMounted(async () => {
@@ -579,7 +607,11 @@ watch(
       <code
         v-if="navigator"
         class="path"
-        style="max-width: 20%; border: 1px solid black; background-color: beige"
+        style="
+          max-width: 20%;
+          border: 0.5px solid black;
+          background-color: rgba(255, 250, 240, 0.7);
+        "
         >{{ navigator.label }}</code
       >
       <span v-if="navigator" class="text-body-2 ml-1">{{
@@ -681,6 +713,10 @@ watch(
   .file-changed-after {
     background: rgba(175, 208, 107, 0.5);
   }
+  .navigation-decoration {
+    border: 0.5px solid black;
+    background-color: rgba(255, 250, 240, 0.7);
+  }
 
   .element-widget {
     cursor: pointer;
@@ -693,7 +729,6 @@ watch(
   .element-decoration {
     border: 1px solid;
   }
-  // .commonTokens-decoration {}
 }
 </style>
 <style lang="scss">
