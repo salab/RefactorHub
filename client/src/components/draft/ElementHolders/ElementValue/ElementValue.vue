@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { DiffCategory } from 'refactorhub'
-import { deleteElementDecoration } from '@/components/draft/ElementEditor/ts/elementDecorations'
 import apis, { CodeElement, ActionName, ActionType } from '@/apis'
 import { log } from '@/utils/action'
 import { asMonacoRange } from '@/components/common/editor/utils/range'
@@ -95,7 +94,6 @@ const deleteElement = async () => {
       props.elementIndex,
     )
   ).data
-  deleteElementDecoration(props.category, props.elementKey, props.elementIndex)
 }
 
 const isEditing = computed(() => {

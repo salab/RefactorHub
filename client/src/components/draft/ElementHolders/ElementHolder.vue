@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { DiffCategory } from 'refactorhub'
-import { deleteElementDecoration } from '@/components/draft/ElementEditor/ts/elementDecorations'
 import apis, { CodeElementHolder, CodeElementMetadata } from '@/apis'
 
 const props = defineProps({
@@ -40,9 +39,6 @@ const removeElementKey = async () => {
       props.elementKey,
     )
   ).data
-  props.elementHolder.elements.forEach((_, i) => {
-    deleteElementDecoration(props.category, props.elementKey, i)
-  })
 }
 
 const verifyElement = async () => {
