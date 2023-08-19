@@ -2,9 +2,9 @@
 import * as monaco from 'monaco-editor'
 import { DiffCategory, ElementMetadata } from 'refactorhub'
 import { CommonTokenSequenceDecorationManager } from './ts/commonTokensDecorations'
-import { CodeFragmentsManager } from './ts/codeFragments'
-import { ElementDecorationsManager } from './ts/elementDecorations'
-import { ElementWidgetsManager } from './ts/elementWidgets'
+import { CodeFragmentManager } from './ts/codeFragments'
+import { ElementDecorationManager } from './ts/elementDecorations'
+import { ElementWidgetManager } from './ts/elementWidgets'
 import { logger } from '@/utils/logger'
 import { DiffViewer, FileViewer, Viewer } from '@/composables/useViewer'
 import { CommitDetail, CommitFile, RefactoringDraft } from '@/apis'
@@ -23,9 +23,9 @@ const isOpeningFileList = ref(false)
 const { mainViewerId, getNavigator } = useViewer()
 const navigator = getNavigator(props.viewer.id)
 
-const elementDecorationsManager = new ElementDecorationsManager()
-const elementWidgetsManager = new ElementWidgetsManager()
-const codeFragmentsManager = new CodeFragmentsManager()
+const elementDecorationManager = new ElementDecorationManager()
+const elementWidgetManager = new ElementWidgetManager()
+const codeFragmentManager = new CodeFragmentManager()
 const commonTokenSequenceDecorationManager =
   new CommonTokenSequenceDecorationManager()
 
@@ -84,12 +84,12 @@ function setupElementDecorations(
   file: CommitFile,
 ) {
   if (!isExistingFile(category, file)) return
-  elementDecorationsManager.clearElementDecorations(category)
+  elementDecorationManager.clearElementDecorations(category)
   const path = getCommitFileName(category, file)
   Object.entries(draft.data[category]).forEach(([key, data]) => {
     data.elements.forEach((element, index) => {
       if (path === element.location?.path) {
-        elementDecorationsManager.setElementDecorationOnEditor(
+        elementDecorationManager.setElementDecorationOnEditor(
           category,
           key,
           index,
@@ -118,17 +118,17 @@ async function setupElementWidgets(
     uri: getCommitFileUri(commit.owner, commit.repository, sha, path),
   })
 
-  elementWidgetsManager.clearElementWidgetsOnEditor(category, fileViewer)
-  codeFragmentsManager.clearCodeFragmentCursors(category)
+  elementWidgetManager.clearElementWidgetsOnEditor(category, fileViewer)
+  codeFragmentManager.clearCodeFragmentCursors(category)
   content.elements.forEach((element) => {
     if (element.type === 'CodeFragment') {
-      codeFragmentsManager.prepareCodeFragmentCursor(
+      codeFragmentManager.prepareCodeFragmentCursor(
         category,
         element,
         fileViewer,
       )
     } else {
-      elementWidgetsManager.setElementWidgetOnEditor(
+      elementWidgetManager.setElementWidgetOnEditor(
         category,
         element,
         fileViewer,
@@ -143,15 +143,15 @@ function setupEditingElement(
 ) {
   if (metadata !== undefined) {
     if (metadata.type === 'CodeFragment') {
-      codeFragmentsManager.setupCodeFragmentCursor(category)
-      elementWidgetsManager.hideElementWidgets(category)
+      codeFragmentManager.setupCodeFragmentCursor(category)
+      elementWidgetManager.hideElementWidgets(category)
     } else {
-      elementWidgetsManager.showElementWidgetsWithType(category, metadata.type)
-      codeFragmentsManager.disposeCodeFragmentCursor(category)
+      elementWidgetManager.showElementWidgetsWithType(category, metadata.type)
+      codeFragmentManager.disposeCodeFragmentCursor(category)
     }
   } else {
-    elementWidgetsManager.hideElementWidgets(category)
-    codeFragmentsManager.disposeCodeFragmentCursor(category)
+    elementWidgetManager.hideElementWidgets(category)
+    codeFragmentManager.disposeCodeFragmentCursor(category)
   }
 }
 
@@ -307,7 +307,6 @@ async function createFileViewer(
 }
 
 let commitFile: CommitFile | undefined
-let diffViewer: monaco.editor.IStandaloneDiffEditor | undefined
 let originalViewer: monaco.editor.IStandaloneCodeEditor | undefined
 let modifiedViewer: monaco.editor.IStandaloneCodeEditor | undefined
 
@@ -349,7 +348,6 @@ async function createViewer(viewer: Viewer) {
     props.viewer.type === 'diff'
       ? await createDiffViewer(container, props.viewer, commit, file)
       : await createFileViewer(container, props.viewer, commit, file)
-  diffViewer = viewers.diffViewer
   originalViewer = viewers.originalViewer
   modifiedViewer = viewers.modifiedViewer
 

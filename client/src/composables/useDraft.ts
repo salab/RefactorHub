@@ -1,4 +1,4 @@
-import { DiffCategory, FileMetadata, ElementMetadata } from 'refactorhub'
+import { DiffCategory, ElementMetadata } from 'refactorhub'
 import apis, {
   CommitDetail,
   RefactoringDraft,
@@ -21,12 +21,6 @@ export const useDraft = () => {
     'fileContentCache',
     () => new Map(),
   )
-  const displayedFile = useState<{
-    [category in DiffCategory]?: FileMetadata
-  }>('displayedFile', () => ({
-    before: undefined,
-    after: undefined,
-  }))
   const editingElement = useState<{
     [category in DiffCategory]?: ElementMetadata
   }>('editingElement', () => ({
@@ -38,8 +32,6 @@ export const useDraft = () => {
     // TODO: temporary fix
     draft.value = undefined
     commit.value = undefined
-    displayedFile.value.before = undefined
-    displayedFile.value.after = undefined
     editingElement.value.before = undefined
     editingElement.value.after = undefined
 
@@ -94,7 +86,6 @@ export const useDraft = () => {
     refactoringTypes,
     elementTypes,
     fileContentCache,
-    displayedFile,
     editingElement,
     initStates,
     getFileContent,

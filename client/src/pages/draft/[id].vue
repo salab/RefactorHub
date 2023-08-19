@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { DiffCategory } from 'refactorhub'
 import apis from '@/apis'
-import { initElementDecorations } from '@/components/draft/ElementEditor/ts/elementDecorations'
-import { initElementWidgets } from '@/components/draft/ElementEditor/ts/elementWidgets'
-import { initCodeFragmentCursor } from '@/components/draft/ElementEditor/ts/codeFragments'
 
 definePageMeta({
   layout: false,
@@ -19,9 +16,6 @@ const draft = computed(() => useDraft().draft.value)
 const commit = computed(() => useDraft().commit.value)
 
 async function init() {
-  // initElementDecorations()
-  // initElementWidgets()
-  // initCodeFragmentCursor()
   await useDraft().initStates(draftId)
   useCommonTokenSequence().init()
   if (commit.value) useViewer().init(commit.value)
@@ -96,7 +90,6 @@ async function discard() {
             <draft-summary :draft="draft" :commit="commit" />
             <v-divider />
             <div class="flex-grow-1 flex-shrink-0">
-              <!-- <element-editor /> -->
               <main-viewers />
             </div>
           </v-container>
