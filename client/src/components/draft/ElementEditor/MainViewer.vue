@@ -419,11 +419,12 @@ async function createViewer(viewer: Viewer) {
     category: DiffCategory,
   ) {
     if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_TEXT) return
-    console.log(e.target.position)
-    // updateCommonTokensDecorationsOnBothDiffEditor(
-    //   diffEditor,
-    //   e.target.position ? [diffCategory, e.target.position] : undefined,
-    // )
+    if (commitFile)
+      useCommonTokenSequence().updateIsHovered(
+        category === 'before' ? commitFile.previousName : commitFile.name,
+        category,
+        e.target.position,
+      )
   }
   originalViewer?.onMouseMove((e) => onMouseMove(e, 'before'))
   modifiedViewer?.onMouseMove((e) => onMouseMove(e, 'after'))

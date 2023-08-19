@@ -6,17 +6,23 @@ const getTypeColor = (type: string, alpha = 1.0) => {
   return `hsla(${(index * 360) / length}, 100%, 60%, ${alpha})`
 }
 
-const { maxId, getType } = useCommonTokenSequence()
+const { maxId, getWithId } = useCommonTokenSequence()
 function getCommonTokenSequenceBorderWidth(id: number) {
-  const type = getType(id)
+  const { type, isHovered } = getWithId(id).tokenSequenceSet
+  let width: number
   switch (type) {
     case 'oneToOne':
-      return 2.2
+      width = 2.2
+      break
     case 'oneToManyOrManyToOne':
-      return 1.5
+      width = 1.5
+      break
     case 'manyToMany':
-      return 1
+      width = 1
+      break
   }
+  if (isHovered) width += 2
+  return width
 }
 function calcHue(id: number) {
   let hue = 0
@@ -31,10 +37,11 @@ function calcHue(id: number) {
   return hue
 }
 function getCommonTokenSequenceColor(id: number, alpha = 1.0) {
-  const hue = calcHue(id)
+  const { type, isHovered } = getWithId(id).tokenSequenceSet
+  const hue = isHovered ? 0 : calcHue(id)
   const saturation = 100
   let lightness
-  switch (getType(id)) {
+  switch (type) {
     case 'oneToOne':
       lightness = 50
       break

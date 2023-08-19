@@ -127,6 +127,8 @@ export class TokenSequence extends TokenSequenceWithoutCategory {
 class TokenSequenceSet {
   private readonly sequenceSet: TokenSequence[] = []
 
+  private _isHovered = false
+
   public get type(): CommonTokenSequenceType {
     const { before, after } = this.count
     if (before === 1 && after === 1) return 'oneToOne'
@@ -139,6 +141,10 @@ class TokenSequenceSet {
       before: this.filterCategory('before').length,
       after: this.filterCategory('after').length,
     }
+  }
+
+  public get isHovered() {
+    return this._isHovered
   }
 
   public toSet(): Set<TokenSequence> {
@@ -161,6 +167,18 @@ class TokenSequenceSet {
 
   public filterCategory(category: DiffCategory) {
     return this.sequenceSet.filter((sequence) => sequence.category === category)
+  }
+
+  public updateIsHovered(
+    path: string,
+    category: DiffCategory,
+    position: monaco.Position,
+  ) {
+    this._isHovered = this.sequenceSet.some(
+      (sequence) =>
+        sequence.isIn(path, category) &&
+        sequence.range.containsPosition(position),
+    )
   }
 }
 class CommonTokenSequenceStorage {
@@ -203,6 +221,16 @@ class CommonTokenSequenceStorage {
     )
     if (!commonTokensSetEntry) return new Set()
     return commonTokensSetEntry.sequenceSet.toSet()
+  }
+
+  public updateIsHovered(
+    path: string,
+    category: DiffCategory,
+    position: monaco.Position,
+  ) {
+    this.commonSequenceSetMap.forEach(({ sequenceSet }) =>
+      sequenceSet.updateIsHovered(path, category, position),
+    )
   }
 
   private getEntryFromMap(key: TokenSequenceWithoutCategory) {
@@ -261,14 +289,12 @@ export const useCommonTokenSequence = () => {
     }
     return all[id]
   }
-  function getType(id: number) {
-    const all = storage.value.get(setting.value)
-    if (!all[id]) {
-      throw new Error(
-        `cannot find common token sequence; id=${id}, all.length=${all.length}`,
-      )
-    }
-    return all[id].tokenSequenceSet.type
+  function updateIsHovered(
+    path: string,
+    category: DiffCategory,
+    position: monaco.Position,
+  ) {
+    storage.value.updateIsHovered(path, category, position)
   }
 
   function updateSetting(newSetting: CommonTokenSequenceSetting) {
@@ -281,7 +307,7 @@ export const useCommonTokenSequence = () => {
     init,
     getCommonTokenSequencesIn,
     getWithId,
-    getType,
+    updateIsHovered,
     updateSetting,
   }
 }
