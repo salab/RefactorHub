@@ -633,6 +633,21 @@ watch(
           }
         "
       />
+      <v-btn
+        v-if="navigator"
+        variant="plain"
+        density="compact"
+        :icon="'$mdiCloseCircleOutline'"
+        flat
+        :title="`delete navigation`"
+        class="mr-1"
+        @click="
+          () => {
+            useViewer().deleteNavigator(viewer.id)
+            navigationDecoration?.clear()
+          }
+        "
+      />
       <v-divider v-if="navigator" vertical />
       <v-btn
         v-if="useViewer().viewers.value.length > 1"

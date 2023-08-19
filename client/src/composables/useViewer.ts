@@ -111,6 +111,9 @@ export const useViewer = () => {
   function getNavigator(viewerId: string) {
     return computed(() => viewerNavigationMap.value.get(viewerId))
   }
+  function deleteNavigator(viewerId: string) {
+    viewerNavigationMap.value.delete(viewerId)
+  }
   function navigate(viewerId: string, direction: 'next' | 'prev') {
     const navigator = viewerNavigationMap.value.get(viewerId)
     const viewer = viewers.value.find((viewer) => viewer.id === viewerId)
@@ -175,6 +178,7 @@ export const useViewer = () => {
     deleteViewer,
     setNavigator,
     getNavigator,
+    deleteNavigator,
     navigate,
   }
 }
