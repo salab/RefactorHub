@@ -249,7 +249,7 @@ export const useCommonTokenSequence = () => {
     'commonTokenSequenceSetting',
     () => ({
       oneToOne: true,
-      oneToManyOrManyToOne: true,
+      oneToManyOrManyToOne: false,
       manyToMany: false,
     }),
   )

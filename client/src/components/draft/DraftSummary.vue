@@ -119,19 +119,22 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
             </v-col>
             <v-col>
               <h3>Editor Settings</h3>
-              <h4>Common Tokens Highlights</h4>
-              <p>
-                3 types based on the occurrence in
+              <h4>Highlights of Common Token Sequences</h4>
+              <span style="text-body-2">
+                3 types that have different relationships between
+                <b>the number of occurrences</b> in
                 <b
-                  ><span :style="'background-color: ' + colors.before"
-                    >before code</span
-                  >
-                  to
-                  <span :style="'background-color: ' + colors.after"
-                    >after code</span
+                  ><span :style="'background-color: ' + colors.before">
+                    the code before the change</span
                   ></b
                 >
-              </p>
+                and that in
+                <b
+                  ><span :style="'background-color: ' + colors.after"
+                    >the code after the change</span
+                  ></b
+                >
+              </span>
               <v-chip-group
                 filter
                 multiple
