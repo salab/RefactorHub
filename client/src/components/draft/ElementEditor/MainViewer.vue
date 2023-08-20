@@ -568,9 +568,6 @@ watch(
             "
           />
           <v-btn
-            v-if="
-              commitFile?.status !== 'added' && commitFile?.status !== 'removed'
-            "
             color="secondary"
             size="small"
             text="diff"
@@ -740,26 +737,25 @@ watch(
     <v-divider />
     <div class="flex-grow-1 position-relative">
       <v-expand-transition style="position: absolute; z-index: 100">
-        <v-sheet
-          v-if="isOpeningFileList"
-          style="width: 100%; height: 100%; overflow-y: scroll"
-        >
+        <v-sheet v-if="isOpeningFileList" style="width: 100%; height: 100%">
           <h2 class="mx-1">Changed File List</h2>
-          <v-list :opened="[`${viewer.id}:(Project Root)`]" class="py-0 mx-1"
-            ><file-list
-              :viewer-id="viewer.id"
-              :file-tree="
-                getFileTreeStructure(
-                  useDraft().commit.value?.files.map((file) =>
-                    file.status === 'added' ? file.name : file.previousName,
-                  ) ?? [],
-                  '(Project Root)',
-                )
-              "
-              former-path=""
-              :on-file-change="() => (isOpeningFileList = !isOpeningFileList)"
-            />
-          </v-list>
+          <div style="width: 100%; height: 100%; overflow-y: scroll">
+            <v-list :opened="[`${viewer.id}:(Project Root)`]" class="py-0 mx-1"
+              ><file-list
+                :viewer-id="viewer.id"
+                :file-tree="
+                  getFileTreeStructure(
+                    useDraft().commit.value?.files.map((file) =>
+                      file.status === 'added' ? file.name : file.previousName,
+                    ) ?? [],
+                    '(Project Root)',
+                  )
+                "
+                former-path=""
+                :on-file-change="() => (isOpeningFileList = !isOpeningFileList)"
+              />
+            </v-list>
+          </div>
         </v-sheet>
       </v-expand-transition>
       <div :id="viewer.id" class="wh-100 element-editor">

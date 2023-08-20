@@ -110,7 +110,6 @@ function getFile(fileName: string): CommitFile {
             "
           />
           <v-btn
-            v-if="['modified', 'renamed'].includes(getFile(fileName).status)"
             color="secondary"
             flat
             size="x-small"
