@@ -307,6 +307,7 @@ async function createFileViewer(
 }
 
 let commitFile: CommitFile | undefined
+let latestMousePosition: monaco.Position | undefined
 let originalViewer: monaco.editor.IStandaloneCodeEditor | undefined
 let modifiedViewer: monaco.editor.IStandaloneCodeEditor | undefined
 
@@ -392,10 +393,12 @@ async function createViewer(viewer: Viewer) {
     const sequencesOnThisViewer = tokenSequenceSet.filterCategory(category)
     const currentDestinationIndex = sequencesOnThisViewer.findIndex(
       (sequence) =>
+        latestMousePosition &&
         sequence.isIn(
           category === 'before' ? file.previousName : file.name,
           category,
-        ),
+        ) &&
+        sequence.range.containsPosition(latestMousePosition),
     )
     useViewer().setNavigator(
       {
@@ -411,6 +414,18 @@ async function createViewer(viewer: Viewer) {
       props.viewer.id,
     )
     if (navigationDecoration) navigationDecoration.clear()
+    if (currentDestinationIndex !== -1) {
+      const fileViewer = category === 'before' ? originalViewer : modifiedViewer
+      if (fileViewer)
+        navigationDecoration = fileViewer.createDecorationsCollection([
+          {
+            range: sequencesOnThisViewer[currentDestinationIndex].range,
+            options: {
+              className: `navigation-decoration`,
+            },
+          },
+        ])
+    }
 
     const otherCategory = category === 'before' ? 'after' : 'before'
     const sequencesOnOtherViewer =
@@ -445,6 +460,7 @@ async function createViewer(viewer: Viewer) {
     category: DiffCategory,
     file: CommitFile,
   ) {
+    if (e.target.position) latestMousePosition = e.target.position
     if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_TEXT) return
     useCommonTokenSequence().updateIsHovered(
       category === 'before' ? file.previousName : file.name,
