@@ -254,11 +254,18 @@ export const useCommonTokenSequence = () => {
     }),
   )
 
-  async function init() {
+  function initialize() {
     storage.value = new CommonTokenSequenceStorage()
-    const commit = useDraft().commit.value
-    if (!commit) return
-    await initStorage(storage.value, commit)
+    setting.value = {
+      oneToOne: true,
+      oneToManyOrManyToOne: false,
+      manyToMany: false,
+    }
+  }
+
+  async function setup(commit: CommitDetail) {
+    useLoader().setLoadingText('detecting common token sequences')
+    await initializeStorage(storage.value, commit)
   }
 
   function getCommonTokenSequencesIn(path: string, category: DiffCategory) {
@@ -304,7 +311,8 @@ export const useCommonTokenSequence = () => {
   return {
     maxId: computed(() => storage.value.get(setting.value).length - 1),
     setting: computed(() => setting.value),
-    init,
+    initialize,
+    setup,
     getCommonTokenSequencesIn,
     getWithId,
     updateIsHovered,
@@ -312,7 +320,7 @@ export const useCommonTokenSequence = () => {
   }
 }
 
-async function initStorage(
+async function initializeStorage(
   storage: CommonTokenSequenceStorage,
   commit: CommitDetail,
 ) {
@@ -342,33 +350,41 @@ async function initStorage(
           new monaco.Range(after.startLine, 1, after.endLine + 1, 0),
         )
     })
+    useLoader().setLoadingText(
+      `fetching file content before change: ${file.previousName}`,
+    )
+    const beforeContent = await useDraft().getFileContent({
+      owner,
+      repository,
+      sha: commit.sha,
+      category: 'before',
+      path: file.previousName,
+      uri: getCommitFileUri(
+        commit.owner,
+        commit.repository,
+        commit.parent,
+        file.previousName,
+      ),
+    })
+    useLoader().setLoadingText(
+      `fetching file content after change: ${file.name}`,
+    )
+    const afterContent = await useDraft().getFileContent({
+      owner,
+      repository,
+      sha: commit.sha,
+      category: 'after',
+      path: file.name,
+      uri: getCommitFileUri(
+        commit.owner,
+        commit.repository,
+        commit.sha,
+        file.name,
+      ),
+    })
     const fileContentPair = {
-      before: await useDraft().getFileContent({
-        owner,
-        repository,
-        sha: commit.sha,
-        category: 'before',
-        path: file.previousName,
-        uri: getCommitFileUri(
-          commit.owner,
-          commit.repository,
-          commit.parent,
-          file.previousName,
-        ),
-      }),
-      after: await useDraft().getFileContent({
-        owner,
-        repository,
-        sha: commit.sha,
-        category: 'after',
-        path: file.name,
-        uri: getCommitFileUri(
-          commit.owner,
-          commit.repository,
-          commit.sha,
-          file.name,
-        ),
-      }),
+      before: beforeContent,
+      after: afterContent,
     }
     function addDiffHunkTokens(category: DiffCategory) {
       const path = category === 'before' ? file.previousName : file.name
@@ -405,6 +421,7 @@ async function initStorage(
     addDiffHunkTokens('after')
   }
 
+  useLoader().setLoadingText('detecting common token sequences')
   const scoreTable: number[][] = [] // number[beforeIndex][afterIndex]
   const detectedCommonTokenSequences: TokenSequenceWithoutCategory[] = []
   function addDetectedCommonTokenSequence(

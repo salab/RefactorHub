@@ -43,6 +43,25 @@ export const useViewer = () => {
     () => new Map(),
   )
 
+  function initialize() {
+    viewers.value = []
+    mainViewerId.value = ''
+    viewerNavigationMap.value.clear()
+  }
+
+  function setup(commit: CommitDetail) {
+    useLoader().setLoadingText('setting up viewer')
+    const file = commit.files[0]
+    const id = cryptoRandomString({ length: 10 })
+    viewers.value.push({
+      id,
+      type: 'diff',
+      beforePath: file.previousName,
+      afterPath: file.name,
+    })
+    mainViewerId.value = id
+  }
+
   function createViewer(
     viewer: Omit<FileViewer, 'id'> | Omit<DiffViewer, 'id'>,
     direction: 'next' | 'prev',
@@ -155,23 +174,11 @@ export const useViewer = () => {
     recreateViewer(viewerId, newViewer)
   }
 
-  function init(commit: CommitDetail) {
-    viewers.value = []
-    viewerNavigationMap.value.clear()
-    const file = commit.files[0]
-    viewers.value.push({
-      id: cryptoRandomString({ length: 10 }),
-      type: 'diff',
-      beforePath: file.previousName,
-      afterPath: file.name,
-    })
-    mainViewerId.value = viewers.value[0].id
-  }
-
   return {
     viewers: computed(() => viewers.value),
     mainViewerId,
-    init,
+    initialize,
+    setup,
     createViewer,
     recreateViewer,
     duplicateViewer,

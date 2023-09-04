@@ -8,8 +8,14 @@ defineProps({
 </script>
 
 <template>
-  <div v-if="active" class="background d-flex align-center justify-center">
+  <div
+    v-if="active"
+    class="background d-flex flex-column align-center justify-center"
+  >
     <v-progress-circular indeterminate />
+    <span v-if="useLoader().isLoading" class="text-caption">{{
+      useLoader().loadingText.value
+    }}</span>
   </div>
 </template>
 

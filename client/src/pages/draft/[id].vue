@@ -10,19 +10,17 @@ definePageMeta({
 const paramId = useRoute().params.id
 const draftId =
   typeof paramId === 'string' ? parseInt(paramId) : parseInt(paramId[0])
+
+const loadingIsStarted = ref(false)
+const isLoading = useLoader().isLoading
+useLoader()
+  .startLoading(draftId)
+  .then(() => (loadingIsStarted.value = true))
+
 const router = useRouter()
 
 const draft = computed(() => useDraft().draft.value)
 const commit = computed(() => useDraft().commit.value)
-
-async function init() {
-  await useDraft().initStates(draftId)
-  useCommonTokenSequence().init()
-  if (commit.value) useViewer().init(commit.value)
-}
-const pending = ref(1)
-const isLoading = computed(() => pending.value > 0)
-init().then(() => pending.value--)
 
 const isActiveOfElementHolders = reactive({
   before: true,
@@ -48,6 +46,9 @@ async function discard() {
 
 <template>
   <v-app>
+    <div v-if="isLoading">
+      <loading-circle :active="isLoading" />
+    </div>
     <div class="app">
       <draft-action-bar
         :save="save"
@@ -64,19 +65,19 @@ async function discard() {
         "
       />
       <element-holders
-        v-if="!isLoading && draft"
+        v-if="loadingIsStarted && draft"
         :is-active="isActiveOfElementHolders.before"
         :draft="draft"
         category="before"
       />
       <element-holders
-        v-if="!isLoading && draft"
+        v-if="loadingIsStarted && draft"
         :is-active="isActiveOfElementHolders.after"
         :draft="draft"
         category="after"
       />
       <v-main
-        v-if="!isLoading && draft && commit"
+        v-if="loadingIsStarted && draft && commit"
         class="d-flex flex-column fill-height pt-0"
       >
         <v-container
