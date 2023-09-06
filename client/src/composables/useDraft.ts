@@ -1,9 +1,11 @@
+import * as monaco from 'monaco-editor'
 import { DiffCategory, ElementMetadata } from 'refactorhub'
 import apis, {
   CommitDetail,
   RefactoringDraft,
   RefactoringType,
   FileContent,
+  CommitFile,
 } from '@/apis'
 import { useState } from '#imports'
 
@@ -125,6 +127,21 @@ export const useDraft = () => {
     return content
   }
 
+  function isExistingFile(category: DiffCategory, file: CommitFile) {
+    return !(
+      (category === 'before' && file.status === 'added') ||
+      (category === 'after' && file.status === 'removed')
+    )
+  }
+  function getCommitSHA(category: DiffCategory) {
+    if (!commit.value) {
+      throw new Error('commit is not loaded')
+    }
+    return category === 'before' ? commit.value.parent : commit.value.sha
+  }
+  function getCommitFileName(category: DiffCategory, file: CommitFile) {
+    return category === 'before' ? file.previousName : file.name
+  }
   function getCommitFileUri(
     owner: string,
     repository: string,
@@ -132,6 +149,39 @@ export const useDraft = () => {
     path: string,
   ) {
     return `https://github.com/${owner}/${repository}/blob/${sha}/${path}`
+  }
+  function getCommitFile(category: DiffCategory, path: string) {
+    if (!commit.value) {
+      logger.error('commit is not loaded')
+      return undefined
+    }
+    return commit.value?.files.find(
+      (file) => getCommitFileName(category, file) === path,
+    )
+  }
+  async function getTextModelOfFile(category: DiffCategory, path: string) {
+    const c = commit.value
+    const file = getCommitFile(category, path)
+    if (!c || !file || !isExistingFile(category, file))
+      return monaco.editor.createModel('', 'text/plain')
+
+    const sha = getCommitSHA(category)
+    const content = await useDraft().getFileContent({
+      owner: c.owner,
+      repository: c.repository,
+      sha: c.sha,
+      category,
+      path,
+      uri: getCommitFileUri(c.owner, c.repository, sha, path),
+    })
+    return (
+      monaco.editor.getModel(monaco.Uri.parse(content.uri)) ||
+      monaco.editor.createModel(
+        content.text,
+        content.extension === 'java' ? 'java' : 'text/plain',
+        monaco.Uri.parse(content.uri),
+      )
+    )
   }
 
   return {
@@ -145,5 +195,6 @@ export const useDraft = () => {
     setup,
     getFileContent,
     getCommitFileUri,
+    getTextModelOfFile,
   }
 }

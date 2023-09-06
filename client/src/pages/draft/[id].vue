@@ -90,6 +90,7 @@ async function discard() {
           >
             <draft-summary :draft="draft" :commit="commit" />
             <v-divider />
+            <tool-tab />
             <div class="flex-grow-1 flex-shrink-0">
               <main-viewers />
             </div>
