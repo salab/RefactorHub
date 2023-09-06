@@ -1,6 +1,6 @@
 # RefactorHub
 
-![logo](/client/src/static/logo.png)
+![logo](/client/src/public/logo.png)
 
 RefactorHub is a commit annotator for refactoring.
 
@@ -117,7 +117,7 @@ And create a new Experiment with `title`, `description` and `refactorings` which
 <details>
 <summary>refactorings NDJSON format</summary>
 
-```json
+```json lines
 {"type":"Extract Method","commit":{"sha":"cb49e436b9d7ee55f2531ebc2ef1863f5c9ba9fe","owner":"rstudio","repository":"rstudio"},"data":{"before":{},"after":{}},"description":"Extract Method protected setMaxHeight(maxHeight int) : void extracted from protected wrapMenuBar(menuBar ToolbarMenuBar) : Widget in class org.rstudio.core.client.widget.ScrollableToolbarPopupMenu"}
 {"type":"Move Attribute","commit":{"sha":"f05e86c4d31987ff2f30330745c3eb605de4c4dc","owner":"Graylog2","repository":"graylog2-server"},"data":{"before":{},"after":{}},"description":"Move Attribute private COMPARATOR : Comparator<IndexRange> from class org.graylog2.indexer.ranges.MongoIndexRangeService to public COMPARATOR : Comparator<IndexRange> from class org.graylog2.indexer.ranges.IndexRange"}
 {"type":"Any","commit":{"sha":"08f37df9f39f101bba0ee96845e232d2c72bf426","owner":"JetBrains","repository":"intellij-community"},"data":{"before":{},"after":{}},"description":""}

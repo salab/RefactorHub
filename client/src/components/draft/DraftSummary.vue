@@ -120,7 +120,7 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
             <v-col>
               <h3>Editor Settings</h3>
               <h4>Highlights of Common Token Sequences</h4>
-              <span style="text-body-2">
+              <span class="text-body-2">
                 3 types that have different relationships between
                 <b>the number of occurrences</b> in
                 <b
