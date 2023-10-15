@@ -27,6 +27,7 @@ import {
   mdiMenuLeftOutline,
   mdiMenuRightOutline,
   mdiCompare,
+  mdiInformation,
 } from '@mdi/js'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -62,6 +63,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         mdiMenuLeftOutline,
         mdiMenuRightOutline,
         mdiCompare,
+        mdiInformation,
       },
       sets: { mdi },
     },

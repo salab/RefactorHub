@@ -126,8 +126,9 @@ watch(
 </script>
 
 <template>
-  <v-sheet>
-    <v-row class="pa-3 pb-0">
+  <v-sheet class="pa-3">
+    <h3>Compare Annotated Elements Before and After Changes</h3>
+    <v-row>
       <v-col>
         <v-select
           v-model="selectedElementNameBefore"
@@ -149,10 +150,6 @@ watch(
         />
       </v-col>
     </v-row>
-    <div
-      :id="diffViewerId"
-      class="pa-3 pt-1"
-      style="width: 100%; height: 300px"
-    />
+    <div :id="diffViewerId" class="pt-1" style="width: 100%; height: 300px" />
   </v-sheet>
 </template>
