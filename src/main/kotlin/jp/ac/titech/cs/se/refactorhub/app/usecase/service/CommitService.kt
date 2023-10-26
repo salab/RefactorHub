@@ -15,19 +15,17 @@ import org.koin.core.component.inject
 class CommitService : KoinComponent {
     private val commitRepository: CommitRepository by inject()
 
-    fun get(owner: String, repository: String, sha: String): Commit {
-        val commit = commitRepository.find(owner, repository, sha)
-        commit ?: throw NotFoundException("Commit(owner=$owner, repository=$repository, sha=$sha) is not found")
-        return commit
-    }
-
     fun getAll(): List<Commit> {
         return commitRepository.findAll()
     }
 
     fun getDetail(owner: String, repository: String, sha: String): CommitDetail {
         val client = GitHub.connectUsingOAuth(GITHUB_ACCESS_TOKEN)
-        return client.getRepository("$owner/$repository").getCommit(sha).let { commit ->
+        return runCatching {
+            client.getRepository("$owner/$repository").getCommit(sha)
+        }.getOrElse {
+            throw NotFoundException("Commit(owner=$owner, repository=$repository, sha=$sha) is not found")
+        }.let { commit ->
             CommitDetail(
                 commit.owner.ownerName,
                 commit.owner.name,

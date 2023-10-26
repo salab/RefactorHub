@@ -18,7 +18,6 @@ class RefactoringService : KoinComponent {
     private val commitService: CommitService by inject()
     private val refactoringDraftService: RefactoringDraftService by inject()
     private val refactoringTypeService: RefactoringTypeService by inject()
-    private val annotatorService: AnnotatorService by inject()
 
     fun create(
         _commit: Commit,
@@ -44,22 +43,10 @@ class RefactoringService : KoinComponent {
         )
     }
 
-    fun getAll(): List<Refactoring> {
-        return refactoringRepository.findAll()
-    }
-
     fun get(id: Int): Refactoring {
         val refactoring = refactoringRepository.findById(id)
         refactoring ?: throw NotFoundException("Refactoring(id=$id) is not found")
         return refactoring
-    }
-
-    fun getChildren(id: Int): List<Refactoring> {
-        return refactoringRepository.findByParentId(id)
-    }
-
-    fun getDrafts(id: Int): List<RefactoringDraft> {
-        return refactoringDraftService.getRefactoringDrafts(id)
     }
 
     fun update(id: Int, typeName: String?, data: Refactoring.Data?, description: String?): Refactoring {

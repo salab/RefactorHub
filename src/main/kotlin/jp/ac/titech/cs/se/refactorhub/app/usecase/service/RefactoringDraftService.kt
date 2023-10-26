@@ -31,10 +31,6 @@ class RefactoringDraftService : KoinComponent {
     private val actionService: ActionService by inject()
     private val mapper: ObjectMapper by inject()
 
-    fun getRefactoringDrafts(refactoringId: Int): List<RefactoringDraft> {
-        return refactoringDraftRepository.findByRefactoringId(refactoringId)
-    }
-
     fun get(id: Int): RefactoringDraft {
         val draft = refactoringDraftRepository.findById(id)
         draft ?: throw NotFoundException("RefactoringDraft(id=$id) is not found")

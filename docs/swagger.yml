@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: RefactorHub
   description: RefactorHub API
-  version: 1.1.0
+  version: 1.2.0
 
 servers:
   - url: "https://refactorhub.com/api"
@@ -31,21 +31,21 @@ tags:
     description: Action
 
 paths:
-  "/users/{userId}":
+  "/users/{userId}/drafts":
     parameters:
       - $ref: "#/components/parameters/userIdInPath"
     get:
-      summary: get user
-      operationId: getUser
+      summary: get drafts the user has
+      operationId: getUserDrafts
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        "404":
-          description: User is not found
+                type: array
+                items:
+                  $ref: "#/components/schemas/RefactoringDraft"
       tags:
         - users
   "/users/{userId}/refactorings":
@@ -63,27 +63,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Refactoring"
-        "404":
-          description: User is not found
-      tags:
-        - users
-  "/users/{userId}/drafts":
-    parameters:
-      - $ref: "#/components/parameters/userIdInPath"
-    get:
-      summary: get drafts the user has
-      operationId: getUserDrafts
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/RefactoringDraft"
-        "404":
-          description: User is not found
       tags:
         - users
   "/users/me":
@@ -102,25 +81,6 @@ paths:
       tags:
         - users
 
-  "/commits/{commitOwner}/{commitRepository}/{commitSha}":
-    parameters:
-      - $ref: "#/components/parameters/commitOwnerInPath"
-      - $ref: "#/components/parameters/commitRepositoryInPath"
-      - $ref: "#/components/parameters/commitShaInPath"
-    get:
-      summary: get commit
-      operationId: getCommit
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Commit"
-        "404":
-          description: Commit is not found
-      tags:
-        - commits
   "/commits/{commitOwner}/{commitRepository}/{commitSha}/detail":
     parameters:
       - $ref: "#/components/parameters/commitOwnerInPath"
@@ -143,97 +103,6 @@ paths:
       tags:
         - commits
 
-  "/refactorings":
-    get:
-      summary: get all refactorings
-      operationId: getAllRefactorings
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Refactoring"
-      tags:
-        - refactorings
-    post:
-      summary: create a new refactoring
-      operationId: createRefactoring
-      security:
-        - cookieAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateRefactoringRequest"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Refactoring"
-        "401":
-          description: You are not logged in
-      tags:
-        - refactorings
-  "/refactorings/{refactoringId}":
-    parameters:
-      - $ref: "#/components/parameters/refactoringIdInPath"
-    get:
-      summary: get refactoring
-      operationId: getRefactoring
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Refactoring"
-        "404":
-          description: Refactoring is not found
-      tags:
-        - refactorings
-  "/refactorings/{refactoringId}/children":
-    parameters:
-      - $ref: "#/components/parameters/refactoringIdInPath"
-    get:
-      summary: get refactoring children of the refactoring
-      operationId: getRefactoringChildren
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Refactoring"
-        "404":
-          description: Refactoring is not found
-      tags:
-        - refactorings
-  "/refactorings/{refactoringId}/drafts":
-    parameters:
-      - $ref: "#/components/parameters/refactoringIdInPath"
-    get:
-      summary: get editing refactoring drafts of the refactoring
-      operationId: getRefactoringDrafts
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/RefactoringDraft"
-        "404":
-          description: Refactoring is not found
-      tags:
-        - refactorings
   "/refactorings/{refactoringId}/fork":
     parameters:
       - $ref: "#/components/parameters/refactoringIdInPath"
@@ -313,21 +182,6 @@ paths:
                 $ref: "#/components/schemas/RefactoringType"
         "400":
           description: This name already exists
-      tags:
-        - refactoringTypes
-  "/refactoring_types/{typeName}":
-    parameters:
-      - $ref: "#/components/parameters/typeNameInPath"
-    get:
-      summary: get refactoring type
-      operationId: getRefactoringType
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RefactoringType"
       tags:
         - refactoringTypes
 

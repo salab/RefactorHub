@@ -15,13 +15,6 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class RefactoringRepositoryImpl : RefactoringRepository {
-    override fun findAll(): List<Refactoring> {
-        return transaction {
-            RefactoringDao.all().map {
-                it.asModel()
-            }
-        }
-    }
 
     override fun findById(id: Int): Refactoring? {
         return transaction {

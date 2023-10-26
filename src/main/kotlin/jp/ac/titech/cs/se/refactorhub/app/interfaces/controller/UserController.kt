@@ -12,10 +12,6 @@ import org.koin.core.component.inject
 class UserController : KoinComponent {
     private val userService: UserService by inject()
 
-    fun get(id: Int): User {
-        return userService.get(id)
-    }
-
     fun getDrafts(id: Int): List<RefactoringDraft> {
         return userService.getDrafts(id)
     }

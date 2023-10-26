@@ -24,10 +24,6 @@ class CreateRefactoringType
 @Location("")
 class GetAllRefactoringTypes
 
-@KtorExperimentalLocationsAPI
-@Location("/{name}")
-class GetRefactoringType(val name: String)
-
 @KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.refactoringTypes() {
@@ -40,9 +36,6 @@ fun Route.refactoringTypes() {
         }
         get<GetAllRefactoringTypes> {
             call.respond(refactoringTypeController.getAll())
-        }
-        get<GetRefactoringType> {
-            call.respond(refactoringTypeController.get(it.name))
         }
     }
 }
