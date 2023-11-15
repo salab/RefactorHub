@@ -12,7 +12,7 @@ class ActionRepositoryImpl : ActionRepository {
                 name = action.name
                 type = action.type
                 user = action.user
-                time = action.time
+                time = action.time.toString()
                 data = action.data
             }.asModel()
         }

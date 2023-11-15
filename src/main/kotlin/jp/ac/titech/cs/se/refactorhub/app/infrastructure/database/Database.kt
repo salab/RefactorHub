@@ -34,10 +34,10 @@ fun Application.connectDB() {
         .load()
 
     val info = flyway.info()
-    if (info.current() == null) {
+//    if (info.current() == null) {
         flyway.clean()
         initializeDatabase()
         flyway.baseline()
-    }
+//    }
     flyway.migrate()
 }

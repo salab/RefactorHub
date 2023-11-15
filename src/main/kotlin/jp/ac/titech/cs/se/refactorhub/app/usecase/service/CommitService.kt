@@ -1,15 +1,20 @@
 package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 
+import io.ktor.util.*
 import jp.ac.titech.cs.se.refactorhub.app.exception.BadRequestException
 import jp.ac.titech.cs.se.refactorhub.app.exception.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.CommitRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.*
+import jp.ac.titech.cs.se.refactorhub.core.annotator.getFileContent
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.DiffHunk
 import org.kohsuke.github.GitHub
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.util.UUID
 
 @KoinApiExtension
 class CommitService : KoinComponent {
@@ -19,49 +24,69 @@ class CommitService : KoinComponent {
         return commitRepository.findAll()
     }
 
-    fun getDetail(owner: String, repository: String, sha: String): CommitDetail {
-        val client = GitHub.connectUsingOAuth(GITHUB_ACCESS_TOKEN)
-        return runCatching {
-            client.getRepository("$owner/$repository").getCommit(sha)
-        }.getOrElse {
-            throw NotFoundException("Commit(owner=$owner, repository=$repository, sha=$sha) is not found")
-        }.let { commit ->
-            CommitDetail(
-                commit.owner.ownerName,
-                commit.owner.name,
-                commit.shA1,
-                commit.htmlUrl.toExternalForm(),
-                commit.commitShortInfo.message,
-                commit.commitShortInfo.author.name,
-                commit.commitShortInfo.authoredDate,
-                commit.files.map { file ->
-                    val patch = file.patch ?: ""
-                    val diffHunks = getDiffHunks(patch)
-                    val linesDeleted = diffHunks.fold(0) { acc, diffHunk -> acc + (diffHunk.before?.let { it.endLine - it.startLine + 1 } ?: 0)}
-                    val linesAdded = diffHunks.fold(0) { acc, diffHunk -> acc + (diffHunk.after?.let { it.endLine - it.startLine + 1 } ?: 0)}
-                    assert(file.linesDeleted == linesDeleted && file.linesAdded == linesAdded)
-                    CommitFile(
-                        file.sha,
-                        CommitFileStatus.valueOf(file.status),
-                        file.fileName,
-                        file.previousFilename ?: file.fileName,
-                        patch,
-                        diffHunks
-                    )
-                },
-                commit.parentSHA1s.firstOrNull() ?: throw BadRequestException("First commit is not supported")
-            )
-        }
-    }
-
     fun createIfNotExist(owner: String, repository: String, sha: String): Commit {
         val commit = commitRepository.find(owner, repository, sha)
         if (commit != null) return commit
         return commitRepository.save(Commit(owner, repository, sha))
     }
+}
 
-    companion object {
-        private val GITHUB_ACCESS_TOKEN = System.getenv("GITHUB_ACCESS_TOKEN") ?: ""
+private val GITHUB_ACCESS_TOKEN = System.getenv("GITHUB_ACCESS_TOKEN") ?: ""
+
+fun fetchCommitFromGitHub(owner: String, repository: String, sha: String): Commit {
+    val client = GitHub.connectUsingOAuth(GITHUB_ACCESS_TOKEN)
+    return runCatching {
+        client.getRepository("$owner/$repository").getCommit(sha)
+    }.getOrElse {
+        throw NotFoundException("Commit(owner=$owner, repository=$repository, sha=$sha) is not found")
+    }.let { commit ->
+        val parentSha = commit.parentSHA1s.firstOrNull() ?: throw BadRequestException("First commit is not supported")
+        Commit(
+            UUID.randomUUID(), // meaningless
+            commit.owner.ownerName,
+            commit.owner.name,
+            commit.shA1,
+            parentSha,
+            commit.htmlUrl.toExternalForm(),
+            commit.commitShortInfo.message,
+            commit.commitShortInfo.author.name,
+            LocalDateTime.ofInstant(commit.commitShortInfo.authoredDate.toInstant(), ZoneId.systemDefault()),
+            commit.files
+                .filter { ChangedFileStatus.valueOf(it.status) != ChangedFileStatus.added }
+                .map {
+                    val fileContent = getFileContent(owner, repository, parentSha, it.previousFilename)
+                    File(
+                        it.previousFilename,
+                        fileContent.text,
+                        fileContent.extension,
+                        fileContent.elements,
+                        fileContent.tokens
+                    )
+                },
+            commit.files
+                .filter { ChangedFileStatus.valueOf(it.status) != ChangedFileStatus.removed }
+                .map {
+                    val fileContent = getFileContent(owner, repository, parentSha, it.previousFilename)
+                    ChangedFile(
+                        it.fileName,
+                        it.previousFilename,
+                        ChangedFileStatus.valueOf(it.status),
+                        fileContent.text,
+                        fileContent.extension,
+                        fileContent.elements,
+                        fileContent.tokens
+                    )
+                },
+            commit.files.flatMap { file ->
+                val patch = file.patch ?: ""
+                val diffHunks = getDiffHunks(patch)
+                val linesDeleted = diffHunks.fold(0) { acc, diffHunk -> acc + (diffHunk.before?.let { it.endLine - it.startLine + 1 } ?: 0)}
+                val linesAdded = diffHunks.fold(0) { acc, diffHunk -> acc + (diffHunk.after?.let { it.endLine - it.startLine + 1 } ?: 0)}
+                assert(file.linesDeleted == linesDeleted && file.linesAdded == linesAdded)
+                diffHunks
+            },
+            commit.files.fold("") { acc, file -> acc + "\n" + file.patch }
+        )
     }
 }
 

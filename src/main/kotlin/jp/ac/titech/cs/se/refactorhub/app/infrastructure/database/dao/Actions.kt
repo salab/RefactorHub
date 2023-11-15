@@ -12,12 +12,13 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.koin.java.KoinJavaComponent.inject
+import java.time.LocalDateTime
 
 object Actions : IntIdTable("actions") {
     val name = enumerationByName("name", 50, ActionName::class)
     val type = enumerationByName("type", 50, ActionType::class)
     val user = integer("user").nullable()
-    val time = long("time")
+    val time = varchar("time", 50)
     val data = jsonb("data", ::stringify, ::parse)
 }
 
@@ -35,7 +36,7 @@ class ActionDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Action> {
             this.name,
             this.type,
             this.user,
-            this.time,
+            LocalDateTime.parse(this.time),
             this.data
         )
     }

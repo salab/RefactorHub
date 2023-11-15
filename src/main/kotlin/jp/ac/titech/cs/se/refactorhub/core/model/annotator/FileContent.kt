@@ -2,6 +2,13 @@ package jp.ac.titech.cs.se.refactorhub.core.model.annotator
 
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
 
+interface File {
+    val text: String
+    val extension: String
+    val elements: List<CodeElement>
+    val tokens: List<Token>
+}
+
 data class FileContent(
     val text: String = "",
     val extension: String = "",

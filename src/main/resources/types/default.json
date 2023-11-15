@@ -2,14 +2,14 @@
   {
     "name": "Any",
     "description": "Any refactoring",
-    "url": "",
+    "referenceUrl": "",
     "before": {},
     "after": {}
   },
   {
     "name": "Extract Method",
     "description": "Extracting code fragments from existing method, and creating a new method based on the extracted code",
-    "url": "https://refactoring.com/catalog/extractFunction.html",
+    "referenceUrl": "https://refactoring.com/catalog/extractFunction.html",
     "before": {
       "extracted code": {
         "description": "Code fragments which is extracted",
@@ -83,7 +83,7 @@
   {
     "name": "Move Attribute",
     "description": "Moving field to the other class",
-    "url": "https://refactoring.com/catalog/moveField.html",
+    "referenceUrl": "https://refactoring.com/catalog/moveField.html",
     "before": {
       "target field": {
         "description": "Field which is moved",
@@ -134,7 +134,7 @@
   {
     "name": "Move Class",
     "description": "Moving class to the other package",
-    "url": "https://www.refactoring.com/catalog/moveClass.html",
+    "referenceUrl": "https://www.refactoring.com/catalog/moveClass.html",
     "before": {
       "target class": {
         "description": "Class which is moved",
@@ -215,7 +215,7 @@
   {
     "name": "Rename Variable",
     "description": "Renaming variable",
-    "url": "https://refactoring.com/catalog/renameVariable.html",
+    "referenceUrl": "https://refactoring.com/catalog/renameVariable.html",
     "before": {
       "target variable": {
         "description": "Variable which is renamed",

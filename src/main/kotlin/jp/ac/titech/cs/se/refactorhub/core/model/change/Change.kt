@@ -1,15 +1,13 @@
-package jp.ac.titech.cs.se.refactorhub.core.model.refactoring
+package jp.ac.titech.cs.se.refactorhub.core.model.change
 
-import jp.ac.titech.cs.se.refactorhub.core.model.Commit
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementHolder
 
-interface Refactoring {
-    val commit: Commit
-    val type: String
-    val data: Data
+interface Change {
+    val type: ChangeType
     val description: String
+    val parameterData: ParameterData
 
-    interface Data {
+    interface ParameterData {
         val before: MutableMap<String, CodeElementHolder>
         val after: MutableMap<String, CodeElementHolder>
     }

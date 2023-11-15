@@ -25,7 +25,7 @@ interface RefactoringConverter<T : Refactoring> {
     fun convert(
         refactoring: T,
         data: RefactoringOracle.Refactoring
-    ): jp.ac.titech.cs.se.refactorhub.core.model.refactoring.Refactoring
+    ): jp.ac.titech.cs.se.refactorhub.core.dataset.refactoringminer.model.Refactoring
 }
 
 fun convertRefactoring(

@@ -1,6 +1,8 @@
 package jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth
 
-data class Session(val id: Int, val accessToken: String) {
+import java.util.UUID
+
+data class Session(val id: UUID, val accessToken: String) {
     companion object {
         const val KEY = "app_session"
     }

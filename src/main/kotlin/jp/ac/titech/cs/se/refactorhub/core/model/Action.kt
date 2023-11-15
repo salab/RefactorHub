@@ -1,12 +1,13 @@
 package jp.ac.titech.cs.se.refactorhub.core.model
 
 import com.fasterxml.jackson.databind.JsonNode
+import java.time.LocalDateTime
 
 interface Action {
     val name: ActionName
     val type: ActionType
     val user: Int?
-    val time: Long
+    val time: LocalDateTime
     val data: JsonNode
 }
 
