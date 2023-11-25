@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: RefactorHub
   description: RefactorHub API
-  version: 1.2.0
+  version: 2.0.0
 
 servers:
   - url: "https://refactorhub.com/api"
@@ -13,62 +13,30 @@ servers:
 tags:
   - name: users
     description: User
-  - name: commits
-    description: Commit
-  - name: refactorings
-    description: Refactoring
-  - name: refactoringTypes
-    description: RefactoringType
-  - name: drafts
-    description: RefactoringDraft
-  - name: annotator
-    description: Annotator
-  - name: elements
-    description: CodeElement
+  - name: annotations
+    description: Annotation
+  - name: annotations/snapshots
+    description: Snapshot of Annotation
+  - name: annotations/snapshots/changes
+    description: Change belonging to Snapshot of Annotation
+  - name: annotations/snapshots/changes/parameters
+    description: Parameter of Change belonging to Snapshot of Annotation
+  - name: changeTypes
+    description: ChangeType
+  - name: codeElementTypes
+    description: CodeElementType
   - name: experiments
     description: Experiment
   - name: actions
     description: Action
 
 paths:
-  "/users/{userId}/drafts":
-    parameters:
-      - $ref: "#/components/parameters/userIdInPath"
-    get:
-      summary: get drafts the user has
-      operationId: getUserDrafts
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/RefactoringDraft"
-      tags:
-        - users
-  "/users/{userId}/refactorings":
-    parameters:
-      - $ref: "#/components/parameters/userIdInPath"
-    get:
-      summary: get refactorings the user has
-      operationId: getUserRefactorings
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Refactoring"
-      tags:
-        - users
   "/users/me":
     get:
-      summary: get logged in user
+      summary: get logged-in user
       operationId: getMe
+      security:
+        - cookieAuth: []
       responses:
         "200":
           description: OK
@@ -80,78 +48,12 @@ paths:
           description: You are not logged in
       tags:
         - users
-
-  "/commits/{commitOwner}/{commitRepository}/{commitSha}/detail":
+  "/users/{userId}/annotations":
     parameters:
-      - $ref: "#/components/parameters/commitOwnerInPath"
-      - $ref: "#/components/parameters/commitRepositoryInPath"
-      - $ref: "#/components/parameters/commitShaInPath"
+      - $ref: "#/components/parameters/userIdInPath"
     get:
-      summary: get commit detail
-      operationId: getCommitDetail
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CommitDetail"
-        "400":
-          description: First commit is not supported
-        "404":
-          description: Commit is not found
-      tags:
-        - commits
-
-  "/refactorings/{refactoringId}/fork":
-    parameters:
-      - $ref: "#/components/parameters/refactoringIdInPath"
-    post:
-      summary: copy & create a new refactoring from the refactoring
-      operationId: forkRefactoring
-      security:
-        - cookieAuth: []
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RefactoringDraft"
-        "401":
-          description: You are not logged in
-        "404":
-          description: Refactoring is not found
-      tags:
-        - refactorings
-  "/refactorings/{refactoringId}/edit":
-    parameters:
-      - $ref: "#/components/parameters/refactoringIdInPath"
-    post:
-      summary: start to edit the refactoring
-      operationId: editRefactoring
-      security:
-        - cookieAuth: []
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RefactoringDraft"
-        "401":
-          description: You are not logged in
-        "403":
-          description: You are not an owner
-        "404":
-          description: Refactoring is not found
-      tags:
-        - refactorings
-
-  "/refactoring_types":
-    get:
-      summary: get all refactoring types
-      operationId: getAllRefactoringTypes
+      summary: get annotation ids the user created
+      operationId: getUserAnnotationIds
       responses:
         "200":
           description: OK
@@ -160,75 +62,69 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/RefactoringType"
+                  type: string
+                  format: uuid
       tags:
-        - refactoringTypes
-    post:
-      summary: create a new refactoring type
-      operationId: createRefactoringType
-      security:
-        - cookieAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateRefactoringTypeRequest"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RefactoringType"
-        "400":
-          description: This name already exists
-      tags:
-        - refactoringTypes
+        - users
 
-  "/drafts/{draftId}":
+  "/annotations/{annotationId}":
     parameters:
-      - $ref: "#/components/parameters/draftIdInPath"
+      - $ref: "#/components/parameters/annotationIdInPath"
     get:
-      summary: get refactoring draft
-      operationId: getRefactoringDraft
+      summary: get an annotation
+      operationId: getAnnotation
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RefactoringDraft"
+                $ref: "#/components/schemas/Annotation"
         "404":
-          description: RefactoringDraft is not found
+          description: Annotation is not found
       tags:
-        - drafts
+        - annotations
     patch:
-      summary: update description or type of refactoring draft
-      operationId: updateRefactoringDraft
+      summary: update isDraft type of the annotation
+      operationId: publishAnnotation
       security:
         - cookieAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateRefactoringDraftRequest"
+              type: object
+              properties:
+                isDraft:
+                  type: boolean
+              required:
+                - isDraft
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RefactoringDraft"
+                type: object
+                properties:
+                  isDraft:
+                    type: boolean
+                required:
+                  - isDraft
+        "401":
+          description: You are not logged in
+        "403":
+          description: You are not the owner
         "404":
-          description: RefactoringDraft is not found
+          description: The annotation is not found
       tags:
-        - drafts
-  "/drafts/{draftId}/save":
+        - annotations
+  "/annotations/{annotationId}/data":
     parameters:
-      - $ref: "#/components/parameters/draftIdInPath"
+      - $ref: "#/components/parameters/annotationIdInPath"
     post:
-      summary: save refactoring draft as refactoring
-      operationId: saveRefactoringDraft
+      summary: get the annotation data
+      operationId: getAnnotationData
       security:
         - cookieAuth: []
       responses:
@@ -237,79 +133,270 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Refactoring"
+                $ref: "#/components/schemas/AnnotationData"
         "404":
-          description: RefactoringDraft is not found
+          description: The annotation is not found
       tags:
-        - drafts
-  "/drafts/{draftId}/discard":
+        - annotations
+  "/annotations/{annotationId}/snapshots":
     parameters:
-      - $ref: "#/components/parameters/draftIdInPath"
+      - $ref: "#/components/parameters/annotationIdInPath"
     post:
-      summary: discard refactoring draft
-      operationId: discardRefactoringDraft
+      summary: append a temporary snapshot based on range of parameters of the specified change belonging to the trailing snapshot
+      operationId: appendTemporarySnapshot
       security:
         - cookieAuth: []
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hasTemporarySnapshot:
+                    type: boolean
+                  snapshots:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Snapshot"
+                required:
+                  - hasTemporarySnapshot
+                  - snapshots
+        "400":
+          description: The specified change is not belonging to the trailing snapshot
+        "401":
+          description: You are not logged in
+        "403":
+          description: You are not the owner
         "404":
-          description: RefactoringDraft is not found
+          description: The annotation is not found
+        "409":
+          description: The annotation already has a temporary snapshot
       tags:
-        - drafts
-  "/drafts/{draftId}/{diffCategory}":
+        - annotations/snapshots
+    put:
+      summary: |-
+        put the fileContent in the specified filePath in the temporary snapshot.
+        If isRemoved is true, the file will be removed.
+      operationId: modifyTemporarySnapshot
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filePath:
+                  type: string
+                fileContent:
+                  type: string
+                isRemoved:
+                  type: boolean
+              required:
+                - filePath
+                - fileContent
+                - isRemoved
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  snapshots:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Snapshot"
+                required:
+                  - snapshots
+        "401":
+          description: You are not logged in
+        "403":
+          description: You are not the owner
+        "404":
+          description: The annotation is not found
+        "409":
+          description: The annotation does not have a temporary snapshot
+      tags:
+        - annotations/snapshots
+    patch:
+      summary: settle the temporary snapshot
+      operationId: settleTemporarySnapshot
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hasTemporarySnapshot:
+                    type: boolean
+                required:
+                  - hasTemporarySnapshot
+        "401":
+          description: You are not logged in
+        "403":
+          description: You are not the owner
+        "404":
+          description: The annotation is not found
+        "409":
+          description: The annotation does not have a temporary snapshot
+      tags:
+        - annotations/snapshots
+  "/annotations/{annotationId}/snapshots/{snapshotId}/changes":
     parameters:
-      - $ref: "#/components/parameters/draftIdInPath"
+      - $ref: "#/components/parameters/annotationIdInPath"
+      - $ref: "#/components/parameters/snapshotIdInPath"
+    post:
+      summary: append a new change to the snapshot
+      operationId: appendChange
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Snapshot"
+        "401":
+          description: You are not logged in
+        "403":
+          description: You are not the owner
+        "404":
+          description: The annotation or snapshot is not found
+      tags:
+        - annotations/snapshots/changes
+  "/annotations/{annotationId}/snapshots/{snapshotId}/changes/{changeId}":
+    parameters:
+      - $ref: "#/components/parameters/annotationIdInPath"
+      - $ref: "#/components/parameters/snapshotIdInPath"
+      - $ref: "#/components/parameters/changeIdInPath"
+    patch:
+      summary: |-
+        update description or typeName of the change.
+        When the value of typeName is changed, parameters will be replaced.
+      operationId: updateChange
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                typeName:
+                  type: string
+              required:
+                - description
+                - typeName
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Change"
+        "400":
+          description: The typeName is not valid
+        "401":
+          description: You are not logged in
+        "403":
+          description: You are not the owner
+        "404":
+          description: The annotation or snapshot or change is not found
+      tags:
+        - annotations/snapshots/changes
+    delete:
+      summary: |-
+        remove the change from the snapshot.
+        If changes do not exist in any snapshots after the snapshot to which the removed change belongs, the snapshot will also be removed.
+      operationId: removeChange
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  snapshots:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Snapshot"
+                required:
+                  - snapshots
+        "401":
+          description: You are not logged in
+        "403":
+          description: You are not the owner
+        "404":
+          description: The annotation or snapshot or change is not found
+      tags:
+        - annotations/snapshots/changes
+  "/annotations/{annotationId}/snapshots/{snapshotId}/changes/{changeId}/{diffCategory}":
+    parameters:
+      - $ref: "#/components/parameters/annotationIdInPath"
+      - $ref: "#/components/parameters/snapshotIdInPath"
+      - $ref: "#/components/parameters/changeIdInPath"
       - $ref: "#/components/parameters/diffCategoryInPath"
     put:
-      summary: put CodeElementHolder on refactoring draft data[category]
-      operationId: putRefactoringDraftElementKey
+      summary: put a new parameter on parameterData[diffCategory] of the change
+      operationId: putNewParameter
       security:
         - cookieAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PutCodeElementHolderRequest"
+              type: object
+              properties:
+                key:
+                  type: string
+                type:
+                  type: string
+                multiple:
+                  type: boolean
+              required:
+                - key
+                - type
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RefactoringDraft"
+                $ref: "#/components/schemas/Change"
         "400":
           description: Bad Request
+        "401":
+          description: You are not logged in
+        "403":
+          description: You are not the owner
         "404":
-          description: RefactoringDraft is not found
+          description: The annotation or snapshot or change is not found
       tags:
-        - drafts
-  "/drafts/{draftId}/{diffCategory}/{elementKey}":
+        - annotations/snapshots/changes/parameters
+  "/annotations/{annotationId}/snapshots/{snapshotId}/changes/{changeId}/{diffCategory}/{parameterName}":
     parameters:
-      - $ref: "#/components/parameters/draftIdInPath"
+      - $ref: "#/components/parameters/annotationIdInPath"
+      - $ref: "#/components/parameters/snapshotIdInPath"
+      - $ref: "#/components/parameters/changeIdInPath"
       - $ref: "#/components/parameters/diffCategoryInPath"
-      - $ref: "#/components/parameters/elementKeyInPath"
-    delete:
-      summary: remove CodeElementHolder on refactoring draft data[category]
-      operationId: removeCodeElementHolder
-      security:
-        - cookieAuth: []
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RefactoringDraft"
-        "400":
-          description: Bad Request
-        "404":
-          description: RefactoringDraft is not found
-      tags:
-        - drafts
+      - $ref: "#/components/parameters/parameterNameInPath"
     post:
-      summary: append default CodeElement value on refactoring draft data[category][key].elements
-      operationId: appendCodeElementDefaultValue
+      summary: append a default parameter element to parameterData[diffCategory][parameterName].elements of the change
+      operationId: appendParameterElement
       security:
         - cookieAuth: []
       responses:
@@ -318,68 +405,118 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RefactoringDraft"
+                $ref: "#/components/schemas/Change"
         "400":
           description: Bad Request
+        "401":
+          description: You are not logged in
+        "403":
+          description: You are not the owner
         "404":
-          description: RefactoringDraft is not found
+          description: The annotation or snapshot or change is not found
       tags:
-        - drafts
+        - annotations/snapshots/changes/parameters
+    delete:
+      summary: remove the parameter from parameterData[diffCategory] of the change
+      operationId: removeParameter
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Change"
+        "400":
+          description: Bad Request
+        "401":
+          description: You are not logged in
+        "403":
+          description: You are not the owner
+        "404":
+          description: The annotation or snapshot or change is not found
+      tags:
+        - annotations/snapshots/changes/parameters
     patch:
-      summary: verify CodeElementHolder on refactoring draft data[category][key]
-      operationId: verifyCodeElementHolder
+      summary: verify the parameter at parameterData[diffCategory][parameterName]
+      operationId: verifyParameter
       security:
         - cookieAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifyCodeElementHolderRequest"
+              type: object
+              properties:
+                isVerified:
+                  type: boolean
+              required:
+                - isVerified
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RefactoringDraft"
+                $ref: "#/components/schemas/Change"
         "400":
           description: Bad Request
+        "401":
+          description: You are not logged in
+        "403":
+          description: You are not the owner
         "404":
-          description: RefactoringDraft is not found
+          description: The annotation or snapshot or change is not found
       tags:
-        - drafts
-  "/drafts/{draftId}/{diffCategory}/{elementKey}/{elementIndex}":
+        - annotations/snapshots/changes/parameters
+  "/annotations/{annotationId}/snapshots/{snapshotId}/changes/{changeId}/{diffCategory}/{parameterName}/{elementIndex}":
     parameters:
-      - $ref: "#/components/parameters/draftIdInPath"
+      - $ref: "#/components/parameters/annotationIdInPath"
+      - $ref: "#/components/parameters/snapshotIdInPath"
+      - $ref: "#/components/parameters/changeIdInPath"
       - $ref: "#/components/parameters/diffCategoryInPath"
-      - $ref: "#/components/parameters/elementKeyInPath"
+      - $ref: "#/components/parameters/parameterNameInPath"
       - $ref: "#/components/parameters/elementIndexInPath"
     patch:
-      summary: update CodeElement value of refactoring draft data[category][key].elements[index]
-      operationId: updateCodeElementValue
+      summary: |-
+        update the parameter value at parameterData[diffCategory][parameterName].elements[elementIndex].
+        Valid even for non-multiple parameters (in that case, elementIndex is 0).
+      operationId: updateParameterValue
       security:
         - cookieAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateCodeElementValueRequest"
+              type: object
+              properties:
+                element:
+                  $ref: "#/components/schemas/CodeElement"
+              required:
+                - element
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RefactoringDraft"
+                $ref: "#/components/schemas/Change"
         "400":
           description: Bad Request
+        "401":
+          description: You are not logged in
+        "403":
+          description: You are not the owner
         "404":
-          description: RefactoringDraft is not found
+          description: The annotation or snapshot or change is not found
       tags:
-        - drafts
+        - annotations/snapshots/changes/parameters
     delete:
-      summary: delete element value of refactoring draft data[category][key].elements[index]
-      operationId: deleteRefactoringDraftElementValue
+      summary: |-
+        clear the parameter value at parameterData[diffCategory][parameterName].elements[elementIndex].
+        Valid even for non-multiple parameters (in that case, elementIndex is 0).
+      operationId: clearParameterValue
       security:
         - cookieAuth: []
       responses:
@@ -388,15 +525,78 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RefactoringDraft"
+                $ref: "#/components/schemas/Change"
         "400":
           description: Bad Request
+        "401":
+          description: You are not logged in
+        "403":
+          description: You are not the owner
         "404":
-          description: RefactoringDraft is not found
+          description: The annotation or snapshot or change is not found
       tags:
-        - drafts
+        - annotations/snapshots/changes/parameters
 
-  "/elements/types":
+  "/change_types":
+    get:
+      summary: get all change types
+      operationId: getChangeTypes
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChangeType"
+      tags:
+        - changeTypes
+    post:
+      summary: create a new change type
+      operationId: createChangeType
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                before:
+                  type: object
+                  additionalProperties:
+                    $ref: "#/components/schemas/CodeElementMetadata"
+                after:
+                  type: object
+                  additionalProperties:
+                    $ref: "#/components/schemas/CodeElementMetadata"
+                description:
+                  type: string
+                referenceUrl:
+                  type: string
+              required:
+                - name
+                - before
+                - after
+                - description
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChangeType"
+        "400":
+          description: This name already exists
+        "401":
+          description: You are not logged in
+      tags:
+        - changeTypes
+
+  "/code_element_types":
     get:
       summary: get all CodeElement types
       operationId: getCodeElementTypes
@@ -410,61 +610,11 @@ paths:
                 items:
                   type: string
       tags:
-        - elements
-
-  "/annotator/content":
-    get:
-      summary: get FileContent with CodeElements
-      operationId: getFileContent
-      parameters:
-        - in: query
-          name: owner
-          schema:
-            type: string
-        - in: query
-          name: repository
-          schema:
-            type: string
-        - in: query
-          name: sha
-          schema:
-            type: string
-        - in: query
-          name: category
-          schema:
-            type: string
-            enum: [before, after]
-        - in: query
-          name: path
-          schema:
-            type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FileContent"
-      tags:
-        - annotator
-
-  "/annotator/content/prepare":
-    post:
-      summary: prepare CommitContents
-      operationId: prepareCommitContents
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: boolean
-      tags:
-        - annotator
+        - codeElementTypes
 
   "/experiments":
     get:
-      summary: get all experiments
+      summary: get experiments
       operationId: getAllExperiments
       responses:
         "200":
@@ -486,7 +636,31 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateExperimentRequest"
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                commits:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      owner:
+                        type: string
+                      repository:
+                        type: string
+                      sha:
+                        type: string
+                    required:
+                      - owner
+                      - repository
+                      - sha
+              required:
+                - title
+                - description
+                - commits
       responses:
         "200":
           description: OK
@@ -496,13 +670,15 @@ paths:
                 $ref: "#/components/schemas/Experiment"
         "401":
           description: You are not logged in
+        "404":
+          description: One of the commits is not found
       tags:
         - experiments
   "/experiments/{experimentId}":
     parameters:
       - $ref: "#/components/parameters/experimentIdInPath"
     get:
-      summary: get experiment
+      summary: get the experiment
       operationId: getExperiment
       responses:
         "200":
@@ -512,15 +688,40 @@ paths:
               schema:
                 $ref: "#/components/schemas/Experiment"
         "404":
-          description: Experiment is not found
+          description: The experiment is not found
+      tags:
+        - experiments
+  "/experiments/{experimentId}/commits/{commitId}":
+    parameters:
+      - $ref: "#/components/parameters/experimentIdInPath"
+      - $ref: "#/components/parameters/commitIdInPath"
+    post:
+      summary: start annotation of the commit and get annotation id
+      operationId: startAnnotation
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+        "401":
+          description: You are not logged in
+        "404":
+          description: The experiment or commit is not found
       tags:
         - experiments
   "/experiments/{experimentId}/result":
     parameters:
       - $ref: "#/components/parameters/experimentIdInPath"
     get:
-      summary: get experiment result
+      summary: get the experiment result
       operationId: getExperimentResult
+      security:
+        - cookieAuth: []
       responses:
         "200":
           description: OK
@@ -529,28 +730,11 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Refactoring"
+                  $ref: "#/components/schemas/AnnotationData"
+        "401":
+          description: You are not logged in
         "404":
-          description: Experiment is not found
-      tags:
-        - experiments
-  "/experiments/{experimentId}/refactorings":
-    parameters:
-      - $ref: "#/components/parameters/experimentIdInPath"
-    get:
-      summary: get experiment refactorings
-      operationId: getExperimentRefactorings
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Refactoring"
-        "404":
-          description: Experiment is not found
+          description: The experiment is not found
       tags:
         - experiments
 
@@ -558,14 +742,29 @@ paths:
     post:
       summary: logging actions
       operationId: postAction
+      security:
+        - cookieAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ActionRequest"
+              type: object
+              properties:
+                name:
+                  $ref: "#/components/schemas/ActionName"
+                type:
+                  $ref: "#/components/schemas/ActionType"
+                data:
+                  type: object
+              required:
+                - name
+                - type
+                - data
       responses:
         "200":
           description: OK
+        "401":
+          description: You are not logged in
       tags:
         - actions
 
@@ -581,7 +780,8 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         name:
           type: string
       required:
@@ -591,75 +791,107 @@ components:
     Commit:
       type: object
       properties:
+        id:
+          type: string
+          format: uuid
         owner:
           type: string
         repository:
           type: string
         sha:
           type: string
-      required:
-        - owner
-        - repository
-        - sha
-    CommitDetail:
-      type: object
-      properties:
-        owner:
-          type: string
-        repository:
-          type: string
-        sha:
+        parentSha:
           type: string
         url:
           type: string
         message:
           type: string
-        author:
+        authorName:
           type: string
-        authorDate:
+        authoredDateTime:
           type: string
           format: date-time
-        files:
+        beforeFiles:
           type: array
           items:
-            $ref: "#/components/schemas/CommitFile"
-        parent:
-          type: string
-      required:
-        - owner
-        - repository
-        - sha
-        - url
-        - message
-        - author
-        - authorDate
-        - files
-        - parent
-    CommitFile:
-      type: object
-      properties:
-        sha:
-          type: string
-        status:
-          type: string
-          enum: [modified, added, removed, renamed]
-        name:
-          type: string
-        previousName:
-          type: string
-        patch:
-          type: string
+            $ref: "#/components/schemas/File"
+        afterFiles:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChangedFile"
         diffHunks:
           type: array
           items:
             $ref: "#/components/schemas/DiffHunk"
+        patch:
+          type: string
       required:
+        - id
+        - owner
+        - repository
         - sha
-        - status
-        - name
-        - previousName
-        - patch
+        - parentSha
+        - url
+        - message
+        - authorName
+        - authoredDateTime
+        - beforeFiles
+        - afterFiles
         - diffHunks
+        - patch
+    File:
+      type: object
+      properties:
+        path:
+          type: string
+        text:
+          type: string
+        extension:
+          type: string
+        elements:
+          type: array
+          items:
+            $ref: "#/components/schemas/CodeElement"
+        tokens:
+          type: array
+          items:
+            $ref: "#/components/schemas/Token"
+      required:
+        - path
+        - text
+        - extension
+        - elements
+        - tokens
+    ChangedFile:
+      type: object
+      properties:
+        path:
+          type: string
+        beforePath:
+          type: string
+        status:
+          type: string
+          enum: [modified, added, removed, renamed]
+        text:
+          type: string
+        extension:
+          type: string
+        elements:
+          type: array
+          items:
+            $ref: "#/components/schemas/CodeElement"
+        tokens:
+          type: array
+          items:
+            $ref: "#/components/schemas/Token"
+      required:
+        - path
+        - beforePath
+        - status
+        - text
+        - extension
+        - elements
+        - tokens
     DiffHunk:
       type: object
       properties:
@@ -678,56 +910,82 @@ components:
         - startLine
         - endLine
 
-    Refactoring:
+    Annotation:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         ownerId:
-          type: integer
-        parentId:
-          type: integer
+          type: string
+          format: uuid
         commit:
           $ref: "#/components/schemas/Commit"
-        type:
-          type: string
-        data:
-          $ref: "#/components/schemas/RefactoringData"
-        description:
-          type: string
-        isVerified:
+        isDraft:
           type: boolean
+        hasTemporarySnapshot:
+          type: boolean
+        snapshots:
+          type: array
+          items:
+            $ref: "#/components/schemas/Snapshot"
       required:
         - id
         - ownerId
         - commit
-        - type
-        - data
-        - description
-        - isVerified
-    RefactoringData:
-      type: object
-      properties:
-        before:
-          type: object
-          additionalProperties:
-            $ref: "#/components/schemas/CodeElementHolder"
-        after:
-          type: object
-          additionalProperties:
-            $ref: "#/components/schemas/CodeElementHolder"
-      required:
-        - before
-        - after
-    RefactoringType:
+        - isDraft
+        - snapshots
+    Snapshot:
       type: object
       properties:
         id:
-          type: integer
-        ownerId:
-          type: integer
+          type: string
+          format: uuid
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChangedFile"
+        diffHunks:
+          type: array
+          items:
+            $ref: "#/components/schemas/DiffHunk"
+        patch:
+          type: string
+        changes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Change"
+      required:
+        - id
+        - files
+        - diffHunks
+        - patch
+        - changes
+    Change:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        typeName:
+          type: string
+        description:
+          type: string
+        parameterData:
+          $ref: "#/components/schemas/ParameterData"
+      required:
+        - id
+        - type
+        - description
+        - parameterData
+    ChangeType:
+      type: object
+      properties:
         name:
           type: string
+        ownerId:
+          type: string
+          format: uuid
         before:
           type: object
           additionalProperties:
@@ -738,89 +996,56 @@ components:
             $ref: "#/components/schemas/CodeElementMetadata"
         description:
           type: string
-        url:
+        referenceUrl:
           type: string
       required:
-        - id
-        - ownerId
         - name
+        - ownerId
         - before
         - after
         - description
-        - url
-
-    RefactoringDraft:
+        - referenceUrl
+    ParameterData:
       type: object
       properties:
-        id:
-          type: integer
-        ownerId:
-          type: integer
-        originId:
-          type: integer
-        isFork:
-          type: boolean
-        commit:
-          $ref: "#/components/schemas/Commit"
-        type:
-          type: string
-        data:
-          $ref: "#/components/schemas/RefactoringData"
-        description:
-          type: string
+        before:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/CodeElementHolder"
+        after:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/CodeElementHolder"
       required:
-        - id
-        - ownerId
-        - originId
-        - isFork
-        - commit
-        - type
-        - data
-        - description
+        - before
+        - after
 
     Experiment:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         ownerId:
-          type: integer
+          type: string
+          format: uuid
         title:
           type: string
         description:
           type: string
         isActive:
           type: boolean
+        targetCommits:
+          type: array
+          items:
+            $ref: "#/components/schemas/Commit"
       required:
         - id
         - ownerId
         - title
         - description
         - isActive
-
-    FileContent:
-      type: object
-      properties:
-        text:
-          type: string
-        extension:
-          type: string
-        uri:
-          type: string
-        elements:
-          type: array
-          items:
-            $ref: "#/components/schemas/CodeElement"
-        tokens:
-          type: array
-          items:
-            $ref: "#/components/schemas/Token"
-      required:
-        - text
-        - extension
-        - uri
-        - elements
-        - tokens
+        - targetCommits
 
     CodeElement:
       type: object
@@ -972,6 +1197,54 @@ components:
         - isSymbol
         - isComment
 
+    AnnotationData:
+      type: object
+      properties:
+        annotatorName:
+          type: string
+        commit:
+          type: object
+          properties:
+            owner:
+              type: string
+            repository:
+              type: string
+            sha:
+              type: string
+          required:
+            - owner
+            - repository
+            - sha
+        snapshots:
+          type: array
+          items:
+            type: object
+            properties:
+              patch:
+                type: string
+              changes:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    description:
+                      type: string
+                    parameterData:
+                      $ref: "#/components/schemas/ParameterData"
+                  required:
+                    - type
+                    - description
+                    - parameterData
+            required:
+              - patch
+              - changes
+      required:
+        - annotatorName
+        - commit
+        - snapshots
+
     Action:
       type: object
       properties:
@@ -982,7 +1255,8 @@ components:
         user:
           type: integer
         time:
-          type: integer
+          type: string
+          format: date-time
         data:
           type: object
       required:
@@ -1014,147 +1288,35 @@ components:
             SetDisplayedFile,
         ]
 
-    CreateRefactoringRequest:
-      type: object
-      properties:
-        commit:
-          $ref: "#/components/schemas/Commit"
-        type:
-          type: string
-        data:
-          $ref: "#/components/schemas/RefactoringData"
-        description:
-          type: string
-      required:
-        - commit
-        - type
-        - data
-        - description
-    CreateRefactoringTypeRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        before:
-          type: object
-          additionalProperties:
-            $ref: "#/components/schemas/CodeElementMetadata"
-        after:
-          type: object
-          additionalProperties:
-            $ref: "#/components/schemas/CodeElementMetadata"
-        description:
-          type: string
-      required:
-        - name
-        - before
-        - after
-        - description
-    CreateExperimentRequest:
-      type: object
-      properties:
-        title:
-          type: string
-        description:
-          type: string
-        refactorings:
-          type: array
-          items:
-            $ref: "#/components/schemas/CreateRefactoringRequest"
-      required:
-        - title
-        - description
-        - refactorings
-    UpdateRefactoringDraftRequest:
-      type: object
-      properties:
-        description:
-          type: string
-        type:
-          type: string
-    PutCodeElementHolderRequest:
-      type: object
-      properties:
-        key:
-          type: string
-        type:
-          type: string
-        multiple:
-          type: boolean
-      required:
-        - key
-        - type
-    VerifyCodeElementHolderRequest:
-      type: object
-      properties:
-        state:
-          type: boolean
-      required:
-        - state
-    UpdateCodeElementValueRequest:
-      type: object
-      properties:
-        element:
-          $ref: "#/components/schemas/CodeElement"
-      required:
-        - element
-    ActionRequest:
-      type: object
-      properties:
-        name:
-          $ref: "#/components/schemas/ActionName"
-        type:
-          $ref: "#/components/schemas/ActionType"
-        data:
-          type: object
-      required:
-        - name
-        - type
-        - data
-
   parameters:
     userIdInPath:
       name: userId
       in: path
       required: true
       schema:
-        type: integer
-    commitOwnerInPath:
-      name: commitOwner
+        type: string
+        format: uuid
+    annotationIdInPath:
+      name: annotationId
       in: path
       required: true
       schema:
         type: string
-    commitRepositoryInPath:
-      name: commitRepository
+        format: uuid
+    snapshotIdInPath:
+      name: snapshotId
       in: path
       required: true
       schema:
         type: string
-    commitShaInPath:
-      name: commitSha
+        format: uuid
+    changeIdInPath:
+      name: changeId
       in: path
       required: true
       schema:
         type: string
-    refactoringIdInPath:
-      name: refactoringId
-      in: path
-      required: true
-      schema:
-        type: integer
-    typeNameInPath:
-      name: typeName
-      in: path
-      required: true
-      schema:
-        type: string
-    draftIdInPath:
-      name: draftId
-      in: path
-      required: true
-      schema:
-        type: integer
+        format: uuid
     diffCategoryInPath:
       name: diffCategory
       in: path
@@ -1162,8 +1324,8 @@ components:
       schema:
         type: string
         enum: [before, after]
-    elementKeyInPath:
-      name: elementKey
+    parameterNameInPath:
+      name: parameterName
       in: path
       required: true
       schema:
@@ -1179,4 +1341,12 @@ components:
       in: path
       required: true
       schema:
-        type: integer
+        type: string
+        format: uuid
+    commitIdInPath:
+      name: commitId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
