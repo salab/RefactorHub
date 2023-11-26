@@ -20,7 +20,7 @@ class ChangeRepositoryImpl : ChangeRepository {
     ): Change {
         return transaction {
             ChangeDao.new {
-                this.type = ChangeTypeDao.find { ChangeTypes.name eq typeName }.first()
+                this.type = ChangeTypeDao.find { ChangeTypes.id eq typeName }.first()
                 this.parameterData = parameterData
                 this.description = description
             }.asModel()
@@ -36,7 +36,7 @@ class ChangeRepositoryImpl : ChangeRepository {
         return transaction {
             val dao = ChangeDao[id]
             if (typeName != null) {
-                val type = ChangeTypeDao.find { ChangeTypes.name eq typeName }.firstOrNull()
+                val type = ChangeTypeDao.find { ChangeTypes.id eq typeName }.firstOrNull()
                 if (type != null) dao.type = type
             }
             if (description != null) dao.description = description

@@ -55,9 +55,8 @@ private fun createChangeTypes(adminDao: UserDao) {
         val stream = object {}.javaClass.classLoader.getResourceAsStream(file) ?: return
         val types = jacksonObjectMapper().readValue<List<ChangeTypeBody>>(stream)
         types.forEach {
-            ChangeTypeDao.new {
+            ChangeTypeDao.new(it.name) {
                 this.owner = adminDao
-                this.name = it.name
                 this.before = it.before
                 this.after = it.after
                 this.description = it.description

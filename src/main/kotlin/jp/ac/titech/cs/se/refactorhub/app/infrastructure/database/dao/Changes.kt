@@ -26,7 +26,7 @@ class ChangeDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Change> {
 
     override fun asModel() = Change(
         this.id.value,
-        this.type.asModel(),
+        this.type.name,
         this.description,
         this.parameterData
     )

@@ -6,12 +6,10 @@ import java.util.UUID
 
 data class Change(
     val id: UUID,
-    override val type: ChangeType,
+    override val typeName: String,
     override val description: String = "",
     override val parameterData: ParameterData = ParameterData()
 ) : Change {
-    val typeName = type.name // for API
-
     data class ParameterData(
         override val before: MutableMap<String, CodeElementHolder> = mutableMapOf(),
         override val after: MutableMap<String, CodeElementHolder> = mutableMapOf()
@@ -19,7 +17,7 @@ data class Change(
 }
 
 data class CreateChangeBody(
-    override val type: ChangeType,
+    override val typeName: String,
     override val description: String,
     override val parameterData: Change.ParameterData
 ) : Change

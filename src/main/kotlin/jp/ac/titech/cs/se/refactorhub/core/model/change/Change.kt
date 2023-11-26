@@ -3,7 +3,7 @@ package jp.ac.titech.cs.se.refactorhub.core.model.change
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementHolder
 
 interface Change {
-    val type: ChangeType
+    val typeName: String
     val description: String
     val parameterData: ParameterData
 
