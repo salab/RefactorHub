@@ -3,37 +3,35 @@ package jp.ac.titech.cs.se.refactorhub.core.annotator
 import jp.ac.titech.cs.se.refactorhub.core.model.Commit
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementHolder
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
-import jp.ac.titech.cs.se.refactorhub.core.model.refactoring.Refactoring
-import jp.ac.titech.cs.se.refactorhub.core.model.refactoring.RefactoringType
+import jp.ac.titech.cs.se.refactorhub.core.model.change.Change
+import jp.ac.titech.cs.se.refactorhub.core.model.change.ChangeType
 import kotlin.reflect.full.createInstance
 
 /**
- * Format Refactoring.Data into RefactoringType.
+ * Format Change.ParameterData into ChangeType.
  * Override/Add holders that defined on type.
  */
-fun Refactoring.Data.format(type: RefactoringType): Refactoring.Data {
+fun Change.ParameterData.format(type: ChangeType): Change.ParameterData {
     return this.copy().apply {
         before.putDefaultCodeElementHolders(type.before)
         after.putDefaultCodeElementHolders(type.after)
     }
 }
 
-internal fun Refactoring.copy(
-    type: String = this.type,
-    commit: Commit = this.commit,
-    data: Refactoring.Data = this.data.copy(),
-    description: String = this.description
-): Refactoring {
-    return object : Refactoring {
-        override val type: String = type
-        override val commit: Commit = commit
-        override val data: Refactoring.Data = data
+internal fun Change.copy(
+    typeName: String = this.typeName,
+    description: String = this.description,
+    parameterData: Change.ParameterData = this.parameterData.copy()
+): Change {
+    return object : Change {
+        override val typeName: String = typeName
         override val description: String = description
+        override val parameterData: Change.ParameterData = parameterData
     }
 }
 
-private fun Refactoring.Data.copy(): Refactoring.Data {
-    return object : Refactoring.Data {
+private fun Change.ParameterData.copy(): Change.ParameterData {
+    return object : Change.ParameterData {
         override val before: MutableMap<String, CodeElementHolder> = this@copy.before.copy()
         override val after: MutableMap<String, CodeElementHolder> = this@copy.after.copy()
     }
@@ -48,13 +46,13 @@ private fun MutableMap<String, CodeElementHolder>.copy(): MutableMap<String, Cod
 }
 
 /**
- * Change RefactoringType and format Refactoring.Data to RefactoringType
+ * Change ChangeType and format Change.ParameterData to ChangeType
  */
-fun Refactoring.changeType(type: RefactoringType): Refactoring {
-    if (this.type != type.name) {
+fun Change.changeType(type: ChangeType): Change {
+    if (this.typeName != type.name) {
         return this.copy(
-            type = type.name,
-            data = this.data.copy().apply {
+            typeName = type.name,
+            parameterData = this.parameterData.copy().apply {
                 before.removeEmptyCodeElementHolders(type.before)
                 before.putDefaultCodeElementHolders(type.before)
                 after.removeEmptyCodeElementHolders(type.after)
@@ -69,7 +67,9 @@ private fun MutableMap<String, CodeElementHolder>.removeEmptyCodeElementHolders(
     metadataMap: Map<String, CodeElementMetadata>
 ) {
     metadataMap.entries.forEach {
-        if (this[it.key]?.elements?.isEmpty() == true) this.remove(it.key)
+        if (this[it.key]?.elements?.none { element ->
+            element.location != null
+        } == true) this.remove(it.key)
     }
 }
 

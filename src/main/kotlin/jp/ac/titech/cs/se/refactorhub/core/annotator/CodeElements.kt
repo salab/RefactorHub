@@ -7,129 +7,129 @@ import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementHolder
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementType
-import jp.ac.titech.cs.se.refactorhub.core.model.refactoring.Refactoring
-import jp.ac.titech.cs.se.refactorhub.core.model.refactoring.RefactoringType
+import jp.ac.titech.cs.se.refactorhub.core.model.change.Change
+import jp.ac.titech.cs.se.refactorhub.core.model.change.ChangeType
 import kotlin.reflect.full.createInstance
 
-fun Refactoring.putCodeElementHolder(
+fun Change.putCodeElementHolder(
     category: DiffCategory,
-    key: String,
-    typeName: String,
+    parameterName: String,
+    codeElementTypeName: String,
     multiple: Boolean
-): Refactoring {
+): Change {
     return this.copy().apply {
         val map = getCodeElementHolderMap(category)
         val type = try {
-            CodeElementType.valueOf(typeName)
+            CodeElementType.valueOf(codeElementTypeName)
         } catch (e: IllegalArgumentException) {
-            throw RuntimeException("CodeElementType($typeName) is unsupported")
+            throw RuntimeException("CodeElementType($codeElementTypeName) is unsupported")
         }
-        if (!map.containsKey(key)) {
-            map[key] = CodeElementHolder(
+        if (!map.containsKey(parameterName)) {
+            map[parameterName] = CodeElementHolder(
                 type,
                 multiple,
                 if (multiple) mutableListOf() else mutableListOf(type.klass.createInstance())
             )
         } else {
-            throw RuntimeException("already has key=$key")
+            throw RuntimeException("already has key=$parameterName")
         }
     }
 }
 
-fun Refactoring.removeCodeElementHolder(
+fun Change.removeCodeElementHolder(
     category: DiffCategory,
-    key: String,
-    type: RefactoringType
-): Refactoring {
+    parameterName: String,
+    changeType: ChangeType
+): Change {
     return this.copy().apply {
         val map = getCodeElementHolderMap(category)
-        if (!map.containsKey(key)) {
-            throw RuntimeException("doesn't have key=$key")
+        if (!map.containsKey(parameterName)) {
+            throw RuntimeException("doesn't have key=$parameterName")
         }
-        val metadataMap = type.getCodeElementMetadataMap(category)
-        if (metadataMap.containsKey(key)) {
-            throw RuntimeException("should have key=$key")
+        val metadataMap = changeType.getCodeElementMetadataMap(category)
+        if (metadataMap.containsKey(parameterName)) {
+            throw RuntimeException("should have key=$parameterName")
         }
-        map.remove(key)
+        map.remove(parameterName)
     }
 }
 
-fun Refactoring.verifyCodeElementHolder(
+fun Change.verifyCodeElementHolder(
     category: DiffCategory,
-    key: String,
-    state: Boolean
-): Refactoring {
+    parameterName: String,
+    isVerified: Boolean
+): Change {
     return this.copy().apply {
         val map = getCodeElementHolderMap(category)
-        if (!map.containsKey(key)) {
-            throw RuntimeException("doesn't have key=$key")
+        if (!map.containsKey(parameterName)) {
+            throw RuntimeException("doesn't have key=$parameterName")
         }
-        map[key]?.let { holder ->
-            map[key] = holder.copy(state = if (state) CodeElementHolder.State.Manual else CodeElementHolder.State.None)
+        map[parameterName]?.let { holder ->
+            map[parameterName] = holder.copy(state = if (isVerified) CodeElementHolder.State.Manual else CodeElementHolder.State.None)
         }
     }
 }
 
-fun Refactoring.appendCodeElementDefaultValue(
+fun Change.appendCodeElementDefaultValue(
     category: DiffCategory,
-    key: String
-): Refactoring {
+    parameterName: String
+): Change {
     return this.copy().apply {
         val map = getCodeElementHolderMap(category)
-        if (!map.containsKey(key)) {
-            throw RuntimeException("doesn't have key=$key")
+        if (!map.containsKey(parameterName)) {
+            throw RuntimeException("doesn't have key=$parameterName")
         }
-        map[key]?.let { holder ->
+        map[parameterName]?.let { holder ->
             if (!holder.multiple) {
-                throw RuntimeException("key=$key doesn't have multiple elements")
+                throw RuntimeException("key=$parameterName doesn't have multiple elements")
             }
-            map[key] = holder.copy(
+            map[parameterName] = holder.copy(
                 elements = holder.elements.toMutableList().also { it.add(holder.type.klass.createInstance()) }
             )
         }
     }
 }
 
-fun Refactoring.updateCodeElementValue(
+fun Change.updateCodeElementValue(
     category: DiffCategory,
-    key: String,
-    index: Int,
+    parameterName: String,
+    elementIndex: Int,
     element: CodeElement,
-    type: RefactoringType,
+    changeType: ChangeType,
     content: CommitContent
-): Refactoring {
+): Change {
     return this.copy().apply {
         val map = getCodeElementHolderMap(category)
-        if (!map.containsKey(key)) {
-            throw RuntimeException("doesn't have key=$key")
+        if (!map.containsKey(parameterName)) {
+            throw RuntimeException("doesn't have key=$parameterName")
         }
-        map[key]?.let { holder ->
+        map[parameterName]?.let { holder ->
             try {
-                map[key] = holder.copy(
-                    elements = holder.elements.toMutableList().also { it[index] = element },
+                map[parameterName] = holder.copy(
+                    elements = holder.elements.toMutableList().also { it[elementIndex] = element },
                     state = CodeElementHolder.State.Manual
                 )
             } catch (e: IndexOutOfBoundsException) {
-                throw RuntimeException("key=$key doesn't have index=$index")
+                throw RuntimeException("key=$parameterName doesn't have index=$elementIndex")
             }
         }
-        this.data.before.processAutofill(category, key, element, DiffCategory.before, type, content)
-        this.data.after.processAutofill(category, key, element, DiffCategory.after, type, content)
+        this.parameterData.before.processAutofill(category, parameterName, element, DiffCategory.before, changeType, content)
+        this.parameterData.after.processAutofill(category, parameterName, element, DiffCategory.after, changeType, content)
     }
 }
 
 private fun MutableMap<String, CodeElementHolder>.processAutofill(
     category: DiffCategory,
-    key: String,
+    parameterName: String,
     element: CodeElement,
     target: DiffCategory,
-    type: RefactoringType,
+    changeType: ChangeType,
     content: CommitContent
 ) {
-    type.getCodeElementMetadataMap(target).entries.forEach metadata@{
+    changeType.getCodeElementMetadataMap(target).entries.forEach metadata@{
         it.value.autofills.forEach { autofill ->
             autofill.follows.forEach { follow ->
-                if (follow.category == category && follow.name == key) {
+                if (follow.category == category && follow.name == parameterName) {
                     val holder = this[it.key]
                     if (holder != null && holder.state == CodeElementHolder.State.Manual) return@metadata
                     val elements = autofill(autofill, category, element, target, it.value, content)
@@ -145,42 +145,42 @@ private fun MutableMap<String, CodeElementHolder>.processAutofill(
     }
 }
 
-fun Refactoring.removeCodeElementValue(
+fun Change.removeCodeElementValue(
     category: DiffCategory,
-    key: String,
-    index: Int
-): Refactoring {
+    parameterName: String,
+    elementIndex: Int
+): Change {
     return this.copy().apply {
         val map = getCodeElementHolderMap(category)
-        if (!map.containsKey(key)) {
-            throw RuntimeException("doesn't have key=$key")
+        if (!map.containsKey(parameterName)) {
+            throw RuntimeException("doesn't have key=$parameterName")
         }
-        map[key]?.let { holder ->
+        map[parameterName]?.let { holder ->
             if (!holder.multiple) {
-                map[key] = CodeElementHolder(
+                map[parameterName] = CodeElementHolder(
                     holder.type,
                     holder.multiple,
                     mutableListOf(holder.type.klass.createInstance())
                 )
             } else {
                 try {
-                    map[key] = holder.copy(elements = holder.elements.toMutableList().also { it.removeAt(index) })
+                    map[parameterName] = holder.copy(elements = holder.elements.toMutableList().also { it.removeAt(elementIndex) })
                 } catch (e: IndexOutOfBoundsException) {
-                    throw RuntimeException("key=$key doesn't have index=$index")
+                    throw RuntimeException("key=$parameterName doesn't have index=$elementIndex")
                 }
             }
         }
     }
 }
 
-private fun Refactoring.getCodeElementHolderMap(category: DiffCategory): MutableMap<String, CodeElementHolder> {
+private fun Change.getCodeElementHolderMap(category: DiffCategory): MutableMap<String, CodeElementHolder> {
     return when (category) {
-        DiffCategory.before -> this.data.before
-        DiffCategory.after -> this.data.after
+        DiffCategory.before -> this.parameterData.before
+        DiffCategory.after -> this.parameterData.after
     }
 }
 
-private fun RefactoringType.getCodeElementMetadataMap(
+private fun ChangeType.getCodeElementMetadataMap(
     category: DiffCategory
 ): Map<String, CodeElementMetadata> {
     return when (category) {
