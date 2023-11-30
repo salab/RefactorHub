@@ -3,10 +3,9 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.extension.jsonb
-import jp.ac.titech.cs.se.refactorhub.app.model.ChangedFile
 import jp.ac.titech.cs.se.refactorhub.app.model.Commit
-import jp.ac.titech.cs.se.refactorhub.app.model.File
-import jp.ac.titech.cs.se.refactorhub.core.model.annotator.DiffHunk
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.File
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileMapping
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -25,8 +24,8 @@ object Commits : UUIDTable("commits") {
     val authorName = varchar("author_name", 100)
     val authoredDateTime = varchar("authored_date_time", 50)
     val beforeFiles = jsonb("before_files", ::stringifyFileList, ::parseFileList)
-    val afterFiles = jsonb("after_files", ::stringifyChangedFileList, ::parseChangedFileList)
-    val diffHunks = jsonb("diff_hunks", ::stringifyDiffHunks, ::parseDiffHunks)
+    val afterFiles = jsonb("after_files", ::stringifyFileList, ::parseFileList)
+    val fileMappings = jsonb("file_mappings", ::stringifyFileMappings, ::parseFileMappings)
     val patch = text("patch")
 }
 
@@ -43,7 +42,7 @@ class CommitDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Commit> {
     var authoredDateTime by Commits.authoredDateTime
     var beforeFiles by Commits.beforeFiles
     var afterFiles by Commits.afterFiles
-    var diffHunks by Commits.diffHunks
+    var fileMappings by Commits.fileMappings
     var patch by Commits.patch
 
     override fun asModel(): Commit {
@@ -59,7 +58,7 @@ class CommitDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Commit> {
             LocalDateTime.parse(this.authoredDateTime),
             this.beforeFiles,
             this.afterFiles,
-            this.diffHunks,
+            this.fileMappings,
             this.patch
         )
     }
@@ -74,20 +73,11 @@ private fun parseFileList(src: String): List<File> {
     return mapper.readValue(src)
 }
 
-private fun stringifyChangedFileList(data: List<ChangedFile>): String {
+private fun stringifyFileMappings(data: List<FileMapping>): String {
     val mapper by KoinJavaComponent.inject(ObjectMapper::class.java)
     return mapper.writeValueAsString(data)
 }
-private fun parseChangedFileList(src: String): List<ChangedFile> {
-    val mapper by KoinJavaComponent.inject(ObjectMapper::class.java)
-    return mapper.readValue(src)
-}
-
-private fun stringifyDiffHunks(data: List<DiffHunk>): String {
-    val mapper by KoinJavaComponent.inject(ObjectMapper::class.java)
-    return mapper.writeValueAsString(data)
-}
-private fun parseDiffHunks(src: String): List<DiffHunk> {
+private fun parseFileMappings(src: String): List<FileMapping> {
     val mapper by KoinJavaComponent.inject(ObjectMapper::class.java)
     return mapper.readValue(src)
 }

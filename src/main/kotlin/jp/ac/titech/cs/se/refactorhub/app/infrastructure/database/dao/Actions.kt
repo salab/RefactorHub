@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 object Actions : IntIdTable("actions") {
     val name = enumerationByName("name", 50, ActionName::class)
     val type = enumerationByName("type", 50, ActionType::class)
-    val user = integer("user").nullable()
+    val userId = reference("user_id", Users)
     val time = varchar("time", 50)
     val data = jsonb("data", ::stringify, ::parse)
 }
@@ -27,7 +27,7 @@ class ActionDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Action> {
 
     var name by Actions.name
     var type by Actions.type
-    var user by Actions.user
+    var user by UserDao referencedOn Actions.userId
     var time by Actions.time
     var data by Actions.data
 
@@ -35,7 +35,7 @@ class ActionDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Action> {
         return Action(
             this.name,
             this.type,
-            this.user,
+            this.user.asModel().id,
             LocalDateTime.parse(this.time),
             this.data
         )

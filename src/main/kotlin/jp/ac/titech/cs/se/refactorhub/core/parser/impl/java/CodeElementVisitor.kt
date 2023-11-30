@@ -305,7 +305,7 @@ class CodeElementVisitor(
         val paths = mutableListOf<String>()
         for (it in generateSequence({ node }, { it.parent })) {
             when (it) {
-                is CompilationUnit -> paths.add(it.`package`.name.fullyQualifiedName)
+                is CompilationUnit -> paths.add(it.`package`?.name?.fullyQualifiedName ?: "")
                 is AbstractTypeDeclaration -> paths.add(it.name.identifier)
             }
         }

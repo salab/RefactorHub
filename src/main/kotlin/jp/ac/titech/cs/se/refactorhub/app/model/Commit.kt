@@ -1,7 +1,8 @@
 package jp.ac.titech.cs.se.refactorhub.app.model
 
 import jp.ac.titech.cs.se.refactorhub.core.model.Commit
-import jp.ac.titech.cs.se.refactorhub.core.model.annotator.DiffHunk
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.File
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileMapping
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -16,7 +17,7 @@ data class Commit(
     val authorName: String,
     val authoredDateTime: LocalDateTime,
     val beforeFiles: List<File>,
-    val afterFiles: List<ChangedFile>,
-    val diffHunks: List<DiffHunk>,
+    val afterFiles: List<File>,
+    val fileMappings: List<FileMapping>,
     val patch: String
 ) : Commit

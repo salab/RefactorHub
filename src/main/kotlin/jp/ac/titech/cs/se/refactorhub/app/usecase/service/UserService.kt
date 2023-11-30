@@ -3,36 +3,32 @@ package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 import jp.ac.titech.cs.se.refactorhub.app.exception.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.exception.UnauthorizedException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.UserRepository
-import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
-import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
 import jp.ac.titech.cs.se.refactorhub.app.model.User
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.UUID
 
 @KoinApiExtension
 class UserService : KoinComponent {
     private val userRepository: UserRepository by inject()
-    private val refactoringService: RefactoringService by inject()
-    private val refactoringDraftService: RefactoringDraftService by inject()
+    private val annotationService: AnnotationService by inject()
 
-    fun get(id: Int): User {
-        val user = userRepository.findById(id)
-        user ?: throw NotFoundException("User(id=$id) is not found")
+    fun get(userId: UUID): User {
+        val user = userRepository.findById(userId)
+        user ?: throw NotFoundException("User(id=$userId) is not found")
         return user
     }
 
-    fun getDrafts(id: Int): List<RefactoringDraft> {
-        return refactoringDraftService.getUserDrafts(id)
+    fun getUserAnnotationIds(userId: UUID): List<CommitIdToAnnotationId> {
+        return annotationService.getUserAnnotations(userId).map {
+            CommitIdToAnnotationId(it.experimentId, it.commit.id, it.id)
+        }
     }
 
-    fun getRefactorings(id: Int): List<Refactoring> {
-        return refactoringService.getUserRefactorings(id)
-    }
-
-    fun getMe(id: Int?): User {
-        id ?: throw UnauthorizedException("You are not logged in")
-        return get(id)
+    fun getMe(userId: UUID?): User {
+        userId ?: throw UnauthorizedException("You are not logged in")
+        return get(userId)
     }
 
     fun createIfNotExist(subId: Int, name: String): User {
@@ -40,3 +36,9 @@ class UserService : KoinComponent {
         return user ?: userRepository.create(subId, name)
     }
 }
+
+data class CommitIdToAnnotationId(
+    val experimentId: UUID,
+    val commitId: UUID,
+    val annotationId: UUID
+)

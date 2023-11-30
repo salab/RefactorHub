@@ -1,26 +1,22 @@
 package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 
-import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
-import jp.ac.titech.cs.se.refactorhub.app.model.RefactoringDraft
 import jp.ac.titech.cs.se.refactorhub.app.model.User
+import jp.ac.titech.cs.se.refactorhub.app.usecase.service.CommitIdToAnnotationId
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.UserService
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.*
 
 @KoinApiExtension
 class UserController : KoinComponent {
     private val userService: UserService by inject()
 
-    fun getDrafts(id: Int): List<RefactoringDraft> {
-        return userService.getDrafts(id)
+    fun getUserAnnotationIds(userId: UUID): List<CommitIdToAnnotationId> {
+        return userService.getUserAnnotationIds(userId)
     }
 
-    fun getRefactorings(id: Int): List<Refactoring> {
-        return userService.getRefactorings(id)
-    }
-
-    fun getMe(userId: Int?): User {
+    fun getMe(userId: UUID?): User {
         return userService.getMe(userId)
     }
 }

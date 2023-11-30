@@ -46,6 +46,8 @@ paths:
                 $ref: "#/components/schemas/User"
         "401":
           description: You are not logged in
+        "404":
+          description: The user is not found
       tags:
         - users
   "/users/{userId}/annotations":
@@ -62,8 +64,23 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
-                  format: uuid
+                  type: object
+                  properties:
+                    experimentId:
+                      type: string
+                      format: uuid
+                    commitId:
+                      type: string
+                      format: uuid
+                    annotationId:
+                      type: string
+                      format: uuid
+                  required:
+                    - experimentId
+                    - commitId
+                    - annotationId
+        "404":
+          description: The user is not found
       tags:
         - users
 
@@ -85,7 +102,7 @@ paths:
       tags:
         - annotations
     patch:
-      summary: update isDraft type of the annotation
+      summary: update isDraft of the annotation
       operationId: publishAnnotation
       security:
         - cookieAuth: []
@@ -125,8 +142,6 @@ paths:
     post:
       summary: get the annotation data
       operationId: getAnnotationData
-      security:
-        - cookieAuth: []
       responses:
         "200":
           description: OK
@@ -146,6 +161,17 @@ paths:
       operationId: appendTemporarySnapshot
       security:
         - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                changeId:
+                  type: string
+                  format: uuid
+              required:
+                - changeId
       responses:
         "200":
           description: OK
@@ -361,15 +387,15 @@ paths:
             schema:
               type: object
               properties:
-                key:
+                parameterName:
                   type: string
-                type:
+                elementType:
                   type: string
                 multiple:
                   type: boolean
               required:
-                - key
-                - type
+                - parameterName
+                - elementType
       responses:
         "200":
           description: OK
@@ -615,7 +641,7 @@ paths:
   "/experiments":
     get:
       summary: get experiments
-      operationId: getAllExperiments
+      operationId: getExperiments
       responses:
         "200":
           description: OK
@@ -668,6 +694,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Experiment"
+        "400":
+          description: First commit is not supported
         "401":
           description: You are not logged in
         "404":
@@ -818,11 +846,11 @@ components:
         afterFiles:
           type: array
           items:
-            $ref: "#/components/schemas/ChangedFile"
-        diffHunks:
+            $ref: "#/components/schemas/File"
+        fileMappings:
           type: array
           items:
-            $ref: "#/components/schemas/DiffHunk"
+            $ref: "#/components/schemas/FileMapping"
         patch:
           type: string
       required:
@@ -837,7 +865,7 @@ components:
         - authoredDateTime
         - beforeFiles
         - afterFiles
-        - diffHunks
+        - fileMappings
         - patch
     File:
       type: object
@@ -862,36 +890,23 @@ components:
         - extension
         - elements
         - tokens
-    ChangedFile:
+    FileMapping:
       type: object
       properties:
-        path:
-          type: string
-        beforePath:
-          type: string
         status:
           type: string
-          enum: [modified, added, removed, renamed]
-        text:
+          enum: [modified, added, removed, renamed, unmodified]
+        beforePath:
           type: string
-        extension:
+        afterPath:
           type: string
-        elements:
+        diffHunks:
           type: array
           items:
-            $ref: "#/components/schemas/CodeElement"
-        tokens:
-          type: array
-          items:
-            $ref: "#/components/schemas/Token"
+            $ref: "#/components/schemas/DiffHunk"
       required:
-        - path
-        - beforePath
         - status
-        - text
-        - extension
-        - elements
-        - tokens
+        - diffHunks
     DiffHunk:
       type: object
       properties:
@@ -944,11 +959,11 @@ components:
         files:
           type: array
           items:
-            $ref: "#/components/schemas/ChangedFile"
-        diffHunks:
+            $ref: "#/components/schemas/File"
+        fileMappings:
           type: array
           items:
-            $ref: "#/components/schemas/DiffHunk"
+            $ref: "#/components/schemas/FileMapping"
         patch:
           type: string
         changes:
@@ -958,7 +973,7 @@ components:
       required:
         - id
         - files
-        - diffHunks
+        - fileMappings
         - patch
         - changes
     Change:
@@ -1227,7 +1242,7 @@ components:
                 items:
                   type: object
                   properties:
-                    type:
+                    typeName:
                       type: string
                     description:
                       type: string

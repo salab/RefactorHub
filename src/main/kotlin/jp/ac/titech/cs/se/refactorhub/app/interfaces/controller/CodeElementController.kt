@@ -1,6 +1,5 @@
 package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 
-import com.fasterxml.jackson.module.jsonSchema.JsonSchema
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.CodeElementService
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -12,9 +11,5 @@ class CodeElementController : KoinComponent {
 
     fun getTypes(): List<String> {
         return codeElementService.getTypes()
-    }
-
-    fun getSchemas(): List<JsonSchema> {
-        return codeElementService.getSchemas()
     }
 }

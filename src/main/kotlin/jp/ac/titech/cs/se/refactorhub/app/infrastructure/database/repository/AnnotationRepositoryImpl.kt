@@ -5,6 +5,7 @@ import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.AnnotationReposi
 import jp.ac.titech.cs.se.refactorhub.app.model.Annotation
 import jp.ac.titech.cs.se.refactorhub.app.model.Snapshot
 import org.jetbrains.exposed.sql.SizedCollection
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
@@ -23,11 +24,22 @@ class AnnotationRepositoryImpl : AnnotationRepository {
         }
     }
 
-    override fun findByCommitId(commitId: UUID): List<Annotation> {
+    override fun findByExperimentId(ownerId: UUID, experimentId: UUID): List<Annotation> {
         return transaction {
             AnnotationDao.find {
-                Annotations.commitId eq commitId
+                (Annotations.ownerId eq ownerId) and
+                        (Annotations.experimentId eq experimentId)
             }.map { it.asModel() }
+        }
+    }
+
+    override fun findByCommitId(ownerId: UUID, experimentId: UUID, commitId: UUID): Annotation? {
+        return transaction {
+            AnnotationDao.find {
+                (Annotations.ownerId eq ownerId) and
+                        (Annotations.experimentId eq experimentId) and
+                        (Annotations.commitId eq commitId)
+            }.firstOrNull()?.asModel()
         }
     }
 

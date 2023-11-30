@@ -11,4 +11,20 @@ data class Annotation(
     val hasTemporarySnapshot: Boolean,
     val latestInternalCommitSha: String,
     val snapshots: List<Snapshot>
+) {
+    data class IsDraft(val isDraft: Boolean)
+    data class HasTemporarySnapshotAndSnapshots(val hasTemporarySnapshot: Boolean, val snapshots: List<Snapshot>)
+    data class HasTemporarySnapshot(val hasTemporarySnapshot: Boolean)
+    data class Snapshots(val snapshots: List<Snapshot>)
+
+    fun pickIsDraft() = IsDraft(isDraft)
+    fun pickHasTemporarySnapshotAndSnapshots() = HasTemporarySnapshotAndSnapshots(hasTemporarySnapshot, snapshots)
+    fun pickHasTemporarySnapshot() = HasTemporarySnapshot(hasTemporarySnapshot)
+    fun pickSnapshots() = Snapshots(snapshots)
+}
+
+data class AnnotationData(
+    val annotatorName: String,
+    val commit: jp.ac.titech.cs.se.refactorhub.core.model.Commit,
+    val snapshots: List<SnapshotData>
 )

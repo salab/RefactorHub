@@ -2,7 +2,6 @@ package jp.ac.titech.cs.se.refactorhub.core.annotator
 
 import jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.autofill
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
-import jp.ac.titech.cs.se.refactorhub.core.model.annotator.CommitContent
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementHolder
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
@@ -96,7 +95,8 @@ fun Change.updateCodeElementValue(
     elementIndex: Int,
     element: CodeElement,
     changeType: ChangeType,
-    content: CommitContent
+    getFileCodeElementsMap: (DiffCategory) -> Map<String, List<CodeElement>>,
+    isInDiffHunk: (DiffCategory, filePath: String, queryLineNumber: Int) -> Boolean
 ): Change {
     return this.copy().apply {
         val map = getCodeElementHolderMap(category)
@@ -113,8 +113,8 @@ fun Change.updateCodeElementValue(
                 throw RuntimeException("key=$parameterName doesn't have index=$elementIndex")
             }
         }
-        this.parameterData.before.processAutofill(category, parameterName, element, DiffCategory.before, changeType, content)
-        this.parameterData.after.processAutofill(category, parameterName, element, DiffCategory.after, changeType, content)
+        this.parameterData.before.processAutofill(category, parameterName, element, DiffCategory.before, changeType, getFileCodeElementsMap, isInDiffHunk)
+        this.parameterData.after.processAutofill(category, parameterName, element, DiffCategory.after, changeType, getFileCodeElementsMap, isInDiffHunk)
     }
 }
 
@@ -124,7 +124,8 @@ private fun MutableMap<String, CodeElementHolder>.processAutofill(
     element: CodeElement,
     target: DiffCategory,
     changeType: ChangeType,
-    content: CommitContent
+    getFileCodeElementsMap: (DiffCategory) -> Map<String, List<CodeElement>>,
+    isInDiffHunk: (DiffCategory, filePath: String, queryLineNumber: Int) -> Boolean
 ) {
     changeType.getCodeElementMetadataMap(target).entries.forEach metadata@{
         it.value.autofills.forEach { autofill ->
@@ -132,7 +133,7 @@ private fun MutableMap<String, CodeElementHolder>.processAutofill(
                 if (follow.category == category && follow.name == parameterName) {
                     val holder = this[it.key]
                     if (holder != null && holder.state == CodeElementHolder.State.Manual) return@metadata
-                    val elements = autofill(autofill, category, element, target, it.value, content)
+                    val elements = autofill(autofill, category, element, target, it.value, getFileCodeElementsMap, isInDiffHunk)
                     this[it.key] = CodeElementHolder(
                         it.value.type,
                         it.value.multiple,

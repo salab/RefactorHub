@@ -119,7 +119,7 @@ private fun createCommits(file: String): List<CommitDao> {
             this.authoredDateTime = commit.authoredDateTime.toString()
             this.beforeFiles = commit.beforeFiles
             this.afterFiles = commit.afterFiles
-            this.diffHunks = commit.diffHunks
+            this.fileMappings = commit.fileMappings
             this.patch = commit.patch
         }
     }

@@ -2,7 +2,6 @@ package jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.impl
 
 import jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.AutofillProcessor
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
-import jp.ac.titech.cs.se.refactorhub.core.model.annotator.CommitContent
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.impl.Package
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
@@ -14,9 +13,11 @@ class PackageProcessor : AutofillProcessor<Package> {
         sourceElement: CodeElement,
         targetCategory: DiffCategory,
         targetMetadata: CodeElementMetadata,
-        content: CommitContent
+        getFileCodeElementsMap: (DiffCategory) -> Map<String, List<CodeElement>>,
+        isInDiffHunk: (DiffCategory, filePath: String, queryLineNumber: Int) -> Boolean
     ): List<CodeElement> {
-        val file = content.files.map { it.get(targetCategory) }.find { it.name == sourceElement.location?.path }
-        return file?.content?.elements?.filter { it.type == targetMetadata.type } ?: listOf()
+        return sourceElement.location?.path
+            ?.let { getFileCodeElementsMap(targetCategory)[it] }
+            ?.filter { it.type == targetMetadata.type } ?: listOf()
     }
 }

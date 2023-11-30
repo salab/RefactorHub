@@ -1,6 +1,27 @@
 [
   {
-    "name": "Any",
+    "name": "Other",
+    "description": "Non-refactoring changes like feature, bug fix",
+    "referenceUrl": "",
+    "before": {
+      "removed code": {
+        "description": "Code fragments which is removed",
+        "type": "CodeFragment",
+        "multiple": true,
+        "required": true
+      }
+    },
+    "after": {
+      "added code": {
+        "description": "Code fragments which is added",
+        "type": "CodeFragment",
+        "multiple": true,
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Any Refactoring",
     "description": "Any refactoring",
     "referenceUrl": "",
     "before": {},

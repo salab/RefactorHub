@@ -1,12 +1,9 @@
 package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao
 
 import jp.ac.titech.cs.se.refactorhub.app.model.User
-import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.dao.id.UUIDTable
 import java.util.UUID
 

@@ -15,9 +15,3 @@ data class Change(
         override val after: MutableMap<String, CodeElementHolder> = mutableMapOf()
     ) : Change.ParameterData
 }
-
-data class CreateChangeBody(
-    override val typeName: String,
-    override val description: String,
-    override val parameterData: Change.ParameterData
-) : Change

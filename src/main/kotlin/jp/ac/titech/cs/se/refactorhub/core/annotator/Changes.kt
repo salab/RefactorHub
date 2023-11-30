@@ -1,6 +1,5 @@
 package jp.ac.titech.cs.se.refactorhub.core.annotator
 
-import jp.ac.titech.cs.se.refactorhub.core.model.Commit
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementHolder
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
 import jp.ac.titech.cs.se.refactorhub.core.model.change.Change

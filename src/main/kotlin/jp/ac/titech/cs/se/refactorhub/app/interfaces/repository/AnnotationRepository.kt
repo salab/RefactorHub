@@ -7,7 +7,8 @@ import java.util.UUID
 interface AnnotationRepository {
     fun findById(id: UUID): Annotation?
     fun findByOwnerId(ownerId: UUID): List<Annotation>
-    fun findByCommitId(commitId: UUID): List<Annotation>
+    fun findByExperimentId(ownerId: UUID, experimentId: UUID): List<Annotation>
+    fun findByCommitId(ownerId: UUID, experimentId: UUID, commitId: UUID): Annotation?
 
     fun create(
         ownerId: UUID,

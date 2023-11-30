@@ -75,7 +75,7 @@ fun Route.login() {
                     val me = getMe(principal.accessToken)
                     call.sessions.set(
                         Session(
-                            me.id,
+                            me.id.toString(),
                             principal.accessToken
                         )
                     )

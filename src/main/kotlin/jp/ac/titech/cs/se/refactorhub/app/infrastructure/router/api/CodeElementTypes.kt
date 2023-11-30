@@ -7,21 +7,21 @@ import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.route
-import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.CommitController
+import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.CodeElementController
 import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
-@Location("/{owner}/{repository}/{sha}/detail")
-data class GetCommitDetail(val owner: String, val repository: String, val sha: String)
+@Location("")
+class GetCodeElementTypes
 
 @KoinApiExtension
 @KtorExperimentalLocationsAPI
-fun Route.commits() {
-    route("/commits") {
-        val commitController: CommitController by inject()
-        get<GetCommitDetail> {
-            call.respond(commitController.getDetail(it.owner, it.repository, it.sha))
+fun Route.codeElementTypes() {
+    route("/code_element_types") {
+        val codeElementController: CodeElementController by inject()
+        get<GetCodeElementTypes> {
+            call.respond(codeElementController.getTypes())
         }
     }
 }

@@ -3,10 +3,9 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.CommitDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Commits
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.CommitRepository
-import jp.ac.titech.cs.se.refactorhub.app.model.ChangedFile
-import jp.ac.titech.cs.se.refactorhub.app.model.Commit
-import jp.ac.titech.cs.se.refactorhub.app.model.File
-import jp.ac.titech.cs.se.refactorhub.core.model.annotator.DiffHunk
+import jp.ac.titech.cs.se.refactorhub.app.model.*
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.File
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileMapping
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
@@ -29,12 +28,6 @@ class CommitRepositoryImpl : CommitRepository {
         }
     }
 
-    override fun findAll(): List<Commit> {
-        return transaction {
-            CommitDao.all().map { it.asModel() }
-        }
-    }
-
     override fun create(
         owner: String,
         repository: String,
@@ -45,8 +38,8 @@ class CommitRepositoryImpl : CommitRepository {
         authorName: String,
         authoredDateTime: LocalDateTime,
         beforeFiles: List<File>,
-        afterFiles: List<ChangedFile>,
-        diffHunks: List<DiffHunk>,
+        afterFiles: List<File>,
+        fileMappings: List<FileMapping>,
         patch: String
     ): Commit {
         return transaction {
@@ -61,7 +54,7 @@ class CommitRepositoryImpl : CommitRepository {
                 this.authoredDateTime = authoredDateTime.toString()
                 this.beforeFiles = beforeFiles
                 this.afterFiles = afterFiles
-                this.diffHunks = diffHunks
+                this.fileMappings = fileMappings
                 this.patch = patch
             }.asModel()
         }
