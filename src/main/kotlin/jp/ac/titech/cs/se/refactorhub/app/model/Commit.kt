@@ -3,6 +3,7 @@ package jp.ac.titech.cs.se.refactorhub.app.model
 import jp.ac.titech.cs.se.refactorhub.core.model.Commit
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.File
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileMapping
+import jp.ac.titech.cs.se.refactorhub.core.model.divider.CommitFileData
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -16,8 +17,8 @@ data class Commit(
     val message: String,
     val authorName: String,
     val authoredDateTime: LocalDateTime,
-    val beforeFiles: List<File>,
-    val afterFiles: List<File>,
-    val fileMappings: List<FileMapping>,
-    val patch: String
-) : Commit
+    override val beforeFiles: List<File>,
+    override val afterFiles: List<File>,
+    override val fileMappings: List<FileMapping>,
+    override val patch: String
+) : Commit, CommitFileData
