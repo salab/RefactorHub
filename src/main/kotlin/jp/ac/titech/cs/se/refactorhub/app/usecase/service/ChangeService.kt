@@ -9,7 +9,11 @@ import jp.ac.titech.cs.se.refactorhub.core.annotator.*
 import jp.ac.titech.cs.se.refactorhub.core.model.ActionName
 import jp.ac.titech.cs.se.refactorhub.core.model.ActionType
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileMapping
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
+import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementHolder
+import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementType
+import jp.ac.titech.cs.se.refactorhub.core.model.element.data.Location
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -31,8 +35,17 @@ class ChangeService : KoinComponent {
         return change ?: throw NotFoundException("Change(id=$changeId) is not found")
     }
 
-    fun create(): Change {
+    fun createEmpty(): Change {
         return changeRepository.create(DEFAULT_CHANGE_TYPE, "", Change.ParameterData())
+    }
+
+    fun modifyLineNumbers(changeId: UUID, notAppliedFileMappings: List<FileMapping>): Change {
+        val change = get(changeId)
+        val newParameterData = Change.ParameterData(
+            change.parameterData.before,
+            change.parameterData.after.modifyLineNumbers(notAppliedFileMappings)
+        )
+        return changeRepository.updateById(changeId, parameterData = newParameterData)
     }
 
     fun update(changeId: UUID, description: String, typeName: String, userId: UUID): Change {
@@ -52,6 +65,10 @@ class ChangeService : KoinComponent {
         }
         actionService.log(ActionName.UpdateChange, ActionType.Server, actionData, userId)
         return change
+    }
+
+    fun delete(changeId: UUID) {
+        changeRepository.deleteById(changeId)
     }
 
     fun putNewParameter(
@@ -210,4 +227,30 @@ class ChangeService : KoinComponent {
             parameterData = Change.ParameterData(newChangeCore.parameterData.before, newChangeCore.parameterData.after)
         )
     }
+}
+
+private fun MutableMap<String, CodeElementHolder>.modifyLineNumbers(notAppliedFileMappings: List<FileMapping>): MutableMap<String, CodeElementHolder> {
+    return map { (parameterName, codeElementHolder) ->
+        parameterName to CodeElementHolder(
+            codeElementHolder.type,
+            codeElementHolder.multiple,
+            codeElementHolder.elements.map elementsMap@{ codeElement ->
+                val path = codeElement.location?.path ?: return@elementsMap codeElement
+                val range = codeElement.location?.range ?: return@elementsMap codeElement
+                val fileMapping = notAppliedFileMappings.find { it.afterPath == path } ?: return@elementsMap codeElement
+                val difference = fileMapping.diffHunks
+                    .filter {
+                        (it.before != null && it.before.oppositeLine < range.startLine)
+                                || (it.after != null && it.after.endLine < range.startLine)
+                    }.sumOf {
+                        ((if (it.before != null) it.before.endLine - it.before.startLine + 1 else 0)
+                                - (if (it.after != null) it.after.endLine - it.after.startLine + 1 else 0))
+                    }
+                range.startLine += difference
+                range.endLine += difference
+                codeElement
+            },
+            codeElementHolder.state
+        )
+    }.toMap().toMutableMap()
 }

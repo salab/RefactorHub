@@ -33,12 +33,12 @@ class AnnotationController : KoinComponent {
     }
 
     fun appendTemporarySnapshot(annotationId: UUID, changeId: UUID, userId: UUID?): Annotation.HasTemporarySnapshotAndSnapshots {
-        annotationService.verifyIds(userId, annotationId)
-        return annotationService.appendTemporarySnapshot(annotationId, changeId)
+        val verifiedUserId = annotationService.verifyIds(userId, annotationId)
+        return annotationService.appendTemporarySnapshot(annotationId, changeId, verifiedUserId)
     }
     fun modifyTemporarySnapshot(annotationId: UUID, filePath: String, fileContent: String, isRemoved: Boolean, userId: UUID?): Annotation.Snapshots {
-        annotationService.verifyIds(userId, annotationId)
-        return annotationService.modifyTemporarySnapshot(annotationId, filePath, fileContent, isRemoved)
+        val verifiedUserId = annotationService.verifyIds(userId, annotationId)
+        return annotationService.modifyTemporarySnapshot(annotationId, filePath, fileContent, isRemoved, verifiedUserId)
     }
     fun settleTemporarySnapshot(annotationId: UUID, userId: UUID?): Annotation.HasTemporarySnapshot {
         annotationService.verifyIds(userId, annotationId)
@@ -61,8 +61,8 @@ class AnnotationController : KoinComponent {
         return changeService.update(changeId, description, typeName, verifiedUserId)
     }
     fun removeChange(annotationId: UUID, snapshotId: UUID, changeId: UUID, userId: UUID?): Annotation.Snapshots {
-        annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
-        return annotationService.removeChange(annotationId, snapshotId, changeId)
+        val verifiedUserId = annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
+        return annotationService.removeChange(annotationId, snapshotId, changeId, verifiedUserId)
     }
 
 

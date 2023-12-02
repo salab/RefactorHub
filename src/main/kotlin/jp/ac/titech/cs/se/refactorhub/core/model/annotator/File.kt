@@ -30,12 +30,34 @@ enum class FileMappingStatus {
     modified, added, removed, renamed, unmodified
 }
 
+/**
+ * example:
+ * ```
+ * @@ -0,0 +1,3 @@
+ * +class Add {
+ * +    String text = "this file was added";
+ * +}
+ * ```
+ * will be
+ * ```
+ * DiffHunk(
+ *   before=null,
+ *   after=Hunk(startLine=1, endLine=3, oppositeLine=0)
+ * )
+ * ```
+ */
 data class DiffHunk(
     val before: Hunk?,
     val after: Hunk?
 ) {
     data class Hunk(
         val startLine: Int,
-        val endLine: Int
+        val endLine: Int,
+        /**
+         * If this `hunk` is in before, the previous line number in after.
+         * Otherwise, the previous line number in before.
+         * This value can be 0.
+         */
+        val oppositeLine: Int
     )
 }

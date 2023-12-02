@@ -31,10 +31,14 @@ private fun getGHContent(
 
 private fun createFile(content: GHContent): File {
     val text = if (content.isText) IOUtils.toString(content.read()) else "This is a binary file."
-    val extension = FilenameUtils.getExtension(content.name)
-    val elements = CodeParser.get(extension).parse(text, content.path)
+    return createFile(content.path, text)
+}
+
+fun createFile(path: String, text: String): File {
+    val extension = FilenameUtils.getExtension(path)
+    val elements = CodeParser.get(extension).parse(text, path)
     val tokens = CodeParser.get(extension).tokenize(text)
-    return File(content.path, text, extension, elements, tokens)
+    return File(path, text, extension, elements, tokens)
 }
 
 private val GHContent.isText: Boolean

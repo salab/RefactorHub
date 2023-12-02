@@ -921,9 +921,12 @@ components:
           type: integer
         endLine:
           type: integer
+        oppositeLine:
+          type: integer
       required:
         - startLine
         - endLine
+        - oppositeLine
 
     Annotation:
       type: object

@@ -24,7 +24,8 @@ interface AnnotationRepository {
         id: UUID,
         isDraft: Boolean? = null,
         hasTemporarySnapshot: Boolean? = null,
-        latestInternalCommitSha: String? = null
+        latestInternalCommitSha: String? = null,
+        snapshots: List<Snapshot>? = null
     ): Annotation
 
     fun deleteById(id: UUID)

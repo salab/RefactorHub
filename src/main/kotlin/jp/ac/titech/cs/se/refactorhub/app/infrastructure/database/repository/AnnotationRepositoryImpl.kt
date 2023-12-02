@@ -71,12 +71,14 @@ class AnnotationRepositoryImpl : AnnotationRepository {
         isDraft: Boolean?,
         hasTemporarySnapshot: Boolean?,
         latestInternalCommitSha: String?,
+        snapshots: List<Snapshot>?
     ): Annotation {
         return transaction {
             val dao = AnnotationDao[id]
             if (isDraft != null) dao.isDraft = isDraft
             if (hasTemporarySnapshot != null) dao.hasTemporarySnapshot = hasTemporarySnapshot
             if (latestInternalCommitSha != null) dao.latestInternalCommitSha = latestInternalCommitSha
+            if (snapshots != null) dao.snapshots = SizedCollection(snapshots.map { SnapshotDao[it.id] })
             dao.asModel()
         }
     }

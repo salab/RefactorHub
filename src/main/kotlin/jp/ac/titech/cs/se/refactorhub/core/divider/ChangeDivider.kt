@@ -11,36 +11,50 @@ fun prepareDividing(userName: String, commit: CommitFileData): String {
     return Git.initializeRepository(userName, null, commit, null)
 }
 
-fun appendTemporarySnapshot(
+/**
+ * divide last commit into 2 commits to create an intermediate commit
+ * @param filesToBeModified files to be added or modified in order to create intermediate commit
+ * @param filePathsToBeRemoved file paths to be removed in order to create intermediate commit
+ * @param originalCommit the original commit the user is annotating
+ * @param currentSnapshots snapshots before executing this method
+ */
+fun divideLastCommit(
     userName: String,
     latestInternalCommitSha: String,
     filesToBeModified: List<File>,
     filePathsToBeRemoved: List<String>,
-    commit: CommitFileData,
+    originalCommit: CommitFileData,
     currentSnapshots: List<SnapshotFileData>
-) {
-    Git.appendCommitBeforeLatest(userName, latestInternalCommitSha, filesToBeModified, filePathsToBeRemoved, commit, currentSnapshots)
-    throw NotImplementedError()
+): AppendResult {
+    return Git.appendCommitBeforeLatest(userName, latestInternalCommitSha, filesToBeModified, filePathsToBeRemoved, originalCommit, currentSnapshots)
 }
 
-fun modifyTemporarySnapshot(
+/**
+ * modify 1 file at last intermediate commit
+ * @param originalCommit the original commit the user is annotating
+ * @param currentSnapshots snapshots before executing this method
+ */
+fun modifyLastIntermediateCommit(
     userName: String,
     latestInternalCommitSha: String,
     fileToBeModified: File,
     isRemoved: Boolean,
-    commit: CommitFileData,
+    originalCommit: CommitFileData,
     currentSnapshots: List<SnapshotFileData>
-) {
-    Git.modifyCommitBeforeLatest(userName, latestInternalCommitSha, fileToBeModified, isRemoved, commit, currentSnapshots)
-    throw NotImplementedError()
+): ModifyResult {
+    return Git.modifyCommitBeforeLatest(userName, latestInternalCommitSha, fileToBeModified, isRemoved, originalCommit, currentSnapshots)
 }
 
-fun removeIntermediateSnapshot(
+/**
+ * remove last intermediate commit
+ * @param originalCommit the original commit the user is annotating
+ * @param currentSnapshots snapshots before executing this method
+ */
+fun removeLastIntermediateCommit(
     userName: String,
     latestInternalCommitSha: String,
-    commit: CommitFileData,
+    originalCommit: CommitFileData,
     currentSnapshots: List<SnapshotFileData>
-) {
-    Git.removeCommitBeforeLatest(userName, latestInternalCommitSha, commit, currentSnapshots)
-    throw NotImplementedError()
+): RemoveResult {
+    return Git.removeCommitBeforeLatest(userName, latestInternalCommitSha, originalCommit, currentSnapshots)
 }

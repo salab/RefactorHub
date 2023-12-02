@@ -84,8 +84,10 @@ private fun parseDiffHunk(diffBody: String): List<DiffHunk> {
     fun addDiffHunk() {
         var beforeHunk: DiffHunk.Hunk? = null
         var afterHunk: DiffHunk.Hunk? = null
-        if (before.isInHunk) beforeHunk = DiffHunk.Hunk(before.hunkStartLine, before.hunkEndLine)
-        if (after.isInHunk) afterHunk = DiffHunk.Hunk(after.hunkStartLine, after.hunkEndLine)
+        if (before.isInHunk) beforeHunk = DiffHunk.Hunk(before.hunkStartLine, before.hunkEndLine,
+            if (after.isInHunk) after.hunkStartLine - 1 else after.currentLine)
+        if (after.isInHunk) afterHunk = DiffHunk.Hunk(after.hunkStartLine, after.hunkEndLine,
+            if (before.isInHunk) before.hunkStartLine - 1 else before.currentLine)
         diffHunks.add(DiffHunk(beforeHunk, afterHunk))
     }
     fun updateEndLine(diffCategory: DiffCategory) {
