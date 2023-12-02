@@ -71,12 +71,7 @@ class Git {
                 userName,
                 writeFilesAndCommit(userName, filesToBeModified, filePathsToBeRemoved, commitMessage.intermediate)
             )
-            val newLatestInternalCommitSha = writeFilesAndCommit(
-                userName,
-                commit.afterFiles,
-                commit.fileMappings.filter { it.status == FileMappingStatus.removed }.map { it.beforePath!! },
-                commitMessage.after
-            )
+            val newLatestInternalCommitSha = commitSnapshotAfterOriginalCommit(userName, commit)
             val patchAfterNew = getPatch(userName, newLatestInternalCommitSha)
             return AppendResult(patchBeforeNew, patchAfterNew, newLatestInternalCommitSha)
         }
@@ -101,12 +96,7 @@ class Git {
                     commitMessage.intermediate
                 )
             )
-            val newLatestInternalCommitSha = writeFilesAndCommit(
-                userName,
-                commit.afterFiles,
-                commit.fileMappings.filter { it.status == FileMappingStatus.removed }.map { it.beforePath!! },
-                commitMessage.after
-            )
+            val newLatestInternalCommitSha = commitSnapshotAfterOriginalCommit(userName, commit)
             val patchAfterNew = getPatch(userName, newLatestInternalCommitSha)
             return ModifyResult(patchBeforeNew, patchAfterNew, newLatestInternalCommitSha)
         }
@@ -119,12 +109,7 @@ class Git {
         ): RemoveResult {
             initializeRepository(userName, latestInternalCommitSha, commit, currentSnapshots)
             resetHard(userName, getCommitShaList(userName)[2])
-            val newLatestInternalCommitSha = writeFilesAndCommit(
-                userName,
-                commit.afterFiles,
-                commit.fileMappings.filter { it.status == FileMappingStatus.removed }.map { it.beforePath!! },
-                commitMessage.after
-            )
+            val newLatestInternalCommitSha = commitSnapshotAfterOriginalCommit(userName, commit)
             val patch = getPatch(userName, newLatestInternalCommitSha)
             return RemoveResult(patch, newLatestInternalCommitSha)
         }
@@ -145,6 +130,17 @@ class Git {
             if (snapshots.isNullOrEmpty()) return applyPatchAndCommit(userName, commit.patch, commitMessage.after)
             snapshots.dropLast(1).forEach { applyPatchAndCommit(userName, it.patch, commitMessage.intermediate) }
             return applyPatchAndCommit(userName, snapshots.last().patch, commitMessage.after)
+        }
+
+        /**
+         * create `commit.afterFiles`, remove files which were removed or renamed by the original `commit`, then commit all
+         * @return `latestInternalCommitSha`
+         */
+        private fun commitSnapshotAfterOriginalCommit(userName: String, commit: CommitFileData): String {
+            val filePathsToBeRemoved = commit.fileMappings.filter {
+                it.status == FileMappingStatus.removed || it.status == FileMappingStatus.renamed
+            }.map { it.beforePath!! }
+            return writeFilesAndCommit(userName, commit.afterFiles, filePathsToBeRemoved, commitMessage.after)
         }
 
         /**
@@ -209,7 +205,7 @@ class Git {
             if (!existsUserRepository(userName)) return listOf()
             val repositoryDirectory = getUserRepositoryDirectory(userName)
             return "git log --pretty=%H".runCommand(repositoryDirectory)
-                .output.split("\n").dropLast(1)
+                .output.split("\n").dropLast(1) // drop last ""
         }
 
         private fun createRepositoryIfNotExist(userName: String) {
