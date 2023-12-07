@@ -11,7 +11,7 @@ import java.util.UUID
 object Annotations : UUIDTable("annotations") {
     val ownerId = reference("owner_id", Users)
     val commitId  = reference("commit_id", Commits)
-    val experimentId = reference("experiment_id", Commits)
+    val experimentId = reference("experiment_id", Experiments)
     val isDraft = bool("is_draft").default(true)
     val hasTemporarySnapshot = bool("has_temporary_snapshot").default(false)
     val latestInternalCommitSha = varchar("latest_internal_commit_sha", 40)

@@ -16,7 +16,7 @@ data class Commit(
     val url: String,
     val message: String,
     val authorName: String,
-    val authoredDateTime: LocalDateTime,
+    val authoredDateTime: String, // format: LocalDateTime.toString()
     override val beforeFiles: List<File>,
     override val afterFiles: List<File>,
     override val fileMappings: List<FileMapping>,

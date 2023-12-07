@@ -8,14 +8,14 @@ import { asMonacoRange } from '@/components/common/editor/utils/range'
 function createAnnotatedElementLocationMap(
   category: DiffCategory,
 ): Map<string, { path: string; range: Range }> {
-  const type = useDraft().refactoringTypes.value.find(
-    (t) => t.name === useDraft().draft.value?.type,
+  const type = useAnnotation().changeTypes.value.find(
+    (t) => t.name === useAnnotation().currentChange.value?.typeName,
   )
   const elementMetadataMap = type ? type[category] : {}
 
-  const draft = useDraft().draft.value
-  if (!draft) return new Map()
-  const entries = Object.entries(draft.data[category])
+  const currentChange = useAnnotation().currentChange.value
+  if (!currentChange) return new Map()
+  const entries = Object.entries(currentChange.parameterData[category])
   const map = elementMetadataMap
   entries.sort((a, b) => {
     if (a[0] in map && b[0] in map) {
@@ -85,7 +85,7 @@ onMounted(() => {
     scrollBeyondLastLine: false,
   })
 })
-async function updateDiffViewer() {
+function updateDiffViewer() {
   if (!diffViewer) {
     logger.error('diffViewer to compare elements is not created')
     return
@@ -96,14 +96,12 @@ async function updateDiffViewer() {
   const locationAfter = annotatedElementLocationMap.after.value.get(
     selectedElementNameAfter.value,
   )
-  const fileModelBefore = await useDraft().getTextModelOfFile(
-    'before',
-    locationBefore ? locationBefore.path : '',
-  )
-  const fileModelAfter = await useDraft().getTextModelOfFile(
-    'after',
-    locationAfter ? locationAfter.path : '',
-  )
+  if (!locationBefore || !locationAfter) return
+  const filePairBefore = useAnnotation().getCurrentFilePair(locationBefore.path)
+  const filePairAfter = useAnnotation().getCurrentFilePair(locationAfter.path)
+  if (!filePairBefore || !filePairAfter) return
+  const fileModelBefore = useAnnotation().getTextModel(filePairBefore, 'before')
+  const fileModelAfter = useAnnotation().getTextModel(filePairAfter, 'after')
   diffViewer.setModel({
     original: monaco.editor.createModel(
       fileModelBefore.getValueInRange(asMonacoRange(locationBefore?.range)),

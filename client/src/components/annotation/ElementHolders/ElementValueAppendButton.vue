@@ -13,17 +13,21 @@ const props = defineProps({
   },
 })
 
-const draft = computed(() => useDraft().draft.value)
 const addLocation = async () => {
-  if (draft.value) {
-    useDraft().draft.value = (
-      await apis.drafts.appendCodeElementDefaultValue(
-        draft.value.id,
+  const { annotationId, snapshotId, changeId } =
+    useAnnotation().currentIds.value
+  if (!annotationId || !snapshotId || !changeId) return
+  useAnnotation().updateChange(
+    (
+      await apis.parameters.appendParameterElement(
+        annotationId,
+        snapshotId,
+        changeId,
         props.category,
         props.elementKey,
       )
-    ).data
-  }
+    ).data,
+  )
 }
 </script>
 

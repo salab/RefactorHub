@@ -1,8 +1,8 @@
 <script setup lang="ts">
-const elementTypes = computed(() => useDraft().elementTypes.value)
+const codeElementTypes = computed(() => useAnnotation().codeElementTypes.value)
 const getTypeColor = (type: string, alpha = 1.0) => {
-  const length = elementTypes.value.length
-  const index = elementTypes.value.indexOf(type)
+  const length = codeElementTypes.value.length
+  const index = codeElementTypes.value.indexOf(type)
   return `hsla(${(index * 360) / length}, 100%, 60%, ${alpha})`
 }
 
@@ -59,7 +59,7 @@ function getCommonTokenSequenceColor(id: number, alpha = 1.0) {
 <template>
   <component :is="'style'">
     <!-- prettier-ignore -->
-    <template v-for="type in elementTypes">
+    <template v-for="type in codeElementTypes">
       .element-holder-{{ type }} {
         border-color: {{ getTypeColor(type) }} !important;
       }

@@ -1,37 +1,35 @@
 import { DiffCategory } from 'refactorhub'
 import { Range } from 'monaco-editor'
 import cryptoRandomString from 'crypto-random-string'
-import { CommitDetail } from 'apis'
+import { FilePair } from './useAnnotation'
 
 interface ViewerBase {
-  id: string
+  readonly id: string
+  /** file pair at current snapshotId */
+  readonly filePair: FilePair
+  readonly navigation?: {
+    readonly category: DiffCategory
+    readonly range: Range
+  }
 }
 export interface FileViewer extends ViewerBase {
-  type: 'file'
-  category: DiffCategory
-  path: string
-  range?: Range
+  readonly type: 'file'
+  readonly category: DiffCategory
 }
 export interface DiffViewer extends ViewerBase {
-  type: 'diff'
-  beforePath: string
-  afterPath: string
-  navigation?: {
-    category: DiffCategory
-    range: Range
-  }
+  readonly type: 'diff'
 }
 export type Viewer = FileViewer | DiffViewer
 
 export interface Destination {
-  category: DiffCategory
-  path: string
-  range: Range
+  readonly category: DiffCategory
+  readonly path: string
+  readonly range: Range
 }
 export interface Navigator {
-  label: string
-  currentDestinationIndex: number
-  destinations: Destination[]
+  readonly label: string
+  readonly currentDestinationIndex: number
+  readonly destinations: Destination[]
 }
 
 export const useViewer = () => {
@@ -49,15 +47,13 @@ export const useViewer = () => {
     viewerNavigationMap.value.clear()
   }
 
-  function setup(commit: CommitDetail) {
+  function setup(initialFilePair: FilePair) {
     useLoader().setLoadingText('setting up viewer')
-    const file = commit.files[0]
     const id = cryptoRandomString({ length: 10 })
     viewers.value.push({
       id,
       type: 'diff',
-      beforePath: file.previousName,
-      afterPath: file.name,
+      filePair: initialFilePair,
     })
     mainViewerId.value = id
   }
@@ -146,32 +142,43 @@ export const useViewer = () => {
         (direction === 'next' ? 1 : -1)) %
       navigator.destinations.length
     const destination = navigator.destinations[destinationIndex]
-    const file = useDraft().commit.value?.files.find((file) =>
-      destination.category === 'before'
-        ? file.previousName === destination.path
-        : file.name === destination.path,
-    )
-    if (!file) {
-      logger.warn(`cannot find file ${destination.path}`)
+    const filePair = useAnnotation().getCurrentFilePair(destination.path)
+    if (!filePair) {
+      logger.warn(`cannot find filePair: path=${destination.path}`)
       return
     }
     const newViewer: Viewer =
       viewer.type === 'file'
         ? {
             ...viewer,
-            type: 'file',
-            ...destination,
+            filePair,
+            navigation: { ...destination },
+            category: destination.category,
           }
         : {
             ...viewer,
-            type: 'diff',
-            beforePath: file.previousName,
-            afterPath: file.name,
+            filePair,
             navigation: { ...destination },
           }
-    navigator.currentDestinationIndex = destinationIndex
-    viewerNavigationMap.value.set(viewerId, navigator)
+    viewerNavigationMap.value.set(viewerId, {
+      ...navigator,
+      currentDestinationIndex: destinationIndex,
+    })
     recreateViewer(viewerId, newViewer)
+  }
+
+  function updateFilePairs(newFilePairOfViewers: FilePair[]) {
+    const mainViewerIndex = viewers.value.findIndex(
+      (viewer) => viewer.id === mainViewerId.value,
+    )
+    if (mainViewerIndex === -1) {
+      throw new Error(`cannot find main viewer: id=${mainViewerId.value}`)
+    }
+    newFilePairOfViewers.forEach((filePair, index) => {
+      const viewer = viewers.value[index]
+      recreateViewer(viewer.id, { ...viewer, filePair })
+    })
+    mainViewerId.value = viewers.value[mainViewerIndex].id
   }
 
   return {
@@ -187,5 +194,7 @@ export const useViewer = () => {
     getNavigator,
     deleteNavigator,
     navigate,
+
+    updateFilePairs,
   }
 }

@@ -31,6 +31,7 @@ fun fetchPatchFromGitHub(owner: String, repository: String, sha: String): String
 
 private fun parsePatch(patch: String): List<FileMapping> {
     val fileMappings = listOf<FileMapping>().toMutableList()
+    if (!patch.startsWith("diff --git")) return fileMappings
 
     // document of format: https://git-scm.com/docs/diff-format#generate_patch_text_with_p
     val diffs = listOf<String>().toMutableList()

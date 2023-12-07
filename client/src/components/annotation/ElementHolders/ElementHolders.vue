@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { DiffCategory } from 'refactorhub'
-import { RefactoringDraft } from '@/apis'
+import { Change } from 'apis'
 
 const props = defineProps({
-  draft: {
-    type: Object as () => RefactoringDraft,
+  currentChange: {
+    type: Object as () => Change,
     required: true,
   },
   category: {
@@ -18,13 +18,15 @@ const props = defineProps({
 })
 
 const elementMetadataMap = computed(() => {
-  const type = useDraft().refactoringTypes.value.find(
-    (t) => t.name === props.draft.type,
+  const type = useAnnotation().changeTypes.value.find(
+    (t) => t.name === props.currentChange.typeName,
   )
   return type ? type[props.category] : {}
 })
 const elementHolderMap = computed(() => {
-  const entries = Object.entries(props.draft.data[props.category])
+  const entries = Object.entries(
+    props.currentChange.parameterData[props.category],
+  )
   const map = elementMetadataMap.value
   entries.sort((a, b) => {
     if (a[0] in map && b[0] in map) {
@@ -49,7 +51,7 @@ const isRemovable = (key: string) =>
   >
     <div class="d-flex flex-column fill-height">
       <v-sheet :color="colors[category]" class="d-flex justify-center py-1">
-        <span class="text-button">{{ category }} Elements</span>
+        <span class="text-button">{{ category }} Parameters</span>
       </v-sheet>
       <v-divider />
       <div class="flex-grow-1 list-container">
@@ -57,7 +59,6 @@ const isRemovable = (key: string) =>
           <element-holder
             v-for="(holder, key) in elementHolderMap"
             :key="key"
-            :draft-id="draft.id"
             :category="category"
             :element-key="key.toString()"
             :element-holder="holder"

@@ -67,13 +67,10 @@ fun fetchCommitFromGitHub(owner: String, repository: String, sha: String): Commi
             commit.htmlUrl.toExternalForm(),
             commit.commitShortInfo.message,
             commit.commitShortInfo.author.name,
-            LocalDateTime.ofInstant(commit.commitShortInfo.authoredDate.toInstant(), ZoneId.systemDefault()),
+            LocalDateTime.ofInstant(commit.commitShortInfo.authoredDate.toInstant(), ZoneId.systemDefault()).toString(),
             commit.files
                 .filter { FileMappingStatus.valueOf(it.status) != FileMappingStatus.added }
-                .map {
-                    val path = if (FileMappingStatus.valueOf(it.status) == FileMappingStatus.removed) it.fileName else it.previousFilename
-                    getFile(owner, repository, parentSha, path)
-                },
+                .map { getFile(owner, repository, parentSha, it.previousFilename ?: it.fileName) },
             commit.files
                 .filter { FileMappingStatus.valueOf(it.status) != FileMappingStatus.removed }
                 .map { getFile(owner, repository, commit.shA1, it.fileName) },

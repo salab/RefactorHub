@@ -98,21 +98,26 @@ export class ElementWidgetManager {
     category: DiffCategory,
     element: CodeElement,
   ) {
-    const draft = useDraft().draft.value
-    const metadata = useDraft().editingElement.value[category]
-    if (!draft || !metadata) return
+    const metadata = useAnnotation().editingElement.value[category]
+    const { annotationId, snapshotId, changeId } =
+      useAnnotation().currentIds.value
+    if (!metadata || !annotationId || !snapshotId || !changeId) return
 
-    useDraft().draft.value = (
-      await apis.drafts.updateCodeElementValue(
-        draft.id,
-        category,
-        metadata.key,
-        metadata.index,
-        {
-          element,
-        },
-      )
-    ).data
-    useDraft().editingElement.value[category] = undefined
+    useAnnotation().updateChange(
+      (
+        await apis.parameters.updateParameterValue(
+          annotationId,
+          snapshotId,
+          changeId,
+          category,
+          metadata.key,
+          metadata.index,
+          {
+            element,
+          },
+        )
+      ).data,
+    )
+    useAnnotation().editingElement.value[category] = undefined
   }
 }

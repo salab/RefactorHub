@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { DiffCategory } from 'refactorhub'
-import apis from '@/apis'
 
 definePageMeta({
   layout: false,
@@ -8,38 +7,25 @@ definePageMeta({
 })
 
 const paramId = useRoute().params.id
-const draftId =
-  typeof paramId === 'string' ? parseInt(paramId) : parseInt(paramId[0])
+const annotationId = typeof paramId === 'string' ? paramId : paramId[0]
 
 const loadingIsStarted = ref(false)
 const isLoading = useLoader().isLoading
 useLoader()
-  .startLoading(draftId)
+  .startLoading(annotationId)
   .then(() => (loadingIsStarted.value = true))
 
 const router = useRouter()
 
-const draft = computed(() => useDraft().draft.value)
-const commit = computed(() => useDraft().commit.value)
+const annotation = computed(() => useAnnotation().annotation.value)
+const currentChange = computed(() => useAnnotation().currentChange.value)
 
 const isActiveOfElementHolders = reactive({
   before: true,
   after: true,
 })
 
-async function save() {
-  const id = draft.value?.id
-  if (id === undefined) return
-  await apis.drafts.saveRefactoringDraft(id)
-  router.back()
-  // TODO: Jump preview page after save
-  // const refactoring = (await apis.drafts.saveRefactoringDraft(id)).data
-  // router.push(`/refactoring/${refactoring.id}`)
-}
-async function discard() {
-  const id = draft.value?.id
-  if (id === undefined) return
-  await apis.drafts.discardRefactoringDraft(id)
+function suspend() {
   router.back()
 }
 </script>
@@ -50,9 +36,8 @@ async function discard() {
       <loading-circle :active="isLoading" />
     </div>
     <div class="app">
-      <draft-action-bar
-        :save="save"
-        :discard="discard"
+      <annotation-bar
+        :suspend="suspend"
         :is-active-of-element-holders="{
           before: isActiveOfElementHolders.before,
           after: isActiveOfElementHolders.after,
@@ -65,19 +50,19 @@ async function discard() {
         "
       />
       <element-holders
-        v-if="loadingIsStarted && draft"
+        v-if="loadingIsStarted && annotation && currentChange"
         :is-active="isActiveOfElementHolders.before"
-        :draft="draft"
+        :current-change="currentChange"
         category="before"
       />
       <element-holders
-        v-if="loadingIsStarted && draft"
+        v-if="loadingIsStarted && annotation && currentChange"
         :is-active="isActiveOfElementHolders.after"
-        :draft="draft"
+        :current-change="currentChange"
         category="after"
       />
       <v-main
-        v-if="loadingIsStarted && draft && commit"
+        v-if="loadingIsStarted && annotation"
         class="d-flex flex-column fill-height pt-0"
       >
         <v-container
@@ -88,15 +73,15 @@ async function discard() {
             fluid
             class="flex-grow-1 flex-shrink-0 d-flex flex-column pt-0 px-0"
           >
-            <draft-summary :draft="draft" :commit="commit" />
+            <annotation-summary v-if="currentChange" />
             <v-divider />
-            <tool-tab />
+            <tool-tab v-if="currentChange" />
             <div class="flex-grow-1 flex-shrink-0">
-              <main-viewers />
+              <main-viewers v-if="currentChange" />
             </div>
           </v-container>
         </v-container>
-        <element-type-colors />
+        <annotation-colors />
       </v-main>
     </div>
   </v-app>

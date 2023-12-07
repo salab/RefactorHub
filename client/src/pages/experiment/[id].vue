@@ -1,56 +1,53 @@
 <script setup lang="ts">
-import apis, { Experiment, Refactoring, RefactoringDraft } from '@/apis'
+import apis, { Experiment } from '@/apis'
 
 definePageMeta({
   middleware: 'authenticated',
 })
 
 const paramId = useRoute().params.id
-const experimentId =
-  typeof paramId === 'string' ? parseInt(paramId) : parseInt(paramId[0])
+const experimentId = typeof paramId === 'string' ? paramId : paramId[0]
 
 const experiment = ref<Experiment>()
-const refactorings = ref<Refactoring[]>([])
-const myRefactorings = ref<Refactoring[]>([])
-const myDrafts = ref<RefactoringDraft[]>([])
+const myAnnotations = ref<
+  {
+    experimentId: string
+    commitId: string
+    annotationId: string
+    isDraft: boolean
+  }[]
+>([])
 
 useAsyncData(async () => {
-  experiment.value = (await apis.experiments.getExperiment(experimentId)).data
-  refactorings.value = (
-    await apis.experiments.getExperimentRefactorings(experimentId)
-  ).data
+  experiment.value =
+    useExperiment().experimentMap.value.get(experimentId) ??
+    (await apis.experiments.getExperiment(experimentId)).data
+  useExperiment().experimentMap.value.set(experimentId, experiment.value)
   const me = (await apis.users.getMe()).data
-  myRefactorings.value = (await apis.users.getUserRefactorings(me.id)).data
-  myDrafts.value = (await apis.users.getUserDrafts(me.id)).data
+  myAnnotations.value = (await apis.users.getUserAnnotationIds(me.id)).data
 })
 
 onMounted(async () => {
   const me = (await apis.users.getMe()).data
-  myRefactorings.value = (await apis.users.getUserRefactorings(me.id)).data
-  myDrafts.value = (await apis.users.getUserDrafts(me.id)).data
+  myAnnotations.value = (await apis.users.getUserAnnotationIds(me.id)).data
 })
 
-const isCompleted = (id: number) =>
-  myRefactorings.value.some((ref) => ref.parentId === id)
+const getStatus = (commitId: string): 'done' | 'draft' | 'notStarted' => {
+  const annotation = myAnnotations.value.find(
+    (annotation) =>
+      annotation.experimentId === experimentId &&
+      annotation.commitId === commitId,
+  )
+  if (!annotation) return 'notStarted'
+  if (annotation.isDraft) return 'draft'
+  return 'done'
+}
 
-const start = async (id: number) => {
-  const myRef = myRefactorings.value.find((ref) => ref.parentId === id)
-  if (myRef) {
-    // if already annotated
-    const draft = (await apis.refactorings.editRefactoring(myRef.id)).data
-    navigateTo(`/draft/${draft.id}`)
-    return
-  }
-
-  const myDraft = myDrafts.value.find((ref) => ref.originId === id)
-  if (myDraft) {
-    // if on annotating
-    navigateTo(`/draft/${myDraft.id}`)
-    return
-  }
-
-  const draft = (await apis.refactorings.forkRefactoring(id)).data
-  navigateTo(`/draft/${draft.id}`)
+const start = async (commitId: string) => {
+  const annotationId = (
+    await apis.experiments.startAnnotation(experimentId, commitId)
+  ).data
+  navigateTo(`/annotation/${annotationId}`)
 }
 </script>
 
@@ -73,8 +70,8 @@ const start = async (id: number) => {
     <div class="py-2">
       <div>
         <v-card
-          v-for="(refactoring, i) in refactorings"
-          :key="refactoring.id"
+          v-for="(commit, i) in experiment.targetCommits"
+          :key="commit.id"
           variant="outlined"
           style="border-color: lightgrey"
           class="my-4"
@@ -82,26 +79,29 @@ const start = async (id: number) => {
           <div class="d-flex align-center">
             <div class="px-4">
               <v-icon
-                v-if="isCompleted(refactoring.id)"
+                v-if="getStatus(commit.id) == 'done'"
                 icon="$mdiCheckCircle"
                 size="x-large"
                 color="success"
+              />
+              <v-icon
+                v-else-if="getStatus(commit.id) == 'draft'"
+                icon="$mdiProgressCheck"
+                size="x-large"
               />
               <v-icon v-else icon="$mdiCircleOutline" size="x-large" />
             </div>
             <div class="flex-grow-1">
               <v-card-title>
-                {{ i + 1 }}. {{ refactoring.type }} (id={{ refactoring.id }})
+                {{ i + 1 }}. {{ commit.owner }}/{{ commit.repository }}/{{
+                  commit.sha
+                }}
               </v-card-title>
-              <v-card-text v-if="refactoring.description" class="pb-1">
-                {{ refactoring.description }}
+              <v-card-text class="pb-1">
+                {{ commit.message }}
               </v-card-text>
             </div>
-            <v-btn
-              flat
-              class="text-none mx-2"
-              @click="() => start(refactoring.id)"
-            >
+            <v-btn flat class="text-none mx-2" @click="() => start(commit.id)">
               START
             </v-btn>
           </div>

@@ -75,10 +75,14 @@ paths:
                     annotationId:
                       type: string
                       format: uuid
+                    isDraft:
+                      type: string
+                      format: boolean
                   required:
                     - experimentId
                     - commitId
                     - annotationId
+                    - isDraft
         "404":
           description: The user is not found
       tags:
@@ -842,11 +846,11 @@ components:
         beforeFiles:
           type: array
           items:
-            $ref: "#/components/schemas/File"
+            $ref: "#/components/schemas/FileModel"
         afterFiles:
           type: array
           items:
-            $ref: "#/components/schemas/File"
+            $ref: "#/components/schemas/FileModel"
         fileMappings:
           type: array
           items:
@@ -867,7 +871,7 @@ components:
         - afterFiles
         - fileMappings
         - patch
-    File:
+    FileModel:
       type: object
       properties:
         path:
@@ -962,7 +966,7 @@ components:
         files:
           type: array
           items:
-            $ref: "#/components/schemas/File"
+            $ref: "#/components/schemas/FileModel"
         fileMappings:
           type: array
           items:

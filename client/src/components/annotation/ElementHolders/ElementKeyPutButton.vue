@@ -9,27 +9,33 @@ const props = defineProps({
   },
 })
 
-const draft = computed(() => useDraft().draft.value)
-const elementTypes = computed(() => useDraft().elementTypes.value)
+const elementTypes = computed(() => useAnnotation().codeElementTypes.value)
 
 const elementKey = ref('')
 const elementType = ref(undefined)
 const multiple = ref(false)
 
 const addElementKey = async () => {
-  if (draft.value && elementKey.value && elementType.value) {
+  if (elementKey.value && elementType.value) {
     // TODO: error handling
-    useDraft().draft.value = (
-      await apis.drafts.putRefactoringDraftElementKey(
-        draft.value.id,
-        props.category,
-        {
-          key: elementKey.value,
-          type: elementType.value,
-          multiple: multiple.value,
-        },
-      )
-    ).data
+    const { annotationId, snapshotId, changeId } =
+      useAnnotation().currentIds.value
+    if (!annotationId || !snapshotId || !changeId) return
+    useAnnotation().updateChange(
+      (
+        await apis.parameters.putNewParameter(
+          annotationId,
+          snapshotId,
+          changeId,
+          props.category,
+          {
+            parameterName: elementKey.value,
+            elementType: elementType.value,
+            multiple: multiple.value,
+          },
+        )
+      ).data,
+    )
     elementKey.value = ''
     elementType.value = undefined
   }

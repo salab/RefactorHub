@@ -28,6 +28,7 @@ import {
   mdiMenuRightOutline,
   mdiCompare,
   mdiInformation,
+  mdiProgressCheck,
 } from '@mdi/js'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -64,6 +65,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         mdiMenuRightOutline,
         mdiCompare,
         mdiInformation,
+        mdiProgressCheck,
       },
       sets: { mdi },
     },

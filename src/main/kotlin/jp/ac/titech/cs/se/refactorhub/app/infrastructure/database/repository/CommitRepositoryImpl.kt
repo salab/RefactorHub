@@ -8,7 +8,6 @@ import jp.ac.titech.cs.se.refactorhub.core.model.annotator.File
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileMapping
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.LocalDateTime
 import java.util.UUID
 
 class CommitRepositoryImpl : CommitRepository {
@@ -36,7 +35,7 @@ class CommitRepositoryImpl : CommitRepository {
         url: String,
         message: String,
         authorName: String,
-        authoredDateTime: LocalDateTime,
+        authoredDateTime: String,
         beforeFiles: List<File>,
         afterFiles: List<File>,
         fileMappings: List<FileMapping>,
@@ -51,7 +50,7 @@ class CommitRepositoryImpl : CommitRepository {
                 this.url = url
                 this.message = message
                 this.authorName = authorName
-                this.authoredDateTime = authoredDateTime.toString()
+                this.authoredDateTime = authoredDateTime
                 this.beforeFiles = beforeFiles
                 this.afterFiles = afterFiles
                 this.fileMappings = fileMappings

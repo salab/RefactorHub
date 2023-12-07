@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const commit = computed(() => useDraft().commit.value)
+const commit = computed(() => useAnnotation().annotation.value?.commit)
 const messageLines = computed(() =>
   commit.value ? commit.value.message.split('\n') : [],
 )
@@ -32,10 +32,10 @@ const messageLines = computed(() =>
     </div>
     <v-divider class="my-1" />
     <div>
-      <span class="text-subtitle-2">{{ commit?.author }}</span>
+      <span class="text-subtitle-2">{{ commit?.authorName }}</span>
       <span class="text-body-2"> committed on </span>
       <span class="text-body-2">{{
-        commit ? new Date(commit.authorDate).toLocaleString() : ''
+        commit ? new Date(commit.authoredDateTime).toLocaleString() : ''
       }}</span>
     </div>
   </v-sheet>

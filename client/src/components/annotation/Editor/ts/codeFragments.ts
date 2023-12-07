@@ -17,18 +17,9 @@ export class CodeFragmentManager {
     after: [],
   }
 
-  private readonly fragments: {
-    [category in DiffCategory]: CodeElement[]
-  } = {
-    before: [],
-    after: [],
-  }
-
   public initCodeFragmentCursor() {
     this.cursors.before.length = 0
     this.cursors.after.length = 0
-    this.fragments.before.length = 0
-    this.fragments.after.length = 0
   }
 
   public setupCodeFragmentCursor(category: DiffCategory) {
@@ -49,8 +40,6 @@ export class CodeFragmentManager {
     element: CodeElement,
     editor: monaco.editor.ICodeEditor,
   ) {
-    this.fragments[category].push(element)
-
     const listeners: monaco.IDisposable[] = []
     const cursor = {
       setup: () => {
@@ -58,8 +47,8 @@ export class CodeFragmentManager {
           listeners.push(
             editor.onDidChangeCursorSelection(
               debounce((e) => {
-                this.updateEditingCodeFragment(category, e.selection)
-              }, 500),
+                this.updateEditingCodeFragment(category, e.selection, element)
+              }, 1000),
             ),
           )
         }
@@ -72,9 +61,10 @@ export class CodeFragmentManager {
     this.cursors[category].push(cursor)
   }
 
-  public async updateEditingCodeFragment(
+  private async updateEditingCodeFragment(
     category: DiffCategory,
     range: monaco.Range,
+    element: CodeElement,
   ) {
     if (
       range.startLineNumber === range.endLineNumber &&
@@ -82,28 +72,30 @@ export class CodeFragmentManager {
     )
       return
 
-    const element = this.fragments[category].find((it) =>
-      asMonacoRange(it.location?.range).containsRange(range),
-    )
-    if (!element) return
+    if (!asMonacoRange(element.location?.range).containsRange(range)) return
 
-    const draft = useDraft().draft.value
-    const metadata = useDraft().editingElement.value[category]
-    if (!draft || !metadata) return
+    const metadata = useAnnotation().editingElement.value[category]
+    const { annotationId, snapshotId, changeId } =
+      useAnnotation().currentIds.value
+    if (!metadata || !annotationId || !snapshotId || !changeId) return
 
     const nextElement = cloneDeep(element)
     nextElement.location!.range = asRange(range)
 
-    useDraft().draft.value = (
-      await apis.drafts.updateCodeElementValue(
-        draft.id,
-        category,
-        metadata.key,
-        metadata.index,
-        {
-          element: nextElement,
-        },
-      )
-    ).data
+    useAnnotation().updateChange(
+      (
+        await apis.parameters.updateParameterValue(
+          annotationId,
+          snapshotId,
+          changeId,
+          category,
+          metadata.key,
+          metadata.index,
+          {
+            element: nextElement,
+          },
+        )
+      ).data,
+    )
   }
 }

@@ -1,15 +1,11 @@
 <script setup lang="ts">
-import apis, {
-  CodeElementMetadata,
-  CreateRefactoringTypeRequest,
-  RefactoringType,
-} from '@/apis'
+import apis, { CodeElementMetadata, ChangeType } from '@/apis'
 
 const examples = [
   `{
   "name": "Extract Method",
   "description": "Extracting code fragments from existing method, and creating a new method based on the extracted code",
-  "url": "https://refactoring.com/catalog/extractFunction.html",
+  "referenceUrl": "https://refactoring.com/catalog/extractFunction.html",
   "before": {
     "extracted code": {
       "description": "Code fragments which is extracted",
@@ -82,7 +78,7 @@ const examples = [
 }`,
 ]
 
-const types = ref<RefactoringType[]>([])
+const types = ref<ChangeType[]>([])
 const form = reactive({
   type: '',
 })
@@ -90,10 +86,10 @@ const message = ref('')
 const pending = ref(false)
 
 useAsyncData(async () => {
-  types.value = (await apis.refactoringTypes.getAllRefactoringTypes()).data
+  types.value = (await apis.changeTypes.getChangeTypes()).data
 })
 
-const sorted = (map: { [k: string]: CodeElementMetadata }) => {
+const sorted = (map: { [parameterName: string]: CodeElementMetadata }) => {
   const entries = Object.entries(map)
   entries.sort((a, b) => {
     if (a[1].required && !b[1].required) return -1
@@ -107,9 +103,8 @@ const create = async () => {
   if (form.type === '') return
   pending.value = true
   try {
-    const request: CreateRefactoringTypeRequest = JSON.parse(form.type.trim())
-    const type = (await apis.refactoringTypes.createRefactoringType(request))
-      .data
+    const request = JSON.parse(form.type.trim())
+    const type = (await apis.changeTypes.createChangeType(request)).data
     types.value.push(type)
     form.type = ''
     message.value = `RefactoringType added: ${type.name}`
@@ -124,21 +119,21 @@ const create = async () => {
 <template>
   <v-container>
     <div class="py-3">
-      <h1 class="text-h4">Refactoring Types</h1>
+      <h1 class="text-h4">Change Types</h1>
     </div>
     <v-divider />
     <div class="py-2">
       <div>
         <v-card
           v-for="type in types"
-          :key="type.id"
+          :key="type.name"
           variant="outlined"
           style="border-color: lightgrey"
           class="my-4 px-4 py-3"
         >
           <div class="text-h5">{{ type.name }}</div>
           <div class="text-body-1">{{ type.description }}</div>
-          <a :href="type.url">{{ type.url }}</a>
+          <a :href="type.referenceUrl">{{ type.referenceUrl }}</a>
           <v-row no-gutters class="mt-2">
             <v-col class="mr-2">
               <v-card
@@ -147,12 +142,12 @@ const create = async () => {
                 style="border-color: lightgrey"
               >
                 <div
-                  v-for="(v, k) in sorted(type.before)"
-                  :key="k"
+                  v-for="(v, parameterName) in sorted(type.before)"
+                  :key="parameterName"
                   class="mb-1"
                 >
                   <div class="text-h6 d-flex align-center">
-                    {{ v.required ? '*' : '' }}{{ k }}
+                    {{ v.required ? '*' : '' }}{{ parameterName }}
                     <span class="text-subtitle-1 pl-1">({{ v.type }})</span>
                   </div>
                   <div class="text-body-1">{{ v.description }}</div>
@@ -165,9 +160,13 @@ const create = async () => {
                 variant="outlined"
                 style="border-color: lightgrey"
               >
-                <div v-for="(v, k) in sorted(type.after)" :key="k" class="mb-1">
+                <div
+                  v-for="(v, parameterName) in sorted(type.after)"
+                  :key="parameterName"
+                  class="mb-1"
+                >
                   <div class="text-h6 d-flex align-center">
-                    {{ v.required ? '*' : '' }}{{ k }}
+                    {{ v.required ? '*' : '' }}{{ parameterName }}
                     <span class="text-subtitle-1 pl-1">({{ v.type }})</span>
                   </div>
                   <div class="text-body-1">{{ v.description }}</div>
@@ -180,7 +179,7 @@ const create = async () => {
     </div>
     <v-divider />
     <div class="py-3">
-      <h2 class="text-h5">Create a new RefactoringType</h2>
+      <h2 class="text-h5">Create a new Change Type</h2>
       <v-card
         variant="outlined"
         class="my-3 pa-4"
@@ -189,13 +188,13 @@ const create = async () => {
         <v-textarea
           v-model="form.type"
           variant="underlined"
-          label="refactoring type (JSON)"
+          label="change type (JSON)"
           rows="3"
           hide-details
           class="mt-4 mb-2"
         />
         <details class="mb-4">
-          <summary class="text-caption">examples for refactoring type</summary>
+          <summary class="text-caption">examples for change type</summary>
           <pre
             v-for="example in examples"
             :key="example"

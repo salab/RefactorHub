@@ -5,10 +5,6 @@ import { log } from '@/utils/action'
 import { asMonacoRange } from '@/components/common/editor/utils/range'
 
 const props = defineProps({
-  draftId: {
-    type: Number,
-    required: true,
-  },
   category: {
     type: String as () => DiffCategory,
     required: true,
@@ -38,12 +34,7 @@ onMounted(() => {
 const path = computed(() => props.element.location?.path || '-')
 
 const file = computed(
-  () =>
-    useDraft().commit.value?.files.find((file) =>
-      props.category === 'before'
-        ? file.previousName === path.value
-        : file.name === path.value,
-    ),
+  () => useAnnotation().getCurrentFilePair(path.value)?.[props.category],
 )
 
 const isExisting = computed(() => file.value !== undefined)
@@ -55,6 +46,8 @@ const openLocation = () => {
   )
   const range = props.element.location?.range
   if (file.value && mainViewer) {
+    const filePair = useAnnotation().getCurrentFilePair(file.value.path)
+    if (!filePair) return
     log(ActionName.OpenElementLocation, ActionType.Client, {
       category: props.category,
       file: file.value,
@@ -65,16 +58,15 @@ const openLocation = () => {
         ? {
             type: 'file',
             category: props.category,
-            path:
-              props.category === 'before'
-                ? file.value.previousName
-                : file.value.name,
-            range: asMonacoRange(range),
+            filePair,
+            navigation: {
+              category: props.category,
+              range: asMonacoRange(range),
+            },
           }
         : {
             type: 'diff',
-            beforePath: file.value.previousName,
-            afterPath: file.value.name,
+            filePair,
             navigation: {
               category: props.category,
               range: asMonacoRange(range),
@@ -86,18 +78,25 @@ const openLocation = () => {
 
 const deleteElement = async () => {
   if (!confirm('Are you sure you want to delete this element?')) return
-  useDraft().draft.value = (
-    await apis.drafts.deleteRefactoringDraftElementValue(
-      props.draftId,
-      props.category,
-      props.elementKey,
-      props.elementIndex,
-    )
-  ).data
+  const { annotationId, snapshotId, changeId } =
+    useAnnotation().currentIds.value
+  if (!annotationId || !snapshotId || !changeId) return
+  useAnnotation().updateChange(
+    (
+      await apis.parameters.clearParameterValue(
+        annotationId,
+        snapshotId,
+        changeId,
+        props.category,
+        props.elementKey,
+        props.elementIndex,
+      )
+    ).data,
+  )
 }
 
 const isEditing = computed(() => {
-  const metadata = useDraft().editingElement.value[props.category]
+  const metadata = useAnnotation().editingElement.value[props.category]
   return (
     metadata?.key === props.elementKey && metadata?.index === props.elementIndex
   )
@@ -113,7 +112,7 @@ const toggleEditing = () => {
         type: props.element.type,
       },
     })
-    useDraft().editingElement.value[props.category] = {
+    useAnnotation().editingElement.value[props.category] = {
       key: props.elementKey,
       index: props.elementIndex,
       type: props.element.type,
@@ -122,7 +121,7 @@ const toggleEditing = () => {
     log(ActionName.ToggleEditingElement, ActionType.Client, {
       category: props.category,
     })
-    useDraft().editingElement.value[props.category] = undefined
+    useAnnotation().editingElement.value[props.category] = undefined
   }
 }
 

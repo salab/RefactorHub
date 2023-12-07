@@ -2,11 +2,7 @@
 import { DiffCategory } from 'refactorhub'
 
 defineProps({
-  save: {
-    type: Function,
-    required: true,
-  },
-  discard: {
+  suspend: {
     type: Function,
     required: true,
   },
@@ -29,7 +25,7 @@ const emit = defineEmits<{
         size="small"
         :color="colors.before"
         :text="
-          isActiveOfElementHolders.before ? 'hide' : 'open before elements'
+          isActiveOfElementHolders.before ? 'hide' : 'open before parameters'
         "
         :prepend-icon="
           isActiveOfElementHolders.before
@@ -39,18 +35,17 @@ const emit = defineEmits<{
         @click="emit('toggleElementHolders', 'before')"
       />
       <v-spacer />
-      <v-btn variant="flat" size="small" color="success" @click="save">
-        <span class="text-none">Save</span>
-      </v-btn>
-      <v-btn variant="flat" size="small" color="error" @click="discard">
-        <span class="text-none">Discard</span>
+      <v-btn variant="flat" size="small" color="secondary" @click="suspend">
+        <span class="text-none">Suspend Annotation</span>
       </v-btn>
       <v-spacer />
       <v-btn
         variant="flat"
         size="small"
         :color="colors.after"
-        :text="isActiveOfElementHolders.after ? 'hide' : 'open after elements'"
+        :text="
+          isActiveOfElementHolders.after ? 'hide' : 'open after parameters'
+        "
         :append-icon="
           isActiveOfElementHolders.after
             ? '$mdiArrowCollapseRight'

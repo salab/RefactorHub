@@ -9,6 +9,7 @@ import org.kohsuke.github.GitHub
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URI
+import java.nio.charset.StandardCharsets
 
 val GITHUB_ACCESS_TOKEN = System.getenv("GITHUB_ACCESS_TOKEN") ?: ""
 fun getFile(owner: String, repository: String, sha: String, path: String): File {
@@ -30,7 +31,7 @@ private fun getGHContent(
 }
 
 private fun createFile(content: GHContent): File {
-    val text = if (content.isText) IOUtils.toString(content.read()) else "This is a binary file."
+    val text = if (content.isText) IOUtils.toString(content.read(), StandardCharsets.UTF_8) else "This is a binary file."
     return createFile(content.path, text)
 }
 

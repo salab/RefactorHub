@@ -1,6 +1,7 @@
 import * as monaco from 'monaco-editor'
 import { DiffCategory } from 'refactorhub'
-import { CommitDetail, Token } from '@/apis'
+import { FilePair } from './useAnnotation'
+import { Token } from '@/apis'
 
 export type CommonTokenSequenceType =
   | 'oneToOne'
@@ -263,9 +264,15 @@ export const useCommonTokenSequence = () => {
     }
   }
 
-  async function setup(commit: CommitDetail) {
+  function setup() {
     useLoader().setLoadingText('detecting common token sequences')
-    await initializeStorage(storage.value, commit)
+    setupStorage()
+  }
+
+  function setupStorage() {
+    storage.value = new CommonTokenSequenceStorage()
+    const currentFilePairs = useAnnotation().getCurrentFilePairs()
+    initializeStorage(storage.value, currentFilePairs)
   }
 
   function getCommonTokenSequencesIn(path: string, category: DiffCategory) {
@@ -313,6 +320,7 @@ export const useCommonTokenSequence = () => {
     setting: computed(() => setting.value),
     initialize,
     setup,
+    setupStorage,
     getCommonTokenSequencesIn,
     getWithId,
     updateIsHovered,
@@ -320,12 +328,10 @@ export const useCommonTokenSequence = () => {
   }
 }
 
-async function initializeStorage(
+function initializeStorage(
   storage: CommonTokenSequenceStorage,
-  commit: CommitDetail,
+  currentFilePairs: FilePair[],
 ) {
-  const { owner, repository, files } = commit
-
   const diffHunkTokens: {
     [category in DiffCategory]: {
       token: TokenDetail | 'diffHunkSeparator'
@@ -335,12 +341,12 @@ async function initializeStorage(
     before: [{ token: 'diffHunkSeparator', isCommonToken: false }],
     after: [{ token: 'diffHunkSeparator', isCommonToken: false }],
   }
-  for (const file of files) {
+  for (const currentFilePair of currentFilePairs) {
     const diffHunkRanges: { [category in DiffCategory]: monaco.Range[] } = {
       before: [],
       after: [],
     }
-    file.diffHunks.forEach(({ before, after }) => {
+    currentFilePair.diffHunks.forEach(({ before, after }) => {
       if (before)
         diffHunkRanges.before.push(
           new monaco.Range(before.startLine, 1, before.endLine + 1, 0),
@@ -350,52 +356,32 @@ async function initializeStorage(
           new monaco.Range(after.startLine, 1, after.endLine + 1, 0),
         )
     })
-    useLoader().setLoadingText(
-      `fetching file content before change: ${file.previousName}`,
-    )
-    const beforeContent = await useDraft().getFileContent({
-      owner,
-      repository,
-      sha: commit.sha,
-      category: 'before',
-      path: file.previousName,
-      uri: getCommitFileUri(
-        commit.owner,
-        commit.repository,
-        commit.parent,
-        file.previousName,
-      ),
-    })
-    useLoader().setLoadingText(
-      `fetching file content after change: ${file.name}`,
-    )
-    const afterContent = await useDraft().getFileContent({
-      owner,
-      repository,
-      sha: commit.sha,
-      category: 'after',
-      path: file.name,
-      uri: getCommitFileUri(
-        commit.owner,
-        commit.repository,
-        commit.sha,
-        file.name,
-      ),
-    })
-    const fileContentPair = {
-      before: beforeContent,
-      after: afterContent,
+    const beforeFile = currentFilePair.before ?? {
+      text: '',
+      tokens: [],
+    }
+    const afterFile = currentFilePair.after ?? {
+      text: '',
+      tokens: [],
+    }
+    const filePair = {
+      before: beforeFile,
+      after: afterFile,
     }
     function addDiffHunkTokens(category: DiffCategory) {
-      const path = category === 'before' ? file.previousName : file.name
+      const path =
+        category === 'before'
+          ? currentFilePair.before?.path
+          : currentFilePair.after?.path
+      if (path === undefined) return
       diffHunkRanges[category].forEach((diffHunkRange) => {
-        fileContentPair[category].tokens.forEach((token) => {
+        filePair[category].tokens.forEach((token) => {
           const startPosition = getPositionFromIndex(
-            fileContentPair[category].text,
+            filePair[category].text,
             token.start,
           )
           const endPosition = getPositionFromIndex(
-            fileContentPair[category].text,
+            filePair[category].text,
             token.end,
           )
           const tokenRange = new monaco.Range(
@@ -421,7 +407,6 @@ async function initializeStorage(
     addDiffHunkTokens('after')
   }
 
-  useLoader().setLoadingText('detecting common token sequences')
   const scoreTable: number[][] = [] // number[beforeIndex][afterIndex]
   const detectedCommonTokenSequences: TokenSequenceWithoutCategory[] = []
   function addDetectedCommonTokenSequence(
@@ -586,12 +571,4 @@ function getPositionFromIndex(text: string, index: number): monaco.Position {
     indexCount += raw.length
   }
   throw new Error(`index ${index} must be less than text length ${text.length}`)
-}
-function getCommitFileUri(
-  owner: string,
-  repository: string,
-  sha: string,
-  path: string,
-) {
-  return `https://github.com/${owner}/${repository}/blob/${sha}/${path}`
 }

@@ -20,9 +20,9 @@ class UserService : KoinComponent {
         return user
     }
 
-    fun getUserAnnotationIds(userId: UUID): List<CommitIdToAnnotationId> {
+    fun getUserAnnotationIds(userId: UUID): List<AnnotationOverview> {
         return annotationService.getUserAnnotations(userId).map {
-            CommitIdToAnnotationId(it.experimentId, it.commit.id, it.id)
+            AnnotationOverview(it.experimentId, it.commit.id, it.id, it.isDraft)
         }
     }
 
@@ -37,8 +37,9 @@ class UserService : KoinComponent {
     }
 }
 
-data class CommitIdToAnnotationId(
+data class AnnotationOverview(
     val experimentId: UUID,
     val commitId: UUID,
-    val annotationId: UUID
+    val annotationId: UUID,
+    val isDraft: Boolean
 )

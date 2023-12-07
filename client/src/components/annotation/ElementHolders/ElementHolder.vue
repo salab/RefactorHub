@@ -3,10 +3,6 @@ import { DiffCategory } from 'refactorhub'
 import apis, { CodeElementHolder, CodeElementMetadata } from '@/apis'
 
 const props = defineProps({
-  draftId: {
-    type: Number,
-    required: true,
-  },
   category: {
     type: String as () => DiffCategory,
     required: true,
@@ -32,24 +28,38 @@ const isCompleted = computed(() => props.elementHolder.state === 'Manual')
 
 const removeElementKey = async () => {
   if (!confirm('Are you sure you want to delete this element key?')) return
-  useDraft().draft.value = (
-    await apis.drafts.removeCodeElementHolder(
-      props.draftId,
-      props.category,
-      props.elementKey,
-    )
-  ).data
+  const { annotationId, snapshotId, changeId } =
+    useAnnotation().currentIds.value
+  if (!annotationId || !snapshotId || !changeId) return
+  useAnnotation().updateChange(
+    (
+      await apis.parameters.removeParameter(
+        annotationId,
+        snapshotId,
+        changeId,
+        props.category,
+        props.elementKey,
+      )
+    ).data,
+  )
 }
 
 const verifyElement = async () => {
-  useDraft().draft.value = (
-    await apis.drafts.verifyCodeElementHolder(
-      props.draftId,
-      props.category,
-      props.elementKey,
-      { state: !isCompleted.value },
-    )
-  ).data
+  const { annotationId, snapshotId, changeId } =
+    useAnnotation().currentIds.value
+  if (!annotationId || !snapshotId || !changeId) return
+  useAnnotation().updateChange(
+    (
+      await apis.parameters.verifyParameter(
+        annotationId,
+        snapshotId,
+        changeId,
+        props.category,
+        props.elementKey,
+        { isVerified: !isCompleted.value },
+      )
+    ).data,
+  )
 }
 </script>
 
@@ -122,7 +132,6 @@ const verifyElement = async () => {
       <div v-for="(element, i) in elementHolder.elements" :key="i">
         <v-divider />
         <element-value
-          :draft-id="draftId"
           :category="category"
           :element-key="elementKey"
           :element-index="i"

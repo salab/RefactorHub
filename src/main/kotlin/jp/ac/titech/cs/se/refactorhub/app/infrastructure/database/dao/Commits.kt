@@ -11,7 +11,6 @@ import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.koin.java.KoinJavaComponent
-import java.time.LocalDateTime
 import java.util.UUID
 
 object Commits : UUIDTable("commits") {
@@ -55,7 +54,7 @@ class CommitDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Commit> {
             this.url,
             this.message,
             this.authorName,
-            LocalDateTime.parse(this.authoredDateTime),
+            this.authoredDateTime,
             this.beforeFiles,
             this.afterFiles,
             this.fileMappings,

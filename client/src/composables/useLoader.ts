@@ -6,12 +6,12 @@ export const useLoader = () => {
     loadingText.value = text
   }
 
-  function startLoading(draftId: number): Promise<void> {
+  function startLoading(annotationId: string): Promise<void> {
     isLoading.value = true
     initialize()
 
     // start loading asynchronously
-    loadDraft(draftId).then(() => {
+    loadAnnotation(annotationId).then(() => {
       isLoading.value = false
       setLoadingText('')
     })
@@ -20,15 +20,15 @@ export const useLoader = () => {
 
   function initialize() {
     setLoadingText('initializing')
-    useDraft().initialize()
+    useAnnotation().initialize()
     useCommonTokenSequence().initialize()
     useViewer().initialize()
   }
 
-  async function loadDraft(draftId: number) {
-    const commit = await useDraft().setup(draftId)
-    await useCommonTokenSequence().setup(commit)
-    useViewer().setup(commit)
+  async function loadAnnotation(annotationId: string) {
+    const initialFilePair = await useAnnotation().setup(annotationId)
+    useCommonTokenSequence().setup()
+    useViewer().setup(initialFilePair)
   }
 
   return {

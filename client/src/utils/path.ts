@@ -1,10 +1,22 @@
+import { DiffCategory } from 'refactorhub'
+import { PathPair } from 'composables/useAnnotation'
+
+export function getFilePath(
+  pathPair: PathPair,
+  category: DiffCategory,
+): string {
+  const path = pathPair[category]
+  if (path !== undefined) return path
+  const otherPath = category === 'before' ? pathPair.after : pathPair.before
+  if (otherPath) return `${otherPath} (not found)`
+  return `${pathPair.notFound} (not found)`
+}
 export function getFileName(path: string) {
   return path.substring(path.lastIndexOf('/') + 1)
 }
-export function getPathDifference(
-  path1: string,
-  path2: string,
-): [string, string] {
+export function getPathDifference(pathPair: PathPair): [string, string] {
+  let path1 = pathPair.before ?? `${pathPair.notFound} (not found)` ?? ''
+  let path2 = pathPair.after ?? `${pathPair.notFound} (not found)` ?? ''
   const directories1 = path1.split('/')
   const directories2 = path2.split('/')
   let i = 0

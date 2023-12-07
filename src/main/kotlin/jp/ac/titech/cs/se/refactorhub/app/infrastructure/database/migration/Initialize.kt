@@ -116,7 +116,7 @@ private fun createCommits(file: String): List<CommitDao> {
             this.url = commit.url
             this.message = commit.message
             this.authorName = commit.authorName
-            this.authoredDateTime = commit.authoredDateTime.toString()
+            this.authoredDateTime = commit.authoredDateTime
             this.beforeFiles = commit.beforeFiles
             this.afterFiles = commit.afterFiles
             this.fileMappings = commit.fileMappings

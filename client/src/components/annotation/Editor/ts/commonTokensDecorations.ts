@@ -14,12 +14,12 @@ export class CommonTokenSequenceDecorationManager {
   }
 
   public setCommonTokensDecorations(
-    path: string,
+    path: string | undefined,
     category: DiffCategory,
     editor: monaco.editor.ICodeEditor,
   ) {
     const model = editor.getModel()
-    if (!model) return
+    if (!model || path === undefined) return
     const commonTokenSequences =
       useCommonTokenSequence().getCommonTokenSequencesIn(path, category)
     for (const { sequence, id, count } of commonTokenSequences) {
