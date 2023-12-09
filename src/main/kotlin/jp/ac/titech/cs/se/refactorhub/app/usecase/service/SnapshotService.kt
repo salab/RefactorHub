@@ -52,13 +52,15 @@ class SnapshotService : KoinComponent {
     fun removeChange(snapshotId: UUID, changeId: UUID): Snapshot {
         val snapshot = get(snapshotId)
         if (snapshot.changes.find { it.id == changeId } == null) return snapshot
-        changeService.delete(changeId)
         val newChanges = snapshot.changes.filter { it.id != changeId }
-        return snapshotRepository.updateById(snapshotId, changes = newChanges)
+        val newSnapshot = snapshotRepository.updateById(snapshotId, changes = newChanges)
+        changeService.delete(changeId)
+        return newSnapshot
     }
 
     fun delete(snapshotId: UUID) {
         val snapshot = get(snapshotId)
+        snapshotRepository.updateById(snapshotId, changes = listOf())
         snapshot.changes.forEach { changeService.delete(it.id) }
         snapshotRepository.deleteById(snapshotId)
     }

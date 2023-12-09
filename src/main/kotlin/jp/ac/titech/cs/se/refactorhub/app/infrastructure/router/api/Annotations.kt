@@ -105,7 +105,7 @@ fun Route.annotations() {
             val (isDraft) = call.receive<PublishAnnotationBody>()
             call.respond(annotationController.publishAnnotation(annotationId, isDraft, userId))
         }
-        post<GetAnnotationData> {
+        get<GetAnnotationData> {
             val annotationId = it.annotationId.toUUID()
             call.respond(annotationController.getAnnotationData(annotationId))
         }

@@ -8,15 +8,19 @@ export function getFilePath(
   const path = pathPair[category]
   if (path !== undefined) return path
   const otherPath = category === 'before' ? pathPair.after : pathPair.before
-  if (otherPath) return `${otherPath} (not found)`
-  return `${pathPair.notFound} (not found)`
+  if (otherPath) return `${otherPath} (Not Found)`
+  return `${pathPair.notFound} (Not Found)`
 }
 export function getFileName(path: string) {
   return path.substring(path.lastIndexOf('/') + 1)
 }
 export function getPathDifference(pathPair: PathPair): [string, string] {
-  let path1 = pathPair.before ?? `${pathPair.notFound} (not found)` ?? ''
-  let path2 = pathPair.after ?? `${pathPair.notFound} (not found)` ?? ''
+  let path1 =
+    pathPair.before ??
+    (pathPair.notFound ? `${pathPair.notFound} (Not Found)` : '')
+  let path2 =
+    pathPair.after ??
+    (pathPair.notFound ? `${pathPair.notFound} (Not Found)` : '')
   const directories1 = path1.split('/')
   const directories2 = path2.split('/')
   let i = 0
@@ -27,7 +31,7 @@ export function getPathDifference(pathPair: PathPair): [string, string] {
   if (i === 0) {
     if (!path1) path1 = '(None)' // added
     if (!path2) path2 = '(None)' // deleted
-    return [path1, path2]
+    return [getFileName(path1), getFileName(path2)]
   }
   if (
     directories1.length === directories2.length &&

@@ -141,9 +141,8 @@ class AnnotationService : KoinComponent {
             changesBeforeNew
         ))
         val newLastSnapshot = snapshotService.create(lastSnapshot.files, fileMappingsAfterNew, patchAfterNew)
-        val newSnapshots = annotation.snapshots.apply {
-            dropLast(1).toMutableList().addAll(listOf(temporarySnapshot, newLastSnapshot))
-        }
+        val newSnapshots = annotation.snapshots.dropLast(1).toMutableList()
+        newSnapshots.addAll(listOf(temporarySnapshot, newLastSnapshot))
 
         return annotationRepository.updateById(
             annotationId,
@@ -161,7 +160,7 @@ class AnnotationService : KoinComponent {
 
         val newFile = createFile(filePath, fileText)
         val newFiles = temporarySnapshot.files.toMutableList().apply {
-            val fileToBeModified = this.find { it.path == filePath }
+            val fileToBeModified = find { it.path == filePath }
             if (fileToBeModified == null) {
                 if (!isRemoved) add(newFile)
                 return@apply
@@ -198,9 +197,8 @@ class AnnotationService : KoinComponent {
             patchAfterNew,
             lastSnapshot.changes
         ))
-        val newSnapshots = annotation.snapshots.apply {
-            dropLast(2).toMutableList().addAll(listOf(newTemporarySnapshot, newLastSnapshot))
-        }
+        val newSnapshots = annotation.snapshots.dropLast(2).toMutableList()
+        newSnapshots.addAll(listOf(newTemporarySnapshot, newLastSnapshot))
 
         return annotationRepository.updateById(
             annotationId,
@@ -214,7 +212,7 @@ class AnnotationService : KoinComponent {
         return annotationRepository.updateById(annotationId, hasTemporarySnapshot = false).pickHasTemporarySnapshot()
     }
 
-    fun removeChange(annotationId: UUID, snapshotId: UUID, changeId: UUID, userId: UUID): Annotation.Snapshots {
+    fun removeChange(annotationId: UUID, snapshotId: UUID, changeId: UUID, userId: UUID): Annotation.HasTemporarySnapshotAndSnapshots {
         val user = userService.getMe(userId)
         val annotation = get(annotationId)
         val snapshotIndex = annotation.snapshots.indexOfFirst { it.id == snapshotId }
@@ -223,7 +221,7 @@ class AnnotationService : KoinComponent {
         if (!isLastIntermediateSnapshot || snapshot.changes.isNotEmpty() || annotation.snapshots.size == 1) {
             val newSnapshots = annotation.snapshots.toMutableList()
             newSnapshots[snapshotIndex] = snapshot
-            return annotationRepository.updateById(annotationId, snapshots = newSnapshots).pickSnapshots()
+            return annotationRepository.updateById(annotationId, snapshots = newSnapshots).pickHasTemporarySnapshotAndSnapshots()
         }
 
         val lastSnapshot = annotation.snapshots.last()
@@ -235,23 +233,24 @@ class AnnotationService : KoinComponent {
             annotation.commit,
             annotation.snapshots
         )
-        snapshotService.delete(snapshotId)
+
         val fileMapping = mapFiles(baseFiles, patch)
-        val newLastSnapshot = snapshotService.update(
-            Snapshot(
-            lastSnapshot.id,
+        val newLastSnapshot = snapshotService.update(Snapshot(
+            snapshotId,
             lastSnapshot.files,
             fileMapping,
             patch,
             listOf(changeService.createEmpty())
         ))
         val newSnapshots = annotation.snapshots.dropLast(2).toMutableList().apply { add(newLastSnapshot) }
-        return annotationRepository.updateById(
+        val newAnnotation = annotationRepository.updateById(
             annotationId,
             hasTemporarySnapshot = false,
             latestInternalCommitSha = latestInternalCommitSha,
             snapshots = newSnapshots
-        ).pickSnapshots()
+        )
+        snapshotService.delete(lastSnapshot.id)
+        return newAnnotation.pickHasTemporarySnapshotAndSnapshots()
     }
 
     fun getFileCodeElementsMap(
@@ -342,17 +341,17 @@ class AnnotationService : KoinComponent {
 
     private fun Annotation.data() = AnnotationData(
         userService.get(this.ownerId).name,
-        this.commit,
+        this.commit.data(),
         this.snapshots.map { SnapshotData(it.patch, it.changes) }
     )
 }
 
 private fun MutableMap<String, CodeElementHolder>.hasIntersection(path: String, hunk: DiffHunk.Hunk): Boolean {
     return this.any { (_, codeElementHolder) ->
-        codeElementHolder.elements.any {
-            val location = it.location ?: return false
-            val range = location.range ?: return false
-            location.path == path && range.startLine >= hunk.endLine && range.endLine <= hunk.startLine
+        codeElementHolder.elements.any elementsAny@{
+            val location = it.location ?: return@elementsAny false
+            val range = location.range ?: return@elementsAny false
+            location.path == path && range.startLine <= hunk.endLine && range.endLine >= hunk.startLine
         }
     }
 }

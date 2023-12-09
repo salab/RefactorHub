@@ -360,11 +360,14 @@ paths:
               schema:
                 type: object
                 properties:
+                  hasTemporarySnapshot:
+                    type: boolean
                   snapshots:
                     type: array
                     items:
                       $ref: "#/components/schemas/Snapshot"
                 required:
+                  - hasTemporarySnapshot
                   - snapshots
         "401":
           description: You are not logged in
@@ -943,6 +946,9 @@ components:
           format: uuid
         commit:
           $ref: "#/components/schemas/Commit"
+        experimentId:
+          type: string
+          format: uuid
         isDraft:
           type: boolean
         hasTemporarySnapshot:

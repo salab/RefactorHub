@@ -55,6 +55,7 @@ interface AbstractFilePair<T> {
   getFilePairAt(snapshotId: string): T
   getPathPair(): PathPair
   getEdgePathPair(): PathPair
+  isNotRemovedYet(): boolean
 }
 interface FilePairModified<T> extends AbstractFilePair<T> {
   readonly status: 'modified'
@@ -176,6 +177,16 @@ abstract class AbstractFilePairImpl implements AbstractFilePair<FilePair> {
     logger.error(this)
     throw new Error(`there is no edge path`)
   }
+
+  public isNotRemovedYet(): boolean {
+    if (this.status === 'removed' || this.status === 'renamed') return true
+    let node = this.next
+    while (node) {
+      if (node.status === 'removed' || node.status === 'renamed') return true
+      node = node.next
+    }
+    return false
+  }
 }
 class FilePairModifiedImpl
   extends AbstractFilePairImpl
@@ -260,9 +271,9 @@ class FilePairRenamedImpl
     after: FileModel,
   ) {
     super(snapshotId, diffHunks)
-    if (before.path !== after.path)
+    if (before.path === after.path)
       throw new Error(
-        `before and after paths of modified file must be different; before=${before.path}, after=${after.path}`,
+        `before and after paths of renamed file must be different; before=${before.path}, after=${after.path}`,
       )
     this.before = before
     this.after = after
@@ -292,7 +303,7 @@ class FilePairUnmodifiedImpl
     super(snapshotId, diffHunks)
     if (before.text !== after.text)
       throw new Error(
-        `before and after texts of modified file must be same; before=${before.text}, after=${after.text}`,
+        `before and after texts of unmodified file must be same; before=${before.text}, after=${after.text}`,
       )
     this.before = before
     this.after = after
@@ -600,31 +611,45 @@ export const useAnnotation = () => {
     divisionIsUpdated: boolean,
   ) {
     if (!annotation.value) return
+    const oldAnnotation = annotation.value
+    const oldSnapshotId = currentSnapshot.value?.id
+    const oldSnapshotIndex = oldAnnotation.snapshots.findIndex(
+      ({ id }) => id === oldSnapshotId,
+    )
     annotation.value = {
       ...annotation.value,
       ...newAnnotation,
     }
-    if (divisionIsUpdated) {
-      updateFilePairsMap()
+    if (!divisionIsUpdated) return
 
-      useCommonTokenSequence().setupStorage()
-
-      const viewers = useViewer().viewers.value
-      const newFilePairs = viewers.map((viewer) => {
-        const edgePathPair = viewer.filePair.getEdgePathPair()
-        const edgeFilePair = getEdgeFilePair(edgePathPair)
-        if (!edgeFilePair)
-          throw new Error(
-            `cannot find file pair of edge of viewer ${viewer.id}`,
-          )
-        if (!currentSnapshot.value)
-          throw new Error(
-            'current snapshot is undefined when annotation updates',
-          )
-        return edgeFilePair.getFilePairAt(currentSnapshot.value.id)
-      })
-      useViewer().updateFilePairs(newFilePairs)
+    const changeList = getChangeList()
+    if (changeList.every(({ id }) => id !== currentChangeId.value)) {
+      let snapshot = annotation.value.snapshots.find(
+        ({ id }) => id === oldSnapshotId,
+      )
+      if (!snapshot) snapshot = annotation.value.snapshots[oldSnapshotIndex]
+      if (snapshot) {
+        currentChangeId.value = snapshot.changes[snapshot.changes.length - 1].id
+      } else {
+        currentChangeId.value = changeList[changeList.length - 1].id
+      }
     }
+
+    updateFilePairsMap()
+
+    useCommonTokenSequence().setupStorage()
+
+    const viewers = useViewer().viewers.value
+    const newFilePairs = viewers.map((viewer) => {
+      const edgePathPair = viewer.filePair.getEdgePathPair()
+      const edgeFilePair = getEdgeFilePair(edgePathPair)
+      if (!edgeFilePair)
+        throw new Error(`cannot find file pair of edge of viewer ${viewer.id}`)
+      if (!currentSnapshot.value)
+        throw new Error('current snapshot is undefined when annotation updates')
+      return edgeFilePair.getFilePairAt(currentSnapshot.value.id)
+    })
+    useViewer().updateFilePairs(newFilePairs)
   }
   function updateSnapshot(newSnapshot: Snapshot, divisionIsUpdated: boolean) {
     if (!annotation.value) return

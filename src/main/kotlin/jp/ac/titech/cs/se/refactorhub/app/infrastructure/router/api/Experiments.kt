@@ -14,7 +14,6 @@ import io.ktor.sessions.sessions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.toUUID
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ExperimentController
-import jp.ac.titech.cs.se.refactorhub.core.model.Commit
 import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
@@ -25,6 +24,11 @@ class GetExperiments
 @KtorExperimentalLocationsAPI
 @Location("")
 class CreateExperiment
+data class Commit(
+    override val owner: String,
+    override val repository: String,
+    override val sha: String
+): jp.ac.titech.cs.se.refactorhub.core.model.Commit
 data class CreateExperimentBody(
     val title: String,
     val description: String,

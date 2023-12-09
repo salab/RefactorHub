@@ -36,7 +36,9 @@ class ChangeService : KoinComponent {
     }
 
     fun createEmpty(): Change {
-        return changeRepository.create(DEFAULT_CHANGE_TYPE, "", Change.ParameterData())
+        val changeType = changeTypeService.get(DEFAULT_CHANGE_TYPE)
+        return changeRepository.create("Extract Method" /* temporary */, "", Change.ParameterData())
+            .applyAndSaveResult { it.changeType(changeType) }
     }
 
     fun modifyLineNumbers(changeId: UUID, notAppliedFileMappings: List<FileMapping>): Change {

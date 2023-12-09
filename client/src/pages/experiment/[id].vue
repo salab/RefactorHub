@@ -19,12 +19,7 @@ const myAnnotations = ref<
 >([])
 
 useAsyncData(async () => {
-  experiment.value =
-    useExperiment().experimentMap.value.get(experimentId) ??
-    (await apis.experiments.getExperiment(experimentId)).data
-  useExperiment().experimentMap.value.set(experimentId, experiment.value)
-  const me = (await apis.users.getMe()).data
-  myAnnotations.value = (await apis.users.getUserAnnotationIds(me.id)).data
+  experiment.value = await useExperiment().getExperiment(experimentId)
 })
 
 onMounted(async () => {
@@ -32,12 +27,15 @@ onMounted(async () => {
   myAnnotations.value = (await apis.users.getUserAnnotationIds(me.id)).data
 })
 
-const getStatus = (commitId: string): 'done' | 'draft' | 'notStarted' => {
-  const annotation = myAnnotations.value.find(
+function getAnnotation(commitId: string) {
+  return myAnnotations.value.find(
     (annotation) =>
       annotation.experimentId === experimentId &&
       annotation.commitId === commitId,
   )
+}
+const getStatus = (commitId: string): 'done' | 'draft' | 'notStarted' => {
+  const annotation = getAnnotation(commitId)
   if (!annotation) return 'notStarted'
   if (annotation.isDraft) return 'draft'
   return 'done'
@@ -53,21 +51,32 @@ const start = async (commitId: string) => {
 
 <template>
   <v-container v-if="experiment">
-    <div class="py-3">
-      <div class="d-flex align-center justify-space-between">
-        <h1 class="text-h4">{{ experiment.title }}</h1>
-        <v-btn
-          flat
-          class="text-none"
-          :href="`/api/experiments/${experiment.id}/result`"
-        >
-          Get All Result
-        </v-btn>
-      </div>
-      <p class="py-1 mb-0 text-body-1">{{ experiment.description }}</p>
+    <div class="d-flex align-end pb-1">
+      <h1 class="text-h4">{{ experiment.title }}</h1>
+      <p class="text-body-1 ml-2">- {{ experiment.description }}</p>
+      <v-spacer />
+      <v-btn
+        flat
+        text="result"
+        :href="`/api/experiments/${experiment.id}/result`"
+      />
     </div>
     <v-divider />
-    <div class="py-2">
+    <v-breadcrumbs
+      class="pa-0"
+      style="font-size: small"
+      :items="[
+        { title: 'Experiments', disabled: false, href: '/experiment' },
+        {
+          title: experiment.title,
+          disabled: true,
+          href: `/experiment/${experimentId}`,
+        },
+      ]"
+      ><template #divider>
+        <v-icon size="small" icon="$mdiChevronRight"></v-icon> </template
+    ></v-breadcrumbs>
+    <div>
       <div>
         <v-card
           v-for="(commit, i) in experiment.targetCommits"
@@ -76,35 +85,52 @@ const start = async (commitId: string) => {
           style="border-color: lightgrey"
           class="my-4"
         >
-          <div class="d-flex align-center">
-            <div class="px-4">
+          <v-row no-gutters class="d-flex align-center">
+            <v-col :cols="1" class="d-flex justify-center">
               <v-icon
-                v-if="getStatus(commit.id) == 'done'"
+                v-if="getStatus(commit.id) === 'done'"
                 icon="$mdiCheckCircle"
                 size="x-large"
                 color="success"
               />
               <v-icon
-                v-else-if="getStatus(commit.id) == 'draft'"
+                v-else-if="getStatus(commit.id) === 'draft'"
                 icon="$mdiProgressCheck"
                 size="x-large"
               />
               <v-icon v-else icon="$mdiCircleOutline" size="x-large" />
-            </div>
-            <div class="flex-grow-1">
-              <v-card-title>
-                {{ i + 1 }}. {{ commit.owner }}/{{ commit.repository }}/{{
-                  commit.sha
-                }}
+            </v-col>
+            <v-col :cols="10">
+              <v-card-title class="px-0">
+                {{ i + 1 }}. {{ commit.owner }}/{{ commit.repository }}/<a
+                  :href="commit.url"
+                  target="_blank"
+                  rel="noopener"
+                  >{{ commit.sha.substring(0, 7) }}</a
+                >
               </v-card-title>
-              <v-card-text class="pb-1">
+              <v-card-text class="px-0 pb-1">
                 {{ commit.message }}
               </v-card-text>
-            </div>
-            <v-btn flat class="text-none mx-2" @click="() => start(commit.id)">
-              START
-            </v-btn>
-          </div>
+            </v-col>
+            <v-col :cols="1" class="d-flex flex-column">
+              <v-btn
+                v-if="getStatus(commit.id) !== 'notStarted'"
+                flat
+                text="result"
+                :href="`/api/annotations/${
+                  getAnnotation(commit.id)?.annotationId
+                }/data`"
+                class="ma-2 mb-0"
+              />
+              <v-btn
+                flat
+                text="start"
+                class="ma-2"
+                @click="() => start(commit.id)"
+              />
+            </v-col>
+          </v-row>
         </v-card>
       </div>
     </div>

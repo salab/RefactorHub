@@ -67,10 +67,8 @@ const create = async () => {
 
 <template>
   <v-container>
-    <div class="py-3">
-      <div class="d-flex align-center">
-        <h1 class="text-h4">Experiments</h1>
-      </div>
+    <div class="d-flex align-end pb-1">
+      <h1 class="text-h4">Experiments</h1>
     </div>
     <v-divider />
     <div class="py-2">

@@ -21,4 +21,10 @@ data class Commit(
     override val afterFiles: List<File>,
     override val fileMappings: List<FileMapping>,
     override val patch: String
-) : Commit, CommitFileData
+) : Commit, CommitFileData {
+    fun data() = object : Commit {
+        override val owner: String = this@Commit.owner
+        override val repository: String = this@Commit.repository
+        override val sha: String = this@Commit.sha
+    }
+}

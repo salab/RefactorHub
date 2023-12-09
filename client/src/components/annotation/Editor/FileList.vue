@@ -76,16 +76,25 @@ function getFilePair(fileName: string): FilePair {
             color="red"
             style="min-width: max-content"
           />
+          <v-icon
+            v-if="getFilePair(fileName).status === 'unmodified'"
+            size="small"
+            icon="$mdiEqualBox"
+            color="brown"
+            style="min-width: max-content"
+          />
+          <v-icon
+            v-if="getFilePair(fileName).status === 'not found'"
+            size="small"
+            icon="$mdiCloseBox"
+            color="grey"
+            style="min-width: max-content"
+          />
           <span class="text-body-2 font-weight-bold path mx-2">{{
             fileName
           }}</span>
           <v-spacer />
           <v-btn
-            v-if="
-              ['removed', 'modified', 'renamed'].includes(
-                getFilePair(fileName).status,
-              )
-            "
             :color="colors.before"
             flat
             size="x-small"
@@ -121,11 +130,6 @@ function getFilePair(fileName: string): FilePair {
             "
           />
           <v-btn
-            v-if="
-              ['added', 'modified', 'renamed'].includes(
-                getFilePair(fileName).status,
-              )
-            "
             :color="colors.after"
             flat
             size="x-small"

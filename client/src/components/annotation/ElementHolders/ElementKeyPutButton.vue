@@ -79,7 +79,7 @@ const addElementKey = async () => {
       color="secondary"
       @click="addElementKey"
     >
-      <span class="text-none body-1">Add Element</span>
+      <span class="text-none body-1">Add Parameter</span>
     </v-btn>
   </div>
 </template>

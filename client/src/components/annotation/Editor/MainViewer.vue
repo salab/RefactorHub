@@ -8,7 +8,7 @@ import { ElementWidgetManager } from './ts/elementWidgets'
 import { PathPair } from '@/composables/useAnnotation'
 import { logger } from '@/utils/logger'
 import { DiffViewer, FileViewer, Viewer } from '@/composables/useViewer'
-import { FileModel } from 'apis'
+import apis, { FileModel } from '@/apis'
 
 const props = defineProps({
   viewer: {
@@ -23,6 +23,32 @@ const isOpeningFileList = ref(false)
 
 const { mainViewerId, getNavigator } = useViewer()
 const navigator = getNavigator(props.viewer.id)
+
+const canModifyAfter = computed(
+  () =>
+    !!useAnnotation().annotation.value?.hasTemporarySnapshot &&
+    useAnnotation()
+      .getChangeList()
+      .findIndex(({ id }) => id === useAnnotation().currentChange.value?.id) ===
+      useAnnotation().getChangeList().length - 2,
+)
+const canModifyBefore = computed(
+  () =>
+    !!useAnnotation().annotation.value?.hasTemporarySnapshot &&
+    useAnnotation()
+      .getChangeList()
+      .findIndex(({ id }) => id === useAnnotation().currentChange.value?.id) ===
+      useAnnotation().getChangeList().length - 1,
+)
+const canModify = computed(
+  () =>
+    (canModifyAfter.value &&
+      props.viewer.type === 'file' &&
+      props.viewer.category === 'after') ||
+    (canModifyBefore.value &&
+      props.viewer.type === 'file' &&
+      props.viewer.category === 'before'),
+)
 
 const elementDecorationManager = new ElementDecorationManager()
 const elementWidgetManager = new ElementWidgetManager()
@@ -145,7 +171,6 @@ function createDiffViewer(
     enableSplitViewResizing: true,
     automaticLayout: true,
     readOnly: true,
-    scrollBeyondLastLine: false,
     diffAlgorithm: {
       onDidChange: () => ({ dispose: () => {} }),
       computeDiff: () =>
@@ -200,8 +225,7 @@ function createFileViewer(
   const { filePair, category, navigation } = viewer
   const fileViewer = monaco.editor.create(container, {
     automaticLayout: true,
-    readOnly: true,
-    scrollBeyondLastLine: false,
+    readOnly: !canModify.value,
   })
   const textModel = useAnnotation().getTextModel(filePair, category)
   fileViewer.setModel(textModel)
@@ -578,6 +602,140 @@ watch(
         :title="`${isOpeningFileList ? `close` : `open`} file list`"
         @click="() => (isOpeningFileList = !isOpeningFileList)"
       />
+
+      <span
+        v-if="!canModify && (canModifyBefore || canModifyAfter)"
+        class="path text-subtitle-2"
+        :style="`border-bottom: 1px solid ${colors.info}; color: ${colors.info}`"
+        >You can modify
+        <v-btn
+          v-if="canModifyAfter"
+          :color="colors.after"
+          flat
+          size="x-small"
+          text="after"
+          class="mx-1"
+          @click="
+            (e: PointerEvent) => {
+              e.stopPropagation() // prevent @click of v-sheet in MainViewer
+              useViewer().createViewer(
+                {
+                  type: 'file',
+                  filePair: viewer.filePair,
+                  category: 'after',
+                },
+                'next',
+              )
+            }
+          "
+        />
+        <v-btn
+          v-if="canModifyBefore"
+          :color="colors.before"
+          flat
+          size="x-small"
+          text="before"
+          class="mx-1"
+          @click="
+            (e: PointerEvent) => {
+              e.stopPropagation() // prevent @click of v-sheet in MainViewer
+              useViewer().createViewer(
+                {
+                  type: 'file',
+                  filePair: viewer.filePair,
+                  category: 'before',
+                },
+                'prev',
+              )
+            }
+          "
+        />source code</span
+      >
+      <span
+        v-if="canModify"
+        class="path text-subtitle-2"
+        :style="`border-bottom: 1px solid ${colors.info}; color: ${colors.info}`"
+        ><span class="font-weight-bold">[Modifiable]</span>
+        <v-btn
+          color="info"
+          flat
+          size="x-small"
+          class="mx-1"
+          @click="
+            async () => {
+              if (viewer.type === 'diff') return
+              const { annotationId } = useAnnotation().currentIds.value
+              if (!annotationId) return
+              const pathPair = viewer.filePair.getPathPair()
+              const filePath =
+                viewer.category === 'before'
+                  ? pathPair.notFound ??
+                    // eslint-disable-next-line prettier/prettier
+                  (pathPair.before ?? pathPair.after)
+                  : pathPair.notFound ??
+                    // eslint-disable-next-line prettier/prettier
+                  (pathPair.after ?? pathPair.before)
+              const fileContent =
+                (viewer.category === 'before'
+                  ? originalViewer
+                  : modifiedViewer
+                )?.getValue() ?? ''
+              useAnnotation().updateAnnotation(
+                {
+                  ...(
+                    await apis.snapshots.modifyTemporarySnapshot(annotationId, {
+                      filePath,
+                      fileContent,
+                      isRemoved: false,
+                    })
+                  ).data,
+                },
+                true,
+              )
+            }
+          "
+          ><span class="text-none">Save Modification</span></v-btn
+        ><v-btn
+          v-if="
+            (canModifyAfter && viewer.filePair.next?.isNotRemovedYet()) ||
+            (canModifyBefore && viewer.filePair.isNotRemovedYet())
+          "
+          color="info"
+          flat
+          size="x-small"
+          class="mx-1"
+          @click="
+            async () => {
+              if (viewer.type === 'diff') return
+              const { annotationId } = useAnnotation().currentIds.value
+              if (!annotationId) return
+              const pathPair = viewer.filePair.getPathPair()
+              const filePath =
+                viewer.category === 'before'
+                  ? pathPair.notFound ??
+                    // eslint-disable-next-line prettier/prettier
+                  (pathPair.before ?? pathPair.after)
+                  : pathPair.notFound ??
+                    // eslint-disable-next-line prettier/prettier
+                  (pathPair.after ?? pathPair.before)
+              useAnnotation().updateAnnotation(
+                {
+                  ...(
+                    await apis.snapshots.modifyTemporarySnapshot(annotationId, {
+                      filePath,
+                      fileContent: '',
+                      isRemoved: true,
+                    })
+                  ).data,
+                },
+                true,
+              )
+            }
+          "
+          ><span class="text-none">Remove This File</span></v-btn
+        >
+      </span>
+
       <v-spacer />
       <v-divider v-if="navigator" vertical />
       <v-btn
@@ -639,6 +797,7 @@ watch(
         "
       />
       <v-divider v-if="navigator" vertical />
+
       <v-btn
         v-if="useViewer().viewers.value.length > 1"
         variant="plain"

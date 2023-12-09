@@ -60,7 +60,7 @@ class AnnotationController : KoinComponent {
         val verifiedUserId = annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
         return changeService.update(changeId, description, typeName, verifiedUserId)
     }
-    fun removeChange(annotationId: UUID, snapshotId: UUID, changeId: UUID, userId: UUID?): Annotation.Snapshots {
+    fun removeChange(annotationId: UUID, snapshotId: UUID, changeId: UUID, userId: UUID?): Annotation.HasTemporarySnapshotAndSnapshots {
         val verifiedUserId = annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
         return annotationService.removeChange(annotationId, snapshotId, changeId, verifiedUserId)
     }

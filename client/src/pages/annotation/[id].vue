@@ -15,8 +15,6 @@ useLoader()
   .startLoading(annotationId)
   .then(() => (loadingIsStarted.value = true))
 
-const router = useRouter()
-
 const annotation = computed(() => useAnnotation().annotation.value)
 const currentChange = computed(() => useAnnotation().currentChange.value)
 
@@ -24,10 +22,6 @@ const isActiveOfElementHolders = reactive({
   before: true,
   after: true,
 })
-
-function suspend() {
-  router.back()
-}
 </script>
 
 <template>
@@ -37,7 +31,6 @@ function suspend() {
     </div>
     <div class="app">
       <annotation-bar
-        :suspend="suspend"
         :is-active-of-element-holders="{
           before: isActiveOfElementHolders.before,
           after: isActiveOfElementHolders.after,

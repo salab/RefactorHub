@@ -175,7 +175,7 @@ class Git {
         private fun commitAll(userName: String, commitMessage: String): String {
             val repositoryDirectory = getUserRepositoryDirectory(userName)
             "git add .".runCommand(repositoryDirectory)
-            "git commit".runCommand(
+            "git commit --allow-empty".runCommand(
                 repositoryDirectory,
                 "-m", "\"$commitMessage\"" // commit message which may have spaces must not be split by space
             )

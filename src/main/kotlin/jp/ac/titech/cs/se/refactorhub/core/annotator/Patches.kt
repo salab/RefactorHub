@@ -45,6 +45,7 @@ private fun parsePatch(patch: String): List<FileMapping> {
     }
     if (temporaryDiff.isNotEmpty()) diffs.add(temporaryDiff.toString())
 
+    val diffGitRegex = Regex("""^diff --git a/(\S+) b/(\S+)""")
     for (diff in diffs) {
         var status = FileMappingStatus.modified
         var beforePath: String? = null
@@ -53,17 +54,25 @@ private fun parsePatch(patch: String): List<FileMapping> {
         val diffBody = StringBuilder()
         for (raw in diff.split("\n").map { it + "\n" }) {
             if (isHeaderRaw) {
-                if (raw.startsWith("new file mode")) status = FileMappingStatus.added
-                else if (raw.startsWith("deleted file mode")) status = FileMappingStatus.removed
-                else if (raw.startsWith("rename from ")) {
+                val matchedHeader = diffGitRegex.find(raw)
+                if (matchedHeader != null) {
+                    assert(matchedHeader.groups.size == 3)
+                    // matchedHeader.groups[0] holds the entire matched string
+                    beforePath = matchedHeader.groups[1]!!.value
+                    afterPath = matchedHeader.groups[2]!!.value
+                } else if (raw.startsWith("new file mode")) {
+                    status = FileMappingStatus.added
+                    beforePath = null
+                } else if (raw.startsWith("deleted file mode")) {
+                    status = FileMappingStatus.removed
+                    afterPath = null
+                } else if (raw.startsWith("rename from ")) {
                     status = FileMappingStatus.renamed
                     beforePath = raw.substring("rename from ".length).substringBefore("\n")
                 } else if (raw.startsWith("rename to ")) {
                     status = FileMappingStatus.renamed
                     afterPath = raw.substring("rename to ".length).substringBefore("\n")
-                } else if (raw.startsWith("--- a/")) beforePath = raw.substring("--- a/".length).substringBefore("\n")
-                else if (raw.startsWith("+++ b/")) afterPath = raw.substring("+++ b/".length).substringBefore("\n")
-                else if (raw.startsWith("@@")) {
+                } else if (raw.startsWith("@@")) {
                     isHeaderRaw = false
                     diffBody.append(raw)
                 }
