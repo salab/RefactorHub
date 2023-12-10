@@ -27,6 +27,7 @@ const navigator = getNavigator(props.viewer.id)
 const canModifyAfter = computed(
   () =>
     !!useAnnotation().annotation.value?.hasTemporarySnapshot &&
+    !props.viewer.filePair.isAlreadyRemoved() &&
     useAnnotation()
       .getChangeList()
       .findIndex(({ id }) => id === useAnnotation().currentChange.value?.id) ===
@@ -35,6 +36,7 @@ const canModifyAfter = computed(
 const canModifyBefore = computed(
   () =>
     !!useAnnotation().annotation.value?.hasTemporarySnapshot &&
+    !props.viewer.filePair.isAlreadyRemoved() &&
     useAnnotation()
       .getChangeList()
       .findIndex(({ id }) => id === useAnnotation().currentChange.value?.id) ===

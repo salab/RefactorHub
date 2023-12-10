@@ -106,7 +106,7 @@ private fun parseDiffHunk(diffBody: String): List<DiffHunk> {
     }
 
     val diffBodyRaws = diffBody.split("\n").map { it + "\n" }
-    val headerRegex = Regex("""^@@ -(\d+),\d+ \+(\d+),\d+ @@""")
+    val headerRegex = Regex("""^@@ -(\d+)\S* \+(\d+)\S* @@""")
     for (raw in diffBodyRaws) {
         val matchedHeader = headerRegex.find(raw)
         if (matchedHeader != null) {
@@ -120,7 +120,7 @@ private fun parseDiffHunk(diffBody: String): List<DiffHunk> {
             }
 
             assert(matchedHeader.groups.size == 3)
-            // matchedHeader.groups[0] holds the entire matched string e.g. "@@ -(g1),1 +(g2),1 @@"
+            // matchedHeader.groups[0] holds the entire matched string e.g. "@@ -(g1),1 +(g2) @@"
             before.currentLine = matchedHeader.groups[1]!!.value.toInt()
             after.currentLine = matchedHeader.groups[2]!!.value.toInt()
             // NOTE: the line of next raw will be matchedHeader.groups[1]

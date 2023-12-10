@@ -56,6 +56,7 @@ interface AbstractFilePair<T> {
   getPathPair(): PathPair
   getEdgePathPair(): PathPair
   isNotRemovedYet(): boolean
+  isAlreadyRemoved(): boolean
 }
 interface FilePairModified<T> extends AbstractFilePair<T> {
   readonly status: 'modified'
@@ -184,6 +185,15 @@ abstract class AbstractFilePairImpl implements AbstractFilePair<FilePair> {
     while (node) {
       if (node.status === 'removed' || node.status === 'renamed') return true
       node = node.next
+    }
+    return false
+  }
+
+  public isAlreadyRemoved(): boolean {
+    let node = this.prev
+    while (node) {
+      if (node.status === 'removed') return true
+      node = node.prev
     }
     return false
   }
