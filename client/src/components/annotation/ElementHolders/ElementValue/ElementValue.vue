@@ -38,6 +38,7 @@ const file = computed(
 )
 
 const isExisting = computed(() => file.value !== undefined)
+const { canEditCurrentChange } = useAnnotation()
 
 const openLocation = () => {
   const { viewers, recreateViewer, mainViewerId } = useViewer()
@@ -159,6 +160,7 @@ const range = computed(() => props.element.location?.range)
         <v-icon :size="16" icon="$mdiEyeOutline" />
       </v-btn>
       <v-btn
+        v-if="canEditCurrentChange"
         variant="text"
         :size="16"
         icon
@@ -169,6 +171,7 @@ const range = computed(() => props.element.location?.range)
         <v-icon :size="16" icon="$mdiMarker" />
       </v-btn>
       <v-btn
+        v-if="canEditCurrentChange"
         variant="text"
         :size="16"
         icon

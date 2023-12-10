@@ -523,6 +523,20 @@ export const useAnnotation = () => {
     const changeId = currentChange.value?.id
     return { annotationId, snapshotId, changeId }
   })
+  const isOwner = computed(
+    () => (annotation.value?.ownerId ?? '') === useUser().user.value?.id,
+  )
+  const currentIsLast = computed(
+    () =>
+      getChangeList().length > 0 &&
+      getChangeList()[getChangeList().length - 1].id ===
+        currentChange.value?.id,
+  )
+  const canEditCurrentChange = computed(() => {
+    return annotation.value?.hasTemporarySnapshot && currentIsLast.value
+      ? false
+      : isOwner && !!annotation.value?.isDraft
+  })
 
   function updateFilePairsMap() {
     filePairsMap.value = annotation.value
@@ -714,6 +728,7 @@ export const useAnnotation = () => {
     currentSnapshot,
     currentChange,
     currentIds,
+    canEditCurrentChange,
     initialize,
     setup,
     getChangeList,

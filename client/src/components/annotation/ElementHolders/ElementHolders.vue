@@ -17,6 +17,8 @@ const props = defineProps({
   },
 })
 
+const { canEditCurrentChange } = useAnnotation()
+
 const elementMetadataMap = computed(() => {
   const type = useAnnotation().changeTypes.value.find(
     (t) => t.name === props.currentChange.typeName,
@@ -67,7 +69,7 @@ const isRemovable = (key: string) =>
           />
         </v-list>
       </div>
-      <div>
+      <div v-if="canEditCurrentChange">
         <v-divider />
         <element-key-put-button :category="category" />
       </div>

@@ -25,6 +25,7 @@ const props = defineProps({
   },
 })
 const isCompleted = computed(() => props.elementHolder.state === 'Manual')
+const { canEditCurrentChange } = useAnnotation()
 
 const removeElementKey = async () => {
   if (!confirm('Are you sure you want to delete this element key?')) return
@@ -45,6 +46,7 @@ const removeElementKey = async () => {
 }
 
 const verifyElement = async () => {
+  if (!canEditCurrentChange.value) return
   const { annotationId, snapshotId, changeId } =
     useAnnotation().currentIds.value
   if (!annotationId || !snapshotId || !changeId) return
@@ -115,7 +117,7 @@ const verifyElement = async () => {
                 }}</span></v-list-item-subtitle
               >
             </v-container>
-            <div v-if="isRemovable">
+            <div v-if="canEditCurrentChange && isRemovable">
               <v-btn
                 variant="text"
                 icon
@@ -139,7 +141,7 @@ const verifyElement = async () => {
           :multiple="elementHolder.multiple"
         />
       </div>
-      <div v-if="elementHolder.multiple">
+      <div v-if="canEditCurrentChange && elementHolder.multiple">
         <v-divider />
         <element-value-append-button
           :category="category"
