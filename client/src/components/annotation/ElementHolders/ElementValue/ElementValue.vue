@@ -36,6 +36,7 @@ const path = computed(() => props.element.location?.path || '-')
 const file = computed(
   () => useAnnotation().getCurrentFilePair(path.value)?.[props.category],
 )
+const currentChangeId = computed(() => useAnnotation().currentChange.value?.id)
 
 const isExisting = computed(() => file.value !== undefined)
 const { canEditCurrentChange } = useAnnotation()
@@ -78,14 +79,6 @@ const openLocation = () => {
 }
 
 const deleteElement = async () => {
-  if (
-    !confirm(
-      `Are you sure you want to ${
-        props.multiple ? 'delete' : 'clear'
-      } this element?`,
-    )
-  )
-    return
   const { annotationId, snapshotId, changeId } =
     useAnnotation().currentIds.value
   if (!annotationId || !snapshotId || !changeId) return
@@ -178,15 +171,36 @@ const range = computed(() => props.element.location?.range)
         <v-icon :size="16" icon="$mdiMarker" />
       </v-btn>
       <v-btn
-        v-if="canEditCurrentChange"
+        v-if="canEditCurrentChange && currentChangeId"
         variant="text"
         :size="16"
         icon
         :title="multiple ? 'Delete' : 'Clear'"
         color="error"
-        @click="deleteElement"
       >
         <v-icon :size="16" :icon="multiple ? '$mdiDelete' : '$mdiEraser'" />
+        <parameter-dialog
+          :title="`Are you sure you want to ${
+            props.multiple ? 'delete' : 'clear'
+          } this parameter?`"
+          :change-parameters-list="[
+            {
+              changeId: currentChangeId,
+              parameters: [
+                {
+                  category,
+                  parameterName: elementKey,
+                  elementIndex,
+                },
+              ],
+            },
+          ]"
+          :continue-button="{
+            text: multiple ? 'delete' : 'clear',
+            color: 'error',
+            onClick: () => deleteElement(),
+          }"
+        />
       </v-btn>
     </div>
   </div>

@@ -27,8 +27,9 @@ const props = defineProps({
 const isCompleted = computed(() => props.elementHolder.state === 'Manual')
 const { canEditCurrentChange } = useAnnotation()
 
+const currentChangeId = computed(() => useAnnotation().currentChange.value?.id)
+
 const removeElementKey = async () => {
-  if (!confirm('Are you sure you want to delete this element key?')) return
   const { annotationId, snapshotId, changeId } =
     useAnnotation().currentIds.value
   if (!annotationId || !snapshotId || !changeId) return
@@ -104,14 +105,31 @@ const verifyElement = async () => {
                 <v-icon v-else :size="16" icon="$mdiCircleOutline" />
               </v-btn>
               <v-btn
-                v-if="canEditCurrentChange && isRemovable"
+                v-if="canEditCurrentChange && isRemovable && currentChangeId"
                 variant="text"
                 icon
                 :size="16"
                 color="error"
-                @click.stop="removeElementKey"
               >
                 <v-icon :size="16" icon="$mdiDelete" />
+                <parameter-dialog
+                  title="Are you sure you want to remove this parameter?"
+                  :change-parameters-list="[
+                    {
+                      changeId: currentChangeId,
+                      parameters: elementHolder.elements.map((_, index) => ({
+                        category,
+                        parameterName: elementKey,
+                        elementIndex: index,
+                      })),
+                    },
+                  ]"
+                  :continue-button="{
+                    text: 'remove',
+                    color: 'error',
+                    onClick: () => removeElementKey(),
+                  }"
+                />
               </v-btn>
             </div>
             <v-container class="pa-0 ma-0 d-flex flex-column align-left">

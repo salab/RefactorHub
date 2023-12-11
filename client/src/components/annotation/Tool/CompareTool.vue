@@ -53,6 +53,9 @@ const annotatedElementLocationMap = {
 
 const selectedElementNameBefore = ref('')
 const selectedElementNameAfter = ref('')
+
+const lineCount = ref(1)
+
 watch(
   () => [...annotatedElementLocationMap.before.value.keys()],
   (newKeys) => {
@@ -90,28 +93,47 @@ function updateDiffViewer() {
     logger.error('diffViewer to compare elements is not created')
     return
   }
+
+  let original = monaco.editor.createModel('', 'text/plain')
   const locationBefore = annotatedElementLocationMap.before.value.get(
     selectedElementNameBefore.value,
   )
+  if (locationBefore) {
+    const filePairBefore = useAnnotation().getCurrentFilePair(
+      locationBefore.path,
+    )
+    if (filePairBefore) {
+      const fileModelBefore = useAnnotation().getTextModel(
+        filePairBefore,
+        'before',
+      )
+      original = monaco.editor.createModel(
+        fileModelBefore.getValueInRange(asMonacoRange(locationBefore?.range)),
+        fileModelBefore.getLanguageId(),
+      )
+    }
+  }
+
+  let modified = monaco.editor.createModel('', 'text/plain')
   const locationAfter = annotatedElementLocationMap.after.value.get(
     selectedElementNameAfter.value,
   )
-  if (!locationBefore || !locationAfter) return
-  const filePairBefore = useAnnotation().getCurrentFilePair(locationBefore.path)
-  const filePairAfter = useAnnotation().getCurrentFilePair(locationAfter.path)
-  if (!filePairBefore || !filePairAfter) return
-  const fileModelBefore = useAnnotation().getTextModel(filePairBefore, 'before')
-  const fileModelAfter = useAnnotation().getTextModel(filePairAfter, 'after')
-  diffViewer.setModel({
-    original: monaco.editor.createModel(
-      fileModelBefore.getValueInRange(asMonacoRange(locationBefore?.range)),
-      fileModelBefore.getLanguageId(),
-    ),
-    modified: monaco.editor.createModel(
-      fileModelAfter.getValueInRange(asMonacoRange(locationAfter?.range)),
-      fileModelAfter.getLanguageId(),
-    ),
-  })
+  if (locationAfter) {
+    const filePairAfter = useAnnotation().getCurrentFilePair(locationAfter.path)
+    if (filePairAfter) {
+      const fileModelAfter = useAnnotation().getTextModel(
+        filePairAfter,
+        'after',
+      )
+      modified = monaco.editor.createModel(
+        fileModelAfter.getValueInRange(asMonacoRange(locationAfter?.range)),
+        fileModelAfter.getLanguageId(),
+      )
+    }
+  }
+
+  diffViewer.setModel({ original, modified })
+  lineCount.value = Math.max(original.getLineCount(), modified.getLineCount())
 }
 watch(
   () => selectedElementNameBefore.value,
@@ -148,6 +170,10 @@ watch(
         />
       </v-col>
     </v-row>
-    <div :id="diffViewerId" class="pt-1" style="width: 100%; height: 300px" />
+    <div
+      :id="diffViewerId"
+      class="pt-1"
+      :style="`width: 100%; height: ${lineCount < 10 ? lineCount * 20 : 200}px`"
+    />
   </v-sheet>
 </template>

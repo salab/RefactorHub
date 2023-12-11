@@ -8,9 +8,48 @@ import apis, {
   FileMapping,
   FileMappingStatusEnum,
   FileModel,
+  ParameterData,
+  Range,
   Snapshot,
 } from '@/apis'
 import { useState } from '#imports'
+import { asMonacoRange } from '@/components/common/editor/utils/range'
+
+export interface ChangeParameters {
+  changeId: string
+  parameters:
+    | 'all'
+    | {
+        category: DiffCategory
+        parameterName: string
+        elementIndex: number
+      }[]
+}
+export interface ChangeParametersTextModels {
+  changeId: string
+  changeType: ChangeType
+  diff: {
+    parameterName: string
+    before: {
+      description: string
+      model: monaco.editor.ITextModel
+    }
+    after: {
+      description: string
+      model: monaco.editor.ITextModel
+    }
+  }[]
+  before: {
+    parameterName: string
+    description: string
+    model: monaco.editor.ITextModel
+  }[]
+  after: {
+    parameterName: string
+    description: string
+    model: monaco.editor.ITextModel
+  }[]
+}
 
 interface PartialPathPair {
   readonly before?: string
@@ -629,6 +668,206 @@ export const useAnnotation = () => {
     const extension = file?.extension ?? 'text/plain'
     return monaco.editor.createModel(text, extension)
   }
+  function getChangeParametersTextModels(
+    changeParametersList: ChangeParameters[],
+  ): ChangeParametersTextModels[] {
+    if (!annotation.value) return []
+    function getParameters(
+      parameterData: ParameterData,
+      changeType: ChangeType,
+      category: DiffCategory,
+    ) {
+      const entries = Object.entries(parameterData[category])
+      const map = changeType[category]
+      entries.sort((a, b) => {
+        if (a[0] in map && b[0] in map) {
+          if (map[a[0]].required && !map[b[0]].required) return -1
+          if (!map[a[0]].required && map[b[0]].required) return 1
+        } else if (a[0] in map) return -1
+        else if (b[0] in map) return 1
+        return a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0
+      })
+      const elementHolderMap = Object.fromEntries(entries)
+
+      const parameters: {
+        parameterName: string
+        description: string
+        locations: { path: string; range: Range }[]
+      }[] = []
+      for (const [parameterName, elementHolder] of Object.entries(
+        elementHolderMap,
+      )) {
+        const description =
+          changeType[category][parameterName]?.description ?? ''
+        const locations = []
+        for (const element of elementHolder.elements) {
+          const path = element.location?.path
+          const range = element.location?.range
+          if (!path || !range) continue
+          locations.push({ path, range })
+        }
+        parameters.push({ parameterName, description, locations })
+      }
+      return parameters
+    }
+    const snapshots = annotation.value.snapshots
+    const commit = annotation.value.commit
+    const results: ChangeParametersTextModels[] = []
+    changeParametersList.forEach(({ changeId, parameters: filters }) => {
+      const snapshotIndex = snapshots.findIndex((snapshot) =>
+        snapshot.changes.some(({ id }) => id === changeId),
+      )
+      if (snapshotIndex === -1) return
+      const snapshot = snapshots[snapshotIndex]
+      const change = snapshot.changes.find(({ id }) => id === changeId)
+      if (!change) return
+      const files = {
+        before:
+          snapshotIndex === 0
+            ? commit.beforeFiles
+            : snapshots[snapshotIndex - 1].files,
+        after: snapshot.files,
+      }
+      const changeType = changeTypes.value.find(
+        ({ name }) => name === change.typeName,
+      )
+      if (!changeType) return
+      let parametersBefore = getParameters(
+        change.parameterData,
+        changeType,
+        'before',
+      )
+      let parametersAfter = getParameters(
+        change.parameterData,
+        changeType,
+        'after',
+      )
+      if (filters !== 'all') {
+        parametersBefore = parametersBefore.filter((parameter) =>
+          filters.some(
+            (filter) =>
+              filter.category === 'before' &&
+              filter.parameterName === parameter.parameterName,
+          ),
+        )
+        parametersBefore = parametersBefore.map((parameter) => {
+          const indicesData = filters.filter(
+            (filter) =>
+              filter.category === 'before' &&
+              filter.parameterName === parameter.parameterName,
+          )
+          return {
+            ...parameter,
+            locations: parameter.locations.filter((_, index) =>
+              indicesData.some((indexData) => indexData.elementIndex === index),
+            ),
+          }
+        })
+        parametersAfter = parametersAfter.filter((parameter) =>
+          filters.some(
+            (filter) =>
+              filter.category === 'after' &&
+              filter.parameterName === parameter.parameterName,
+          ),
+        )
+        parametersAfter = parametersAfter.map((parameter) => {
+          const indicesData = filters.filter(
+            (filter) =>
+              filter.category === 'after' &&
+              filter.parameterName === parameter.parameterName,
+          )
+          return {
+            ...parameter,
+            locations: parameter.locations.filter((_, index) =>
+              indicesData.some((indexData) => indexData.elementIndex === index),
+            ),
+          }
+        })
+      }
+
+      const diff: ChangeParametersTextModels['diff'] = []
+      ;[...parametersBefore].forEach((before) => {
+        const after = parametersAfter.find(
+          (after) => after.parameterName === before.parameterName,
+        )
+        if (!after) return
+        const texts = { before: '', after: '' }
+        before.locations.forEach((location) => {
+          const file = files.before.find((file) => file.path === location.path)
+          if (!file) return
+          const model = monaco.editor.createModel(file.text, file.extension)
+          texts.before +=
+            (texts.before ? '\n' : '') +
+            model.getValueInRange(asMonacoRange(location.range))
+        })
+        after.locations.forEach((location) => {
+          const file = files.after.find((file) => file.path === location.path)
+          if (!file) return
+          const model = monaco.editor.createModel(file.text, file.extension)
+          texts.after +=
+            (texts.after ? '\n' : '') +
+            model.getValueInRange(asMonacoRange(location.range))
+        })
+        const textModels = {
+          before: monaco.editor.createModel(texts.before, 'java'),
+          after: monaco.editor.createModel(texts.after, 'java'),
+        }
+        diff.push({
+          parameterName: before.parameterName,
+          before: { description: before.description, model: textModels.before },
+          after: { description: after.description, model: textModels.after },
+        })
+        parametersBefore = parametersBefore.filter(
+          (parameter) => parameter.parameterName !== before.parameterName,
+        )
+        parametersAfter = parametersAfter.filter(
+          (parameter) => parameter.parameterName !== after.parameterName,
+        )
+      })
+
+      const before: ChangeParametersTextModels['before'] = parametersBefore.map(
+        (parameter) => {
+          let text = ''
+          parameter.locations.forEach((location) => {
+            const file = files.before.find(
+              (file) => file.path === location.path,
+            )
+            if (!file) return
+            const model = monaco.editor.createModel(file.text, file.extension)
+            text +=
+              (text ? '\n' : '') +
+              model.getValueInRange(asMonacoRange(location.range))
+          })
+          return {
+            parameterName: parameter.parameterName,
+            description: parameter.description,
+            model: monaco.editor.createModel(text, 'java'),
+          }
+        },
+      )
+      const after: ChangeParametersTextModels['after'] = parametersAfter.map(
+        (parameter) => {
+          let text = ''
+          parameter.locations.forEach((location) => {
+            const file = files.after.find((file) => file.path === location.path)
+            if (!file) return
+            const model = monaco.editor.createModel(file.text, file.extension)
+            text +=
+              (text ? '\n' : '') +
+              model.getValueInRange(asMonacoRange(location.range))
+          })
+          return {
+            parameterName: parameter.parameterName,
+            description: parameter.description,
+            model: monaco.editor.createModel(text, 'java'),
+          }
+        },
+      )
+
+      results.push({ changeId, changeType, diff, before, after })
+    })
+    return results
+  }
 
   function updateAnnotation(
     newAnnotation: Partial<Annotation>,
@@ -735,6 +974,7 @@ export const useAnnotation = () => {
     getCurrentFilePairs,
     getCurrentFilePair,
     getTextModel,
+    getChangeParametersTextModels,
     updateAnnotation,
     updateSnapshot,
     updateChange,

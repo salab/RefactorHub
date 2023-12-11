@@ -179,7 +179,7 @@ const switchCurrentChange = () => {
               ><b>[Extraction in Progress]</b> You can
               <span class="font-weight-medium">finish extraction</span> or
               <span class="font-weight-medium"
-                >modify the extracted source codes</span
+                >modify the extracted source code</span
               ></span
             >
             <v-spacer />
@@ -198,9 +198,22 @@ const switchCurrentChange = () => {
               size="small"
               density="comfortable"
               color="success"
-              @click="() => updateIsDraft(false)"
-              ><span class="text-none">Finish Annotation</span></v-btn
-            >
+              ><span class="text-none">Finish Annotation</span>
+              <parameter-dialog
+                title="Confirm Annotations"
+                :change-parameters-list="
+                  changeList.map((change) => ({
+                    changeId: change.id,
+                    parameters: 'all',
+                  }))
+                "
+                :continue-button="{
+                  text: 'finish',
+                  color: 'success',
+                  onClick: () => updateIsDraft(false),
+                }"
+              />
+            </v-btn>
             <v-btn
               v-if="isOwner && isDraft && hasTemporarySnapshot"
               variant="flat"
@@ -208,9 +221,23 @@ const switchCurrentChange = () => {
               density="comfortable"
               color="info"
               prepend-icon="$mdiSourceCommit"
-              @click="() => settleTemporarySnapshot()"
-              ><span class="text-none">Finish Extraction</span></v-btn
-            >
+              ><span class="text-none">Finish Extraction</span>
+              <parameter-dialog
+                title="Confirm Annotations and Source Code"
+                subtitle="[CAUTION] If you have modified the source code, the annotated ranges may be misaligned"
+                :change-parameters-list="[
+                  {
+                    changeId: changeList[changeList.length - 2].id,
+                    parameters: 'all',
+                  },
+                ]"
+                :continue-button="{
+                  text: 'finish',
+                  color: 'info',
+                  onClick: () => settleTemporarySnapshot(),
+                }"
+              />
+            </v-btn>
           </v-container>
           <v-tabs
             v-model="selectedChangeId"
@@ -319,12 +346,23 @@ const switchCurrentChange = () => {
                   color="error"
                   prepend-icon="$mdiDeleteCircle"
                   class="my-1"
-                  @click="() => removeChange()"
                 >
-                  <span class="text-none"
-                    >Reset Annotations after This</span
-                  ></v-btn
-                >
+                  <span class="text-none">Remove Annotations after This</span>
+                  <parameter-dialog
+                    title="Are you sure you want to remove these annotations?"
+                    :change-parameters-list="
+                      changeList.slice(changeList.length - 2).map((change) => ({
+                        changeId: change.id,
+                        parameters: 'all',
+                      }))
+                    "
+                    :continue-button="{
+                      text: 'remove',
+                      color: 'error',
+                      onClick: () => removeChange(),
+                    }"
+                  />
+                </v-btn>
                 <v-btn
                   v-if="selectedChangeId !== currentChange?.id"
                   variant="flat"
@@ -350,6 +388,26 @@ const switchCurrentChange = () => {
                   If you want to remove previous annotation, please remove the
                   newer annotation first</span
                 >
+                <v-btn
+                  v-if="selectedChange"
+                  color="secondary"
+                  variant="flat"
+                  size="small"
+                  density="comfortable"
+                  class="my-1"
+                >
+                  <span class="text-none">Display Parameters</span>
+                  <parameter-dialog
+                    title="Annotated Parameters"
+                    :subtitle="selectedChange.description"
+                    :change-parameters-list="[
+                      {
+                        changeId: selectedChange.id,
+                        parameters: 'all',
+                      },
+                    ]"
+                  />
+                </v-btn>
               </v-container>
               <v-container
                 v-if="isDraft && hasTemporarySnapshot"
@@ -367,11 +425,22 @@ const switchCurrentChange = () => {
                   color="error"
                   prepend-icon="$mdiDeleteCircle"
                   class="my-1"
-                  @click="() => removeChange()"
-                  ><span class="text-none"
-                    >Reset Annotations after This</span
-                  ></v-btn
-                >
+                  ><span class="text-none">Remove Annotations after This</span>
+                  <parameter-dialog
+                    title="Are you sure you want to remove these annotations?"
+                    :change-parameters-list="
+                      changeList.slice(changeList.length - 2).map((change) => ({
+                        changeId: change.id,
+                        parameters: 'all',
+                      }))
+                    "
+                    :continue-button="{
+                      text: 'remove',
+                      color: 'error',
+                      onClick: () => removeChange(),
+                    }"
+                  />
+                </v-btn>
                 <v-btn
                   v-if="selectedChangeId !== currentChange?.id"
                   variant="flat"
@@ -405,6 +474,26 @@ const switchCurrentChange = () => {
                   If you want to remove previous annotation, please remove the
                   newer annotation first</span
                 >
+                <v-btn
+                  v-if="selectedChange"
+                  color="secondary"
+                  variant="flat"
+                  size="small"
+                  density="comfortable"
+                  class="my-1"
+                >
+                  <span class="text-none">Display Parameters</span>
+                  <parameter-dialog
+                    title="Annotated Parameters"
+                    :subtitle="selectedChange.description"
+                    :change-parameters-list="[
+                      {
+                        changeId: selectedChange.id,
+                        parameters: 'all',
+                      },
+                    ]"
+                  />
+                </v-btn>
               </v-container>
               <v-container
                 v-if="!isDraft"
@@ -424,6 +513,26 @@ const switchCurrentChange = () => {
                     >Switch Displaying Change</span
                   ></v-btn
                 >
+                <v-btn
+                  v-if="selectedChange"
+                  color="secondary"
+                  variant="flat"
+                  size="small"
+                  density="comfortable"
+                  class="my-1"
+                >
+                  <span class="text-none">Display Parameters</span>
+                  <parameter-dialog
+                    title="Annotated Parameters"
+                    :subtitle="selectedChange.description"
+                    :change-parameters-list="[
+                      {
+                        changeId: selectedChange.id,
+                        parameters: 'all',
+                      },
+                    ]"
+                  />
+                </v-btn>
               </v-container>
             </v-col>
           </v-row>
