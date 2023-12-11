@@ -78,7 +78,14 @@ const openLocation = () => {
 }
 
 const deleteElement = async () => {
-  if (!confirm('Are you sure you want to delete this element?')) return
+  if (
+    !confirm(
+      `Are you sure you want to ${
+        props.multiple ? 'delete' : 'clear'
+      } this element?`,
+    )
+  )
+    return
   const { annotationId, snapshotId, changeId } =
     useAnnotation().currentIds.value
   if (!annotationId || !snapshotId || !changeId) return
@@ -134,7 +141,7 @@ const range = computed(() => props.element.location?.range)
     <div class="location flex-grow-1 d-flex flex-column justify-center pa-2">
       <div
         v-if="'name' in element && typeof element['name'] === 'string'"
-        class="d-flex justify-center"
+        class="path d-flex justify-center"
       >
         <span style="font-size: small">{{ element['name'] }}</span>
       </div>
@@ -175,11 +182,11 @@ const range = computed(() => props.element.location?.range)
         variant="text"
         :size="16"
         icon
-        title="Delete"
+        :title="multiple ? 'Delete' : 'Clear'"
         color="error"
         @click="deleteElement"
       >
-        <v-icon :size="16" icon="$mdiDelete" />
+        <v-icon :size="16" :icon="multiple ? '$mdiDelete' : '$mdiEraser'" />
       </v-btn>
     </div>
   </div>

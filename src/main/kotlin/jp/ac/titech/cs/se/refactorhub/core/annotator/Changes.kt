@@ -65,10 +65,11 @@ fun Change.changeType(type: ChangeType): Change {
 private fun MutableMap<String, CodeElementHolder>.removeEmptyCodeElementHolders(
     metadataMap: Map<String, CodeElementMetadata>
 ) {
-    metadataMap.entries.forEach {
-        if (this[it.key]?.elements?.none { element ->
-            element.location != null
-        } == true) this.remove(it.key)
+    this.toMap().entries.forEach { (parameterName, element) ->
+        val newElement = metadataMap[parameterName]
+        if (newElement == null || newElement.type != element.type) {
+            this.remove(parameterName)
+        }
     }
 }
 
@@ -76,19 +77,7 @@ private fun MutableMap<String, CodeElementHolder>.putDefaultCodeElementHolders(
     metadataMap: Map<String, CodeElementMetadata>
 ) {
     metadataMap.entries.forEach {
-        if (this.containsKey(it.key)) {
-            this[it.key]?.let { holder ->
-                if (it.value.type != holder.type || it.value.multiple != holder.multiple) {
-                    this["${it.key} (conflict)"] = holder
-                    this[it.key] = CodeElementHolder(
-                        it.value.type,
-                        it.value.multiple,
-                        if (it.value.multiple) mutableListOf()
-                        else mutableListOf(it.value.type.klass.createInstance())
-                    )
-                }
-            }
-        } else {
+        if (!this.containsKey(it.key)) {
             this[it.key] = CodeElementHolder(
                 it.value.type,
                 it.value.multiple,

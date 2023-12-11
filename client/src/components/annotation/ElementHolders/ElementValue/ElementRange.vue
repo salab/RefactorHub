@@ -10,7 +10,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="d-flex align-center justify-center text--secondary">
+  <div class="d-flex align-center justify-center">
     <number-column :number="range ? range.startLine : undefined" />
     <div>:</div>
     <number-column :number="range ? range.startColumn : undefined" />

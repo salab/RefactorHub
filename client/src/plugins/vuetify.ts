@@ -16,6 +16,7 @@ import {
   mdiCircleOutline,
   mdiDelete,
   mdiDeleteCircle,
+  mdiEraser,
   mdiMarker,
   mdiGithub,
   mdiArrowExpandRight,
@@ -35,6 +36,7 @@ import {
   mdiSourceCommit,
   mdiSourceCommitLocal,
   mdiChevronRight,
+  mdiAlertCircle,
 } from '@mdi/js'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -59,6 +61,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         mdiCircleOutline,
         mdiDelete,
         mdiDeleteCircle,
+        mdiEraser,
         mdiMarker,
         mdiGithub,
         mdiArrowExpandRight,
@@ -78,6 +81,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         mdiSourceCommit,
         mdiSourceCommitLocal,
         mdiChevronRight,
+        mdiAlertCircle,
       },
       sets: { mdi },
     },

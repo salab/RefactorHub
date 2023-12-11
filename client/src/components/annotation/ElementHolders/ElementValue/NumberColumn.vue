@@ -29,7 +29,7 @@ defineProps({
 }
 
 .number-letter {
-  font-size: 0.4rem;
+  font-size: 0.5rem;
   font-family: 'Roboto', sans-serif;
   letter-spacing: -0.01rem;
 }

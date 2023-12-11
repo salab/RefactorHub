@@ -169,7 +169,7 @@ const switchCurrentChange = () => {
               >You can
               <span class="font-weight-medium">finish annotation</span> or
               <span class="font-weight-medium"
-                >extract trailing annotated change to continue next
+                >extract the newest annotated change to continue next
                 annotation</span
               ></span
             >
@@ -228,6 +228,15 @@ const switchCurrentChange = () => {
                 v-if="change.id === currentChange?.id"
                 size="small"
                 icon="$mdiMarker"
+              />
+              <v-icon
+                v-if="
+                  hasTemporarySnapshot &&
+                  (change.id === changeList[changeList.length - 1]?.id ||
+                    change.id === changeList[changeList.length - 2]?.id)
+                "
+                size="small"
+                icon="$mdiSourceCommitLocal"
               />
               <span
                 v-if="change.id === currentChange?.id"
@@ -307,7 +316,7 @@ const switchCurrentChange = () => {
                   variant="flat"
                   size="small"
                   density="comfortable"
-                  color="warning"
+                  color="error"
                   prepend-icon="$mdiDeleteCircle"
                   class="my-1"
                   @click="() => removeChange()"
@@ -329,6 +338,18 @@ const switchCurrentChange = () => {
                     >Switch Displaying Change</span
                   ></v-btn
                 >
+                <span
+                  v-if="
+                    selectedChangeId === currentChange?.id &&
+                    !currentIsLast &&
+                    !currentIsSecondFromLast
+                  "
+                  class="text-body-2"
+                >
+                  <v-icon size="small" icon="$mdiDeleteCircle" color="error" />
+                  If you want to remove previous annotation, please remove the
+                  newer annotation first</span
+                >
               </v-container>
               <v-container
                 v-if="isDraft && hasTemporarySnapshot"
@@ -343,7 +364,7 @@ const switchCurrentChange = () => {
                   variant="flat"
                   size="small"
                   density="comfortable"
-                  color="warning"
+                  color="error"
                   prepend-icon="$mdiDeleteCircle"
                   class="my-1"
                   @click="() => removeChange()"
@@ -363,6 +384,26 @@ const switchCurrentChange = () => {
                   ><span class="text-none"
                     >Switch Displaying Change</span
                   ></v-btn
+                >
+                <span
+                  v-if="selectedChangeId === currentChange?.id && currentIsLast"
+                  class="text-body-2"
+                >
+                  <v-icon size="small" icon="$mdiAlertCircle" color="error" />
+                  You cannot proceed to the next annotation until extraction is
+                  finished</span
+                >
+                <span
+                  v-if="
+                    selectedChangeId === currentChange?.id &&
+                    !currentIsLast &&
+                    !currentIsSecondFromLast
+                  "
+                  class="text-body-2"
+                >
+                  <v-icon size="small" icon="$mdiDeleteCircle" color="error" />
+                  If you want to remove previous annotation, please remove the
+                  newer annotation first</span
                 >
               </v-container>
               <v-container

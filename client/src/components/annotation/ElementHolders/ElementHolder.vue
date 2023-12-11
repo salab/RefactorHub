@@ -103,22 +103,8 @@ const verifyElement = async () => {
                 />
                 <v-icon v-else :size="16" icon="$mdiCircleOutline" />
               </v-btn>
-            </div>
-            <v-container class="pa-0 ma-0 d-flex flex-column align-left">
-              <v-list-item-title
-                :title="elementMetadata && elementMetadata.description"
-                ><span style="font-size: small">{{
-                  elementKey
-                }}</span></v-list-item-title
-              >
-              <v-list-item-subtitle
-                ><span style="font-size: x-small">{{
-                  `${elementHolder.type}${elementHolder.multiple ? '[]' : ''}`
-                }}</span></v-list-item-subtitle
-              >
-            </v-container>
-            <div v-if="canEditCurrentChange && isRemovable">
               <v-btn
+                v-if="canEditCurrentChange && isRemovable"
                 variant="text"
                 icon
                 :size="16"
@@ -128,6 +114,34 @@ const verifyElement = async () => {
                 <v-icon :size="16" icon="$mdiDelete" />
               </v-btn>
             </div>
+            <v-container class="pa-0 ma-0 d-flex flex-column align-left">
+              <v-list-item-title
+                ><v-tooltip
+                  v-if="elementMetadata?.description"
+                  location="top center"
+                  origin="auto"
+                >
+                  <template #activator="{ props: tooltipProps }">
+                    <v-icon
+                      v-bind="tooltipProps"
+                      :size="14"
+                      icon="$mdiInformation"
+                      color="info"
+                      class="me-1"
+                    />
+                  </template>
+                  <div>{{ elementMetadata?.description }}</div>
+                </v-tooltip>
+                <span style="font-size: small">{{
+                  elementKey
+                }}</span></v-list-item-title
+              >
+              <v-list-item-subtitle
+                ><span style="font-size: x-small">{{
+                  `${elementHolder.type}${elementHolder.multiple ? '[]' : ''}`
+                }}</span></v-list-item-subtitle
+              >
+            </v-container>
           </v-container>
         </v-list-item>
       </template>

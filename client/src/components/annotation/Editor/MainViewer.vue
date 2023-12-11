@@ -26,6 +26,8 @@ const navigator = getNavigator(props.viewer.id)
 
 const canModifyAfter = computed(
   () =>
+    useAnnotation().annotation.value?.ownerId ===
+      (useUser().user.value?.id ?? '') &&
     !!useAnnotation().annotation.value?.hasTemporarySnapshot &&
     !props.viewer.filePair.isAlreadyRemoved() &&
     useAnnotation()
@@ -35,6 +37,8 @@ const canModifyAfter = computed(
 )
 const canModifyBefore = computed(
   () =>
+    useAnnotation().annotation.value?.ownerId ===
+      (useUser().user.value?.id ?? '') &&
     !!useAnnotation().annotation.value?.hasTemporarySnapshot &&
     !props.viewer.filePair.isAlreadyRemoved() &&
     useAnnotation()
@@ -609,7 +613,14 @@ watch(
         v-if="!canModify && (canModifyBefore || canModifyAfter)"
         class="path text-subtitle-2"
         :style="`border-bottom: 1px solid ${colors.info}; color: ${colors.info}`"
-        >You can modify
+      >
+        <v-icon
+          size="small"
+          icon="$mdiSourceCommitLocal"
+          color="info"
+          style="min-width: max-content; align-self: center"
+        />
+        You can modify
         <v-btn
           v-if="canModifyAfter"
           :color="colors.after"
@@ -657,7 +668,14 @@ watch(
         v-if="canModify"
         class="path text-subtitle-2"
         :style="`border-bottom: 1px solid ${colors.info}; color: ${colors.info}`"
-        ><span class="font-weight-bold">[Modifiable]</span>
+      >
+        <v-icon
+          size="small"
+          icon="$mdiSourceCommitLocal"
+          color="info"
+          style="min-width: max-content; align-self: center"
+        />
+        <span class="font-weight-bold">[Modifiable]</span>
         <v-btn
           color="info"
           flat
