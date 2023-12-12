@@ -12,8 +12,6 @@ import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileMapping
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementHolder
-import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementType
-import jp.ac.titech.cs.se.refactorhub.core.model.element.data.Location
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -35,10 +33,15 @@ class ChangeService : KoinComponent {
         return change ?: throw NotFoundException("Change(id=$changeId) is not found")
     }
 
-    fun createEmpty(): Change {
+    fun createEmpty(snapshotId: UUID, orderIndex: Int): Change {
         val changeType = changeTypeService.get(DEFAULT_CHANGE_TYPE)
-        return changeRepository.create("Extract Method" /* temporary */, "", Change.ParameterData())
-            .applyAndSaveResult { it.changeType(changeType) }
+        return changeRepository.create(
+            snapshotId,
+            orderIndex,
+            "Extract Method", // temporary
+            "",
+            Change.ParameterData()
+        ).applyAndSaveResult { it.changeType(changeType) }
     }
 
     fun modifyLineNumbers(changeId: UUID, notAppliedFileMappings: List<FileMapping>): Change {
@@ -48,6 +51,10 @@ class ChangeService : KoinComponent {
             change.parameterData.after.modifyLineNumbers(notAppliedFileMappings)
         )
         return changeRepository.updateById(changeId, parameterData = newParameterData)
+    }
+
+    fun updateOrderIndex(changeId: UUID, orderIndex: Int): Change {
+        return changeRepository.updateById(changeId, orderIndex = orderIndex)
     }
 
     fun update(changeId: UUID, description: String, typeName: String, userId: UUID): Change {

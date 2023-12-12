@@ -7,6 +7,7 @@ import java.util.UUID
 
 data class Snapshot(
     val id: UUID,
+    val orderIndex: Int,
     override val files: List<File>,
     override val fileMappings: List<FileMapping>,
     override val patch: String,

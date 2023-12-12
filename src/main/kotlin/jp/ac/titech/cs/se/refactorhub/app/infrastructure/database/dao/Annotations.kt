@@ -5,7 +5,6 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
-import org.jetbrains.exposed.sql.Table
 import java.util.UUID
 
 object Annotations : UUIDTable("annotations") {
@@ -17,12 +16,6 @@ object Annotations : UUIDTable("annotations") {
     val latestInternalCommitSha = varchar("latest_internal_commit_sha", 40)
 }
 
-object AnnotationToSnapshots : Table("annotation_to_snapshots") {
-    val annotation = reference("annotation", Annotations)
-    val snapshot = reference("snapshot", Snapshots)
-    override val primaryKey = PrimaryKey(annotation, snapshot)
-}
-
 class AnnotationDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Annotation> {
     companion object : UUIDEntityClass<AnnotationDao>(Annotations)
 
@@ -32,7 +25,7 @@ class AnnotationDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Annotat
     var isDraft by Annotations.isDraft
     var hasTemporarySnapshot by Annotations.hasTemporarySnapshot
     var latestInternalCommitSha by Annotations.latestInternalCommitSha
-    var snapshots by SnapshotDao via AnnotationToSnapshots
+    val snapshots by SnapshotDao referrersOn Snapshots.annotationId
 
     override fun asModel(): Annotation {
         return Annotation(
@@ -43,7 +36,7 @@ class AnnotationDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Annotat
             this.isDraft,
             this.hasTemporarySnapshot,
             this.latestInternalCommitSha,
-            this.snapshots.map { it.asModel() }
+            this.snapshots.sortedBy { it.orderIndex }.map { it.asModel() }
         )
     }
 }

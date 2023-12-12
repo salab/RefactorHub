@@ -65,16 +65,18 @@ class AnnotationService : KoinComponent {
 
     fun createAnnotationIfNotExist(userId: UUID?, experimentId: UUID, commitId: UUID): Annotation {
         val user = userService.getMe(userId)
-        return annotationRepository.findByCommitId(user.id, experimentId, commitId)
-            ?: annotationRepository.create(
-                user.id,
-                commitId,
-                experimentId,
-                isDraft = true,
-                hasTemporarySnapshot = false,
-                prepareDividing(user.name, commitService.get(commitId)),
-                listOf(snapshotService.createFromCommit(commitId))
-            )
+        val annotation = annotationRepository.findByCommitId(user.id, experimentId, commitId)
+        if (annotation != null) return annotation
+        val annotationId = annotationRepository.create(
+            user.id,
+            commitId,
+            experimentId,
+            isDraft = true,
+            hasTemporarySnapshot = false,
+            prepareDividing(user.name, commitService.get(commitId))
+        ).id
+        snapshotService.createFromCommit(annotationId, 0, commitId)
+        return get(annotationId)
     }
 
     fun publish(annotationId: UUID, isDraft: Boolean): Annotation.IsDraft {
@@ -133,22 +135,26 @@ class AnnotationService : KoinComponent {
             changeService.modifyLineNumbers(it.id, notAppliedFileMappings)
         }
 
-        val temporarySnapshot = snapshotService.update(Snapshot(
+        snapshotService.update(Snapshot(
             lastSnapshot.id,
+            lastSnapshot.orderIndex,
             newFiles,
             fileMappingsBeforeNew,
             patchBeforeNew,
             changesBeforeNew
         ))
-        val newLastSnapshot = snapshotService.create(lastSnapshot.files, fileMappingsAfterNew, patchAfterNew)
-        val newSnapshots = annotation.snapshots.dropLast(1).toMutableList()
-        newSnapshots.addAll(listOf(temporarySnapshot, newLastSnapshot))
+        snapshotService.create(
+            annotationId,
+            lastSnapshot.orderIndex + 1,
+            lastSnapshot.files,
+            fileMappingsAfterNew,
+            patchAfterNew
+        )
 
         return annotationRepository.updateById(
             annotationId,
             hasTemporarySnapshot = true,
             latestInternalCommitSha = latestInternalCommitSha,
-            snapshots = newSnapshots
         ).pickHasTemporarySnapshotAndSnapshots()
     }
     fun modifyTemporarySnapshot(annotationId: UUID, filePath: String, fileText: String, isRemoved: Boolean, userId: UUID): Annotation.Snapshots {
@@ -183,27 +189,26 @@ class AnnotationService : KoinComponent {
         val fileMappingsBeforeNew = mapFiles(baseFiles, patchBeforeNew)
         val fileMappingsAfterNew = mapFiles(newFiles, patchAfterNew)
 
-        val newTemporarySnapshot = snapshotService.update(Snapshot(
+        snapshotService.update(Snapshot(
             temporarySnapshot.id,
+            temporarySnapshot.orderIndex,
             newFiles,
             fileMappingsBeforeNew,
             patchBeforeNew,
             temporarySnapshot.changes
         ))
-        val newLastSnapshot = snapshotService.update(Snapshot(
+        snapshotService.update(Snapshot(
             lastSnapshot.id,
+            lastSnapshot.orderIndex,
             lastSnapshot.files,
             fileMappingsAfterNew,
             patchAfterNew,
             lastSnapshot.changes
         ))
-        val newSnapshots = annotation.snapshots.dropLast(2).toMutableList()
-        newSnapshots.addAll(listOf(newTemporarySnapshot, newLastSnapshot))
 
         return annotationRepository.updateById(
             annotationId,
             latestInternalCommitSha = latestInternalCommitSha,
-            snapshots = newSnapshots
         ).pickSnapshots()
     }
     fun settleTemporarySnapshot(annotationId: UUID): Annotation.HasTemporarySnapshot {
@@ -214,16 +219,15 @@ class AnnotationService : KoinComponent {
 
     fun removeChange(annotationId: UUID, snapshotId: UUID, changeId: UUID, userId: UUID): Annotation.HasTemporarySnapshotAndSnapshots {
         val user = userService.getMe(userId)
-        val annotation = get(annotationId)
+        var annotation = get(annotationId)
         val snapshotIndex = annotation.snapshots.indexOfFirst { it.id == snapshotId }
         val isLastIntermediateSnapshot = snapshotIndex == annotation.snapshots.size - 2
         val snapshot = snapshotService.removeChange(snapshotId, changeId)
         if (!isLastIntermediateSnapshot || snapshot.changes.isNotEmpty() || annotation.snapshots.size == 1) {
-            val newSnapshots = annotation.snapshots.toMutableList()
-            newSnapshots[snapshotIndex] = snapshot
-            return annotationRepository.updateById(annotationId, snapshots = newSnapshots).pickHasTemporarySnapshotAndSnapshots()
+            return get(annotationId).pickHasTemporarySnapshotAndSnapshots()
         }
 
+        annotation = get(annotationId)
         val lastSnapshot = annotation.snapshots.last()
         val baseFiles = if (annotation.snapshots.size == 2)
             annotation.commit.beforeFiles else annotation.snapshots[annotation.snapshots.size - 3].files
@@ -235,21 +239,21 @@ class AnnotationService : KoinComponent {
         )
 
         val fileMapping = mapFiles(baseFiles, patch)
-        val newLastSnapshot = snapshotService.update(Snapshot(
+
+        snapshotService.update(Snapshot(
             snapshotId,
+            lastSnapshot.orderIndex - 1,
             lastSnapshot.files,
             fileMapping,
             patch,
-            listOf(changeService.createEmpty())
+            listOf(changeService.createEmpty(snapshotId, 0))
         ))
-        val newSnapshots = annotation.snapshots.dropLast(2).toMutableList().apply { add(newLastSnapshot) }
+        snapshotService.delete(lastSnapshot.id)
         val newAnnotation = annotationRepository.updateById(
             annotationId,
             hasTemporarySnapshot = false,
             latestInternalCommitSha = latestInternalCommitSha,
-            snapshots = newSnapshots
         )
-        snapshotService.delete(lastSnapshot.id)
         return newAnnotation.pickHasTemporarySnapshotAndSnapshots()
     }
 

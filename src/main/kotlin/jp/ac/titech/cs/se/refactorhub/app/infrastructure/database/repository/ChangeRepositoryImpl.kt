@@ -15,12 +15,16 @@ class ChangeRepositoryImpl : ChangeRepository {
     }
 
     override fun create(
+        snapshotId: UUID,
+        orderIndex: Int,
         typeName: String,
         description: String,
         parameterData: Change.ParameterData
     ): Change {
         return transaction {
             ChangeDao.new {
+                this.snapshot = SnapshotDao[snapshotId]
+                this.orderIndex = orderIndex
                 this.type = ChangeTypeDao.find { ChangeTypes.id eq typeName }.first()
                 this.description = description
                 this.parameterData = parameterData.deepCopy()
@@ -30,12 +34,14 @@ class ChangeRepositoryImpl : ChangeRepository {
 
     override fun updateById(
         id: UUID,
+        orderIndex: Int?,
         typeName: String?,
         description: String?,
         parameterData: Change.ParameterData?
     ): Change {
         return transaction {
             val dao = ChangeDao[id]
+            if (orderIndex != null) dao.orderIndex = orderIndex
             if (typeName != null) {
                 val type = ChangeTypeDao.find { ChangeTypes.id eq typeName }.firstOrNull()
                 if (type != null) dao.type = type

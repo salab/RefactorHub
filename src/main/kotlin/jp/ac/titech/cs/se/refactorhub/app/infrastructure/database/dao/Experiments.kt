@@ -15,9 +15,9 @@ object Experiments : UUIDTable("experiments") {
     val isActive = bool("is_active").default(false)
 }
 
-object ExperimentToCommits : Table("experiment_to_commits") {
-    val experiment = reference("experiment", Experiments)
-    val commit = reference("commit", Commits)
+object ExperimentsToCommits : Table("experiments_to_commits") {
+    val experiment = reference("experiment_id", Experiments)
+    val commit = reference("commit_id", Commits)
     override val primaryKey = PrimaryKey(experiment, commit)
 }
 
@@ -28,8 +28,9 @@ class ExperimentDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Experim
     var title by Experiments.title
     var description by Experiments.description
     var isActive by Experiments.isActive
-    var targetCommits by CommitDao via ExperimentToCommits
+    var targetCommits by CommitDao via ExperimentsToCommits
 
+    @OptIn(ExperimentalStdlibApi::class)
     override fun asModel(): Experiment {
         return Experiment(
             this.id.value,
@@ -37,7 +38,7 @@ class ExperimentDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Experim
             this.title,
             this.description,
             this.isActive,
-            this.targetCommits.map { it.asModel() }
+            this.targetCommits.sortedBy { "${it.owner}/${it.repository}/${it.sha}".lowercase() }.map { it.asModel() }
         )
     }
 }

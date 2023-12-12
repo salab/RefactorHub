@@ -2,7 +2,6 @@ package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 
 import jp.ac.titech.cs.se.refactorhub.app.exception.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.SnapshotRepository
-import jp.ac.titech.cs.se.refactorhub.app.model.Change
 import jp.ac.titech.cs.se.refactorhub.app.model.Snapshot
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.File
@@ -24,43 +23,52 @@ class SnapshotService : KoinComponent {
     }
 
     fun create(
+        annotationId: UUID,
+        orderIndex: Int,
         files: List<File>,
         fileMappings: List<FileMapping>,
         patch: String,
-        changes: List<Change> = listOf(changeService.createEmpty())
     ): Snapshot {
-        return snapshotRepository.create(files, fileMappings, patch, changes)
+        val snapshotId = snapshotRepository.create(annotationId, orderIndex, files, fileMappings, patch).id
+        changeService.createEmpty(snapshotId, 0)
+        return get(snapshotId)
     }
-    fun createFromCommit(commitId: UUID): Snapshot {
+    fun createFromCommit(annotationId: UUID, orderIndex: Int, commitId: UUID): Snapshot {
         val commit = commitService.get(commitId)
-        return snapshotRepository.create(
+        val snapshotId = snapshotRepository.create(
+            annotationId,
+            orderIndex,
             commit.afterFiles,
             commit.fileMappings,
-            commit.patch,
-            listOf(changeService.createEmpty())
-        )
+            commit.patch
+        ).id
+        changeService.createEmpty(snapshotId, 0)
+        return get(snapshotId)
     }
 
     fun update(snapshot: Snapshot): Snapshot {
-        return snapshotRepository.updateById(snapshot.id, snapshot.files, snapshot.fileMappings, snapshot.patch, snapshot.changes)
+        return snapshotRepository.updateById(snapshot.id, snapshot.orderIndex, snapshot.files, snapshot.fileMappings, snapshot.patch)
     }
     fun appendChange(snapshotId: UUID): Snapshot {
-        val changes = get(snapshotId).changes.toMutableList()
-        changes.add(changeService.createEmpty())
-        return snapshotRepository.updateById(snapshotId, changes = changes)
+        val changes = get(snapshotId).changes
+        changeService.createEmpty(snapshotId, changes.size)
+        return get(snapshotId)
     }
     fun removeChange(snapshotId: UUID, changeId: UUID): Snapshot {
-        val snapshot = get(snapshotId)
-        if (snapshot.changes.find { it.id == changeId } == null) return snapshot
-        val newChanges = snapshot.changes.filter { it.id != changeId }
-        val newSnapshot = snapshotRepository.updateById(snapshotId, changes = newChanges)
+        val oldSnapshot = get(snapshotId)
+        if (oldSnapshot.changes.find { it.id == changeId } == null) return oldSnapshot
+        var orderIndex = 0
+        oldSnapshot.changes.forEach {
+            if (it.id == changeId) return@forEach
+            changeService.updateOrderIndex(it.id, orderIndex)
+            orderIndex++
+        }
         changeService.delete(changeId)
-        return newSnapshot
+        return get(snapshotId)
     }
 
     fun delete(snapshotId: UUID) {
         val snapshot = get(snapshotId)
-        snapshotRepository.updateById(snapshotId, changes = listOf())
         snapshot.changes.forEach { changeService.delete(it.id) }
         snapshotRepository.deleteById(snapshotId)
     }

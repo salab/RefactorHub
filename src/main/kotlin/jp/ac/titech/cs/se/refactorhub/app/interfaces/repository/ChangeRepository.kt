@@ -7,6 +7,8 @@ interface ChangeRepository {
     fun findById(id: UUID): Change?
 
     fun create(
+        snapshotId: UUID,
+        orderIndex: Int,
         typeName: String,
         description: String,
         parameterData: Change.ParameterData
@@ -14,6 +16,7 @@ interface ChangeRepository {
 
     fun updateById(
         id: UUID,
+        orderIndex: Int? = null,
         typeName: String? = null,
         description: String? = null,
         parameterData: Change.ParameterData? = null

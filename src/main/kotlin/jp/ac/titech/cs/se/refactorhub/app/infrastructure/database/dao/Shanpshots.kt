@@ -10,36 +10,34 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
-import org.jetbrains.exposed.sql.Table
 import org.koin.java.KoinJavaComponent
 import java.util.UUID
 
 object Snapshots : UUIDTable("snapshots") {
+    var annotationId = reference("annotation_id", Annotations)
+    val orderIndex = integer("order_index")
     val files = jsonb("files", ::stringifyFileList, ::parseFileList)
     val fileMappings = jsonb("file_mappings", ::stringifyFileMappings, ::parseFileMappings)
     val patch = text("patch")
 }
 
-object SnapshotToChanges : Table("snapshot_to_changes") {
-    val snapshot = reference("snapshot", Snapshots)
-    val change = reference("change", Changes)
-    override val primaryKey = PrimaryKey(snapshot, change)
-}
-
 class SnapshotDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Snapshot> {
     companion object : UUIDEntityClass<SnapshotDao>(Snapshots)
 
+    var annotation by AnnotationDao referencedOn Snapshots.annotationId
+    var orderIndex by Snapshots.orderIndex
     var files by Snapshots.files
     var fileMappings by Snapshots.fileMappings
     var patch by Snapshots.patch
-    var changes by ChangeDao via SnapshotToChanges
+    val changes by ChangeDao referrersOn Changes.snapshotId
 
     override fun asModel() = Snapshot(
         this.id.value,
+        this.orderIndex,
         this.files,
         this.fileMappings,
         this.patch,
-        this.changes.map { it.asModel() }
+        this.changes.sortedBy { it.orderIndex }.map { it.asModel() }
     )
 }
 

@@ -12,6 +12,8 @@ import org.koin.java.KoinJavaComponent.inject
 import java.util.UUID
 
 object Changes : UUIDTable("changes") {
+    val snapshotId = reference("snapshot_id", Snapshots)
+    val orderIndex = integer("order_index")
     val typeName = reference("type_name", ChangeTypes)
     val description = text("description")
     val parameterData = jsonb("parameter_data", ::stringifyParameterData, ::parseParameterData)
@@ -20,12 +22,15 @@ object Changes : UUIDTable("changes") {
 class ChangeDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Change> {
     companion object : UUIDEntityClass<ChangeDao>(Changes)
 
+    var snapshot by SnapshotDao referencedOn Changes.snapshotId
+    var orderIndex by Changes.orderIndex
     var type by ChangeTypeDao referencedOn Changes.typeName
     var description by Changes.description
     var parameterData by Changes.parameterData
 
     override fun asModel() = Change(
         this.id.value,
+        this.orderIndex,
         this.type.name,
         this.description,
         this.parameterData

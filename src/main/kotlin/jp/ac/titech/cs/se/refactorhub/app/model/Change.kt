@@ -6,6 +6,7 @@ import java.util.UUID
 
 data class Change(
     val id: UUID,
+    val orderIndex: Int,
     override val typeName: String,
     override val description: String = "",
     override val parameterData: ParameterData = ParameterData()

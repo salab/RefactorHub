@@ -9,18 +9,19 @@ interface SnapshotRepository {
     fun findById(id: UUID): Snapshot?
 
     fun create(
+        annotationId: UUID,
+        orderIndex: Int,
         files: List<File>,
         fileMappings: List<FileMapping>,
-        patch: String,
-        changes: List<Change>
+        patch: String
     ): Snapshot
 
     fun updateById(
         id: UUID,
+        orderIndex: Int? = null,
         files: List<File>? = null,
         fileMappings: List<FileMapping>? = null,
         patch: String? = null,
-        changes: List<Change>? = null
     ): Snapshot
 
     fun deleteById(id: UUID)

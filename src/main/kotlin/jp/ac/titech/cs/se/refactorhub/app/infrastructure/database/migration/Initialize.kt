@@ -20,13 +20,11 @@ private val tables = arrayOf(
     Users,
     Commits,
     Experiments,
-    ExperimentToCommits,
+    ExperimentsToCommits,
     ChangeTypes,
     Changes,
     Snapshots,
-    SnapshotToChanges,
     Annotations,
-    AnnotationToSnapshots,
     Actions
 )
 
