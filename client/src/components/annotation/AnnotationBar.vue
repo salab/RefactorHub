@@ -15,7 +15,7 @@ const experimentTitle = ref('')
 function updateExperimentTitle() {
   if (!experimentId.value) return
   useExperiment()
-    .getExperiment(experimentId.value)
+    .get(experimentId.value)
     .then((experiment) => (experimentTitle.value = experiment.title))
 }
 watch(

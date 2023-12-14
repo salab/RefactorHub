@@ -19,7 +19,7 @@ const myAnnotations = ref<
 >([])
 
 useAsyncData(async () => {
-  experiment.value = await useExperiment().getExperiment(experimentId)
+  experiment.value = await useExperiment().get(experimentId)
 })
 
 onMounted(async () => {

@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import apis from '@/apis'
+import { Experiment } from '@/apis'
 
-const { experimentMap, gotAll } = useExperiment()
 const form = reactive({
   title: '',
   description: '',
@@ -20,21 +19,10 @@ const examples = [
     `{"sha":"6abc40ed4850d74ee6c155f5a28f8b34881a0284","owner":"BuildCraft","repository":"BuildCraft"}`,
   ].join('\n'),
 ]
-
+const experiments = ref<Experiment[]>([])
 useAsyncData(async () => {
-  if (gotAll.value) return
-  experimentMap.value = new Map(
-    (await apis.experiments.getExperiments()).data.map((experiment) => [
-      experiment.id,
-      experiment,
-    ]),
-  )
-  gotAll.value = true
+  experiments.value = await useExperiment().getAll()
 })
-
-const actives = computed(() =>
-  [...experimentMap.value.values()].filter((e) => e.isActive),
-)
 
 const create = async () => {
   if (form.title === '' || form.commits === '') return
@@ -45,18 +33,15 @@ const create = async () => {
         .trim()
         .split('\n')
         .map((it) => JSON.parse(it))
-    const experiment = (
-      await apis.experiments.createExperiment({
-        title: form.title,
-        description: form.description,
-        commits,
-      })
-    ).data
-    experimentMap.value.set(experiment.id, experiment)
+    experiments.value = await useExperiment().create({
+      title: form.title,
+      description: form.description,
+      commits,
+    })
+    message.value = `Experiment added: ${form.title}`
     form.title = ''
     form.description = ''
     form.commits = ''
-    message.value = `Experiment added: ${experiment.title}`
   } catch (e) {
     message.value = `Failed: ${e}`
   } finally {
@@ -72,9 +57,14 @@ const create = async () => {
     </div>
     <v-divider />
     <div class="py-2">
-      <div>
+      <div v-if="experiments.length === 0">
+        Loading Experiments... Please wait a moment
+      </div>
+      <div v-else>
         <v-card
-          v-for="experiment in actives"
+          v-for="experiment in experiments.filter(
+            (experiment) => experiment.isActive,
+          )"
           :key="experiment.id"
           variant="outlined"
           style="border-color: lightgrey"

@@ -38,7 +38,7 @@ class ExperimentDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Experim
             this.title,
             this.description,
             this.isActive,
-            this.targetCommits.sortedBy { "${it.owner}/${it.repository}/${it.sha}".lowercase() }.map { it.asModel() }
+            this.targetCommits.sortedBy { "${it.owner}/${it.repository}/${it.sha}".lowercase() }.map { it.asModel().overview() }
         )
     }
 }

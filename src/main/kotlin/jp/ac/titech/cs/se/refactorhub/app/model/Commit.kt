@@ -27,4 +27,14 @@ data class Commit(
         override val repository: String = this@Commit.repository
         override val sha: String = this@Commit.sha
     }
+
+    data class Overview(
+        val id: UUID,
+        val owner: String,
+        val repository: String,
+        val sha: String,
+        val url: String,
+        val message: String,
+    )
+    fun overview() = Overview(id, owner, repository, sha, url, message)
 }

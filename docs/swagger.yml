@@ -874,6 +874,29 @@ components:
         - afterFiles
         - fileMappings
         - patch
+    CommitOverview:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        owner:
+          type: string
+        repository:
+          type: string
+        sha:
+          type: string
+        url:
+          type: string
+        message:
+          type: string
+      required:
+        - id
+        - owner
+        - repository
+        - sha
+        - url
+        - message
     FileModel:
       type: object
       properties:
@@ -1066,7 +1089,7 @@ components:
         targetCommits:
           type: array
           items:
-            $ref: "#/components/schemas/Commit"
+            $ref: "#/components/schemas/CommitOverview"
       required:
         - id
         - ownerId

@@ -8,5 +8,5 @@ data class Experiment(
     val title: String,
     val description: String,
     val isActive: Boolean,
-    val targetCommits: List<Commit>
+    val targetCommits: List<Commit.Overview>
 )

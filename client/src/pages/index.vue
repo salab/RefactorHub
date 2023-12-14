@@ -1,7 +1,5 @@
 <script setup lang="ts">
 const isAuthenticated = useUser().isAuthenticated
-useExperiment().gotAll.value = false
-useExperiment().experimentMap.value = new Map()
 </script>
 
 <template>
