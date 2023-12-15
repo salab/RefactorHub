@@ -26,9 +26,16 @@ const props = defineProps({
     required: true,
   },
 })
+
+const range = computed(() => props.element.location?.range)
+
 const pathRef = ref<HTMLSpanElement>()
 onMounted(() => {
   pathRef.value?.scrollTo(1000, 0)
+  watch(
+    () => props.element.location?.path,
+    () => setTimeout(() => pathRef.value?.scrollTo(1000, 0), 100),
+  )
 })
 
 const path = computed(() => props.element.location?.path || '-')
@@ -125,8 +132,6 @@ const toggleEditing = () => {
     useAnnotation().editingElement.value[props.category] = undefined
   }
 }
-
-const range = computed(() => props.element.location?.range)
 </script>
 
 <template>
@@ -134,74 +139,115 @@ const range = computed(() => props.element.location?.range)
     <div class="location flex-grow-1 d-flex flex-column justify-center pa-2">
       <div
         v-if="'name' in element && typeof element['name'] === 'string'"
-        class="path d-flex justify-center"
+        class="d-flex justify-center"
       >
-        <span style="font-size: small">{{ element['name'] }}</span>
+        <v-tooltip location="top center" origin="auto" :open-delay="500">
+          <template #activator="{ props: tooltipProps }">
+            <span
+              v-bind="tooltipProps"
+              style="font-size: small"
+              class="d-inline-block text-truncate"
+              >{{ element['name'] }}</span
+            >
+          </template>
+          {{ element['name'] }}
+        </v-tooltip>
       </div>
-      <div class="path d-flex justify-center">
-        <span
-          ref="pathRef"
-          style="font-size: x-small; color: gray"
-          :title="path"
-          >{{ path }}</span
-        >
+      <div class="d-flex justify-center">
+        <v-tooltip location="top center" origin="auto" :open-delay="500">
+          <template #activator="{ props: tooltipProps }">
+            <span
+              v-bind="tooltipProps"
+              ref="pathRef"
+              style="font-size: x-small; color: gray"
+              class="path"
+              >{{ path }}</span
+            >
+          </template>
+          {{ path }}
+        </v-tooltip>
       </div>
       <element-range :range="range" />
     </div>
     <div class="pa-1 d-flex flex-column justify-space-evenly">
-      <v-btn
-        variant="text"
-        :size="16"
-        icon
-        title="Preview on editor"
-        :disabled="!isExisting"
-        @click="openLocation"
-      >
-        <v-icon :size="16" icon="$mdiEyeOutline" />
-      </v-btn>
-      <v-btn
-        v-if="canEditCurrentChange"
-        variant="text"
-        :size="16"
-        icon
-        title="Start to select on editor"
-        color="secondary"
-        @click="toggleEditing"
-      >
-        <v-icon :size="16" icon="$mdiMarker" />
-      </v-btn>
-      <v-btn
-        v-if="canEditCurrentChange && currentChangeId"
-        variant="text"
-        :size="16"
-        icon
-        :title="multiple ? 'Delete' : 'Clear'"
-        color="error"
-      >
-        <v-icon :size="16" :icon="multiple ? '$mdiDelete' : '$mdiEraser'" />
-        <parameter-dialog
-          :title="`Are you sure you want to ${
-            props.multiple ? 'delete' : 'clear'
-          } this parameter?`"
-          :change-parameters-list="[
-            {
-              changeId: currentChangeId,
-              parameters: [
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-bind="tooltipProps"
+            variant="text"
+            :size="16"
+            icon
+            :disabled="!isExisting"
+            @click="openLocation"
+          >
+            <v-icon :size="16" icon="$mdiEyeOutline" />
+          </v-btn>
+        </template>
+        Preview on editor
+      </v-tooltip>
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-if="canEditCurrentChange"
+            v-bind="tooltipProps"
+            variant="text"
+            :size="16"
+            icon
+            color="secondary"
+            @click="toggleEditing"
+          >
+            <v-icon :size="16" icon="$mdiMarker" />
+          </v-btn>
+        </template>
+        Start to select on editor
+      </v-tooltip>
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-if="
+              canEditCurrentChange &&
+              currentChangeId &&
+              (multiple || element.location)
+            "
+            v-bind="tooltipProps"
+            variant="text"
+            :size="16"
+            icon
+            color="error"
+            @click="
+              () => {
+                if (!element.location) deleteElement()
+              }
+            "
+          >
+            <v-icon :size="16" :icon="multiple ? '$mdiDelete' : '$mdiEraser'" />
+            <parameter-dialog
+              v-if="element.location"
+              :title="`Are you sure you want to ${
+                props.multiple ? 'delete' : 'clear'
+              } this parameter?`"
+              :change-parameters-list="[
                 {
-                  category,
-                  parameterName: elementKey,
-                  elementIndex,
+                  changeId: currentChangeId,
+                  parameters: [
+                    {
+                      category,
+                      parameterName: elementKey,
+                      elementIndex,
+                    },
+                  ],
                 },
-              ],
-            },
-          ]"
-          :continue-button="{
-            text: multiple ? 'delete' : 'clear',
-            color: 'error',
-            onClick: () => deleteElement(),
-          }"
-        />
-      </v-btn>
+              ]"
+              :continue-button="{
+                text: multiple ? 'delete' : 'clear',
+                color: 'error',
+                onClick: () => deleteElement(),
+              }"
+            />
+          </v-btn>
+        </template>
+        {{ multiple ? 'Delete' : 'Clear' }}
+      </v-tooltip>
     </div>
   </div>
 </template>
@@ -211,29 +257,10 @@ $scrollbar-width: 4px;
 
 .location {
   overflow-x: hidden;
-
-  .path {
-    overflow-x: hidden;
-
-    span {
-      display: flex;
-      overflow-x: scroll;
-      white-space: nowrap;
-      // max-width: 100%;
-      &::-webkit-scrollbar {
-        height: $scrollbar-width;
-      }
-      &::-webkit-scrollbar-thumb {
-        background-color: rgba(128, 128, 128, 0.2);
-        border-radius: $scrollbar-width;
-      }
-      &::-webkit-scrollbar-button {
-        display: none;
-      }
-      &::-webkit-scrollbar-corner {
-        display: none;
-      }
-    }
-  }
+}
+.path {
+  display: flex;
+  overflow-x: scroll;
+  white-space: nowrap;
 }
 </style>

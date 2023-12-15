@@ -17,14 +17,13 @@ const props = defineProps({
   },
   elementMetadata: {
     type: Object as () => CodeElementMetadata,
-    default: null,
+    default: undefined,
   },
   isRemovable: {
     type: Boolean,
     required: true,
   },
 })
-const isCompleted = computed(() => props.elementHolder.state === 'Manual')
 const { canEditCurrentChange } = useAnnotation()
 
 const currentChangeId = computed(() => useAnnotation().currentChange.value?.id)
@@ -45,25 +44,6 @@ const removeElementKey = async () => {
     ).data,
   )
 }
-
-const verifyElement = async () => {
-  if (!canEditCurrentChange.value) return
-  const { annotationId, snapshotId, changeId } =
-    useAnnotation().currentIds.value
-  if (!annotationId || !snapshotId || !changeId) return
-  useAnnotation().updateChange(
-    (
-      await apis.parameters.verifyParameter(
-        annotationId,
-        snapshotId,
-        changeId,
-        props.category,
-        props.elementKey,
-        { isVerified: !isCompleted.value },
-      )
-    ).data,
-  )
-}
 </script>
 
 <template>
@@ -76,43 +56,53 @@ const verifyElement = async () => {
       <template #activator="{ props: vListGroupProps }">
         <v-list-item v-bind="vListGroupProps" class="pa-0">
           <v-container class="d-flex align-center pa-0 ma-0">
-            <div class="mx-1 d-flex flex-column align-center">
-              <v-icon
-                v-if="elementMetadata && elementMetadata.required"
-                class="my-1"
-                :size="12"
-                color="error"
-                title="This element is required"
-                icon="$mdiAsterisk"
-              />
-              <v-btn
-                variant="text"
-                :size="16"
-                icon
-                :title="
-                  isCompleted
-                    ? 'This element is verified'
-                    : 'Verify this element'
-                "
-                @click.stop="verifyElement"
-              >
-                <v-icon
-                  v-if="isCompleted"
-                  :size="16"
-                  color="success"
-                  icon="$mdiCheckCircle"
-                />
-                <v-icon v-else :size="16" icon="$mdiCircleOutline" />
-              </v-btn>
+            <div class="mx-1 d-flex flex-column">
+              <v-tooltip location="top center" origin="auto">
+                <template #activator="{ props: tooltipProps }">
+                  <v-icon
+                    v-bind="tooltipProps"
+                    :size="16"
+                    icon="$mdiInformation"
+                    color="info"
+                    class="my-1"
+                  />
+                </template>
+                <div class="text-h6">
+                  {{ elementKey }}: {{ elementHolder.type
+                  }}{{ elementHolder.multiple ? '[]' : '' }}
+                </div>
+                <div v-if="elementMetadata?.required" class="text-subtitle-2">
+                  This parameter is mandatory required
+                </div>
+                <div v-else-if="isRemovable" class="text-subtitle-2">
+                  This parameter is not defined by the change type
+                </div>
+                <div v-else class="text-subtitle-2">
+                  This parameter is optional
+                </div>
+                <v-divider :thickness="5" />
+                <div v-if="elementMetadata?.description" class="text-body-2">
+                  <cite>{{ elementMetadata?.description }}</cite>
+                </div>
+              </v-tooltip>
               <v-btn
                 v-if="canEditCurrentChange && isRemovable && currentChangeId"
                 variant="text"
                 icon
                 :size="16"
                 color="error"
+                class="mb-1"
+                @click="
+                  (e: MouseEvent) => {
+                    e.stopPropagation()
+                    if (elementHolder.elements.every((e) => !e.location))
+                      removeElementKey()
+                  }
+                "
               >
                 <v-icon :size="16" icon="$mdiDelete" />
                 <parameter-dialog
+                  v-if="elementHolder.elements.some((e) => e.location)"
                   title="Are you sure you want to remove this parameter?"
                   :change-parameters-list="[
                     {
@@ -133,27 +123,25 @@ const verifyElement = async () => {
               </v-btn>
             </div>
             <v-container class="pa-0 ma-0 d-flex flex-column align-left">
-              <v-list-item-title
-                ><v-tooltip
-                  v-if="elementMetadata?.description"
-                  location="top center"
-                  origin="auto"
-                >
-                  <template #activator="{ props: tooltipProps }">
-                    <v-icon
+              <v-tooltip location="top center" origin="auto" :open-delay="500">
+                <template #activator="{ props: tooltipProps }">
+                  <v-list-item-title>
+                    <span
                       v-bind="tooltipProps"
-                      :size="14"
-                      icon="$mdiInformation"
-                      color="info"
-                      class="me-1"
-                    />
-                  </template>
-                  <div>{{ elementMetadata?.description }}</div>
-                </v-tooltip>
-                <span style="font-size: small">{{
-                  elementKey
-                }}</span></v-list-item-title
-              >
+                      :class="
+                        elementMetadata?.required
+                          ? 'font-weight-black'
+                          : isRemovable
+                          ? 'font-italic'
+                          : 'font-weight-regular'
+                      "
+                      style="font-size: small"
+                      >{{ elementKey }}</span
+                    ></v-list-item-title
+                  >
+                </template>
+                {{ elementKey }}
+              </v-tooltip>
               <v-list-item-subtitle
                 ><span style="font-size: x-small">{{
                   `${elementHolder.type}${elementHolder.multiple ? '[]' : ''}`
@@ -185,20 +173,8 @@ const verifyElement = async () => {
   </div>
 </template>
 
-<style lang="scss" scoped>
-.element-holder {
-  border-left: solid 0.5rem;
-  ::v-deep(&) {
-    .v-list-group__header {
-      padding: 0;
-    }
-    .v-list-item__icon.v-list-group__header__append-icon {
-      min-width: 0;
-      margin: 0 0.5rem;
-      .v-icon {
-        font-size: 1rem;
-      }
-    }
-  }
+<style lang="scss">
+.v-list-item__append > .v-icon {
+  margin-inline-start: 0px;
 }
 </style>
