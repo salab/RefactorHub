@@ -67,7 +67,7 @@ private fun MutableMap<String, CodeElementHolder>.removeEmptyCodeElementHolders(
 ) {
     this.toMap().entries.forEach { (parameterName, element) ->
         val newElement = metadataMap[parameterName]
-        if (newElement == null || newElement.type != element.type) {
+        if (newElement == null || newElement.type != element.type || newElement.multiple != element.multiple) {
             this.remove(parameterName)
         }
     }
