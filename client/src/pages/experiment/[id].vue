@@ -98,22 +98,21 @@ const start = async (commitId: string) => {
                 icon="$mdiProgressCheck"
                 size="x-large"
               />
-              <v-icon v-else icon="$mdiCircleOutline" size="x-large" />
             </v-col>
-            <v-col :cols="10">
+            <v-col :cols="9">
               <v-card-title class="px-0">
-                {{ i + 1 }}. {{ commit.owner }}/{{ commit.repository }}/<a
-                  :href="commit.url"
-                  target="_blank"
-                  rel="noopener"
-                  >{{ commit.sha.substring(0, 7) }}</a
-                >
+                {{ i + 1 }}. {{ commit.owner }}/{{ commit.repository }}/{{
+                  commit.sha.substring(0, 7)
+                }}
+                <a :href="commit.url" target="_blank" rel="noopener"
+                  ><v-icon icon="$mdiGithub" size="small" class="pb-1"
+                /></a>
               </v-card-title>
               <v-card-text class="px-0 pb-1">
                 {{ commit.message }}
               </v-card-text>
             </v-col>
-            <v-col :cols="1" class="d-flex flex-column">
+            <v-col :cols="2" class="d-flex flex-column">
               <v-btn
                 v-if="getStatus(commit.id) !== 'notStarted'"
                 flat
