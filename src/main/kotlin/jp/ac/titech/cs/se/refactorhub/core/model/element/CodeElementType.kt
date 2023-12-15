@@ -5,7 +5,6 @@ import kotlin.reflect.KClass
 enum class CodeElementType {
     PackageDeclaration,
 
-    TypeDeclaration,
     ClassDeclaration,
     InterfaceDeclaration,
     EnumDeclaration,
@@ -36,7 +35,7 @@ enum class CodeElementType {
         get() = when (this) {
             PackageDeclaration -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.PackageDeclaration::class
 
-            TypeDeclaration -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.TypeDeclaration::class
+            //TypeDeclaration -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.TypeDeclaration::class
             ClassDeclaration -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.ClassDeclaration::class
             InterfaceDeclaration -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.InterfaceDeclaration::class
             EnumDeclaration -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.EnumDeclaration::class
