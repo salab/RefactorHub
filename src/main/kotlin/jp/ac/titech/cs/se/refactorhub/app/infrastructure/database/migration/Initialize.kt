@@ -36,7 +36,7 @@ private fun createInitialData() {
     val adminDao = createAdmin()
     createChangeTypes(adminDao)
     createTutorial(adminDao)
-    createExperiments(adminDao)
+//    createExperiments(adminDao)
 }
 
 private fun createAdmin(): UserDao {
