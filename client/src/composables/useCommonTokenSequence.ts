@@ -375,28 +375,47 @@ function initializeStorage(
           : currentFilePair.after?.path
       if (path === undefined) return
       diffHunkRanges[category].forEach((diffHunkRange) => {
-        filePair[category].tokens.forEach((token) => {
-          const startPosition = getPositionFromIndex(
-            filePair[category].text,
-            token.start,
-          )
-          const endPosition = getPositionFromIndex(
-            filePair[category].text,
-            token.end,
-          )
-          const tokenRange = new monaco.Range(
-            startPosition.lineNumber,
-            startPosition.column,
-            endPosition.lineNumber,
-            endPosition.column + 1,
-          )
-          if (diffHunkRange.intersectRanges(tokenRange)) {
+        const diffHunkStart = getIndexFromPosition(
+          filePair[category].text,
+          diffHunkRange.getStartPosition(),
+        )
+        const diffHunkEnd = getIndexFromPosition(
+          filePair[category].text,
+          diffHunkRange.getEndPosition(),
+        )
+        const tokenIndexStart = binarySearch(
+          filePair[category].tokens,
+          (token) => diffHunkStart - token.end,
+          -1,
+        )
+        const tokenIndexEnd = binarySearch(
+          filePair[category].tokens,
+          (token) => diffHunkEnd - token.start,
+          1,
+        )
+        if (
+          tokenIndexStart === undefined ||
+          tokenIndexEnd === undefined ||
+          tokenIndexStart > tokenIndexEnd
+        ) {
+          return
+        }
+        filePair[category].tokens
+          .slice(tokenIndexStart, tokenIndexEnd + 1)
+          .forEach((token) => {
+            const startPosition = getPositionFromIndex(
+              filePair[category].text,
+              token.start,
+            )
+            const endPosition = getPositionFromIndex(
+              filePair[category].text,
+              token.end,
+            )
             diffHunkTokens[category].push({
               token: new TokenDetail(token, path, startPosition, endPosition),
               isCommonToken: false,
             })
-          }
-        })
+          })
         diffHunkTokens[category].push({
           token: 'diffHunkSeparator',
           isCommonToken: false,
@@ -571,4 +590,71 @@ function getPositionFromIndex(text: string, index: number): monaco.Position {
     indexCount += raw.length
   }
   throw new Error(`index ${index} must be less than text length ${text.length}`)
+}
+function getIndexFromPosition(text: string, position: monaco.Position): number {
+  const raws = text.split('\n')
+  for (let i = 0; i < raws.length - 1; i++) raws[i] += '\n'
+  let indexCount = 0
+  for (let i = 0; i < raws.length; i++) {
+    const raw = raws[i]
+    if (i === position.lineNumber - 1) {
+      indexCount += position.column - 1
+      return indexCount
+    }
+    indexCount += raw.length
+  }
+  throw new Error(
+    `position ${position.toString()} must be less than text which has ${
+      raws.length
+    } lines`,
+  )
+}
+
+function binarySearch<T>(
+  sortedArray: T[],
+  compare: (element: T) => number,
+  needs: -1 | 1,
+): number | undefined {
+  if (sortedArray.length === 0) return undefined
+
+  let left = 0
+  let right = sortedArray.length - 1
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2)
+    const difference = compare(sortedArray[mid])
+    if (difference < 0) {
+      right = mid - 1
+    } else if (difference > 0) {
+      left = mid + 1
+    } else {
+      return mid
+    }
+  }
+
+  if (right === -1) {
+    const firstDifference = compare(sortedArray[0])
+    if (firstDifference < 0 && needs < 0) return 0
+    if (firstDifference > 0 && needs > 0) return 0
+    return undefined
+  }
+
+  if (left === sortedArray.length) {
+    const lastDifference = compare(sortedArray[sortedArray.length - 1])
+    if (lastDifference < 0 && needs < 0) return sortedArray.length - 1
+    if (lastDifference > 0 && needs > 0) return sortedArray.length - 1
+    return undefined
+  }
+
+  const leftDifference = compare(sortedArray[left])
+  const rightDifference = compare(sortedArray[right])
+  if (needs < 0) {
+    if (rightDifference < 0) return right
+    if (leftDifference < 0) return left
+    return undefined
+  }
+
+  if (leftDifference > 0) return left
+  if (rightDifference > 0) return right
+  return undefined
 }
