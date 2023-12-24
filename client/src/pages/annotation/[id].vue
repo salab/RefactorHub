@@ -69,7 +69,7 @@ const isActiveOfElementHolders = reactive({
             <annotation-summary v-if="currentChange" />
             <v-divider />
             <tool-tab v-if="currentChange" />
-            <div class="flex-grow-1 flex-shrink-0">
+            <div class="flex-grow-1 flex-shrink-0" style="margin-bottom: 10px">
               <main-viewers v-if="currentChange" />
             </div>
           </v-container>
