@@ -1,69 +1,77 @@
 import * as monaco from 'monaco-editor'
-import hash from 'object-hash'
-import { DiffCategory, DecorationMetadata } from 'refactorhub'
+import { DiffCategory, ElementMetadata } from 'refactorhub'
 import { asMonacoRange } from '@/components/common/editor/utils/range'
-import { CodeElement } from '@/apis'
+import { Location } from '@/apis'
+import { PathPair } from 'composables/useAnnotation'
 
 export class ElementDecorationManager {
-  private readonly decorationMetadataMap: {
-    [category in DiffCategory]: Map<string, DecorationMetadata>
+  private readonly viewer: {
+    [category in DiffCategory]?: monaco.editor.ICodeEditor
   } = {
-    before: new Map(),
-    after: new Map(),
+    before: undefined,
+    after: undefined,
   }
 
-  public setElementDecorationOnEditor(
-    category: DiffCategory,
-    key: string,
-    index: number,
-    element: CodeElement,
-    editor: monaco.editor.ICodeEditor,
-  ) {
-    const model = editor.getModel()
-    if (model) {
-      const [id] = editor.deltaDecorations(
-        [],
-        [this.createElementDecoration(key, element)],
-      )
-      this.decorationMetadataMap[category].set(hash({ key, index }), {
-        id,
-        uri: model.uri.toString(),
-      })
-    }
+  private readonly decorationsCollection: {
+    [category in DiffCategory]?: monaco.editor.IEditorDecorationsCollection
+  } = {
+    before: undefined,
+    after: undefined,
   }
 
-  public deleteElementDecoration(
-    category: DiffCategory,
-    key: string,
-    index: number,
+  private pathPair: PathPair
+
+  public constructor(
+    pathPair: PathPair,
+    originalViewer: monaco.editor.ICodeEditor | undefined,
+    modifiedViewer: monaco.editor.ICodeEditor | undefined,
   ) {
-    const metadata = this.decorationMetadataMap[category].get(
-      hash({ key, index }),
+    this.pathPair = pathPair
+    this.viewer.before = originalViewer
+    this.viewer.after = modifiedViewer
+
+    this.updateDecoration('before', useParameter().hoveredElement.value.before)
+    this.updateDecoration('after', useParameter().hoveredElement.value.after)
+    watch(
+      () => useParameter().hoveredElement.value.before,
+      (newElementMetaData) =>
+        this.updateDecoration('before', newElementMetaData),
     )
-    if (metadata) {
-      const model = monaco.editor.getModel(monaco.Uri.parse(metadata.uri))
-      if (model) model.deltaDecorations([metadata.id], [])
-      this.decorationMetadataMap[category].delete(hash({ key, index }))
-    }
+    watch(
+      () => useParameter().hoveredElement.value.after,
+      (newElementMetaData) =>
+        this.updateDecoration('after', newElementMetaData),
+    )
   }
 
-  public clearElementDecorations(category: DiffCategory) {
-    this.decorationMetadataMap[category].forEach((metadata) => {
-      const model = monaco.editor.getModel(monaco.Uri.parse(metadata.uri))
-      if (model) model.deltaDecorations([metadata.id], [])
-    })
-    this.decorationMetadataMap[category].clear()
+  public updatePathPair(pathPair: PathPair) {
+    this.pathPair = pathPair
+  }
+
+  private updateDecoration(
+    category: DiffCategory,
+    elementMetaData: ElementMetadata | undefined,
+  ) {
+    this.decorationsCollection[category]?.clear()
+    const viewer = this.viewer[category]
+    if (!elementMetaData || !viewer) return
+    const location =
+      useAnnotation().currentChange.value?.parameterData[category][
+        elementMetaData.key
+      ].elements[elementMetaData.index].location
+    if (!location || location.path !== this.pathPair[category]) return
+    this.decorationsCollection[category] = viewer.createDecorationsCollection([
+      this.createElementDecoration(location),
+    ])
   }
 
   private createElementDecoration(
-    key: string,
-    element: CodeElement,
+    location: Location,
   ): monaco.editor.IModelDeltaDecoration {
     return {
-      range: asMonacoRange(element.location?.range),
+      range: asMonacoRange(location.range),
       options: {
-        className: `element-decoration element-decoration-${element.type}`,
-        hoverMessage: { value: key },
+        className: 'element-decoration',
       },
     }
   }

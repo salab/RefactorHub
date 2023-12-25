@@ -48,11 +48,7 @@ const removeElementKey = async () => {
 
 <template>
   <div>
-    <v-list-group
-      class="element-holder"
-      :class="`element-holder-${elementHolder.type}`"
-      :value="elementKey"
-    >
+    <v-list-group :value="elementKey">
       <template #activator="{ props: vListGroupProps }">
         <v-list-item v-bind="vListGroupProps" class="pa-0">
           <v-container class="d-flex align-center pa-0 ma-0">

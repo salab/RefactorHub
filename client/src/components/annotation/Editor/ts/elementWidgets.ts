@@ -66,7 +66,7 @@ export class ElementWidgetManager {
     const range = asMonacoRange(element.location?.range)
     const id = cryptoRandomString({ length: 10 })
     const div = document.createElement('div')
-    div.classList.add('element-widget', `element-widget-${element.type}`)
+    div.classList.add('element-widget')
     div.style.width = `${getRangeWidthOnEditor(range, editor)}px`
     div.style.height = `${getRangeHeightOnEditor(range, editor)}px`
     div.style.minWidth = div.style.width
@@ -98,7 +98,7 @@ export class ElementWidgetManager {
     category: DiffCategory,
     element: CodeElement,
   ) {
-    const metadata = useAnnotation().editingElement.value[category]
+    const metadata = useParameter().editingElement.value[category]
     const { annotationId, snapshotId, changeId } =
       useAnnotation().currentIds.value
     if (!metadata || !annotationId || !snapshotId || !changeId) return
@@ -118,6 +118,6 @@ export class ElementWidgetManager {
         )
       ).data,
     )
-    useAnnotation().editingElement.value[category] = undefined
+    useParameter().updateEditingElement(category, undefined)
   }
 }

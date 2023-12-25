@@ -5,7 +5,6 @@ import { CommonTokenSequenceDecorationManager } from './ts/commonTokensDecoratio
 import { CodeFragmentManager } from './ts/codeFragments'
 import { ElementDecorationManager } from './ts/elementDecorations'
 import { ElementWidgetManager } from './ts/elementWidgets'
-import { PathPair } from '@/composables/useAnnotation'
 import { logger } from '@/utils/logger'
 import { DiffViewer, FileViewer, Viewer } from '@/composables/useViewer'
 import apis, { FileModel } from '@/apis'
@@ -56,41 +55,11 @@ const canModify = computed(
       props.viewer.category === 'before'),
 )
 
-const elementDecorationManager = new ElementDecorationManager()
 const elementWidgetManager = new ElementWidgetManager()
 const codeFragmentManager = new CodeFragmentManager()
 const commonTokenSequenceDecorationManager =
   new CommonTokenSequenceDecorationManager()
 
-function setupElementDecorations(
-  fileViewer: monaco.editor.IStandaloneCodeEditor,
-  category: DiffCategory,
-  pathPair: PathPair,
-) {
-  const path = pathPair[category]
-  if (path === undefined) return
-  const parameterData = useAnnotation().currentChange.value?.parameterData
-  if (!parameterData) {
-    logger.warn(
-      'currentChange is undefined though element decoration already started',
-    )
-    return
-  }
-  elementDecorationManager.clearElementDecorations(category)
-  Object.entries(parameterData[category]).forEach(([key, data]) => {
-    data.elements.forEach((element, index) => {
-      if (path === element.location?.path) {
-        elementDecorationManager.setElementDecorationOnEditor(
-          category,
-          key,
-          index,
-          element,
-          fileViewer,
-        )
-      }
-    })
-  })
-}
 function setupElementWidgets(
   fileViewer: monaco.editor.IStandaloneCodeEditor,
   category: DiffCategory,
@@ -132,8 +101,6 @@ function setupEditingElement(
     codeFragmentManager.disposeCodeFragmentCursor(category)
   }
 }
-
-let navigationDecoration: monaco.editor.IEditorDecorationsCollection | undefined
 
 function createDiffViewer(
   container: HTMLElement,
@@ -177,6 +144,7 @@ function createDiffViewer(
     enableSplitViewResizing: true,
     automaticLayout: true,
     readOnly: true,
+    renderWhitespace: 'all',
     diffAlgorithm: {
       onDidChange: () => ({ dispose: () => {} }),
       computeDiff: () =>
@@ -203,15 +171,7 @@ function createDiffViewer(
   if (navigation) {
     const { category, range } = navigation
     const fileViewer = category === 'before' ? originalViewer : modifiedViewer
-    navigationDecoration = fileViewer.createDecorationsCollection([
-      {
-        range,
-        options: {
-          className: `navigation-decoration`,
-        },
-      },
-    ])
-    setTimeout(() => fileViewer.revealRangeNearTop(range), 100)
+    setTimeout(() => fileViewer.revealRangeAtTop(range), 100)
   }
 
   return {
@@ -232,6 +192,7 @@ function createFileViewer(
   const fileViewer = monaco.editor.create(container, {
     automaticLayout: true,
     readOnly: !canModify.value,
+    renderWhitespace: 'all',
   })
   const textModel = useAnnotation().getTextModel(filePair, category)
   fileViewer.setModel(textModel)
@@ -258,15 +219,7 @@ function createFileViewer(
   )
 
   if (navigation) {
-    navigationDecoration = fileViewer.createDecorationsCollection([
-      {
-        range: navigation.range,
-        options: {
-          className: `navigation-decoration`,
-        },
-      },
-    ])
-    setTimeout(() => fileViewer.revealRangeNearTop(navigation.range), 100)
+    setTimeout(() => fileViewer.revealRangeAtTop(navigation.range), 100)
   }
 
   if (category === 'before')
@@ -297,8 +250,17 @@ async function createViewer(viewer: Viewer) {
   originalViewer = viewers.originalViewer
   modifiedViewer = viewers.modifiedViewer
 
+  const elementDecorationManager = new ElementDecorationManager(
+    filePair.getPathPair(),
+    originalViewer,
+    modifiedViewer,
+  )
+  watch(
+    () => props.viewer.filePair.getPathPair(),
+    (newPathPair) => elementDecorationManager.updatePathPair(newPathPair),
+  )
+
   if (originalViewer) {
-    setupElementDecorations(originalViewer, 'before', filePair.getPathPair())
     setupElementWidgets(originalViewer, 'before', filePair.before)
     commonTokenSequenceDecorationManager.setCommonTokensDecorations(
       filePair.before?.path,
@@ -306,9 +268,8 @@ async function createViewer(viewer: Viewer) {
       originalViewer,
     )
   }
-  setupEditingElement('before', useAnnotation().editingElement.value.before)
+  setupEditingElement('before', useParameter().editingElement.value.before)
   if (modifiedViewer) {
-    setupElementDecorations(modifiedViewer, 'after', filePair.getPathPair())
     setupElementWidgets(modifiedViewer, 'after', filePair.after)
     commonTokenSequenceDecorationManager.setCommonTokensDecorations(
       filePair.after?.path,
@@ -316,7 +277,7 @@ async function createViewer(viewer: Viewer) {
       modifiedViewer,
     )
   }
-  setupEditingElement('after', useAnnotation().editingElement.value.after)
+  setupEditingElement('after', useParameter().editingElement.value.after)
 
   function onMouseDown(
     e: monaco.editor.IEditorMouseEvent,
@@ -334,6 +295,7 @@ async function createViewer(viewer: Viewer) {
     const { joinedRaw, tokenSequenceSet } = useCommonTokenSequence().getWithId(
       commonTokenSequenceId,
     )
+    useCommonTokenSequence().updateSelectedId(commonTokenSequenceId)
     const sequencesOnThisViewer = tokenSequenceSet.filterCategory(category)
     const currentPath =
       category === 'before' ? filePair.before?.path : filePair.after?.path
@@ -358,19 +320,6 @@ async function createViewer(viewer: Viewer) {
       },
       props.viewer.id,
     )
-    if (navigationDecoration) navigationDecoration.clear()
-    if (currentDestinationIndex !== -1) {
-      const fileViewer = category === 'before' ? originalViewer : modifiedViewer
-      if (fileViewer)
-        navigationDecoration = fileViewer.createDecorationsCollection([
-          {
-            range: sequencesOnThisViewer[currentDestinationIndex].range,
-            options: {
-              className: `navigation-decoration`,
-            },
-          },
-        ])
-    }
 
     const otherCategory = category === 'before' ? 'after' : 'before'
     const sequencesOnOtherViewer =
@@ -432,24 +381,12 @@ onMounted(async () => {
 })
 
 watch(
-  () => useAnnotation().editingElement.value.before,
+  () => useParameter().editingElement.value.before,
   (elementMetadata) => setupEditingElement('before', elementMetadata),
 )
 watch(
-  () => useAnnotation().editingElement.value.after,
+  () => useParameter().editingElement.value.after,
   (elementMetadata) => setupEditingElement('after', elementMetadata),
-)
-watch(
-  () => useAnnotation().currentChange.value,
-  () => {
-    const pathPair = props.viewer.filePair.getPathPair()
-    if (originalViewer) {
-      setupElementDecorations(originalViewer, 'before', pathPair)
-    }
-    if (modifiedViewer) {
-      setupElementDecorations(modifiedViewer, 'after', pathPair)
-    }
-  },
 )
 watch(
   () => useCommonTokenSequence().setting.value,
@@ -561,57 +498,90 @@ watch(
           />
         </v-btn-group>
       </v-menu>
-      <span
+
+      <div
         v-if="viewer.type === 'file'"
-        class="flex-shrink-1 mx-1 path text-subtitle-2"
-        :style="`background-color: ${colors[viewer.category]}; min-width: 0%`"
+        class="flex-shrink-1 mx-1"
+        style="min-width: 0%"
       >
-        {{
-          getFileName(
-            getFilePath(viewer.filePair.getPathPair(), viewer.category),
-          )
-        }}
-      </span>
+        <v-tooltip location="top center" origin="auto" :open-delay="500">
+          <template #activator="{ props: tooltipProps }">
+            <span
+              v-bind="tooltipProps"
+              class="text-shrink text-subtitle-2"
+              :style="`background-color: ${colors[viewer.category]};`"
+            >
+              {{
+                getFileName(
+                  getFilePath(viewer.filePair.getPathPair(), viewer.category),
+                )
+              }}
+            </span>
+          </template>
+          {{
+            getFileName(
+              getFilePath(viewer.filePair.getPathPair(), viewer.category),
+            )
+          }}
+        </v-tooltip>
+      </div>
       <div
         v-else
         class="flex-shrink-1 mx-1 d-flex align-center flex-nowrap"
         style="min-width: 0%"
       >
-        <span
-          class="path text-subtitle-2"
-          :style="`background-color: ${colors.before}`"
-        >
+        <v-tooltip location="top center" origin="auto" :open-delay="500">
+          <template #activator="{ props: tooltipProps }">
+            <span
+              v-bind="tooltipProps"
+              class="text-shrink text-subtitle-2"
+              :style="`background-color: ${colors.before}`"
+            >
+              {{ getPathDifference(viewer.filePair.getPathPair())[0] }}
+            </span>
+          </template>
           {{ getPathDifference(viewer.filePair.getPathPair())[0] }}
-        </span>
+        </v-tooltip>
         <v-icon
           size="small"
           icon="$mdiArrowRightBoldBox"
           color="purple"
           style="min-width: max-content"
         />
-        <span
-          class="path text-subtitle-2"
-          :style="`background-color: ${colors.after}`"
-        >
+        <v-tooltip location="top center" origin="auto" :open-delay="500">
+          <template #activator="{ props: tooltipProps }">
+            <span
+              v-bind="tooltipProps"
+              class="text-shrink text-subtitle-2"
+              :style="`background-color: ${colors.after}`"
+            >
+              {{ getPathDifference(viewer.filePair.getPathPair())[1] }}
+            </span>
+          </template>
           {{ getPathDifference(viewer.filePair.getPathPair())[1] }}
-        </span>
+        </v-tooltip>
       </div>
-      <v-btn
-        variant="plain"
-        density="compact"
-        :icon="
-          isOpeningFileList
-            ? '$mdiArrowUpDropCircleOutline'
-            : '$mdiArrowDownDropCircleOutline'
-        "
-        flat
-        :title="`${isOpeningFileList ? `close` : `open`} file list`"
-        @click="() => (isOpeningFileList = !isOpeningFileList)"
-      />
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-bind="tooltipProps"
+            variant="plain"
+            density="compact"
+            :icon="
+              isOpeningFileList
+                ? '$mdiArrowUpDropCircleOutline'
+                : '$mdiArrowDownDropCircleOutline'
+            "
+            flat
+            @click="() => (isOpeningFileList = !isOpeningFileList)"
+          />
+        </template>
+        {{ isOpeningFileList ? 'Close' : 'Open' }} file list
+      </v-tooltip>
 
       <span
         v-if="!canModify && (canModifyBefore || canModifyAfter)"
-        class="path text-subtitle-2"
+        class="text-shrink text-subtitle-2"
         :style="`border-bottom: 1px solid ${colors.info}; color: ${colors.info}`"
       >
         <v-icon
@@ -666,7 +636,7 @@ watch(
       >
       <span
         v-if="canModify"
-        class="path text-subtitle-2"
+        class="text-shrink text-subtitle-2"
         :style="`border-bottom: 1px solid ${colors.info}; color: ${colors.info}`"
       >
         <v-icon
@@ -758,93 +728,129 @@ watch(
 
       <v-spacer />
       <v-divider v-if="navigator" vertical />
-      <v-btn
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-if="navigator"
+            v-bind="tooltipProps"
+            variant="plain"
+            density="compact"
+            icon="$mdiMenuLeftOutline"
+            flat
+            @click="
+              (e: PointerEvent) => {
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                useViewer().navigate(viewer.id, 'prev')
+              }
+            "
+          />
+        </template>
+        Show previous
+      </v-tooltip>
+      <v-tooltip
         v-if="navigator"
-        variant="plain"
-        density="compact"
-        :icon="'$mdiMenuLeftOutline'"
-        flat
-        :title="`show previous`"
-        @click="
-          (e: PointerEvent) => {
-            e.stopPropagation() // prevent @click of v-sheet in MainViewer
-            useViewer().navigate(viewer.id, 'prev')
-          }
-        "
-      />
-      <code
-        v-if="navigator"
-        class="path"
-        style="
-          max-width: 20%;
-          border: 0.5px solid black;
-          background-color: rgba(255, 250, 240, 0.7);
-        "
-        >{{ navigator.label }}</code
+        location="top center"
+        origin="auto"
+        :open-delay="500"
       >
+        <template #activator="{ props: tooltipProps }">
+          <code
+            v-bind="tooltipProps"
+            class="text-shrink"
+            style="
+              max-width: 20%;
+              border: 0.5px solid black;
+              background-color: rgba(255, 250, 240, 0.7);
+            "
+            >{{ navigator.label }}</code
+          >
+        </template>
+        <code>{{ navigator.label }}</code>
+      </v-tooltip>
       <span v-if="navigator" class="text-body-2 ml-1">{{
         `${navigator.currentDestinationIndex + 1}/${
           navigator.destinations.length
         }`
       }}</span>
-      <v-btn
-        v-if="navigator"
-        variant="plain"
-        density="compact"
-        :icon="'$mdiMenuRightOutline'"
-        flat
-        :title="`show next`"
-        @click="
-          (e: PointerEvent) => {
-            e.stopPropagation() // prevent @click of v-sheet in MainViewer
-            useViewer().navigate(viewer.id, 'next')
-          }
-        "
-      />
-      <v-btn
-        v-if="navigator"
-        variant="plain"
-        density="compact"
-        :icon="'$mdiCloseCircleOutline'"
-        flat
-        :title="`delete navigation`"
-        class="mr-1"
-        @click="
-          () => {
-            useViewer().deleteNavigator(viewer.id)
-            navigationDecoration?.clear()
-          }
-        "
-      />
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-if="navigator"
+            v-bind="tooltipProps"
+            variant="plain"
+            density="compact"
+            :icon="'$mdiMenuRightOutline'"
+            flat
+            @click="
+              (e: PointerEvent) => {
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                useViewer().navigate(viewer.id, 'next')
+              }
+            "
+          />
+        </template>
+        Show next
+      </v-tooltip>
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-if="navigator"
+            v-bind="tooltipProps"
+            variant="plain"
+            density="compact"
+            icon="$mdiCloseCircleOutline"
+            flat
+            class="mr-1"
+            @click="
+              () => {
+                useViewer().deleteNavigator(viewer.id)
+                // TODO: 他のところから切り替わった際を考える
+                useCommonTokenSequence().updateSelectedId(undefined)
+              }
+            "
+          />
+        </template>
+        Delete navigation
+      </v-tooltip>
       <v-divider v-if="navigator" vertical />
 
-      <v-btn
-        v-if="useViewer().viewers.value.length > 1"
-        variant="plain"
-        density="compact"
-        :icon="'$mdiTabRemove'"
-        flat
-        :title="`delete this window`"
-        @click="
-          (e: PointerEvent) => {
-            e.stopPropagation() // prevent @click of v-sheet in MainViewer
-            useViewer().deleteViewer(viewer.id)
-          }
-        "
-      />
-      <v-btn
-        variant="plain"
-        density="compact"
-        :icon="'$mdiTabPlus'"
-        flat
-        :title="`duplicate this window`"
-        @click="
-          (e: PointerEvent) => {
-            e.stopPropagation() // prevent @click of v-sheet in MainViewer
-            useViewer().duplicateViewer(viewer.id)
-          }
-        "
-      />
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-if="useViewer().viewers.value.length > 1"
+            v-bind="tooltipProps"
+            variant="plain"
+            density="compact"
+            icon="$mdiTabRemove"
+            flat
+            @click="
+              (e: PointerEvent) => {
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                useViewer().deleteViewer(viewer.id)
+              }
+            "
+          />
+        </template>
+        Delete this window
+      </v-tooltip>
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-bind="tooltipProps"
+            variant="plain"
+            density="compact"
+            :icon="'$mdiTabPlus'"
+            flat
+            @click="
+              (e: PointerEvent) => {
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                useViewer().duplicateViewer(viewer.id)
+              }
+            "
+          />
+        </template>
+        Duplicate this window
+      </v-tooltip>
     </div>
     <v-divider />
     <div class="flex-grow-1 position-relative">
@@ -892,9 +898,9 @@ watch(
   height: 100%;
 }
 
-.path {
+.text-shrink {
   display: flex;
-  overflow-x: scroll;
+  overflow-x: hidden;
   white-space: nowrap;
 }
 
@@ -904,22 +910,6 @@ watch(
   }
   .file-changed-after {
     background: rgba(175, 208, 107, 0.5);
-  }
-  .navigation-decoration {
-    border: 0.5px solid black;
-    background-color: rgba(255, 250, 240, 0.7);
-  }
-
-  .element-widget {
-    cursor: pointer;
-    border: 2px solid;
-    opacity: 0.6;
-    &:hover {
-      opacity: 1;
-    }
-  }
-  .element-decoration {
-    border: 1px solid;
   }
 }
 </style>

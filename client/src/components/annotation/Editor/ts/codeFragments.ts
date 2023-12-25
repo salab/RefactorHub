@@ -74,7 +74,7 @@ export class CodeFragmentManager {
 
     if (!asMonacoRange(element.location?.range).containsRange(range)) return
 
-    const metadata = useAnnotation().editingElement.value[category]
+    const metadata = useParameter().editingElement.value[category]
     const { annotationId, snapshotId, changeId } =
       useAnnotation().currentIds.value
     if (!metadata || !annotationId || !snapshotId || !changeId) return
@@ -97,6 +97,6 @@ export class CodeFragmentManager {
         )
       ).data,
     )
-    useAnnotation().editingElement.value[category] = undefined
+    useParameter().updateEditingElement(category, undefined)
   }
 }

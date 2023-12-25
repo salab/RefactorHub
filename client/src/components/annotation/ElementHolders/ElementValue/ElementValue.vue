@@ -104,7 +104,13 @@ const deleteElement = async () => {
 }
 
 const isEditing = computed(() => {
-  const metadata = useAnnotation().editingElement.value[props.category]
+  const metadata = useParameter().editingElement.value[props.category]
+  return (
+    metadata?.key === props.elementKey && metadata?.index === props.elementIndex
+  )
+})
+const isHovered = computed(() => {
+  const metadata = useParameter().hoveredElement.value[props.category]
   return (
     metadata?.key === props.elementKey && metadata?.index === props.elementIndex
   )
@@ -120,22 +126,39 @@ const toggleEditing = () => {
         type: props.element.type,
       },
     })
-    useAnnotation().editingElement.value[props.category] = {
+    useParameter().updateEditingElement(props.category, {
       key: props.elementKey,
       index: props.elementIndex,
       type: props.element.type,
-    }
+    })
   } else {
     log(ActionName.ToggleEditingElement, ActionType.Client, {
       category: props.category,
     })
-    useAnnotation().editingElement.value[props.category] = undefined
+    useParameter().updateEditingElement(props.category, undefined)
   }
 }
 </script>
 
 <template>
-  <div :class="{ [`element-value-${element.type}`]: isEditing }" class="d-flex">
+  <div
+    :class="{ ['element-value']: isEditing || isHovered }"
+    class="d-flex"
+    @mouseenter="
+      () =>
+        useParameter().updateHoveredElement(props.category, {
+          key: props.elementKey,
+          index: props.elementIndex,
+          type: props.element.type,
+        })
+    "
+    @mouseleave="
+      () => {
+        if (isHovered)
+          useParameter().updateHoveredElement(props.category, undefined)
+      }
+    "
+  >
     <div class="location flex-grow-1 d-flex flex-column justify-center pa-2">
       <div
         v-if="'name' in element && typeof element['name'] === 'string'"

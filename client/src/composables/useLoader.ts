@@ -21,6 +21,7 @@ export const useLoader = () => {
   function initialize() {
     setLoadingText('initializing')
     useAnnotation().initialize()
+    useParameter().initialize()
     useCommonTokenSequence().initialize()
     useViewer().initialize()
   }

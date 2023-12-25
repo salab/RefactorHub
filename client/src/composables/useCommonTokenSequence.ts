@@ -254,6 +254,7 @@ export const useCommonTokenSequence = () => {
       manyToMany: false,
     }),
   )
+  const selectedId = useState<number | undefined>('selectedId', () => undefined)
 
   function initialize() {
     storage.value = new CommonTokenSequenceStorage()
@@ -262,6 +263,7 @@ export const useCommonTokenSequence = () => {
       oneToManyOrManyToOne: false,
       manyToMany: false,
     }
+    selectedId.value = undefined
   }
 
   function setup() {
@@ -310,13 +312,16 @@ export const useCommonTokenSequence = () => {
   ) {
     storage.value.updateIsHovered(path, category, position)
   }
-
   function updateSetting(newSetting: CommonTokenSequenceSetting) {
     setting.value = newSetting
+  }
+  function updateSelectedId(newSelectedId: number | undefined) {
+    selectedId.value = newSelectedId
   }
 
   return {
     maxId: computed(() => storage.value.get(setting.value).length - 1),
+    selectedId: computed(() => selectedId.value),
     setting: computed(() => setting.value),
     initialize,
     setup,
@@ -325,6 +330,7 @@ export const useCommonTokenSequence = () => {
     getWithId,
     updateIsHovered,
     updateSetting,
+    updateSelectedId,
   }
 }
 

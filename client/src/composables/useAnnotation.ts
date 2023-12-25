@@ -1,5 +1,5 @@
 import * as monaco from 'monaco-editor'
-import { DiffCategory, ElementMetadata } from 'refactorhub'
+import { DiffCategory } from 'refactorhub'
 import apis, {
   Annotation,
   Change,
@@ -533,12 +533,6 @@ export const useAnnotation = () => {
   )
   const changeTypes = useState<ChangeType[]>('changeTypes', () => [])
   const codeElementTypes = useState<string[]>('codeElementTypes', () => [])
-  const editingElement = useState<{
-    [category in DiffCategory]?: ElementMetadata
-  }>('editingElement', () => ({
-    before: undefined,
-    after: undefined,
-  }))
 
   const currentChangeId = useState<string | undefined>(
     'currentChangeId',
@@ -588,8 +582,6 @@ export const useAnnotation = () => {
     filePairsMap.value = new Map()
     changeTypes.value = []
     codeElementTypes.value = []
-    editingElement.value.before = undefined
-    editingElement.value.after = undefined
     currentChangeId.value = ''
   }
 
@@ -963,7 +955,6 @@ export const useAnnotation = () => {
     annotation,
     changeTypes,
     codeElementTypes,
-    editingElement,
     currentSnapshot,
     currentChange,
     currentIds,
