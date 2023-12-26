@@ -180,12 +180,7 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
             v-for="change in changeList"
             :key="change.id"
             :value="change.id"
-            :onclick="
-              () => {
-                console.log('aaaa')
-                switchCurrentChange(change.id)
-              }
-            "
+            :onclick="() => switchCurrentChange(change.id)"
           >
             <v-icon
               v-if="change.id === currentChange?.id"
