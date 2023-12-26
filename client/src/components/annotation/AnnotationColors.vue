@@ -1,7 +1,8 @@
 <script setup lang="ts">
 const hoveredCommonTokenSequencesHueId = 0
 const selectedCommonTokenSequencesHueId = 5
-const elementHueId = 3
+const hoveredElementHueId = 3
+const editingElementHueId = 1
 const otherCommonTokenSequencesHueIdMin = 6
 const { hoveredElement, editingElement } = useParameter()
 const elementIsHighlighted = computed(
@@ -25,8 +26,11 @@ function calcHue(hueId: number) {
   }
   return hue
 }
-const getElementColor = (alpha = 1.0) => {
-  return `hsla(${calcHue(elementHueId)}, 100%, 60%, ${alpha})`
+const getHoveredElementColor = (alpha = 1.0) => {
+  return `hsla(${calcHue(hoveredElementHueId)}, 100%, 60%, ${alpha})`
+}
+const getEditingElementColor = (alpha = 1.0) => {
+  return `hsla(${calcHue(editingElementHueId)}, 100%, 60%, ${alpha})`
 }
 
 function getCommonTokenSequenceColor(id: number, alpha = 1.0) {
@@ -96,23 +100,26 @@ function getCommonTokenSequenceBorderWidth(id: number) {
 <template>
   <!-- prettier-ignore -->
   <component :is="'style'">
-      .element-value {
-        background-color: {{ getElementColor(0.2) }};
+      .element-value-hovered {
+        background-color: {{ getHoveredElementColor(0.2) }};
+      }
+      .element-value-editing {
+        background-color: {{ getEditingElementColor(0.2) }};
       }
       .element-widget {
         cursor: pointer;
         border: 2px solid;
         opacity: 0.6;
-        background-color: {{ getElementColor(0.2) }};
-        color: {{ getElementColor(0.9) }};
+        background-color: {{ getEditingElementColor(0.2) }};
+        color: {{ getEditingElementColor(0.9) }};
         &:hover {
           opacity: 1;
         }
       }
       .element-decoration {
         border: 1px solid;
-        background-color: {{ getElementColor(0.2) }};
-        border-color: {{ getElementColor(0.9) }} !important;
+        background-color: {{ getHoveredElementColor(0.2) }};
+        border-color: {{ getHoveredElementColor(0.9) }} !important;
       }
     <template v-if="!elementIsHighlighted">
       <template v-for="id in [...new Array(maxId + 1).keys()]">

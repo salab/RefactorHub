@@ -1,50 +1,64 @@
 import * as monaco from 'monaco-editor'
-import { DecorationMetadata, DiffCategory } from 'refactorhub'
+import { DiffCategory } from 'refactorhub'
 import { TokenSequence } from 'composables/useCommonTokenSequence'
+import { PathPair } from 'composables/useAnnotation'
 
+/** Dependencies: beforePath, afterPath */
 export class CommonTokenSequenceDecorationManager {
-  private readonly currentDecorations: {
-    [category in DiffCategory]: Set<{
-      sequence: TokenSequence
-      metadata: DecorationMetadata
-    }>
-  } = {
-    before: new Set(),
-    after: new Set(),
+  private readonly viewer: {
+    [category in DiffCategory]?: monaco.editor.ICodeEditor
   }
 
-  public setCommonTokensDecorations(
-    path: string | undefined,
-    category: DiffCategory,
-    editor: monaco.editor.ICodeEditor,
+  private pathPair: PathPair
+
+  private readonly decorationsCollection: {
+    [category in DiffCategory]?: monaco.editor.IEditorDecorationsCollection
+  } = {
+    before: undefined,
+    after: undefined,
+  }
+
+  public constructor(
+    pathPair: PathPair,
+    originalViewer: monaco.editor.ICodeEditor | undefined,
+    modifiedViewer: monaco.editor.ICodeEditor | undefined,
   ) {
-    const model = editor.getModel()
-    if (!model || path === undefined) return
+    this.pathPair = pathPair
+    this.viewer = {
+      before: originalViewer,
+      after: modifiedViewer,
+    }
+
+    this.updateDecorations('before')
+    this.updateDecorations('after')
+    watch(
+      () => useCommonTokenSequence().setting.value,
+      () => {
+        this.updateDecorations('before')
+        this.updateDecorations('after')
+      },
+    )
+  }
+
+  public update(pathPair: PathPair) {
+    this.pathPair = pathPair
+    this.updateDecorations('before')
+    this.updateDecorations('after')
+  }
+
+  private updateDecorations(category: DiffCategory) {
+    this.decorationsCollection[category]?.clear()
+    const viewer = this.viewer[category]
+    const model = viewer?.getModel()
+    const path = this.pathPair[category]
+    if (!viewer || !model || path === undefined) return
     const commonTokenSequences =
       useCommonTokenSequence().getCommonTokenSequencesIn(path, category)
-    for (const { sequence, id, count } of commonTokenSequences) {
-      const decoration = this.createCommonTokenSequenceDecoration(
-        sequence,
-        id,
-        count,
-      )
-      const [decorationId] = editor.deltaDecorations([], [decoration])
-      this.currentDecorations[category].add({
-        sequence,
-        metadata: {
-          id: decorationId,
-          uri: model.uri.toString(),
-        },
-      })
-    }
-  }
-
-  public clearCommonTokensDecorations(category: DiffCategory) {
-    this.currentDecorations[category].forEach(({ metadata }) => {
-      const model = monaco.editor.getModel(monaco.Uri.parse(metadata.uri))
-      if (model) model.deltaDecorations([metadata.id], [])
-    })
-    this.currentDecorations[category].clear()
+    this.decorationsCollection[category] = viewer.createDecorationsCollection(
+      commonTokenSequences.map(({ sequence, id, count }) =>
+        this.createCommonTokenSequenceDecoration(sequence, id, count),
+      ),
+    )
   }
 
   private createCommonTokenSequenceDecoration(
@@ -52,18 +66,41 @@ export class CommonTokenSequenceDecorationManager {
     id: number,
     count: { [category in DiffCategory]: number },
   ): monaco.editor.IModelDeltaDecoration {
-    const hoverMessage = [
-      {
-        value: `**View Common Token Sequence (id=${id}): \`${sequence.joinedRaw}\` (before: ${count.before}, after: ${count.after})**`,
-      },
-    ]
     const className = `commonTokenSequence-decoration-${id}`
     return {
       range: sequence.range,
       options: {
         className,
-        hoverMessage,
+        hoverMessage: [
+          {
+            value: `\`${sequence.joinedRaw}\` (${count.before}:${count.after}) (id=${id})`,
+          },
+        ],
       },
     }
+  }
+
+  public getIdFromHoverMessageClickEvent(
+    e: monaco.editor.IEditorMouseEvent,
+  ): number | undefined {
+    if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_WIDGET)
+      return undefined
+    let element = e.target.element
+    while (element) {
+      const content = element.textContent ?? ''
+      const id = this.getIdFromHoverMessage(content)
+      if (id !== undefined) return id
+      element = element.parentElement
+    }
+  }
+
+  private getIdFromHoverMessage(content: string): number | undefined {
+    if (!content.includes('(id=')) return undefined
+    const firstIndex = content.lastIndexOf('(id=') + '(id='.length
+    const lastIndex = content.lastIndexOf(')')
+    const commonTokenSequenceId = Number.parseInt(
+      content.substring(firstIndex, lastIndex),
+    )
+    return commonTokenSequenceId
   }
 }

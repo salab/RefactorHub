@@ -4,12 +4,10 @@ import { asMonacoRange } from '@/components/common/editor/utils/range'
 import { Location } from '@/apis'
 import { PathPair } from 'composables/useAnnotation'
 
+/** Dependencies: beforePath, afterPath */
 export class ElementDecorationManager {
   private readonly viewer: {
     [category in DiffCategory]?: monaco.editor.ICodeEditor
-  } = {
-    before: undefined,
-    after: undefined,
   }
 
   private readonly decorationsCollection: {
@@ -27,8 +25,10 @@ export class ElementDecorationManager {
     modifiedViewer: monaco.editor.ICodeEditor | undefined,
   ) {
     this.pathPair = pathPair
-    this.viewer.before = originalViewer
-    this.viewer.after = modifiedViewer
+    this.viewer = {
+      before: originalViewer,
+      after: modifiedViewer,
+    }
 
     this.updateDecoration('before', useParameter().hoveredElement.value.before)
     this.updateDecoration('after', useParameter().hoveredElement.value.after)
@@ -44,8 +44,10 @@ export class ElementDecorationManager {
     )
   }
 
-  public updatePathPair(pathPair: PathPair) {
+  public update(pathPair: PathPair) {
     this.pathPair = pathPair
+    this.updateDecoration('before', useParameter().hoveredElement.value.before)
+    this.updateDecoration('after', useParameter().hoveredElement.value.after)
   }
 
   private updateDecoration(

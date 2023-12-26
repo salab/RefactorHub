@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import * as monaco from 'monaco-editor'
-import { DiffCategory, ElementMetadata } from 'refactorhub'
+import { DiffCategory } from 'refactorhub'
 import { CommonTokenSequenceDecorationManager } from './ts/commonTokensDecorations'
 import { CodeFragmentManager } from './ts/codeFragments'
 import { ElementDecorationManager } from './ts/elementDecorations'
 import { ElementWidgetManager } from './ts/elementWidgets'
 import { logger } from '@/utils/logger'
 import { DiffViewer, FileViewer, Viewer } from '@/composables/useViewer'
-import apis, { FileModel } from '@/apis'
+import apis from '@/apis'
 
 const props = defineProps({
   viewer: {
@@ -54,53 +54,6 @@ const canModify = computed(
       props.viewer.type === 'file' &&
       props.viewer.category === 'before'),
 )
-
-const elementWidgetManager = new ElementWidgetManager()
-const codeFragmentManager = new CodeFragmentManager()
-const commonTokenSequenceDecorationManager =
-  new CommonTokenSequenceDecorationManager()
-
-function setupElementWidgets(
-  fileViewer: monaco.editor.IStandaloneCodeEditor,
-  category: DiffCategory,
-  file: FileModel | undefined,
-) {
-  elementWidgetManager.clearElementWidgetsOnEditor(category, fileViewer)
-  codeFragmentManager.clearCodeFragmentCursors(category)
-  file?.elements.forEach((element) => {
-    if (element.type === 'CodeFragment') {
-      codeFragmentManager.prepareCodeFragmentCursor(
-        category,
-        element,
-        fileViewer,
-      )
-    } else {
-      elementWidgetManager.setElementWidgetOnEditor(
-        category,
-        element,
-        fileViewer,
-      )
-    }
-  })
-}
-
-function setupEditingElement(
-  category: DiffCategory,
-  metadata?: ElementMetadata,
-) {
-  if (metadata !== undefined) {
-    if (metadata.type === 'CodeFragment') {
-      codeFragmentManager.setupCodeFragmentCursor(category)
-      elementWidgetManager.hideElementWidgets(category)
-    } else {
-      elementWidgetManager.showElementWidgetsWithType(category, metadata.type)
-      codeFragmentManager.disposeCodeFragmentCursor(category)
-    }
-  } else {
-    elementWidgetManager.hideElementWidgets(category)
-    codeFragmentManager.disposeCodeFragmentCursor(category)
-  }
-}
 
 function createDiffViewer(
   container: HTMLElement,
@@ -255,43 +208,51 @@ async function createViewer(viewer: Viewer) {
     originalViewer,
     modifiedViewer,
   )
-  watch(
-    () => props.viewer.filePair.getPathPair(),
-    (newPathPair) => elementDecorationManager.updatePathPair(newPathPair),
+  const codeFragmentManager = new CodeFragmentManager(
+    filePair.getPathPair(),
+    filePair.before?.elements ?? [],
+    filePair.after?.elements ?? [],
+    originalViewer,
+    modifiedViewer,
   )
-
-  if (originalViewer) {
-    setupElementWidgets(originalViewer, 'before', filePair.before)
-    commonTokenSequenceDecorationManager.setCommonTokensDecorations(
-      filePair.before?.path,
-      'before',
+  const elementWidgetManager = new ElementWidgetManager(
+    filePair.before?.elements ?? [],
+    filePair.after?.elements ?? [],
+    originalViewer,
+    modifiedViewer,
+  )
+  const commonTokenSequenceDecorationManager =
+    new CommonTokenSequenceDecorationManager(
+      filePair.getPathPair(),
       originalViewer,
-    )
-  }
-  setupEditingElement('before', useParameter().editingElement.value.before)
-  if (modifiedViewer) {
-    setupElementWidgets(modifiedViewer, 'after', filePair.after)
-    commonTokenSequenceDecorationManager.setCommonTokensDecorations(
-      filePair.after?.path,
-      'after',
       modifiedViewer,
     )
-  }
-  setupEditingElement('after', useParameter().editingElement.value.after)
+
+  watch(
+    () => props.viewer.filePair,
+    (newFilePair) => {
+      elementDecorationManager.update(newFilePair.getPathPair())
+      codeFragmentManager.update(
+        newFilePair.getPathPair(),
+        newFilePair.before?.elements ?? [],
+        newFilePair.after?.elements ?? [],
+      )
+      elementWidgetManager.update(
+        newFilePair.before?.elements ?? [],
+        newFilePair.after?.elements ?? [],
+      )
+      commonTokenSequenceDecorationManager.update(newFilePair.getPathPair())
+    },
+  )
 
   function onMouseDown(
     e: monaco.editor.IEditorMouseEvent,
     category: DiffCategory,
   ) {
     if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_WIDGET) return
-    const content = e.target.element?.textContent ?? ''
-    if (!content.startsWith('View Common Token Sequence')) return
-
-    const firstIndex = content.indexOf('(id=') + '(id='.length
-    const lastIndex = content.indexOf(')')
-    const commonTokenSequenceId = Number.parseInt(
-      content.substring(firstIndex, lastIndex),
-    )
+    const commonTokenSequenceId =
+      commonTokenSequenceDecorationManager.getIdFromHoverMessageClickEvent(e)
+    if (commonTokenSequenceId === undefined) return
     const { joinedRaw, tokenSequenceSet } = useCommonTokenSequence().getWithId(
       commonTokenSequenceId,
     )
@@ -379,38 +340,6 @@ onMounted(async () => {
   await createViewer(props.viewer)
   pending.value--
 })
-
-watch(
-  () => useParameter().editingElement.value.before,
-  (elementMetadata) => setupEditingElement('before', elementMetadata),
-)
-watch(
-  () => useParameter().editingElement.value.after,
-  (elementMetadata) => setupEditingElement('after', elementMetadata),
-)
-watch(
-  () => useCommonTokenSequence().setting.value,
-  () => {
-    if (originalViewer) {
-      commonTokenSequenceDecorationManager.clearCommonTokensDecorations(
-        'before',
-      )
-      commonTokenSequenceDecorationManager.setCommonTokensDecorations(
-        props.viewer.filePair.getPathPair().before,
-        'before',
-        originalViewer,
-      )
-    }
-    if (modifiedViewer) {
-      commonTokenSequenceDecorationManager.clearCommonTokensDecorations('after')
-      commonTokenSequenceDecorationManager.setCommonTokensDecorations(
-        props.viewer.filePair.getPathPair().after,
-        'after',
-        modifiedViewer,
-      )
-    }
-  },
-)
 </script>
 
 <template>

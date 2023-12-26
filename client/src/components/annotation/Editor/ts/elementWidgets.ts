@@ -1,61 +1,130 @@
 import * as monaco from 'monaco-editor'
 import cryptoRandomString from 'crypto-random-string'
-import { DiffCategory } from 'refactorhub'
+import { DiffCategory, ElementMetadata } from 'refactorhub'
 import {
   asMonacoRange,
   getRangeWidthOnEditor,
   getRangeHeightOnEditor,
 } from '@/components/common/editor/utils/range'
-import apis, { CodeElement } from '@/apis'
+import apis, { CodeElement, CodeElementType } from '@/apis'
 
 interface ElementWidget extends monaco.editor.IContentWidget {
   type: string
 }
 
+/** Dependencies: beforeElements, afterElements */
 export class ElementWidgetManager {
-  private widgets: {
+  private readonly viewer: {
+    [category in DiffCategory]?: monaco.editor.ICodeEditor
+  }
+
+  private readonly codeElements: {
+    [category in DiffCategory]: CodeElement[]
+  }
+
+  private readonly widgets: {
     [category in DiffCategory]: ElementWidget[]
   } = {
     before: [],
     after: [],
   }
 
+  public constructor(
+    beforeElements: CodeElement[],
+    afterElements: CodeElement[],
+    originalViewer: monaco.editor.ICodeEditor | undefined,
+    modifiedViewer: monaco.editor.ICodeEditor | undefined,
+  ) {
+    this.codeElements = {
+      before: beforeElements.filter(
+        (element) => element.type !== CodeElementType.CodeFragment,
+      ),
+      after: afterElements.filter(
+        (element) => element.type !== CodeElementType.CodeFragment,
+      ),
+    }
+    this.viewer = {
+      before: originalViewer,
+      after: modifiedViewer,
+    }
+    this.resetElementWidgets()
+
+    watch(
+      () => useParameter().editingElement.value.before,
+      (newElementMetaData) =>
+        this.visualizeElementWidgets('before', newElementMetaData),
+    )
+    watch(
+      () => useParameter().editingElement.value.after,
+      (newElementMetaData) =>
+        this.visualizeElementWidgets('after', newElementMetaData),
+    )
+  }
+
+  public update(beforeElements: CodeElement[], afterElements: CodeElement[]) {
+    this.codeElements.before = beforeElements.filter(
+      (element) => element.type !== CodeElementType.CodeFragment,
+    )
+    this.codeElements.after = afterElements.filter(
+      (element) => element.type !== CodeElementType.CodeFragment,
+    )
+    this.resetElementWidgets()
+  }
+
+  private resetElementWidgets() {
+    if (this.viewer.before) {
+      this.clearElementWidgets('before', this.viewer.before)
+      this.createElementWidgets('before', this.viewer.before)
+      this.visualizeElementWidgets(
+        'before',
+        useParameter().editingElement.value.before,
+      )
+    }
+    if (this.viewer.after) {
+      this.clearElementWidgets('after', this.viewer.after)
+      this.createElementWidgets('after', this.viewer.after)
+      this.visualizeElementWidgets(
+        'after',
+        useParameter().editingElement.value.after,
+      )
+    }
+  }
+
   /**
    * show element widgets with specified type & hide others
    */
-  public showElementWidgetsWithType(category: DiffCategory, type: string) {
+  private visualizeElementWidgets(
+    category: DiffCategory,
+    editingElementMetaData: ElementMetadata | undefined,
+  ) {
     this.widgets[category].forEach((widget) => {
-      if (widget.type === type) widget.getDomNode().style.display = 'block'
+      if (widget.type === editingElementMetaData?.type)
+        widget.getDomNode().style.display = 'block'
       else widget.getDomNode().style.display = 'none'
     })
   }
 
-  public hideElementWidgets(category: DiffCategory) {
-    this.widgets[category].forEach((widget) => {
-      widget.getDomNode().style.display = 'none'
-    })
-  }
-
-  public clearElementWidgetsOnEditor(
+  private clearElementWidgets(
     category: DiffCategory,
-    editor: monaco.editor.ICodeEditor,
+    viewer: monaco.editor.ICodeEditor,
   ) {
     this.widgets[category].forEach((widget) => {
-      editor.removeContentWidget(widget)
+      viewer.removeContentWidget(widget)
     })
     this.widgets[category].length = 0
   }
 
-  public setElementWidgetOnEditor(
+  private createElementWidgets(
     category: DiffCategory,
-    element: CodeElement,
-    editor: monaco.editor.ICodeEditor,
+    viewer: monaco.editor.ICodeEditor,
   ) {
-    const widget = this.createElementWidget(element, editor, () =>
-      this.updateEditingElement(category, element),
-    )
-    editor.addContentWidget(widget)
-    this.widgets[category].push(widget)
+    this.codeElements[category].forEach((element) => {
+      const widget = this.createElementWidget(element, viewer, () =>
+        this.updateParameterValue(category, element),
+      )
+      viewer.addContentWidget(widget)
+      this.widgets[category].push(widget)
+    })
   }
 
   private createElementWidget(
@@ -94,7 +163,7 @@ export class ElementWidgetManager {
     }
   }
 
-  private async updateEditingElement(
+  private async updateParameterValue(
     category: DiffCategory,
     element: CodeElement,
   ) {

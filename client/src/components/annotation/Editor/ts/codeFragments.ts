@@ -2,69 +2,62 @@ import * as monaco from 'monaco-editor'
 import { cloneDeep, debounce } from 'lodash-es'
 import { DiffCategory } from 'refactorhub'
 import { asRange, asMonacoRange } from '@/components/common/editor/utils/range'
-import apis, { CodeElement } from '@/apis'
+import apis, { CodeElement, CodeElementType } from '@/apis'
+import { PathPair } from 'composables/useAnnotation'
 
-interface CodeFragmentCursor {
-  setup(): void
-  dispose(): void
-}
-
+/** Dependencies: beforePath, afterPath, beforeElements, afterElements */
 export class CodeFragmentManager {
-  private readonly cursors: {
-    [category in DiffCategory]: CodeFragmentCursor[]
-  } = {
-    before: [],
-    after: [],
+  private pathPair: PathPair
+  private readonly codeFragments: {
+    [category in DiffCategory]: CodeElement[]
   }
 
-  public initCodeFragmentCursor() {
-    this.cursors.before.length = 0
-    this.cursors.after.length = 0
-  }
-
-  public setupCodeFragmentCursor(category: DiffCategory) {
-    this.cursors[category].forEach((cursor) => cursor.setup())
-  }
-
-  public disposeCodeFragmentCursor(category: DiffCategory) {
-    this.cursors[category].forEach((cursor) => cursor.dispose())
-  }
-
-  public clearCodeFragmentCursors(category: DiffCategory) {
-    this.cursors[category].forEach((cursor) => cursor.dispose())
-    this.cursors[category].length = 0
-  }
-
-  public prepareCodeFragmentCursor(
-    category: DiffCategory,
-    element: CodeElement,
-    editor: monaco.editor.ICodeEditor,
+  public constructor(
+    pathPair: PathPair,
+    beforeElements: CodeElement[],
+    afterElements: CodeElement[],
+    originalViewer: monaco.editor.ICodeEditor | undefined,
+    modifiedViewer: monaco.editor.ICodeEditor | undefined,
   ) {
-    const listeners: monaco.IDisposable[] = []
-    const cursor = {
-      setup: () => {
-        if (listeners.length === 0) {
-          listeners.push(
-            editor.onDidChangeCursorSelection(
-              debounce((e) => {
-                this.updateEditingCodeFragment(category, e.selection, element)
-              }, 1000),
-            ),
-          )
-        }
-      },
-      dispose: () => {
-        listeners.forEach((listener) => listener.dispose())
-        listeners.length = 0
-      },
+    this.pathPair = pathPair
+    this.codeFragments = {
+      before: beforeElements.filter(
+        (element) => element.type === CodeElementType.CodeFragment,
+      ),
+      after: afterElements.filter(
+        (element) => element.type === CodeElementType.CodeFragment,
+      ),
     }
-    this.cursors[category].push(cursor)
+
+    originalViewer?.onDidChangeCursorSelection(
+      debounce((e: monaco.editor.ICursorSelectionChangedEvent) => {
+        this.updateEditingCodeFragment('before', e.selection)
+      }, 1000),
+    )
+    modifiedViewer?.onDidChangeCursorSelection(
+      debounce((e: monaco.editor.ICursorSelectionChangedEvent) => {
+        this.updateEditingCodeFragment('after', e.selection)
+      }, 1000),
+    )
+  }
+
+  public update(
+    pathPair: PathPair,
+    beforeElements: CodeElement[],
+    afterElements: CodeElement[],
+  ) {
+    this.pathPair = pathPair
+    this.codeFragments.before = beforeElements.filter(
+      (element) => element.type === CodeElementType.CodeFragment,
+    )
+    this.codeFragments.after = afterElements.filter(
+      (element) => element.type === CodeElementType.CodeFragment,
+    )
   }
 
   private async updateEditingCodeFragment(
     category: DiffCategory,
     range: monaco.Range,
-    element: CodeElement,
   ) {
     if (
       range.startLineNumber === range.endLineNumber &&
@@ -72,7 +65,18 @@ export class CodeFragmentManager {
     )
       return
 
-    if (!asMonacoRange(element.location?.range).containsRange(range)) return
+    const path = this.pathPair[category]
+    if (path === undefined) return
+
+    const element = this.codeFragments[category].find((e) =>
+      asMonacoRange(e.location?.range).containsRange(range),
+    ) ?? {
+      type: CodeElementType.CodeFragment,
+      location: {
+        path,
+        range: asRange(range),
+      },
+    }
 
     const metadata = useParameter().editingElement.value[category]
     const { annotationId, snapshotId, changeId } =

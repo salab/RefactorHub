@@ -103,14 +103,14 @@ const deleteElement = async () => {
   )
 }
 
-const isEditing = computed(() => {
-  const metadata = useParameter().editingElement.value[props.category]
+const isHovered = computed(() => {
+  const metadata = useParameter().hoveredElement.value[props.category]
   return (
     metadata?.key === props.elementKey && metadata?.index === props.elementIndex
   )
 })
-const isHovered = computed(() => {
-  const metadata = useParameter().hoveredElement.value[props.category]
+const isEditing = computed(() => {
+  const metadata = useParameter().editingElement.value[props.category]
   return (
     metadata?.key === props.elementKey && metadata?.index === props.elementIndex
   )
@@ -142,7 +142,10 @@ const toggleEditing = () => {
 
 <template>
   <div
-    :class="{ ['element-value']: isEditing || isHovered }"
+    :class="{
+      ['element-value-hovered']: isHovered,
+      ['element-value-editing']: isEditing,
+    }"
     class="d-flex"
     @mouseenter="
       () =>
