@@ -86,11 +86,13 @@ export class CommonTokenSequenceDecorationManager {
     if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_WIDGET)
       return undefined
     let element = e.target.element
-    while (element) {
+    let count = 0
+    while (element && count < 2) {
       const content = element.textContent ?? ''
       const id = this.getIdFromHoverMessage(content)
       if (id !== undefined) return id
       element = element.parentElement
+      count++
     }
   }
 
