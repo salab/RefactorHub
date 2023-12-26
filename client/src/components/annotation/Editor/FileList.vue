@@ -103,10 +103,12 @@ function getFilePair(fileName: string): FilePair {
               (e: PointerEvent) => {
                 e.stopPropagation() // prevent @click of v-sheet in MainViewer
                 const filePair = getFilePair(fileName)
-                useViewer().recreateViewer(viewerId, {
+                useViewer().updateViewer(viewerId, {
                   type: 'file',
                   filePair,
-                  category: 'before',
+                  navigation: {
+                    category: 'before',
+                  },
                 })
                 onFileChange()
               }
@@ -121,7 +123,7 @@ function getFilePair(fileName: string): FilePair {
               (e: PointerEvent) => {
                 e.stopPropagation() // prevent @click of v-sheet in MainViewer
                 const filePair = getFilePair(fileName)
-                useViewer().recreateViewer(viewerId, {
+                useViewer().updateViewer(viewerId, {
                   type: 'diff',
                   filePair,
                 })
@@ -138,10 +140,12 @@ function getFilePair(fileName: string): FilePair {
               (e: PointerEvent) => {
                 e.stopPropagation() // prevent @click of v-sheet in MainViewer
                 const filePair = getFilePair(fileName)
-                useViewer().recreateViewer(viewerId, {
+                useViewer().updateViewer(viewerId, {
                   type: 'file',
                   filePair,
-                  category: 'after',
+                  navigation: {
+                    category: 'after',
+                  },
                 })
                 onFileChange()
               }

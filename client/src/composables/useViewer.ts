@@ -9,15 +9,22 @@ interface ViewerBase {
   readonly filePair: FilePair
   readonly navigation?: {
     readonly category: DiffCategory
-    readonly range: Range
+    readonly range?: Range
   }
 }
 export interface FileViewer extends ViewerBase {
   readonly type: 'file'
-  readonly category: DiffCategory
+  readonly navigation: {
+    readonly category: DiffCategory
+    readonly range?: Range
+  }
 }
 export interface DiffViewer extends ViewerBase {
   readonly type: 'diff'
+  readonly navigation?: {
+    readonly category: DiffCategory
+    readonly range: Range
+  }
 }
 export type Viewer = FileViewer | DiffViewer
 
@@ -75,10 +82,22 @@ export const useViewer = () => {
     viewers.value.splice(index, 0, { ...viewer, id })
     return viewers.value[index]
   }
-  function recreateViewer(
+  function updateViewer(
     id: string,
     viewer: Omit<FileViewer, 'id'> | Omit<DiffViewer, 'id'>,
   ) {
+    const index = viewers.value.findIndex((viewer) => viewer.id === id)
+    if (index === -1) {
+      logger.warn(`cannot find viewer: id=${id}`)
+      return
+    }
+    viewers.value[index] = {
+      ...viewer,
+      id,
+    }
+    return viewers.value[index]
+  }
+  function recreateViewer(id: string) {
     const index = viewers.value.findIndex((viewer) => viewer.id === id)
     if (index === -1) {
       logger.warn(`cannot find viewer: id=${id}`)
@@ -88,7 +107,7 @@ export const useViewer = () => {
     const newId = cryptoRandomString({ length: 10 })
     mainViewerId.value = newId
     viewers.value[index] = {
-      ...viewer,
+      ...viewers.value[index],
       id: newId,
     }
     const navigator = viewerNavigationMap.value.get(id)
@@ -153,7 +172,6 @@ export const useViewer = () => {
             ...viewer,
             filePair,
             navigation: { ...destination },
-            category: destination.category,
           }
         : {
             ...viewer,
@@ -164,7 +182,7 @@ export const useViewer = () => {
       ...navigator,
       currentDestinationIndex: destinationIndex,
     })
-    recreateViewer(viewerId, newViewer)
+    updateViewer(viewerId, newViewer)
   }
 
   function updateFilePairs(newFilePairOfViewers: FilePair[]) {
@@ -176,7 +194,7 @@ export const useViewer = () => {
     }
     newFilePairOfViewers.forEach((filePair, index) => {
       const viewer = viewers.value[index]
-      recreateViewer(viewer.id, { ...viewer, filePair })
+      updateViewer(viewer.id, { ...viewer, filePair })
     })
     mainViewerId.value = viewers.value[mainViewerIndex].id
   }
@@ -187,6 +205,7 @@ export const useViewer = () => {
     initialize,
     setup,
     createViewer,
+    updateViewer,
     recreateViewer,
     duplicateViewer,
     deleteViewer,

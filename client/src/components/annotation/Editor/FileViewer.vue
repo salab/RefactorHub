@@ -6,7 +6,7 @@ import { CodeFragmentManager } from './ts/codeFragments'
 import { ElementDecorationManager } from './ts/elementDecorations'
 import { ElementWidgetManager } from './ts/elementWidgets'
 import { logger } from '@/utils/logger'
-import { FileViewer, Viewer } from '@/composables/useViewer'
+import { FileViewer } from '@/composables/useViewer'
 import apis from '@/apis'
 
 const props = defineProps({
@@ -15,6 +15,9 @@ const props = defineProps({
     required: true,
   },
 })
+// eslint-disable-next-line vue/no-setup-props-destructure
+const originalCategory = props.viewer.navigation.category
+
 const pending = ref(0)
 const isLoading = computed(() => pending.value > 0)
 
@@ -47,9 +50,49 @@ const canModifyBefore = computed(
 )
 const canModify = computed(
   () =>
-    (canModifyAfter.value && props.viewer.category === 'after') ||
-    (canModifyBefore.value && props.viewer.category === 'before'),
+    (canModifyAfter.value && props.viewer.navigation.category === 'after') ||
+    (canModifyBefore.value && props.viewer.navigation.category === 'before'),
 )
+
+let fileViewer: monaco.editor.IStandaloneCodeEditor | undefined
+let changedLineDecorationsCollection:
+  | monaco.editor.IEditorDecorationsCollection
+  | undefined
+
+function updateChangedLineDecorations() {
+  changedLineDecorationsCollection?.clear()
+  const changedRanges: monaco.Range[] = []
+  for (const { before, after } of props.viewer.filePair.diffHunks) {
+    if (props.viewer.navigation.category === 'before' && before) {
+      changedRanges.push(
+        new monaco.Range(before.startLine, 1, before.endLine, 1),
+      )
+    }
+    if (props.viewer.navigation.category === 'after' && after) {
+      changedRanges.push(new monaco.Range(after.startLine, 1, after.endLine, 1))
+    }
+  }
+  changedLineDecorationsCollection = fileViewer?.createDecorationsCollection(
+    changedRanges.map((range) => ({
+      range,
+      options: {
+        isWholeLine: true,
+        className: `file-changed-${props.viewer.navigation.category}`,
+      },
+    })),
+  )
+}
+function navigate(viewer: FileViewer) {
+  const range = viewer.navigation.range
+  if (!range) return
+  useViewer().updateViewer(viewer.id, {
+    ...viewer,
+    navigation: { ...viewer.navigation, range: undefined },
+  })
+  setTimeout(() => {
+    fileViewer?.revealRangeAtTop(range)
+  }, 100)
+}
 
 function createFileViewer(
   container: HTMLElement,
@@ -59,8 +102,9 @@ function createFileViewer(
   originalViewer?: monaco.editor.IStandaloneCodeEditor
   modifiedViewer?: monaco.editor.IStandaloneCodeEditor
 } {
-  const { filePair, category, navigation } = viewer
-  const fileViewer = monaco.editor.create(container, {
+  const { filePair, navigation } = viewer
+  const { category } = navigation
+  fileViewer = monaco.editor.create(container, {
     automaticLayout: true,
     readOnly: !canModify.value,
     renderWhitespace: 'all',
@@ -68,30 +112,9 @@ function createFileViewer(
   const textModel = useAnnotation().getTextModel(filePair, category)
   fileViewer.setModel(textModel)
 
-  const changedRanges: monaco.Range[] = []
-  for (const { before, after } of filePair.diffHunks) {
-    if (category === 'before' && before) {
-      changedRanges.push(
-        new monaco.Range(before.startLine, 1, before.endLine, 1),
-      )
-    }
-    if (category === 'after' && after) {
-      changedRanges.push(new monaco.Range(after.startLine, 1, after.endLine, 1))
-    }
-  }
-  fileViewer.createDecorationsCollection(
-    changedRanges.map((range) => ({
-      range,
-      options: {
-        isWholeLine: true,
-        className: `file-changed-${category}`,
-      },
-    })),
-  )
+  updateChangedLineDecorations()
 
-  if (navigation) {
-    setTimeout(() => fileViewer.revealRangeAtTop(navigation.range), 100)
-  }
+  navigate(viewer)
 
   if (category === 'before')
     return {
@@ -103,10 +126,8 @@ function createFileViewer(
 }
 
 let latestMousePosition: monaco.Position | undefined
-let originalViewer: monaco.editor.IStandaloneCodeEditor | undefined
-let modifiedViewer: monaco.editor.IStandaloneCodeEditor | undefined
 
-async function createViewer(viewer: Viewer) {
+async function createViewer(viewer: FileViewer) {
   const container = document.getElementById(viewer.id)
   if (!container) {
     logger.error(`Cannot find the container element: id is ${viewer.id}`)
@@ -115,8 +136,8 @@ async function createViewer(viewer: Viewer) {
   const { filePair } = viewer
 
   const viewers = await createFileViewer(container, props.viewer)
-  originalViewer = viewers.originalViewer
-  modifiedViewer = viewers.modifiedViewer
+  const originalViewer = viewers.originalViewer
+  const modifiedViewer = viewers.modifiedViewer
 
   const elementDecorationManager = new ElementDecorationManager(
     filePair.getPathPair(),
@@ -144,19 +165,29 @@ async function createViewer(viewer: Viewer) {
     )
 
   watch(
-    () => props.viewer.filePair,
-    (newFilePair) => {
-      elementDecorationManager.update(newFilePair.getPathPair())
+    () => props.viewer,
+    (newViewer) => {
+      if (newViewer.navigation.category !== originalCategory) {
+        useViewer().recreateViewer(newViewer.id)
+        return
+      }
+      const text = newViewer.filePair[newViewer.navigation.category]?.text
+      if (text !== undefined) fileViewer?.setValue(text)
+      updateChangedLineDecorations()
+      elementDecorationManager.update(newViewer.filePair.getPathPair())
       codeFragmentManager.update(
-        newFilePair.getPathPair(),
-        newFilePair.before?.elements ?? [],
-        newFilePair.after?.elements ?? [],
+        newViewer.filePair.getPathPair(),
+        newViewer.filePair.before?.elements ?? [],
+        newViewer.filePair.after?.elements ?? [],
       )
       elementWidgetManager.update(
-        newFilePair.before?.elements ?? [],
-        newFilePair.after?.elements ?? [],
+        newViewer.filePair.before?.elements ?? [],
+        newViewer.filePair.after?.elements ?? [],
       )
-      commonTokenSequenceDecorationManager.update(newFilePair.getPathPair())
+      commonTokenSequenceDecorationManager.update(
+        newViewer.filePair.getPathPair(),
+      )
+      navigate(newViewer)
     },
   )
 
@@ -212,7 +243,6 @@ async function createViewer(viewer: Viewer) {
       {
         type: 'file',
         filePair: filePairOnOtherViewer,
-        category: otherCategory,
         navigation: {
           category: otherCategory,
           range: sequencesOnOtherViewer[0].range,
@@ -268,7 +298,7 @@ onMounted(async () => {
       <v-menu transition="slide-y-transition">
         <template #activator="{ props: menuProps }">
           <v-btn
-            v-if="viewer.category === 'before'"
+            v-if="viewer.navigation.category === 'before'"
             :color="colors.before"
             flat
             size="x-small"
@@ -277,7 +307,7 @@ onMounted(async () => {
             v-bind="menuProps"
           />
           <v-btn
-            v-if="viewer.category === 'after'"
+            v-if="viewer.navigation.category === 'after'"
             :color="colors.after"
             flat
             size="x-small"
@@ -294,10 +324,12 @@ onMounted(async () => {
             @click="
               (e: PointerEvent) => {
                 e.stopPropagation() // prevent @click of v-sheet in MainViewer
-                useViewer().recreateViewer(viewer.id, {
+                useViewer().updateViewer(viewer.id, {
                   type: 'file',
                   filePair: viewer.filePair,
-                  category: 'before',
+                  navigation: {
+                    category: 'before',
+                  },
                 })
               }
             "
@@ -309,7 +341,7 @@ onMounted(async () => {
             @click="
               (e: PointerEvent) => {
                 e.stopPropagation() // prevent @click of v-sheet in MainViewer
-                useViewer().recreateViewer(viewer.id, {
+                useViewer().updateViewer(viewer.id, {
                   type: 'diff',
                   filePair: viewer.filePair,
                 })
@@ -323,10 +355,12 @@ onMounted(async () => {
             @click="
               (e: PointerEvent) => {
                 e.stopPropagation() // prevent @click of v-sheet in MainViewer
-                useViewer().recreateViewer(viewer.id, {
+                useViewer().updateViewer(viewer.id, {
                   type: 'file',
                   filePair: viewer.filePair,
-                  category: 'after',
+                  navigation: {
+                    category: 'after',
+                  },
                 })
               }
             "
@@ -340,18 +374,26 @@ onMounted(async () => {
             <span
               v-bind="tooltipProps"
               class="text-shrink text-subtitle-2"
-              :style="`background-color: ${colors[viewer.category]};`"
+              :style="`background-color: ${
+                colors[viewer.navigation.category]
+              };`"
             >
               {{
                 getFileName(
-                  getFilePath(viewer.filePair.getPathPair(), viewer.category),
+                  getFilePath(
+                    viewer.filePair.getPathPair(),
+                    viewer.navigation.category,
+                  ),
                 )
               }}
             </span>
           </template>
           {{
             getFileName(
-              getFilePath(viewer.filePair.getPathPair(), viewer.category),
+              getFilePath(
+                viewer.filePair.getPathPair(),
+                viewer.navigation.category,
+              ),
             )
           }}
         </v-tooltip>
@@ -400,7 +442,9 @@ onMounted(async () => {
                 {
                   type: 'file',
                   filePair: viewer.filePair,
-                  category: 'after',
+                  navigation: {
+                    category: 'after',
+                  },
                 },
                 'next',
               )
@@ -421,7 +465,9 @@ onMounted(async () => {
                 {
                   type: 'file',
                   filePair: viewer.filePair,
-                  category: 'before',
+                  navigation: {
+                    category: 'before',
+                  },
                 },
                 'prev',
               )
@@ -452,18 +498,14 @@ onMounted(async () => {
               if (!annotationId) return
               const pathPair = viewer.filePair.getPathPair()
               const filePath =
-                viewer.category === 'before'
+                viewer.navigation.category === 'before'
                   ? pathPair.notFound ??
                     // eslint-disable-next-line prettier/prettier
                   (pathPair.before ?? pathPair.after)
                   : pathPair.notFound ??
                     // eslint-disable-next-line prettier/prettier
                   (pathPair.after ?? pathPair.before)
-              const fileContent =
-                (viewer.category === 'before'
-                  ? originalViewer
-                  : modifiedViewer
-                )?.getValue() ?? ''
+              const fileContent = fileViewer?.getValue() ?? ''
               useAnnotation().updateAnnotation(
                 {
                   ...(
@@ -494,7 +536,7 @@ onMounted(async () => {
               if (!annotationId) return
               const pathPair = viewer.filePair.getPathPair()
               const filePath =
-                viewer.category === 'before'
+                viewer.navigation.category === 'before'
                   ? pathPair.notFound ??
                     // eslint-disable-next-line prettier/prettier
                   (pathPair.before ?? pathPair.after)

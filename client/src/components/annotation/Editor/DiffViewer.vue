@@ -6,7 +6,8 @@ import { CodeFragmentManager } from './ts/codeFragments'
 import { ElementDecorationManager } from './ts/elementDecorations'
 import { ElementWidgetManager } from './ts/elementWidgets'
 import { logger } from '@/utils/logger'
-import { DiffViewer, Viewer } from '@/composables/useViewer'
+import { DiffViewer } from '@/composables/useViewer'
+import { DiffHunk } from 'apis'
 
 const props = defineProps({
   viewer: {
@@ -45,19 +46,11 @@ const canModifyBefore = computed(
       useAnnotation().getChangeList().length - 1,
 )
 
-function createDiffViewer(
-  container: HTMLElement,
-  viewer: DiffViewer,
-): {
-  diffViewer: monaco.editor.IStandaloneDiffEditor
-  originalViewer: monaco.editor.IStandaloneCodeEditor
-  modifiedViewer: monaco.editor.IStandaloneCodeEditor
-} {
-  const { filePair, navigation } = viewer
+function calculateDiff(diffHunks: DiffHunk[]) {
   const changes: monaco.editor.LineRangeMapping[] = []
   let beforeLineNumber = 0
   let afterLineNumber = 0
-  for (const { before, after } of filePair.diffHunks) {
+  for (const { before, after } of diffHunks) {
     if (before) {
       if (!after) afterLineNumber += before.startLine - beforeLineNumber
       beforeLineNumber = before.startLine
@@ -82,7 +75,17 @@ function createDiffViewer(
       ),
     )
   }
+  return changes
+}
 
+function createDiffViewer(
+  container: HTMLElement,
+  viewer: DiffViewer,
+): {
+  diffViewer: monaco.editor.IStandaloneDiffEditor
+  originalViewer: monaco.editor.IStandaloneCodeEditor
+  modifiedViewer: monaco.editor.IStandaloneCodeEditor
+} {
   const diffViewer = monaco.editor.createDiffEditor(container, {
     enableSplitViewResizing: true,
     automaticLayout: true,
@@ -93,15 +96,16 @@ function createDiffViewer(
       computeDiff: () =>
         new Promise((resolve) =>
           resolve({
-            identical: filePair.diffHunks.length === 0,
+            identical: props.viewer.filePair.diffHunks.length === 0,
             quitEarly: false,
-            changes,
+            changes: calculateDiff(props.viewer.filePair.diffHunks),
             moves: [],
           }),
         ),
     },
   })
 
+  const { filePair } = viewer
   const originalTextModel = useAnnotation().getTextModel(filePair, 'before')
   const modifiedTextModel = useAnnotation().getTextModel(filePair, 'after')
   diffViewer.setModel({
@@ -111,11 +115,6 @@ function createDiffViewer(
 
   const originalViewer = diffViewer.getOriginalEditor()
   const modifiedViewer = diffViewer.getModifiedEditor()
-  if (navigation) {
-    const { category, range } = navigation
-    const fileViewer = category === 'before' ? originalViewer : modifiedViewer
-    setTimeout(() => fileViewer.revealRangeAtTop(range), 100)
-  }
 
   return {
     diffViewer,
@@ -128,7 +127,19 @@ let latestMousePosition: monaco.Position | undefined
 let originalViewer: monaco.editor.IStandaloneCodeEditor | undefined
 let modifiedViewer: monaco.editor.IStandaloneCodeEditor | undefined
 
-async function createViewer(viewer: Viewer) {
+function navigate(viewer: DiffViewer) {
+  const navigation = viewer.navigation
+  if (!navigation) return
+  useViewer().updateViewer(viewer.id, {
+    ...viewer,
+    navigation: undefined,
+  })
+  const { category, range } = navigation
+  const fileViewer = category === 'before' ? originalViewer : modifiedViewer
+  setTimeout(() => fileViewer?.revealRangeAtTop(range), 100)
+}
+
+async function createViewer(viewer: DiffViewer) {
   const container = document.getElementById(viewer.id)
   if (!container) {
     logger.error(`Cannot find the container element: id is ${viewer.id}`)
@@ -139,6 +150,8 @@ async function createViewer(viewer: Viewer) {
   const viewers = await createDiffViewer(container, props.viewer)
   originalViewer = viewers.originalViewer
   modifiedViewer = viewers.modifiedViewer
+
+  navigate(viewer)
 
   const elementDecorationManager = new ElementDecorationManager(
     filePair.getPathPair(),
@@ -166,19 +179,26 @@ async function createViewer(viewer: Viewer) {
     )
 
   watch(
-    () => props.viewer.filePair,
-    (newFilePair) => {
-      elementDecorationManager.update(newFilePair.getPathPair())
+    () => props.viewer,
+    (newViewer) => {
+      if (newViewer.filePair.before)
+        originalViewer?.setValue(newViewer.filePair.before.text)
+      if (newViewer.filePair.after)
+        modifiedViewer?.setValue(newViewer.filePair.after.text)
+      navigate(newViewer)
+      elementDecorationManager.update(newViewer.filePair.getPathPair())
       codeFragmentManager.update(
-        newFilePair.getPathPair(),
-        newFilePair.before?.elements ?? [],
-        newFilePair.after?.elements ?? [],
+        newViewer.filePair.getPathPair(),
+        newViewer.filePair.before?.elements ?? [],
+        newViewer.filePair.after?.elements ?? [],
       )
       elementWidgetManager.update(
-        newFilePair.before?.elements ?? [],
-        newFilePair.after?.elements ?? [],
+        newViewer.filePair.before?.elements ?? [],
+        newViewer.filePair.after?.elements ?? [],
       )
-      commonTokenSequenceDecorationManager.update(newFilePair.getPathPair())
+      commonTokenSequenceDecorationManager.update(
+        newViewer.filePair.getPathPair(),
+      )
     },
   )
 
@@ -234,7 +254,6 @@ async function createViewer(viewer: Viewer) {
       {
         type: 'file',
         filePair: filePairOnOtherViewer,
-        category: otherCategory,
         navigation: {
           category: otherCategory,
           range: sequencesOnOtherViewer[0].range,
@@ -306,10 +325,12 @@ onMounted(async () => {
             @click="
               (e: PointerEvent) => {
                 e.stopPropagation() // prevent @click of v-sheet in MainViewer
-                useViewer().recreateViewer(viewer.id, {
+                useViewer().updateViewer(viewer.id, {
                   type: 'file',
                   filePair: viewer.filePair,
-                  category: 'before',
+                  navigation: {
+                    category: 'before',
+                  },
                 })
               }
             "
@@ -321,7 +342,7 @@ onMounted(async () => {
             @click="
               (e: PointerEvent) => {
                 e.stopPropagation() // prevent @click of v-sheet in MainViewer
-                useViewer().recreateViewer(viewer.id, {
+                useViewer().updateViewer(viewer.id, {
                   type: 'diff',
                   filePair: viewer.filePair,
                 })
@@ -335,10 +356,12 @@ onMounted(async () => {
             @click="
               (e: PointerEvent) => {
                 e.stopPropagation() // prevent @click of v-sheet in MainViewer
-                useViewer().recreateViewer(viewer.id, {
+                useViewer().updateViewer(viewer.id, {
                   type: 'file',
                   filePair: viewer.filePair,
-                  category: 'after',
+                  navigation: {
+                    category: 'after',
+                  },
                 })
               }
             "
@@ -425,7 +448,9 @@ onMounted(async () => {
                 {
                   type: 'file',
                   filePair: viewer.filePair,
-                  category: 'after',
+                  navigation: {
+                    category: 'after',
+                  },
                 },
                 'next',
               )
@@ -446,7 +471,9 @@ onMounted(async () => {
                 {
                   type: 'file',
                   filePair: viewer.filePair,
-                  category: 'before',
+                  navigation: {
+                    category: 'before',
+                  },
                 },
                 'prev',
               )

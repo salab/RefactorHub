@@ -49,7 +49,7 @@ const isExisting = computed(() => file.value !== undefined)
 const { canEditCurrentChange } = useAnnotation()
 
 const openLocation = () => {
-  const { viewers, recreateViewer, mainViewerId } = useViewer()
+  const { viewers, updateViewer, mainViewerId } = useViewer()
   const mainViewer = viewers.value.find(
     (viewer) => viewer.id === mainViewerId.value,
   )
@@ -61,12 +61,11 @@ const openLocation = () => {
       category: props.category,
       file: file.value,
     })
-    recreateViewer(
+    updateViewer(
       mainViewerId.value,
       mainViewer.type === 'file'
         ? {
             type: 'file',
-            category: props.category,
             filePair,
             navigation: {
               category: props.category,
