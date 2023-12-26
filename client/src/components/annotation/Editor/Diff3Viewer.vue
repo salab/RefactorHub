@@ -1,0 +1,611 @@
+<script setup lang="ts">
+import * as monaco from 'monaco-editor'
+import { DiffCategory } from 'refactorhub'
+import { CommonTokenSequenceDecorationManager } from './ts/commonTokensDecorations'
+import { CodeFragmentManager } from './ts/codeFragments'
+import { ElementDecorationManager } from './ts/elementDecorations'
+import { ElementWidgetManager } from './ts/elementWidgets'
+import { logger } from '@/utils/logger'
+import { DiffViewer } from '@/composables/useViewer'
+import { DiffHunk } from 'apis'
+
+const props = defineProps({
+  viewer: {
+    type: Object as () => DiffViewer,
+    required: true,
+  },
+})
+const pending = ref(0)
+const isLoading = computed(() => pending.value > 0)
+
+const scrollTop = ref(0)
+const scrollLeft = ref(0)
+
+const isOpeningFileList = ref(false)
+
+const { mainViewerId, getNavigator } = useViewer()
+const navigator = getNavigator(props.viewer.id)
+
+let latestMousePosition: monaco.Position | undefined
+let originalViewer: monaco.editor.IStandaloneCodeEditor | undefined
+let intermediateViewer: monaco.editor.IStandaloneCodeEditor | undefined
+let modifiedViewer: monaco.editor.IStandaloneCodeEditor | undefined
+
+function navigate(viewer: DiffViewer) {
+  const navigation = viewer.navigation
+  if (!navigation) return
+  useViewer().updateViewer(viewer.id, {
+    ...viewer,
+    navigation: undefined,
+  })
+  const { category, range } = navigation
+  const fileViewer = category === 'before' ? originalViewer : intermediateViewer
+  setTimeout(() => fileViewer?.revealRangeAtTop(range), 100)
+}
+
+function createViewer(viewer: DiffViewer) {
+  const filePair1 = viewer.filePair
+  const filePair2 = filePair1.next
+  if (!filePair2) {
+    logger.error(
+      `Cannot find the filePair2: path is ${filePair1.getPathPair().after}`,
+    )
+    return
+  }
+  const containerBefore = document.getElementById(`${viewer.id}-before`)
+  const containerIntermediate = document.getElementById(
+    `${viewer.id}-intermediate`,
+  )
+  const containerAfter = document.getElementById(`${viewer.id}-after`)
+  if (!containerBefore || !containerIntermediate || !containerAfter) {
+    logger.error(`Cannot find the container element: id is ${viewer.id}`)
+    return
+  }
+
+  originalViewer = monaco.editor.create(containerBefore, {
+    automaticLayout: true,
+    readOnly: true,
+    renderWhitespace: 'all',
+    lineNumbers: 'off',
+    glyphMargin: true,
+    folding: false,
+    lineDecorationsWidth: 0,
+    lineNumbersMinChars: 0,
+    minimap: {
+      enabled: false,
+    },
+  })
+  originalViewer.setModel(useAnnotation().getTextModel(filePair1, 'before'))
+  intermediateViewer = monaco.editor.create(containerIntermediate, {
+    automaticLayout: true,
+    readOnly: false,
+    renderWhitespace: 'all',
+    lineNumbers: 'off',
+    glyphMargin: true,
+    folding: false,
+    lineDecorationsWidth: 0,
+    lineNumbersMinChars: 0,
+    minimap: {
+      enabled: false,
+    },
+  })
+  intermediateViewer.setModel(useAnnotation().getTextModel(filePair1, 'after'))
+  modifiedViewer = monaco.editor.create(containerAfter, {
+    automaticLayout: true,
+    readOnly: true,
+    renderWhitespace: 'all',
+    lineNumbers: 'off',
+    glyphMargin: true,
+    folding: false,
+    lineDecorationsWidth: 0,
+    lineNumbersMinChars: 0,
+    minimap: {
+      enabled: false,
+    },
+  })
+  modifiedViewer.setModel(useAnnotation().getTextModel(filePair2, 'after'))
+
+  originalViewer.onDidScrollChange((e) => {
+    scrollTop.value = e.scrollTop
+    scrollLeft.value = e.scrollLeft
+  })
+  intermediateViewer.onDidScrollChange((e) => {
+    scrollTop.value = e.scrollTop
+    scrollLeft.value = e.scrollLeft
+  })
+  modifiedViewer.onDidScrollChange((e) => {
+    scrollTop.value = e.scrollTop
+    scrollLeft.value = e.scrollLeft
+  })
+  watch(
+    () => scrollTop.value,
+    (newScrollTop) => {
+      originalViewer?.setScrollTop(newScrollTop)
+      intermediateViewer?.setScrollTop(newScrollTop)
+      modifiedViewer?.setScrollTop(newScrollTop)
+    },
+  )
+  watch(
+    () => scrollLeft.value,
+    (newScrollLeft) => {
+      originalViewer?.setScrollLeft(newScrollLeft)
+      intermediateViewer?.setScrollLeft(newScrollLeft)
+      modifiedViewer?.setScrollLeft(newScrollLeft)
+    },
+  )
+
+  navigate(viewer)
+
+  const elementDecorationManager = new ElementDecorationManager(
+    filePair1.getPathPair(),
+    originalViewer,
+    intermediateViewer,
+  )
+  const codeFragmentManager = new CodeFragmentManager(
+    filePair1.getPathPair(),
+    filePair1.before?.elements ?? [],
+    filePair1.after?.elements ?? [],
+    originalViewer,
+    intermediateViewer,
+  )
+  const elementWidgetManager = new ElementWidgetManager(
+    filePair1.before?.elements ?? [],
+    filePair1.after?.elements ?? [],
+    originalViewer,
+    intermediateViewer,
+  )
+  const commonTokenSequenceDecorationManager =
+    new CommonTokenSequenceDecorationManager(
+      filePair1.getPathPair(),
+      originalViewer,
+      intermediateViewer,
+    )
+
+  watch(
+    () => props.viewer,
+    (newViewer) => {
+      const filePair1 = newViewer.filePair
+      const filePair2 = filePair1.next
+      if (!filePair2) {
+        logger.error(
+          `Cannot find the filePair2: path is ${filePair1.getPathPair().after}`,
+        )
+        return
+      }
+      if (filePair1.before) originalViewer?.setValue(filePair1.before.text)
+      if (filePair1.after) intermediateViewer?.setValue(filePair1.after.text)
+      if (filePair2.after) modifiedViewer?.setValue(filePair2.after.text)
+      navigate(newViewer)
+      elementDecorationManager.update(filePair1.getPathPair())
+      codeFragmentManager.update(
+        filePair1.getPathPair(),
+        filePair1.before?.elements ?? [],
+        filePair1.after?.elements ?? [],
+      )
+      elementWidgetManager.update(
+        filePair1.before?.elements ?? [],
+        filePair1.after?.elements ?? [],
+      )
+      commonTokenSequenceDecorationManager.update(filePair1.getPathPair())
+    },
+  )
+
+  function onMouseDown(
+    e: monaco.editor.IEditorMouseEvent,
+    category: DiffCategory,
+  ) {
+    if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_WIDGET) return
+    const commonTokenSequenceId =
+      commonTokenSequenceDecorationManager.getIdFromHoverMessageClickEvent(e)
+    if (commonTokenSequenceId === undefined) return
+    const { joinedRaw, tokenSequenceSet } = useCommonTokenSequence().getWithId(
+      commonTokenSequenceId,
+    )
+    useCommonTokenSequence().updateSelectedId(commonTokenSequenceId)
+    const sequencesOnThisViewer = tokenSequenceSet.filterCategory(category)
+    const currentPath =
+      category === 'before' ? filePair1.before?.path : filePair2?.after?.path
+    if (currentPath === undefined)
+      throw new Error('cannot get currentPath of viewer')
+    const currentDestinationIndex = sequencesOnThisViewer.findIndex(
+      (sequence) =>
+        latestMousePosition &&
+        sequence.isIn(currentPath, category) &&
+        sequence.range.containsPosition(latestMousePosition),
+    )
+    useViewer().setNavigator(
+      {
+        label: joinedRaw,
+        currentDestinationIndex:
+          currentDestinationIndex === -1 ? 0 : currentDestinationIndex,
+        destinations: sequencesOnThisViewer.map((sequence) => ({
+          path: sequence.path,
+          category,
+          range: sequence.range,
+        })),
+      },
+      props.viewer.id,
+    )
+
+    const otherCategory = category === 'before' ? 'after' : 'before'
+    const sequencesOnOtherViewer =
+      tokenSequenceSet.filterCategory(otherCategory)
+    const filePairOnOtherViewer = useAnnotation().getCurrentFilePair(
+      sequencesOnOtherViewer[0].path,
+    )
+    if (!filePairOnOtherViewer) {
+      throw new Error(
+        `cannot find filePair; path=${sequencesOnOtherViewer[0].path}`,
+      )
+    }
+    const { id: newViewerId } = useViewer().createViewer(
+      {
+        type: 'file',
+        filePair: filePairOnOtherViewer,
+        navigation: {
+          category: otherCategory,
+          range: sequencesOnOtherViewer[0].range,
+        },
+      },
+      category === 'before' ? 'next' : 'prev',
+    )
+    useViewer().setNavigator(
+      {
+        label: joinedRaw,
+        currentDestinationIndex: 0,
+        destinations: sequencesOnOtherViewer.map((sequence) => ({
+          path: sequence.path,
+          category: otherCategory,
+          range: sequence.range,
+        })),
+      },
+      newViewerId,
+    )
+  }
+  originalViewer?.onMouseDown((e) => onMouseDown(e, 'before'))
+  modifiedViewer?.onMouseDown((e) => onMouseDown(e, 'after'))
+
+  function onMouseMove(
+    e: monaco.editor.IEditorMouseEvent,
+    category: DiffCategory,
+  ) {
+    if (e.target.position) latestMousePosition = e.target.position
+    if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_TEXT) return
+    const path =
+      category === 'before' ? filePair1.before?.path : filePair2?.after?.path
+    if (path === undefined) return
+    useCommonTokenSequence().updateIsHovered(path, category, e.target.position)
+  }
+  originalViewer?.onMouseMove((e) => onMouseMove(e, 'before'))
+  modifiedViewer?.onMouseMove((e) => onMouseMove(e, 'after'))
+}
+
+onMounted(async () => {
+  pending.value++
+  await createViewer(props.viewer)
+  pending.value--
+})
+</script>
+
+<template>
+  <v-sheet
+    border
+    :color="mainViewerId === viewer.id ? 'primary' : 'background'"
+    class="d-flex flex-column fill-height"
+    @click="() => (useViewer().mainViewerId.value = viewer.id)"
+  >
+    <div class="d-flex align-center flex-nowrap" style="max-width: 100%">
+      <v-menu transition="slide-y-transition">
+        <template #activator="{ props: menuProps }">
+          <v-btn
+            color="secondary"
+            flat
+            size="x-small"
+            text="diff"
+            class="mx-1"
+            v-bind="menuProps"
+          />
+        </template>
+        <v-btn-group variant="elevated" :elevation="5" density="compact">
+          <v-btn
+            :color="colors.before"
+            size="small"
+            text="before"
+            @click="
+              (e: PointerEvent) => {
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                useViewer().updateViewer(viewer.id, {
+                  type: 'file',
+                  filePair: viewer.filePair,
+                  navigation: {
+                    category: 'before',
+                  },
+                })
+              }
+            "
+          />
+          <v-btn
+            color="secondary"
+            size="small"
+            text="diff"
+            @click="
+              (e: PointerEvent) => {
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                useViewer().updateViewer(viewer.id, {
+                  type: 'diff',
+                  filePair: viewer.filePair,
+                })
+              }
+            "
+          />
+          <v-btn
+            :color="colors.after"
+            size="small"
+            text="after"
+            @click="
+              (e: PointerEvent) => {
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                useViewer().updateViewer(viewer.id, {
+                  type: 'file',
+                  filePair: viewer.filePair,
+                  navigation: {
+                    category: 'after',
+                  },
+                })
+              }
+            "
+          />
+        </v-btn-group>
+      </v-menu>
+
+      <div
+        class="flex-shrink-1 mx-1 d-flex align-center flex-nowrap"
+        style="min-width: 0%"
+      >
+        <v-tooltip location="top center" origin="auto" :open-delay="500">
+          <template #activator="{ props: tooltipProps }">
+            <span
+              v-bind="tooltipProps"
+              class="text-shrink text-subtitle-2"
+              :style="`background-color: ${colors.before}`"
+            >
+              {{ getPathDifference(viewer.filePair.getPathPair())[0] }}
+            </span>
+          </template>
+          {{ getPathDifference(viewer.filePair.getPathPair())[0] }}
+        </v-tooltip>
+        <v-icon
+          size="small"
+          icon="$mdiArrowRightBoldBox"
+          color="purple"
+          style="min-width: max-content"
+        />
+        <v-tooltip location="top center" origin="auto" :open-delay="500">
+          <template #activator="{ props: tooltipProps }">
+            <span
+              v-bind="tooltipProps"
+              class="text-shrink text-subtitle-2"
+              :style="`background-color: ${colors.after}`"
+            >
+              {{ getPathDifference(viewer.filePair.getPathPair())[1] }}
+            </span>
+          </template>
+          {{ getPathDifference(viewer.filePair.getPathPair())[1] }}
+        </v-tooltip>
+      </div>
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-bind="tooltipProps"
+            variant="plain"
+            density="compact"
+            :icon="
+              isOpeningFileList
+                ? '$mdiArrowUpDropCircleOutline'
+                : '$mdiArrowDownDropCircleOutline'
+            "
+            flat
+            @click="() => (isOpeningFileList = !isOpeningFileList)"
+          />
+        </template>
+        {{ isOpeningFileList ? 'Close' : 'Open' }} file list
+      </v-tooltip>
+
+      <v-spacer />
+      <v-divider v-if="navigator" vertical />
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-if="navigator"
+            v-bind="tooltipProps"
+            variant="plain"
+            density="compact"
+            icon="$mdiMenuLeftOutline"
+            flat
+            @click="
+              (e: PointerEvent) => {
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                useViewer().navigate(viewer.id, 'prev')
+              }
+            "
+          />
+        </template>
+        Show previous
+      </v-tooltip>
+      <v-tooltip
+        v-if="navigator"
+        location="top center"
+        origin="auto"
+        :open-delay="500"
+      >
+        <template #activator="{ props: tooltipProps }">
+          <code
+            v-bind="tooltipProps"
+            class="text-shrink"
+            style="
+              max-width: 20%;
+              border: 0.5px solid black;
+              background-color: rgba(255, 250, 240, 0.7);
+            "
+            >{{ navigator.label }}</code
+          >
+        </template>
+        <code>{{ navigator.label }}</code>
+      </v-tooltip>
+      <span v-if="navigator" class="text-body-2 ml-1">{{
+        `${navigator.currentDestinationIndex + 1}/${
+          navigator.destinations.length
+        }`
+      }}</span>
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-if="navigator"
+            v-bind="tooltipProps"
+            variant="plain"
+            density="compact"
+            :icon="'$mdiMenuRightOutline'"
+            flat
+            @click="
+              (e: PointerEvent) => {
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                useViewer().navigate(viewer.id, 'next')
+              }
+            "
+          />
+        </template>
+        Show next
+      </v-tooltip>
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-if="navigator"
+            v-bind="tooltipProps"
+            variant="plain"
+            density="compact"
+            icon="$mdiCloseCircleOutline"
+            flat
+            class="mr-1"
+            @click="
+              () => {
+                useViewer().deleteNavigator(viewer.id)
+                // TODO: 他のところから切り替わった際を考える
+                useCommonTokenSequence().updateSelectedId(undefined)
+              }
+            "
+          />
+        </template>
+        Delete navigation
+      </v-tooltip>
+      <v-divider v-if="navigator" vertical />
+
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-if="useViewer().viewers.value.length > 1"
+            v-bind="tooltipProps"
+            variant="plain"
+            density="compact"
+            icon="$mdiTabRemove"
+            flat
+            @click="
+              (e: PointerEvent) => {
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                useViewer().deleteViewer(viewer.id)
+              }
+            "
+          />
+        </template>
+        Delete this window
+      </v-tooltip>
+      <v-tooltip location="top center" origin="auto" :open-delay="500">
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-bind="tooltipProps"
+            variant="plain"
+            density="compact"
+            :icon="'$mdiTabPlus'"
+            flat
+            @click="
+              (e: PointerEvent) => {
+                e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                useViewer().duplicateViewer(viewer.id)
+              }
+            "
+          />
+        </template>
+        Duplicate this window
+      </v-tooltip>
+    </div>
+    <v-divider />
+    <div class="flex-grow-1 position-relative">
+      <v-expand-transition style="position: absolute; z-index: 100">
+        <file-list-sheet
+          :is-opening-file-list="isOpeningFileList"
+          :viewer-id="viewer.id"
+          :on-file-change="() => (isOpeningFileList = !isOpeningFileList)"
+        />
+      </v-expand-transition>
+      <div class="d-flex" style="width: 100%; height: 100%">
+        <div
+          :id="`${viewer.id}-before`"
+          class="element-editor"
+          :style="`width: ${100 / 3}%; height: 100%;`"
+        >
+          <loading-circle :active="isLoading" />
+        </div>
+        <div
+          :id="`${viewer.id}-intermediate`"
+          class="element-editor element-editor-modifiable"
+          :style="`width: ${100 / 3}%; height: 100%;`"
+        >
+          <loading-circle :active="isLoading" />
+        </div>
+        <div
+          :id="`${viewer.id}-after`"
+          class="element-editor"
+          :style="`width: ${100 / 3}%; height: 100%;`"
+        >
+          <loading-circle :active="isLoading" />
+        </div>
+      </div>
+    </div>
+  </v-sheet>
+</template>
+
+<style lang="scss" scoped>
+.position-relative {
+  position: relative;
+}
+
+.text-shrink {
+  display: flex;
+  overflow-x: hidden;
+  white-space: nowrap;
+}
+
+::v-deep(.element-editor) {
+  .file-changed-before {
+    background: rgba(255, 98, 88, 0.5);
+  }
+  .file-changed-after {
+    background: rgba(175, 208, 107, 0.5);
+  }
+  .glyph-margin {
+    background: rgba(230, 230, 230, 0.5);
+  }
+}
+
+::v-deep(.element-editor-modifiable) {
+  .monaco-editor-background {
+    background: rgba(179, 229, 252, 0.5);
+  }
+}
+</style>
+<style lang="scss">
+*,
+::before,
+::after {
+  background-repeat: repeat !important; // in order to display shaded area in diff editor
+}
+</style>
