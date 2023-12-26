@@ -1,0 +1,651 @@
+<script setup lang="ts">
+import { debounce } from 'lodash-es'
+import apis from '@/apis'
+import { CommonTokenSequenceType } from 'composables/useCommonTokenSequence'
+
+const changeList = computed(() => useAnnotation().getChangeList())
+const selectedChangeId = ref(useAnnotation().currentChange.value?.id)
+const selectedChange = computed(() =>
+  changeList.value.find(({ id }) => id === selectedChangeId.value),
+)
+const currentChange = computed(() => useAnnotation().currentChange.value)
+const changeTypes = computed(() => useAnnotation().changeTypes.value)
+
+watch(
+  () => currentChange.value?.id,
+  (newCurrentChangeId) => {
+    // NOTE: there is not newCurrentChangeId in v-tabs of changes when change is removed, so reload twice
+    selectedChangeId.value = newCurrentChangeId
+    setTimeout(() => (selectedChangeId.value = newCurrentChangeId), 1)
+  },
+)
+
+const isDraft = computed(
+  () => useAnnotation().annotation.value?.isDraft ?? false,
+)
+const isOwner = computed(
+  () =>
+    (useAnnotation().annotation.value?.ownerId ?? '') ===
+    useUser().user.value?.id,
+)
+const hasTemporarySnapshot = computed(
+  () => useAnnotation().annotation.value?.hasTemporarySnapshot ?? false,
+)
+const currentIsLast = computed(
+  () =>
+    changeList.value.length > 0 &&
+    changeList.value[changeList.value.length - 1].id ===
+      currentChange.value?.id,
+)
+
+const updateChange = debounce(
+  async (
+    typeName: string = currentChange.value?.typeName ?? '',
+    description: string = currentChange.value?.description ?? '',
+  ) => {
+    const { annotationId, snapshotId, changeId } =
+      useAnnotation().currentIds.value
+    if (!annotationId || !snapshotId || !changeId) return
+    useAnnotation().updateChange(
+      (
+        await apis.changes.updateChange(annotationId, snapshotId, changeId, {
+          typeName,
+          description,
+        })
+      ).data,
+    )
+  },
+  500,
+)
+const appendTemporarySnapshot = async () => {
+  const { annotation, currentIds } = useAnnotation()
+  if (annotation.value?.hasTemporarySnapshot) {
+    logger.warn('annotation already has a temporary snapshot')
+    return
+  }
+  if (changeList.value.length === 0) return
+  switchCurrentChange(changeList.value[changeList.value.length - 1].id)
+
+  const { annotationId, changeId } = currentIds.value
+  if (!annotationId || !changeId) return
+  useAnnotation().updateAnnotation(
+    {
+      ...(
+        await apis.snapshots.appendTemporarySnapshot(annotationId, {
+          changeId,
+        })
+      ).data,
+    },
+    true,
+  )
+}
+const settleTemporarySnapshot = async () => {
+  const { annotation, currentIds } = useAnnotation()
+  if (!annotation.value?.hasTemporarySnapshot) {
+    logger.warn('annotation does not have a temporary snapshot')
+    return
+  }
+  const { annotationId } = currentIds.value
+  if (!annotationId) return
+  useAnnotation().updateAnnotation(
+    {
+      ...(await apis.snapshots.settleTemporarySnapshot(annotationId)).data,
+    },
+    true,
+  )
+}
+const removeChange = async () => {
+  if (changeList.value.length <= 1) {
+    logger.warn('cannot remove all changes')
+    return
+  }
+  switchCurrentChange(changeList.value[changeList.value.length - 2].id)
+
+  const { currentIds } = useAnnotation()
+  const { annotationId, snapshotId, changeId } = currentIds.value
+  if (!annotationId || !snapshotId || !changeId) return
+  useAnnotation().updateAnnotation(
+    {
+      ...(await apis.changes.removeChange(annotationId, snapshotId, changeId))
+        .data,
+    },
+    true,
+  )
+}
+const updateIsDraft = async (isDraft: boolean) => {
+  const { annotationId } = useAnnotation().currentIds.value
+  if (!annotationId) return
+  useAnnotation().updateAnnotation(
+    {
+      ...(await apis.annotations.publishAnnotation(annotationId, { isDraft }))
+        .data,
+    },
+    false,
+  )
+}
+
+const switchCurrentChange = (newChangeId: string) => {
+  if (newChangeId === currentChange.value?.id) return
+  useAnnotation().updateCurrentChangeId(newChangeId)
+}
+
+const commonTokenSequenceSetting = useCommonTokenSequence().setting
+const commonTokenSequenceTypes = [
+  'oneToOne',
+  'oneToManyOrManyToOne',
+  'manyToMany',
+] satisfies CommonTokenSequenceType[]
+const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
+  useCommonTokenSequence().updateSetting({
+    oneToOne: types.includes('oneToOne'),
+    oneToManyOrManyToOne: types.includes('oneToManyOrManyToOne'),
+    manyToMany: types.includes('manyToMany'),
+  })
+}
+</script>
+
+<template>
+  <v-container fluid class="pa-1" style="height: 100%">
+    <v-row no-gutters>
+      <v-col cols="6" class="pa-1">
+        <span v-if="!isOwner" class="text-body-2"
+          ><b>[Readonly]</b> You can view the annotation but cannot edit
+          it</span
+        >
+        <span v-else-if="!isDraft" class="text-body-2"
+          ><b>[Readonly]</b> You can modify the annotation if you want</span
+        >
+        <span v-else-if="!hasTemporarySnapshot" class="text-body-2"
+          >You can <span class="font-weight-medium">finish annotation</span> or
+          <span class="font-weight-medium"
+            >start change division to continue next annotation</span
+          ></span
+        >
+        <span v-else class="text-body-2"
+          ><b>[Change Division in Progress]</b> You can
+          <span class="font-weight-medium">finish change division</span> or
+          <span class="font-weight-medium"
+            >modify the intermediate source code</span
+          ></span
+        >
+        <v-tabs
+          v-model="selectedChangeId"
+          center-active
+          show-arrows
+          density="compact"
+          bg-color="primary"
+          height="25"
+        >
+          <v-tab
+            v-for="change in changeList"
+            :key="change.id"
+            :value="change.id"
+            :onclick="
+              () => {
+                console.log('aaaa')
+                switchCurrentChange(change.id)
+              }
+            "
+          >
+            <v-icon
+              v-if="change.id === currentChange?.id"
+              size="small"
+              icon="$mdiMarker"
+            />
+            <v-icon
+              v-if="
+                hasTemporarySnapshot &&
+                (change.id === changeList[changeList.length - 1]?.id ||
+                  change.id === changeList[changeList.length - 2]?.id)
+              "
+              size="small"
+              icon="$mdiSourceCommitLocal"
+            />
+            <span
+              v-if="change.id === currentChange?.id"
+              class="text-none font-weight-black"
+              >{{ change.typeName }}</span
+            >
+            <span v-else class="text-none"> {{ change.typeName }}</span>
+            <v-tooltip location="top center" origin="auto" :open-delay="500">
+              <template #activator="{ props: tooltipProps }">
+                <v-btn
+                  v-bind="tooltipProps"
+                  variant="text"
+                  size="20"
+                  icon
+                  density="comfortable"
+                >
+                  <v-icon size="20" icon="$mdiInformation" color="info" />
+                  <parameter-dialog
+                    title="Annotated Parameters"
+                    :subtitle="change.description"
+                    :change-parameters-list="[
+                      {
+                        changeId: change.id,
+                        parameters: 'all',
+                      },
+                    ]"
+                    :continue-button="
+                      currentChange?.id !== change.id
+                        ? {
+                            text: 'switch',
+                            color: 'success',
+                            onClick: () => {
+                              switchCurrentChange(change.id)
+                            },
+                          }
+                        : undefined
+                    "
+                  />
+                </v-btn>
+              </template>
+              Show Annotated Parameters
+            </v-tooltip>
+          </v-tab>
+        </v-tabs>
+        <v-row class="pt-3">
+          <v-col>
+            <v-select
+              v-if="changeTypes && selectedChange"
+              variant="underlined"
+              density="compact"
+              :model-value="selectedChange.typeName"
+              :disabled="
+                !isOwner ||
+                !isDraft ||
+                selectedChangeId !== currentChange?.id ||
+                (hasTemporarySnapshot && currentIsLast)
+              "
+              :hide-details="true"
+              :items="changeTypes.map((it) => it.name)"
+              label="Change Type"
+              @update:model-value="
+                (newTypeName) =>
+                  updateChange(newTypeName, currentChange?.description)
+              "
+            />
+          </v-col>
+          <v-col>
+            <v-textarea
+              variant="underlined"
+              density="compact"
+              :model-value="selectedChange?.description"
+              :disabled="
+                !isOwner || !isDraft || (hasTemporarySnapshot && currentIsLast)
+              "
+              :hide-details="true"
+              rows="1"
+              label="Description"
+              @update:model-value="
+                (newDescription) =>
+                  updateChange(currentChange?.typeName, newDescription)
+              "
+            />
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-col cols="6">
+        <div v-if="isOwner && !isDraft">
+          <v-row no-gutters class="pa-1">
+            <v-col>
+              <v-btn
+                variant="flat"
+                block
+                size="small"
+                density="comfortable"
+                color="secondary"
+                @click="() => updateIsDraft(true)"
+                ><span class="text-none"
+                  >Start Modifying Annotation</span
+                ></v-btn
+              >
+            </v-col>
+          </v-row>
+        </div>
+        <div v-if="isOwner && isDraft">
+          <v-row no-gutters class="pa-1">
+            <v-col>
+              <v-tooltip location="top center" origin="auto" :open-delay="500">
+                <template #activator="{ props: tooltipProps }">
+                  <div v-bind="tooltipProps">
+                    <v-btn
+                      :disabled="hasTemporarySnapshot"
+                      variant="flat"
+                      block
+                      size="small"
+                      density="comfortable"
+                      color="success"
+                      prepend-icon="$mdiCheckCircle"
+                      ><span class="text-none">Finish Annotation</span>
+                      <parameter-dialog
+                        title="Confirm Annotations"
+                        :change-parameters-list="
+                          changeList.map((change) => ({
+                            changeId: change.id,
+                            parameters: 'all',
+                          }))
+                        "
+                        :continue-button="{
+                          text: 'finish',
+                          color: 'success',
+                          onClick: () => updateIsDraft(false),
+                        }"
+                      />
+                    </v-btn>
+                  </div>
+                </template>
+                <div>
+                  When you have annotated all the refactorings which the commit
+                  has, click this button
+                </div>
+                <div v-if="hasTemporarySnapshot" class="font-italic">
+                  <hr />
+                  You cannot finish annotation while dividing changes <br />
+                  Please finish change division first
+                </div>
+              </v-tooltip>
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="pa-1">
+            <v-col>
+              <v-tooltip location="top center" origin="auto" :open-delay="500">
+                <template #activator="{ props: tooltipProps }">
+                  <div v-bind="tooltipProps">
+                    <v-btn
+                      :disabled="hasTemporarySnapshot"
+                      variant="flat"
+                      block
+                      size="small"
+                      density="comfortable"
+                      color="info"
+                      prepend-icon="$mdiSourceCommitLocal"
+                      @click="() => appendTemporarySnapshot()"
+                    >
+                      <span class="text-none">Start Change Division</span>
+                    </v-btn>
+                  </div>
+                </template>
+                <div>
+                  If you have found more than 1 refactoring or functional
+                  change, click this button to divide the changes
+                </div>
+                <div v-if="hasTemporarySnapshot" class="font-italic">
+                  <hr />
+                  You cannot start another change division while dividing
+                  changes
+                  <br />
+                  Please finish current change division first
+                </div>
+              </v-tooltip>
+            </v-col>
+            <v-col class="pl-2">
+              <v-tooltip location="top center" origin="auto" :open-delay="500">
+                <template #activator="{ props: tooltipProps }">
+                  <div v-bind="tooltipProps">
+                    <v-btn
+                      :disabled="!hasTemporarySnapshot"
+                      variant="flat"
+                      block
+                      size="small"
+                      density="comfortable"
+                      color="info"
+                      prepend-icon="$mdiSourceCommit"
+                      ><span class="text-none">Finish Change Division</span>
+                      <parameter-dialog
+                        v-if="changeList.length >= 2"
+                        title="Confirm Annotations and Source Code"
+                        subtitle="[CAUTION] If you have modified the source code, the annotated ranges may be misaligned"
+                        :change-parameters-list="[
+                          {
+                            changeId: changeList[changeList.length - 2].id,
+                            parameters: 'all',
+                          },
+                        ]"
+                        :continue-button="{
+                          text: 'finish',
+                          color: 'info',
+                          onClick: () => settleTemporarySnapshot(),
+                        }"
+                      />
+                    </v-btn>
+                  </div>
+                </template>
+                <div>
+                  When you have divided the specific change and annotated the
+                  parameters, click this button to finish change division
+                </div>
+                <div v-if="!hasTemporarySnapshot" class="font-italic">
+                  <hr />
+                  You cannot finish change division because you have not started
+                  change division yet
+                </div>
+              </v-tooltip>
+            </v-col>
+            <v-col class="pl-2">
+              <v-tooltip location="top center" origin="auto" :open-delay="500">
+                <template #activator="{ props: tooltipProps }">
+                  <div v-bind="tooltipProps">
+                    <v-btn
+                      :disabled="!hasTemporarySnapshot"
+                      variant="flat"
+                      block
+                      size="small"
+                      density="comfortable"
+                      color="error"
+                      prepend-icon="$mdiDeleteCircle"
+                      :onclick="() => removeChange()"
+                    >
+                      <span class="text-none">Cancel Change Division</span>
+                    </v-btn>
+                  </div>
+                </template>
+                <div>
+                  If you want to cancel change division, click this button
+                  <br />
+                  The annotated parameters will be removed
+                </div>
+                <div v-if="!hasTemporarySnapshot" class="font-italic">
+                  <hr />
+                  You cannot cancel change division because you have not started
+                  change division yet
+                </div>
+              </v-tooltip>
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="pa-1">
+            <v-col>
+              <v-tooltip location="top center" origin="auto" :open-delay="500">
+                <template #activator="{ props: tooltipProps }">
+                  <div v-bind="tooltipProps">
+                    <v-btn
+                      :disabled="hasTemporarySnapshot || changeList.length <= 1"
+                      variant="flat"
+                      block
+                      size="small"
+                      density="comfortable"
+                      color="error"
+                      prepend-icon="$mdiDeleteCircle"
+                    >
+                      <span class="text-none">Remove Latest 2 Annotations</span>
+                      <parameter-dialog
+                        v-if="changeList.length >= 2"
+                        title="Are you sure you want to remove these annotations?"
+                        :change-parameters-list="
+                          changeList
+                            .slice(changeList.length - 2)
+                            .map((change) => ({
+                              changeId: change.id,
+                              parameters: 'all',
+                            }))
+                        "
+                        :continue-button="{
+                          text: 'remove',
+                          color: 'error',
+                          onClick: () => removeChange(),
+                        }"
+                      />
+                    </v-btn>
+                  </div>
+                </template>
+                <div>
+                  Undo the latest change division and remove latest 2
+                  annotations
+                </div>
+                <div v-if="hasTemporarySnapshot" class="font-italic">
+                  <hr />
+                  You cannot remove latest 2 annotations while dividing changes
+                  <br />
+                  Please finish change division first
+                </div>
+                <div v-else-if="changeList.length <= 1" class="font-italic">
+                  <hr />
+                  You cannot remove first annotation
+                </div>
+              </v-tooltip>
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="pa-1">
+            <v-col class="d-flex align-center">
+              <v-tooltip location="top center" origin="auto" :open-delay="500">
+                <template #activator="{ props: tooltipProps }">
+                  <span
+                    v-bind="tooltipProps"
+                    class="text-subtitle-1 font-weight-medium"
+                    >Common Token Sequences Setting</span
+                  >
+                </template>
+                <span class="text-body-2">
+                  3 types that have different relationships between
+                  <b>the number of occurrences</b> in
+                  <b
+                    ><span
+                      :style="`background-color: ${colors.before}; color: black`"
+                    >
+                      the code before the change</span
+                    ></b
+                  >
+                  and that in
+                  <b
+                    ><span
+                      :style="`background-color: ${colors.after}; color: black`"
+                      >the code after the change</span
+                    ></b
+                  >
+                </span>
+              </v-tooltip>
+              <span class="text-body-2 font-weight-light mx-2"> (N > 1) </span>
+              <v-chip-group
+                filter
+                multiple
+                :model-value="
+                  commonTokenSequenceTypes.filter(
+                    (type) => commonTokenSequenceSetting[type],
+                  )
+                "
+                class="pa-0"
+                @update:model-value="updateCommonTokensTypes"
+              >
+                <v-tooltip
+                  location="top center"
+                  origin="auto"
+                  :open-delay="500"
+                >
+                  <template #activator="{ props: tooltipProps }">
+                    <v-chip
+                      v-bind="tooltipProps"
+                      :value="commonTokenSequenceTypes[0]"
+                      density="comfortable"
+                      >1:1</v-chip
+                    >
+                  </template>
+                  <div>
+                    <span
+                      :style="`background-color: ${colors.before}; color: black`"
+                    >
+                      <b>1 occurrence</b> in the code before the change</span
+                    >
+                    to
+                    <span
+                      :style="`background-color: ${colors.after}; color: black`"
+                    >
+                      <b>1 occurrence</b> in the code after the change</span
+                    >
+                  </div>
+                </v-tooltip>
+                <v-tooltip
+                  location="top center"
+                  origin="auto"
+                  :open-delay="500"
+                >
+                  <template #activator="{ props: tooltipProps }">
+                    <v-chip
+                      v-bind="tooltipProps"
+                      :value="commonTokenSequenceTypes[1]"
+                      density="comfortable"
+                      >1:N & N:1</v-chip
+                    >
+                  </template>
+                  <div>
+                    <span
+                      :style="`background-color: ${colors.before}; color: black`"
+                    >
+                      <b>1 occurrence</b> in the code before the change</span
+                    >
+                    to
+                    <span
+                      :style="`background-color: ${colors.after}; color: black`"
+                    >
+                      <b>many occurrence</b> in the code after the change</span
+                    >
+                  </div>
+                  <hr />
+                  <div>
+                    <span
+                      :style="`background-color: ${colors.before}; color: black`"
+                    >
+                      <b>many occurrence</b> in the code before the change</span
+                    >
+                    to
+                    <span
+                      :style="`background-color: ${colors.after}; color: black`"
+                    >
+                      <b>1 occurrence</b> in the code after the change</span
+                    >
+                  </div>
+                </v-tooltip>
+                <v-tooltip
+                  location="top center"
+                  origin="auto"
+                  :open-delay="500"
+                >
+                  <template #activator="{ props: tooltipProps }">
+                    <v-chip
+                      v-bind="tooltipProps"
+                      :value="commonTokenSequenceTypes[2]"
+                      density="comfortable"
+                      >N:N</v-chip
+                    >
+                  </template>
+                  <div>
+                    <span
+                      :style="`background-color: ${colors.before}; color: black`"
+                    >
+                      <b>many occurrence</b> in the code before the change</span
+                    >
+                    to
+                    <span
+                      :style="`background-color: ${colors.after}; color: black`"
+                    >
+                      <b>many occurrence</b> in the code after the change</span
+                    >
+                  </div>
+                </v-tooltip>
+              </v-chip-group>
+            </v-col>
+          </v-row>
+        </div>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>

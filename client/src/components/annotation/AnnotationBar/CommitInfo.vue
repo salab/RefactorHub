@@ -6,16 +6,20 @@ const messageLines = computed(() =>
 </script>
 
 <template>
-  <v-sheet class="pa-3">
+  <v-tooltip v-if="commit" location="bottom center" origin="auto">
+    <template #activator="{ props: tooltipProps }">
+      <a :href="commit.url" target="_blank" rel="noopener"
+        ><v-icon v-bind="tooltipProps" size="small" icon="$mdiGithub"
+      /></a>
+    </template>
+
     <h3>Commit Information</h3>
     <div class="text-subtitle-1 font-weight-medium">
-      <span>{{ commit?.owner }}</span>
+      <span>{{ commit.owner }}</span>
       /
-      <span>{{ commit?.repository }}</span>
+      <span>{{ commit.repository }}</span>
       /
-      <a :href="commit?.url" target="_blank" rel="noopener">{{
-        commit?.sha.substring(0, 7)
-      }}</a>
+      {{ commit.sha }}
     </div>
     <v-divider class="my-1" />
     <div>
@@ -32,11 +36,11 @@ const messageLines = computed(() =>
     </div>
     <v-divider class="my-1" />
     <div>
-      <span class="text-subtitle-2">{{ commit?.authorName }}</span>
+      <span class="text-subtitle-2">{{ commit.authorName }}</span>
       <span class="text-body-2"> committed on </span>
       <span class="text-body-2">{{
-        commit ? new Date(commit.authoredDateTime).toLocaleString() : ''
+        new Date(commit.authoredDateTime).toLocaleString()
       }}</span>
     </div>
-  </v-sheet>
+  </v-tooltip>
 </template>

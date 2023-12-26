@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DiffCategory } from 'refactorhub'
+import { annotationBarSize } from '@/components/annotation/AnnotationBar/AnnotationBar.vue'
 
 definePageMeta({
   layout: false,
@@ -17,11 +17,6 @@ useLoader()
 
 const annotation = computed(() => useAnnotation().annotation.value)
 const currentChange = computed(() => useAnnotation().currentChange.value)
-
-const isActiveOfElementHolders = reactive({
-  before: true,
-  after: true,
-})
 </script>
 
 <template>
@@ -30,27 +25,14 @@ const isActiveOfElementHolders = reactive({
       <loading-circle :active="isLoading" />
     </div>
     <div class="app">
-      <annotation-bar
-        :is-active-of-element-holders="{
-          before: isActiveOfElementHolders.before,
-          after: isActiveOfElementHolders.after,
-        }"
-        @toggle-element-holders="
-          (category: DiffCategory) => {
-            isActiveOfElementHolders[category] =
-              !isActiveOfElementHolders[category]
-          }
-        "
-      />
+      <annotation-bar />
       <element-holders
         v-if="loadingIsStarted && annotation && currentChange"
-        :is-active="isActiveOfElementHolders.before"
         :current-change="currentChange"
         category="before"
       />
       <element-holders
         v-if="loadingIsStarted && annotation && currentChange"
-        :is-active="isActiveOfElementHolders.after"
         :current-change="currentChange"
         category="after"
       />
@@ -66,10 +48,10 @@ const isActiveOfElementHolders = reactive({
             fluid
             class="flex-grow-1 flex-shrink-0 d-flex flex-column pt-0 px-0"
           >
-            <annotation-summary v-if="currentChange" />
-            <v-divider />
-            <tool-tab v-if="currentChange" />
-            <div class="flex-grow-1 flex-shrink-0" style="margin-bottom: 10px">
+            <div
+              class="flex-grow-1 flex-shrink-0"
+              :style="`margin-bottom: ${annotationBarSize - 35}px`"
+            >
               <main-viewers v-if="currentChange" />
             </div>
           </v-container>

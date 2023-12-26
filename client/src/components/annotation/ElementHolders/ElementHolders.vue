@@ -11,13 +11,10 @@ const props = defineProps({
     type: String as () => DiffCategory,
     required: true,
   },
-  isActive: {
-    type: Boolean,
-    required: true,
-  },
 })
 
 const { canEditCurrentChange } = useAnnotation()
+const isActive = ref(true)
 
 const elementMetadataMap = computed(() => {
   const type = useAnnotation().changeTypes.value.find(
@@ -54,6 +51,36 @@ const isRemovable = (key: string) =>
     <div class="d-flex flex-column fill-height">
       <v-sheet :color="colors[category]" class="d-flex justify-center py-1">
         <span class="text-button">{{ category }} Parameters</span>
+        <v-tooltip location="top center" origin="auto">
+          <template #activator="{ props: tooltipProps }">
+            <div
+              :class="{
+                ['expand-toggle-before-open']:
+                  props.category === 'before' && !isActive,
+                ['expand-toggle-before-close']:
+                  props.category === 'before' && isActive,
+                ['expand-toggle-after-open']:
+                  props.category === 'after' && !isActive,
+                ['expand-toggle-after-close']:
+                  props.category === 'after' && isActive,
+              }"
+            >
+              <v-btn
+                v-bind="tooltipProps"
+                size="30"
+                :color="colors[props.category]"
+                :icon="
+                  (props.category === 'before' && isActive) ||
+                  (props.category === 'after' && !isActive)
+                    ? '$mdiChevronDoubleLeft'
+                    : '$mdiChevronDoubleRight'
+                "
+                @click="isActive = !isActive"
+              />
+            </div>
+          </template>
+          {{ isActive ? 'Close Parameter List' : 'Open Parameter List' }}
+        </v-tooltip>
       </v-sheet>
       <v-divider />
       <div class="flex-grow-1 list-container">
@@ -81,5 +108,51 @@ const isRemovable = (key: string) =>
 .list-container {
   min-height: 0;
   overflow-y: scroll;
+}
+
+.v-navigation-drawer--mini-variant,
+.v-navigation-drawer {
+  overflow: visible !important;
+}
+
+.expand-toggle-before-close {
+  position: absolute;
+  z-index: 1;
+  right: -15px;
+  top: 30px;
+  .v-btn {
+    margin: auto;
+    border: thin solid white !important;
+  }
+}
+.expand-toggle-before-open {
+  position: absolute;
+  z-index: 1;
+  right: -40px;
+  top: 30px;
+  .v-btn {
+    margin: auto;
+    border: thin solid white !important;
+  }
+}
+.expand-toggle-after-close {
+  position: absolute;
+  z-index: 1;
+  left: -15px;
+  top: 30px;
+  .v-btn {
+    margin: auto;
+    border: thin solid white !important;
+  }
+}
+.expand-toggle-after-open {
+  position: absolute;
+  z-index: 1;
+  left: -40px;
+  top: 30px;
+  .v-btn {
+    margin: auto;
+    border: thin solid white !important;
+  }
 }
 </style>

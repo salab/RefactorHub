@@ -5,7 +5,7 @@ const isAuthenticated = useUser().isAuthenticated
 <template>
   <v-container>
     <div class="py-10 text-center">
-      <v-img src="/logo.png" contain max-height="100"></v-img>
+      <v-img src="/logo.png" max-height="100" />
       <div class="mt-6 text-h5">A Commit Annotator for Refactoring</div>
     </div>
     <template v-if="isAuthenticated">
