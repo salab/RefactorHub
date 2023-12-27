@@ -12,7 +12,7 @@ interface ElementWidget extends monaco.editor.IContentWidget {
   type: string
 }
 
-/** Dependencies: beforeElements, afterElements */
+/** Dependencies: beforeElements, afterElements, linesMap */
 export class ElementWidgetManager {
   private readonly viewer: {
     [category in DiffCategory]?: monaco.editor.ICodeEditor
@@ -29,11 +29,26 @@ export class ElementWidgetManager {
     after: [],
   }
 
+  private readonly linesMap: {
+    [category in DiffCategory]?: {
+      [lineNumber: number]: number
+    }
+  } = {
+    before: undefined,
+    after: undefined,
+  }
+
   public constructor(
     beforeElements: CodeElement[],
     afterElements: CodeElement[],
     originalViewer: monaco.editor.ICodeEditor | undefined,
     modifiedViewer: monaco.editor.ICodeEditor | undefined,
+    beforeLinesMap?: {
+      [lineNumber: number]: number
+    },
+    afterLinesMap?: {
+      [lineNumber: number]: number
+    },
   ) {
     this.codeElements = {
       before: beforeElements.filter(
@@ -47,6 +62,8 @@ export class ElementWidgetManager {
       before: originalViewer,
       after: modifiedViewer,
     }
+    this.linesMap.before = beforeLinesMap
+    this.linesMap.after = afterLinesMap
     this.resetElementWidgets()
 
     watch(
@@ -61,13 +78,24 @@ export class ElementWidgetManager {
     )
   }
 
-  public update(beforeElements: CodeElement[], afterElements: CodeElement[]) {
+  public update(
+    beforeElements: CodeElement[],
+    afterElements: CodeElement[],
+    beforeLinesMap?: {
+      [lineNumber: number]: number
+    },
+    afterLinesMap?: {
+      [lineNumber: number]: number
+    },
+  ) {
     this.codeElements.before = beforeElements.filter(
       (element) => element.type !== CodeElementType.CodeFragment,
     )
     this.codeElements.after = afterElements.filter(
       (element) => element.type !== CodeElementType.CodeFragment,
     )
+    this.linesMap.before = beforeLinesMap
+    this.linesMap.after = afterLinesMap
     this.resetElementWidgets()
   }
 
@@ -119,7 +147,7 @@ export class ElementWidgetManager {
     viewer: monaco.editor.ICodeEditor,
   ) {
     this.codeElements[category].forEach((element) => {
-      const widget = this.createElementWidget(element, viewer, () =>
+      const widget = this.createElementWidget(element, viewer, category, () =>
         this.updateParameterValue(category, element),
       )
       viewer.addContentWidget(widget)
@@ -130,9 +158,13 @@ export class ElementWidgetManager {
   private createElementWidget(
     element: CodeElement,
     editor: monaco.editor.ICodeEditor,
+    category: DiffCategory,
     onClick: () => void,
   ): ElementWidget {
-    const range = asMonacoRange(element.location?.range)
+    const range = this.mapRange(
+      asMonacoRange(element.location?.range),
+      category,
+    )
     const id = cryptoRandomString({ length: 10 })
     const div = document.createElement('div')
     div.classList.add('element-widget')
@@ -188,5 +220,20 @@ export class ElementWidgetManager {
       ).data,
     )
     useParameter().updateEditingElement(category, undefined)
+  }
+
+  private mapRange(range: monaco.Range, category: DiffCategory) {
+    let { startLineNumber, endLineNumber } = range
+    const map = this.linesMap[category]
+    if (map) {
+      startLineNumber = map[startLineNumber]
+      endLineNumber = map[endLineNumber]
+    }
+    return new monaco.Range(
+      startLineNumber,
+      range.startColumn,
+      endLineNumber,
+      range.endColumn,
+    )
   }
 }

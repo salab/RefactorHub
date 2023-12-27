@@ -3,10 +3,19 @@ import { DiffCategory } from 'refactorhub'
 import { TokenSequence } from 'composables/useCommonTokenSequence'
 import { PathPair } from 'composables/useAnnotation'
 
-/** Dependencies: beforePath, afterPath */
+/** Dependencies: beforePath, afterPath, linesMap */
 export class CommonTokenSequenceDecorationManager {
   private readonly viewer: {
     [category in DiffCategory]?: monaco.editor.ICodeEditor
+  }
+
+  private readonly linesMap: {
+    [category in DiffCategory]?: {
+      [lineNumber: number]: number
+    }
+  } = {
+    before: undefined,
+    after: undefined,
   }
 
   private pathPair: PathPair
@@ -22,12 +31,20 @@ export class CommonTokenSequenceDecorationManager {
     pathPair: PathPair,
     originalViewer: monaco.editor.ICodeEditor | undefined,
     modifiedViewer: monaco.editor.ICodeEditor | undefined,
+    beforeLinesMap?: {
+      [lineNumber: number]: number
+    },
+    afterLinesMap?: {
+      [lineNumber: number]: number
+    },
   ) {
     this.pathPair = pathPair
     this.viewer = {
       before: originalViewer,
       after: modifiedViewer,
     }
+    this.linesMap.before = beforeLinesMap
+    this.linesMap.after = afterLinesMap
 
     this.updateDecorations('before')
     this.updateDecorations('after')
@@ -40,8 +57,18 @@ export class CommonTokenSequenceDecorationManager {
     )
   }
 
-  public update(pathPair: PathPair) {
+  public update(
+    pathPair: PathPair,
+    beforeLinesMap?: {
+      [lineNumber: number]: number
+    },
+    afterLinesMap?: {
+      [lineNumber: number]: number
+    },
+  ) {
     this.pathPair = pathPair
+    this.linesMap.before = beforeLinesMap
+    this.linesMap.after = afterLinesMap
     this.updateDecorations('before')
     this.updateDecorations('after')
   }
@@ -56,7 +83,7 @@ export class CommonTokenSequenceDecorationManager {
       useCommonTokenSequence().getCommonTokenSequencesIn(path, category)
     this.decorationsCollection[category] = viewer.createDecorationsCollection(
       commonTokenSequences.map(({ sequence, id, count }) =>
-        this.createCommonTokenSequenceDecoration(sequence, id, count),
+        this.createCommonTokenSequenceDecoration(sequence, id, count, category),
       ),
     )
   }
@@ -65,10 +92,11 @@ export class CommonTokenSequenceDecorationManager {
     sequence: TokenSequence,
     id: number,
     count: { [category in DiffCategory]: number },
+    category: DiffCategory,
   ): monaco.editor.IModelDeltaDecoration {
     const className = `commonTokenSequence-decoration-${id}`
     return {
-      range: sequence.range,
+      range: this.mapRange(sequence.range, category),
       options: {
         className,
         hoverMessage: [
@@ -104,5 +132,20 @@ export class CommonTokenSequenceDecorationManager {
       content.substring(firstIndex, lastIndex),
     )
     return commonTokenSequenceId
+  }
+
+  private mapRange(range: monaco.Range, category: DiffCategory) {
+    let { startLineNumber, endLineNumber } = range
+    const map = this.linesMap[category]
+    if (map) {
+      startLineNumber = map[startLineNumber]
+      endLineNumber = map[endLineNumber]
+    }
+    return new monaco.Range(
+      startLineNumber,
+      range.startColumn,
+      endLineNumber,
+      range.endColumn,
+    )
   }
 }

@@ -4,7 +4,7 @@ import { asMonacoRange } from '@/components/common/editor/utils/range'
 import { Location } from '@/apis'
 import { PathPair } from 'composables/useAnnotation'
 
-/** Dependencies: beforePath, afterPath */
+/** Dependencies: beforePath, afterPath, linesMap */
 export class ElementDecorationManager {
   private readonly viewer: {
     [category in DiffCategory]?: monaco.editor.ICodeEditor
@@ -17,18 +17,35 @@ export class ElementDecorationManager {
     after: undefined,
   }
 
+  private readonly linesMap: {
+    [category in DiffCategory]?: {
+      [lineNumber: number]: number
+    }
+  } = {
+    before: undefined,
+    after: undefined,
+  }
+
   private pathPair: PathPair
 
   public constructor(
     pathPair: PathPair,
     originalViewer: monaco.editor.ICodeEditor | undefined,
     modifiedViewer: monaco.editor.ICodeEditor | undefined,
+    beforeLinesMap?: {
+      [lineNumber: number]: number
+    },
+    afterLinesMap?: {
+      [lineNumber: number]: number
+    },
   ) {
     this.pathPair = pathPair
     this.viewer = {
       before: originalViewer,
       after: modifiedViewer,
     }
+    this.linesMap.before = beforeLinesMap
+    this.linesMap.after = afterLinesMap
 
     this.updateDecoration('before', useParameter().hoveredElement.value.before)
     this.updateDecoration('after', useParameter().hoveredElement.value.after)
@@ -44,8 +61,18 @@ export class ElementDecorationManager {
     )
   }
 
-  public update(pathPair: PathPair) {
+  public update(
+    pathPair: PathPair,
+    beforeLinesMap?: {
+      [lineNumber: number]: number
+    },
+    afterLinesMap?: {
+      [lineNumber: number]: number
+    },
+  ) {
     this.pathPair = pathPair
+    this.linesMap.before = beforeLinesMap
+    this.linesMap.after = afterLinesMap
     this.updateDecoration('before', useParameter().hoveredElement.value.before)
     this.updateDecoration('after', useParameter().hoveredElement.value.after)
   }
@@ -63,18 +90,34 @@ export class ElementDecorationManager {
       ].elements[elementMetaData.index].location
     if (!location || location.path !== this.pathPair[category]) return
     this.decorationsCollection[category] = viewer.createDecorationsCollection([
-      this.createElementDecoration(location),
+      this.createElementDecoration(location, category),
     ])
   }
 
   private createElementDecoration(
     location: Location,
+    category: DiffCategory,
   ): monaco.editor.IModelDeltaDecoration {
     return {
-      range: asMonacoRange(location.range),
+      range: this.mapRange(asMonacoRange(location.range), category),
       options: {
         className: 'element-decoration',
       },
     }
+  }
+
+  private mapRange(range: monaco.Range, category: DiffCategory) {
+    let { startLineNumber, endLineNumber } = range
+    const map = this.linesMap[category]
+    if (map) {
+      startLineNumber = map[startLineNumber]
+      endLineNumber = map[endLineNumber]
+    }
+    return new monaco.Range(
+      startLineNumber,
+      range.startColumn,
+      endLineNumber,
+      range.endColumn,
+    )
   }
 }

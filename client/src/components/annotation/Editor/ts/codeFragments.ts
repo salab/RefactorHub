@@ -5,11 +5,20 @@ import { asRange, asMonacoRange } from '@/components/common/editor/utils/range'
 import apis, { CodeElement, CodeElementType } from '@/apis'
 import { PathPair } from 'composables/useAnnotation'
 
-/** Dependencies: beforePath, afterPath, beforeElements, afterElements */
+/** Dependencies: beforePath, afterPath, beforeElements, afterElements, linesMap */
 export class CodeFragmentManager {
   private pathPair: PathPair
   private readonly codeFragments: {
     [category in DiffCategory]: CodeElement[]
+  }
+
+  private readonly linesMap: {
+    [category in DiffCategory]?: {
+      [lineNumber: number]: number
+    }
+  } = {
+    before: undefined,
+    after: undefined,
   }
 
   public constructor(
@@ -18,6 +27,12 @@ export class CodeFragmentManager {
     afterElements: CodeElement[],
     originalViewer: monaco.editor.ICodeEditor | undefined,
     modifiedViewer: monaco.editor.ICodeEditor | undefined,
+    beforeLinesMap?: {
+      [lineNumber: number]: number
+    },
+    afterLinesMap?: {
+      [lineNumber: number]: number
+    },
   ) {
     this.pathPair = pathPair
     this.codeFragments = {
@@ -28,6 +43,8 @@ export class CodeFragmentManager {
         (element) => element.type === CodeElementType.CodeFragment,
       ),
     }
+    this.linesMap.before = beforeLinesMap
+    this.linesMap.after = afterLinesMap
 
     originalViewer?.onDidChangeCursorSelection(
       debounce((e: monaco.editor.ICursorSelectionChangedEvent) => {
@@ -45,6 +62,12 @@ export class CodeFragmentManager {
     pathPair: PathPair,
     beforeElements: CodeElement[],
     afterElements: CodeElement[],
+    beforeLinesMap?: {
+      [lineNumber: number]: number
+    },
+    afterLinesMap?: {
+      [lineNumber: number]: number
+    },
   ) {
     this.pathPair = pathPair
     this.codeFragments.before = beforeElements.filter(
@@ -53,12 +76,17 @@ export class CodeFragmentManager {
     this.codeFragments.after = afterElements.filter(
       (element) => element.type === CodeElementType.CodeFragment,
     )
+    this.linesMap.before = beforeLinesMap
+    this.linesMap.after = afterLinesMap
   }
 
   private async updateEditingCodeFragment(
     category: DiffCategory,
     range: monaco.Range,
   ) {
+    const inverseRange = this.mapRangeInverse(range, category)
+    if (!inverseRange) return
+    range = inverseRange
     if (
       range.startLineNumber === range.endLineNumber &&
       range.startColumn === range.endColumn
@@ -102,5 +130,29 @@ export class CodeFragmentManager {
       ).data,
     )
     useParameter().updateEditingElement(category, undefined)
+  }
+
+  private mapRangeInverse(range: monaco.Range, category: DiffCategory) {
+    let { startLineNumber, endLineNumber } = range
+    const map = this.linesMap[category]
+    if (map) {
+      const oldStartLine = Object.entries(map).find(
+        ([, newLineNumber]) => newLineNumber === startLineNumber,
+      )
+      if (!oldStartLine) return undefined
+      startLineNumber = Number.parseInt(oldStartLine[0])
+
+      const oldEndLine = Object.entries(map).find(
+        ([, newLineNumber]) => newLineNumber === endLineNumber,
+      )
+      if (!oldEndLine) return undefined
+      endLineNumber = Number.parseInt(oldEndLine[0])
+    }
+    return new monaco.Range(
+      startLineNumber,
+      range.startColumn,
+      endLineNumber,
+      range.endColumn,
+    )
   }
 }

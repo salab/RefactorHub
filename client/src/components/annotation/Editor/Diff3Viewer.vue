@@ -36,7 +36,15 @@ let originalViewer: monaco.editor.IStandaloneCodeEditor | undefined
 let intermediateViewer: monaco.editor.IStandaloneCodeEditor | undefined
 let modifiedViewer: monaco.editor.IStandaloneCodeEditor | undefined
 
-function navigate(viewer: DiffViewer) {
+function navigate(
+  viewer: DiffViewer,
+  beforeLinesMap: {
+    [lineNumber: number]: number
+  },
+  intermediateLinesMap: {
+    [lineNumber: number]: number
+  },
+) {
   const navigation = viewer.navigation
   if (!navigation) return
   useViewer().updateViewer(viewer.id, {
@@ -44,8 +52,18 @@ function navigate(viewer: DiffViewer) {
     navigation: undefined,
   })
   const { category, range } = navigation
+  let { startLineNumber, endLineNumber } = range
+  const linesMap = category === 'before' ? beforeLinesMap : intermediateLinesMap
+  startLineNumber = linesMap[startLineNumber]
+  endLineNumber = linesMap[endLineNumber]
+  const mappedRange = new monaco.Range(
+    startLineNumber,
+    range.startColumn,
+    endLineNumber,
+    range.endColumn,
+  )
   const fileViewer = category === 'before' ? originalViewer : intermediateViewer
-  setTimeout(() => fileViewer?.revealRangeAtTop(range), 100)
+  setTimeout(() => fileViewer?.revealRangeAtTop(mappedRange), 100)
 }
 
 let beforeLineDecorationsCollection:
@@ -361,9 +379,28 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
     }
   }
 
+  const oldScrollTop = scrollTop.value
+  const oldScrollLeft = scrollLeft.value
+  const oldOriginalViewerCursorPosition = originalViewer?.getPosition()
+  const oldIntermediateViewerCursorPosition = intermediateViewer?.getPosition()
+  const oldModifiedViewerCursorPosition = modifiedViewer?.getPosition()
+
   originalViewer?.setValue(newBeforeText)
   intermediateViewer?.setValue(newIntermediateText)
   modifiedViewer?.setValue(newAfterText)
+
+  originalViewer?.setScrollTop(oldScrollTop)
+  originalViewer?.setScrollLeft(oldScrollLeft)
+  intermediateViewer?.setScrollTop(oldScrollTop)
+  intermediateViewer?.setScrollLeft(oldScrollLeft)
+  modifiedViewer?.setScrollTop(oldScrollTop)
+  modifiedViewer?.setScrollLeft(oldScrollLeft)
+  if (oldOriginalViewerCursorPosition)
+    originalViewer?.setPosition(oldOriginalViewerCursorPosition)
+  if (oldIntermediateViewerCursorPosition)
+    intermediateViewer?.setPosition(oldIntermediateViewerCursorPosition)
+  if (oldModifiedViewerCursorPosition)
+    modifiedViewer?.setPosition(oldModifiedViewerCursorPosition)
 
   beforeLineDecorationsCollection = originalViewer?.createDecorationsCollection(
     Object.entries(newBeforeLines)
@@ -442,6 +479,12 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
         }
       }),
   )
+
+  return {
+    beforeLinesMap,
+    intermediateLinesMap,
+    afterLinesMap,
+  }
 }
 
 function createViewer(viewer: DiffViewer) {
@@ -506,7 +549,10 @@ function createViewer(viewer: DiffViewer) {
   })
   modifiedViewer.setModel(useAnnotation().getTextModel(filePair2, 'after'))
 
-  updateDiff(filePair1, filePair2)
+  const { beforeLinesMap, intermediateLinesMap } = updateDiff(
+    filePair1,
+    filePair2,
+  )
 
   originalViewer.onDidScrollChange((e) => {
     scrollTop.value = e.scrollTop
@@ -537,10 +583,18 @@ function createViewer(viewer: DiffViewer) {
     },
   )
 
-  navigate(viewer)
+  navigate(viewer, beforeLinesMap, intermediateLinesMap)
 
   intermediateViewer.onDidChangeModelContent(
     debounce(async (e: monaco.editor.IModelContentChangedEvent) => {
+      const filePair1 = props.viewer.filePair
+      const filePair2 = filePair1.next
+      if (!filePair2) {
+        logger.error(
+          `Cannot find the filePair2: path is ${filePair1.getPathPair().after}`,
+        )
+        return
+      }
       const { annotationId } = useAnnotation().currentIds.value
       if (!annotationId) return
       const pathPair = filePair1.getPathPair()
@@ -568,13 +622,15 @@ function createViewer(viewer: DiffViewer) {
         },
         true,
       )
-    }, 1000),
+    }, 1500),
   )
 
   const elementDecorationManager = new ElementDecorationManager(
     filePair1.getPathPair(),
     originalViewer,
     intermediateViewer,
+    beforeLinesMap,
+    intermediateLinesMap,
   )
   const codeFragmentManager = new CodeFragmentManager(
     filePair1.getPathPair(),
@@ -582,18 +638,24 @@ function createViewer(viewer: DiffViewer) {
     filePair1.after?.elements ?? [],
     originalViewer,
     intermediateViewer,
+    beforeLinesMap,
+    intermediateLinesMap,
   )
   const elementWidgetManager = new ElementWidgetManager(
     filePair1.before?.elements ?? [],
     filePair1.after?.elements ?? [],
     originalViewer,
     intermediateViewer,
+    beforeLinesMap,
+    intermediateLinesMap,
   )
   const commonTokenSequenceDecorationManager =
     new CommonTokenSequenceDecorationManager(
       filePair1.getPathPair(),
       originalViewer,
       intermediateViewer,
+      beforeLinesMap,
+      intermediateLinesMap,
     )
 
   watch(
@@ -607,19 +669,34 @@ function createViewer(viewer: DiffViewer) {
         )
         return
       }
-      updateDiff(filePair1, filePair2)
-      navigate(newViewer)
-      elementDecorationManager.update(filePair1.getPathPair())
+      const { beforeLinesMap, intermediateLinesMap } = updateDiff(
+        filePair1,
+        filePair2,
+      )
+      navigate(newViewer, beforeLinesMap, intermediateLinesMap)
+      elementDecorationManager.update(
+        filePair1.getPathPair(),
+        beforeLinesMap,
+        intermediateLinesMap,
+      )
       codeFragmentManager.update(
         filePair1.getPathPair(),
         filePair1.before?.elements ?? [],
         filePair1.after?.elements ?? [],
+        beforeLinesMap,
+        intermediateLinesMap,
       )
       elementWidgetManager.update(
         filePair1.before?.elements ?? [],
         filePair1.after?.elements ?? [],
+        beforeLinesMap,
+        intermediateLinesMap,
       )
-      commonTokenSequenceDecorationManager.update(filePair1.getPathPair())
+      commonTokenSequenceDecorationManager.update(
+        filePair1.getPathPair(),
+        beforeLinesMap,
+        intermediateLinesMap,
+      )
     },
   )
 
@@ -637,7 +714,7 @@ function createViewer(viewer: DiffViewer) {
     useCommonTokenSequence().updateSelectedId(commonTokenSequenceId)
     const sequencesOnThisViewer = tokenSequenceSet.filterCategory(category)
     const currentPath =
-      category === 'before' ? filePair1.before?.path : filePair2?.after?.path
+      category === 'before' ? filePair1.before?.path : filePair1?.after?.path
     if (currentPath === undefined)
       throw new Error('cannot get currentPath of viewer')
     const currentDestinationIndex = sequencesOnThisViewer.findIndex(
@@ -696,21 +773,37 @@ function createViewer(viewer: DiffViewer) {
     )
   }
   originalViewer?.onMouseDown((e) => onMouseDown(e, 'before'))
-  modifiedViewer?.onMouseDown((e) => onMouseDown(e, 'after'))
+  intermediateViewer?.onMouseDown((e) => onMouseDown(e, 'after'))
 
   function onMouseMove(
     e: monaco.editor.IEditorMouseEvent,
     category: DiffCategory,
+    linesMap: {
+      [lineNumber: number]: number
+    },
   ) {
-    if (e.target.position) latestMousePosition = e.target.position
+    const position = e.target.position
+    if (!position) return
+    const oldLine = Object.entries(linesMap).find(
+      ([, newLineNumber]) => newLineNumber === position.lineNumber,
+    )
+    if (!oldLine) return undefined
+    const inverseLineNumber = Number.parseInt(oldLine[0])
+    const inversePosition = new monaco.Position(
+      inverseLineNumber,
+      position.column,
+    )
+    latestMousePosition = inversePosition
     if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_TEXT) return
     const path =
-      category === 'before' ? filePair1.before?.path : filePair2?.after?.path
+      category === 'before' ? filePair1.before?.path : filePair1?.after?.path
     if (path === undefined) return
-    useCommonTokenSequence().updateIsHovered(path, category, e.target.position)
+    useCommonTokenSequence().updateIsHovered(path, category, inversePosition)
   }
-  originalViewer?.onMouseMove((e) => onMouseMove(e, 'before'))
-  modifiedViewer?.onMouseMove((e) => onMouseMove(e, 'after'))
+  originalViewer?.onMouseMove((e) => onMouseMove(e, 'before', beforeLinesMap))
+  intermediateViewer?.onMouseMove((e) =>
+    onMouseMove(e, 'after', intermediateLinesMap),
+  )
 }
 
 onMounted(async () => {
