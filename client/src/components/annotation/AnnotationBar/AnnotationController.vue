@@ -3,7 +3,11 @@ import { debounce } from 'lodash-es'
 import apis from '@/apis'
 import { CommonTokenSequenceType } from 'composables/useCommonTokenSequence'
 
-const changeList = computed(() => useAnnotation().getChangeList())
+const changeList = computed(() => {
+  const list = [...useAnnotation().getChangeList()]
+  if (useAnnotation().isDividingChange.value) list.pop()
+  return list
+})
 const selectedChangeId = ref(useAnnotation().currentChange.value?.id)
 const selectedChange = computed(() =>
   changeList.value.find(({ id }) => id === selectedChangeId.value),
@@ -30,12 +34,6 @@ const isOwner = computed(
 )
 const hasTemporarySnapshot = computed(
   () => useAnnotation().annotation.value?.hasTemporarySnapshot ?? false,
-)
-const currentIsLast = computed(
-  () =>
-    changeList.value.length > 0 &&
-    changeList.value[changeList.value.length - 1].id ===
-      currentChange.value?.id,
 )
 
 const updateChange = debounce(
@@ -95,11 +93,12 @@ const settleTemporarySnapshot = async () => {
   )
 }
 const removeChange = async () => {
-  if (changeList.value.length <= 1) {
+  const changeList = useAnnotation().getChangeList()
+  if (changeList.length <= 1) {
     logger.warn('cannot remove all changes')
     return
   }
-  switchCurrentChange(changeList.value[changeList.value.length - 2].id)
+  switchCurrentChange(changeList[changeList.length - 2].id)
 
   const { currentIds } = useAnnotation()
   const { annotationId, snapshotId, changeId } = currentIds.value
@@ -190,8 +189,7 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
             <v-icon
               v-if="
                 hasTemporarySnapshot &&
-                (change.id === changeList[changeList.length - 1]?.id ||
-                  change.id === changeList[changeList.length - 2]?.id)
+                change.id === changeList[changeList.length - 1]?.id
               "
               size="small"
               icon="$mdiSourceCommitLocal"
@@ -246,12 +244,7 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
               variant="underlined"
               density="compact"
               :model-value="selectedChange.typeName"
-              :disabled="
-                !isOwner ||
-                !isDraft ||
-                selectedChangeId !== currentChange?.id ||
-                (hasTemporarySnapshot && currentIsLast)
-              "
+              :disabled="!isOwner || !isDraft"
               :hide-details="true"
               :items="changeTypes.map((it) => it.name)"
               label="Change Type"
@@ -266,9 +259,7 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
               variant="underlined"
               density="compact"
               :model-value="selectedChange?.description"
-              :disabled="
-                !isOwner || !isDraft || (hasTemporarySnapshot && currentIsLast)
-              "
+              :disabled="!isOwner || !isDraft"
               :hide-details="true"
               rows="1"
               label="Description"
@@ -388,12 +379,11 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
                       prepend-icon="$mdiSourceCommit"
                       ><span class="text-none">Finish Change Division</span>
                       <parameter-dialog
-                        v-if="changeList.length >= 2"
                         title="Confirm Annotations and Source Code"
                         subtitle="[CAUTION] If you have modified the source code, the annotated ranges may be misaligned"
                         :change-parameters-list="[
                           {
-                            changeId: changeList[changeList.length - 2].id,
+                            changeId: changeList[changeList.length - 1].id,
                             parameters: 'all',
                           },
                         ]"
