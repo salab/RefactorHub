@@ -40,14 +40,16 @@ class ExperimentService : KoinComponent {
         targetCommits: List<Commit>
     ): Experiment {
         val owner = userService.getMe(ownerId)
-        return experimentRepository.create(
+        val experimentId = experimentRepository.create(
             owner.id,
             title,
             description,
             isActive,
-            targetCommits.map {
-                commitService.createIfNotExist(it.owner, it.repository, it.sha)
-            },
-        )
+        ).id
+        for (orderIndex in targetCommits.indices) {
+            val targetCommit = targetCommits[orderIndex]
+            commitService.create(experimentId, orderIndex, targetCommit.owner, targetCommit.repository, targetCommit.sha)
+        }
+        return get(experimentId)
     }
 }

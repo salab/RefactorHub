@@ -28,7 +28,6 @@ class ExperimentRepositoryImpl : ExperimentRepository {
         title: String,
         description: String,
         isActive: Boolean,
-        targetCommits: List<Commit>,
     ): Experiment {
         return transaction {
             ExperimentDao.new {
@@ -36,8 +35,6 @@ class ExperimentRepositoryImpl : ExperimentRepository {
                 this.title = title
                 this.description = description
                 this.isActive = isActive
-            }.apply {
-                this.targetCommits = SizedCollection(targetCommits.map { CommitDao[it.id] })
             }.asModel()
         }
     }

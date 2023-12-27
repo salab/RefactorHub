@@ -13,6 +13,5 @@ interface ExperimentRepository {
         title: String,
         description: String,
         isActive: Boolean,
-        targetCommits: List<Commit>,
     ): Experiment
 }

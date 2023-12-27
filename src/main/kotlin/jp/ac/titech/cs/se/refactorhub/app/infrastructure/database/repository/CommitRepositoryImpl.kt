@@ -2,6 +2,7 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository
 
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.CommitDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Commits
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.ExperimentDao
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.CommitRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.*
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.File
@@ -28,6 +29,8 @@ class CommitRepositoryImpl : CommitRepository {
     }
 
     override fun create(
+        experimentId: UUID,
+        orderIndex: Int,
         owner: String,
         repository: String,
         sha: String,
@@ -43,6 +46,8 @@ class CommitRepositoryImpl : CommitRepository {
     ): Commit {
         return transaction {
             CommitDao.new {
+                this.expriment = ExperimentDao[experimentId]
+                this.orderIndex = orderIndex
                 this.owner = owner
                 this.repository = repository
                 this.sha = sha

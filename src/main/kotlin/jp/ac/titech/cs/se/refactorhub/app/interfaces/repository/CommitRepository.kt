@@ -10,6 +10,8 @@ interface CommitRepository {
     fun findById(id: UUID): Commit?
 
     fun create(
+        experimentId: UUID,
+        orderIndex: Int,
         owner: String,
         repository: String,
         sha: String,

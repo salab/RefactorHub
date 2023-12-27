@@ -5,7 +5,6 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
-import org.jetbrains.exposed.sql.Table
 import java.util.UUID
 
 object Experiments : UUIDTable("experiments") {
@@ -15,12 +14,6 @@ object Experiments : UUIDTable("experiments") {
     val isActive = bool("is_active").default(false)
 }
 
-object ExperimentsToCommits : Table("experiments_to_commits") {
-    val experiment = reference("experiment_id", Experiments)
-    val commit = reference("commit_id", Commits)
-    override val primaryKey = PrimaryKey(experiment, commit)
-}
-
 class ExperimentDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Experiment> {
     companion object : UUIDEntityClass<ExperimentDao>(Experiments)
 
@@ -28,9 +21,8 @@ class ExperimentDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Experim
     var title by Experiments.title
     var description by Experiments.description
     var isActive by Experiments.isActive
-    var targetCommits by CommitDao via ExperimentsToCommits
+    val targetCommits by CommitDao referrersOn Commits.experimentId
 
-    @OptIn(ExperimentalStdlibApi::class)
     override fun asModel(): Experiment {
         return Experiment(
             this.id.value,
@@ -38,7 +30,7 @@ class ExperimentDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Experim
             this.title,
             this.description,
             this.isActive,
-            this.targetCommits.sortedBy { "${it.owner}/${it.repository}/${it.sha}".lowercase() }.map { it.asModel().overview() }
+            this.targetCommits.sortedBy { it.orderIndex }.map { it.asModel().overview() }
         )
     }
 }

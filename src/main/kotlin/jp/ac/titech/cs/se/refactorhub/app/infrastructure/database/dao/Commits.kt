@@ -14,6 +14,8 @@ import org.koin.java.KoinJavaComponent
 import java.util.UUID
 
 object Commits : UUIDTable("commits") {
+    val experimentId = reference("experiment_id", Experiments)
+    val orderIndex = integer("order_index")
     val owner = varchar("owner", 100)
     val repository = varchar("repository", 100)
     val sha = varchar("sha", 40)
@@ -31,6 +33,8 @@ object Commits : UUIDTable("commits") {
 class CommitDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Commit> {
     companion object : UUIDEntityClass<CommitDao>(Commits)
 
+    var expriment by ExperimentDao referencedOn Commits.experimentId
+    var orderIndex by Commits.orderIndex
     var owner by Commits.owner
     var repository by Commits.repository
     var sha by Commits.sha

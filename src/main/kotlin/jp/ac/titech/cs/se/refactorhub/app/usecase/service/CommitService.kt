@@ -25,10 +25,11 @@ class CommitService : KoinComponent {
         return commit ?: throw NotFoundException("Commit(id=$commitId) is not found")
     }
 
-    fun createIfNotExist(owner: String, repository: String, sha: String): Commit {
-        return commitRepository.find(owner, repository, sha)
-            ?: fetchCommitFromGitHub(owner, repository, sha).let {
+    fun create(experimentId: UUID, orderIndex: Int, owner: String, repository: String, sha: String): Commit {
+        return fetchCommitFromGitHub(owner, repository, sha).let {
             commitRepository.create(
+                experimentId,
+                orderIndex,
                 it.owner,
                 it.repository,
                 it.sha,

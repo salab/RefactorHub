@@ -6,7 +6,6 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.*
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.fetchCommitFromGitHub
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun initializeDatabase() {
@@ -20,7 +19,6 @@ private val tables = arrayOf(
     Users,
     Commits,
     Experiments,
-    ExperimentsToCommits,
     ChangeTypes,
     Changes,
     Snapshots,
@@ -89,24 +87,25 @@ private fun createExperiments(adminDao: UserDao) {
 }
 
 private fun createExperiment(adminDao: UserDao, title: String, description: String, input: String) {
-    ExperimentDao.new {
+    val experimentDao = ExperimentDao.new {
         this.owner = adminDao
         this.title = title
         this.description = description
         this.isActive = true
-    }.apply {
-        this.targetCommits = SizedCollection(createCommits(input))
     }
+    createCommits(input, experimentDao)
 }
 
-private fun createCommits(file: String): List<CommitDao> {
+private fun createCommits(file: String, experimentDao: ExperimentDao): List<CommitDao> {
     val ndjson = object {}.javaClass.classLoader.getResource(file)?.readText() ?: return emptyList()
     val mapper = jacksonObjectMapper()
     val commits = ndjson.trim().split("\n").map { mapper.readValue<CommitBody>(it) }
 
-    return commits.map {
-        val commit = fetchCommitFromGitHub(it.owner, it.repository, it.sha)
+    return commits.indices.map {
+        val commit = fetchCommitFromGitHub(commits[it].owner, commits[it].repository, commits[it].sha)
         CommitDao.new {
+            this.expriment = experimentDao
+            this.orderIndex = it
             this.owner = commit.owner
             this.repository = commit.repository
             this.sha = commit.sha
