@@ -181,19 +181,31 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
             :value="change.id"
             :onclick="() => switchCurrentChange(change.id)"
           >
-            <v-icon
-              v-if="change.id === currentChange?.id"
-              size="small"
-              icon="$mdiMarker"
-            />
-            <v-icon
-              v-if="
-                hasTemporarySnapshot &&
-                change.id === changeList[changeList.length - 1]?.id
-              "
-              size="small"
-              icon="$mdiSourceCommitLocal"
-            />
+            <v-tooltip location="top center" origin="auto" :open-delay="500">
+              <template #activator="{ props: tooltipProps }">
+                <v-icon
+                  v-if="change.id === currentChange?.id"
+                  v-bind="tooltipProps"
+                  size="small"
+                  icon="$mdiMarker"
+                />
+              </template>
+              Now displaying this change
+            </v-tooltip>
+            <v-tooltip location="top center" origin="auto" :open-delay="500">
+              <template #activator="{ props: tooltipProps }">
+                <v-icon
+                  v-if="
+                    hasTemporarySnapshot &&
+                    change.id === changeList[changeList.length - 1]?.id
+                  "
+                  v-bind="tooltipProps"
+                  size="small"
+                  icon="$mdiSourceCommitLocal"
+                />
+              </template>
+              Now dividing this change
+            </v-tooltip>
             <span
               v-if="change.id === currentChange?.id"
               class="text-none font-weight-black"
