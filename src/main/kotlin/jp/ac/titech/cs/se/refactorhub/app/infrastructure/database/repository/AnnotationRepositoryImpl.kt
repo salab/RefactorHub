@@ -3,6 +3,7 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.*
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.AnnotationRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Annotation
+import jp.ac.titech.cs.se.refactorhub.app.model.AnnotationOverview
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
@@ -14,11 +15,9 @@ class AnnotationRepositoryImpl : AnnotationRepository {
         }
     }
 
-    override fun findByOwnerId(ownerId: UUID): List<Annotation> {
+    override fun findByOwnerId(ownerId: UUID): List<AnnotationOverview> {
         return transaction {
-            AnnotationDao.find {
-                Annotations.ownerId eq ownerId
-            }.map { it.asModel() }
+            UserDao.findById(ownerId)?.annotations?.map { it.asModel() } ?: listOf()
         }
     }
 

@@ -18,7 +18,7 @@ watch(
 const commit = computed(() => useAnnotation().annotation.value?.commit)
 </script>
 <script lang="ts">
-const extensionHeight = 128
+const extensionHeight = 138
 export const annotationBarSize = defaultAppBarHeight + extensionHeight
 </script>
 

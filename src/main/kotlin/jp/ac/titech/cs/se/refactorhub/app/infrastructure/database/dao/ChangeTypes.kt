@@ -17,6 +17,7 @@ object ChangeTypes : StringIdTable("change_types", "name", 100) {
     val after = jsonb("after", ::stringifyParameterMap, ::parseParameterMap)
     val description = text("description")
     val referenceUrl = varchar("reference_url", 500)
+    val tags = jsonb("tags", ::stringifyTags, ::parseTags)
 }
 
 class ChangeTypeDao(id: EntityID<String>) : StringEntity(id), ModelConverter<ChangeType> {
@@ -27,16 +28,18 @@ class ChangeTypeDao(id: EntityID<String>) : StringEntity(id), ModelConverter<Cha
     var after by ChangeTypes.after
     var description by ChangeTypes.description
     var referenceUrl by ChangeTypes.referenceUrl
+    var tags by ChangeTypes.tags
 
     val name = id.value
 
     override fun asModel() = ChangeType(
         this.name,
-        this.owner.asModel().id,
+        this.owner.id.value,
         this.before,
         this.after,
         this.description,
         this.referenceUrl,
+        this.tags,
     )
 }
 
@@ -45,6 +48,15 @@ private fun stringifyParameterMap(data: Map<String, CodeElementMetadata>): Strin
     return mapper.writeValueAsString(data)
 }
 private fun parseParameterMap(src: String): Map<String, CodeElementMetadata> {
+    val mapper by inject(ObjectMapper::class.java)
+    return mapper.readValue(src)
+}
+
+private fun stringifyTags(data: List<String>): String {
+    val mapper by inject(ObjectMapper::class.java)
+    return mapper.writeValueAsString(data)
+}
+private fun parseTags(src: String): List<String> {
     val mapper by inject(ObjectMapper::class.java)
     return mapper.readValue(src)
 }

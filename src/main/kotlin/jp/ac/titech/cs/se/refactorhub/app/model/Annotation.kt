@@ -28,3 +28,10 @@ data class AnnotationData(
     val commit: jp.ac.titech.cs.se.refactorhub.core.model.Commit,
     val snapshots: List<SnapshotData>
 )
+
+data class AnnotationOverview(
+    val experimentId: UUID,
+    val commitId: UUID,
+    val annotationId: UUID,
+    val isDraft: Boolean
+)

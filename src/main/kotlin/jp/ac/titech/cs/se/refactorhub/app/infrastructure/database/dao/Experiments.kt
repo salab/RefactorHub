@@ -21,16 +21,16 @@ class ExperimentDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Experim
     var title by Experiments.title
     var description by Experiments.description
     var isActive by Experiments.isActive
-    val targetCommits by CommitDao referrersOn Commits.experimentId
+    val targetCommits by CommitOverviewDao referrersOn Commits.experimentId
 
     override fun asModel(): Experiment {
         return Experiment(
             this.id.value,
-            this.owner.asModel().id,
+            this.owner.id.value,
             this.title,
             this.description,
             this.isActive,
-            this.targetCommits.sortedBy { it.orderIndex }.map { it.asModel().overview() }
+            this.targetCommits.sortedBy { it.orderIndex }.map { it.asModel() }
         )
     }
 }

@@ -18,6 +18,7 @@ class UserDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<User> {
 
     var subId by Users.subId
     var name by Users.name
+    val annotations by AnnotationOverviewDao referrersOn Annotations.ownerId
 
     override fun asModel(): User {
         return User(

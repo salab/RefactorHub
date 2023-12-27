@@ -1049,6 +1049,10 @@ components:
           type: string
         referenceUrl:
           type: string
+        tags:
+          type: array
+          items:
+            type: string
       required:
         - name
         - ownerId
@@ -1056,6 +1060,7 @@ components:
         - after
         - description
         - referenceUrl
+        - tags
     ParameterData:
       type: object
       properties:

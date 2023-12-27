@@ -1,6 +1,7 @@
 package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao
 
 import jp.ac.titech.cs.se.refactorhub.app.model.Annotation
+import jp.ac.titech.cs.se.refactorhub.app.model.AnnotationOverview
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -30,13 +31,31 @@ class AnnotationDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Annotat
     override fun asModel(): Annotation {
         return Annotation(
             this.id.value,
-            this.owner.asModel().id,
+            this.owner.id.value,
             this.commit.asModel(),
-            this.experiment.asModel().id,
+            this.experiment.id.value,
             this.isDraft,
             this.hasTemporarySnapshot,
             this.latestInternalCommitSha,
             this.snapshots.sortedBy { it.orderIndex }.map { it.asModel() }
+        )
+    }
+}
+
+class AnnotationOverviewDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<AnnotationOverview> {
+    companion object : UUIDEntityClass<AnnotationOverviewDao>(Annotations)
+
+    var owner by UserDao referencedOn Annotations.ownerId
+    var commit by CommitDao referencedOn Annotations.commitId
+    var experiment by ExperimentDao referencedOn Annotations.experimentId
+    var isDraft by Annotations.isDraft
+
+    override fun asModel(): AnnotationOverview {
+        return AnnotationOverview(
+            this.experiment.id.value,
+            this.commit.id.value,
+            this.id.value,
+            this.isDraft,
         )
     }
 }

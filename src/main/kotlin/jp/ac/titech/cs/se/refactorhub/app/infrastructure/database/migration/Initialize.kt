@@ -57,6 +57,7 @@ private fun createChangeTypes(adminDao: UserDao) {
                 this.after = it.after
                 this.description = it.description
                 this.referenceUrl = it.referenceUrl
+                this.tags = it.tags
             }
         }
     }
@@ -104,7 +105,7 @@ private fun createCommits(file: String, experimentDao: ExperimentDao): List<Comm
     return commits.indices.map {
         val commit = fetchCommitFromGitHub(commits[it].owner, commits[it].repository, commits[it].sha)
         CommitDao.new {
-            this.expriment = experimentDao
+            this.experiment = experimentDao
             this.orderIndex = it
             this.owner = commit.owner
             this.repository = commit.repository
@@ -127,7 +128,8 @@ private data class ChangeTypeBody (
     val before: Map<String, CodeElementMetadata>,
     val after: Map<String, CodeElementMetadata>,
     val description: String = "",
-    val referenceUrl: String = ""
+    val referenceUrl: String = "",
+    val tags: List<String>
 )
 
 private data class CommitBody(

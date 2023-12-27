@@ -1,7 +1,7 @@
 package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 
 import jp.ac.titech.cs.se.refactorhub.app.model.User
-import jp.ac.titech.cs.se.refactorhub.app.usecase.service.AnnotationOverview
+import jp.ac.titech.cs.se.refactorhub.app.model.AnnotationOverview
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.UserService
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent

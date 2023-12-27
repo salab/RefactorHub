@@ -35,7 +35,7 @@ class ActionDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Action> {
         return Action(
             this.name,
             this.type,
-            this.user.asModel().id,
+            this.user.id.value,
             LocalDateTime.parse(this.time),
             this.data
         )

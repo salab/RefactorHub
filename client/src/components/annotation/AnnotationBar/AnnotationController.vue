@@ -14,6 +14,16 @@ const selectedChange = computed(() =>
 )
 const currentChange = computed(() => useAnnotation().currentChange.value)
 const changeTypes = computed(() => useAnnotation().changeTypes.value)
+const changeTypeTags = computed(() => {
+  const tagSet = new Set<string>()
+  changeTypes.value.forEach((type) =>
+    type.tags.forEach((tag) => tagSet.add(tag)),
+  )
+  const tags = [...tagSet.values()]
+  tags.sort()
+  return tags
+})
+const selectedChangeTypeTags = ref<string[]>([])
 
 watch(
   () => currentChange.value?.id,
@@ -146,27 +156,7 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
 <template>
   <v-container fluid class="pa-1" style="height: 100%">
     <v-row no-gutters>
-      <v-col cols="6" class="pa-1">
-        <span v-if="!isOwner" class="text-body-2"
-          ><b>[Readonly]</b> You can view the annotation but cannot edit
-          it</span
-        >
-        <span v-else-if="!isDraft" class="text-body-2"
-          ><b>[Readonly]</b> You can modify the annotation if you want</span
-        >
-        <span v-else-if="!hasTemporarySnapshot" class="text-body-2"
-          >You can <span class="font-weight-medium">finish annotation</span> or
-          <span class="font-weight-medium"
-            >start change division to continue next annotation</span
-          ></span
-        >
-        <span v-else class="text-body-2"
-          ><b>[Change Division in Progress]</b> You can
-          <span class="font-weight-medium">finish change division</span> or
-          <span class="font-weight-medium"
-            >modify the intermediate source code</span
-          ></span
-        >
+      <v-col cols="6" class="pr-1">
         <v-tabs
           v-model="selectedChangeId"
           center-active
@@ -249,8 +239,8 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
             </v-tooltip>
           </v-tab>
         </v-tabs>
-        <v-row class="pt-3">
-          <v-col>
+        <v-row class="mt-0">
+          <v-col cols="4">
             <v-select
               v-if="changeTypes && selectedChange"
               variant="underlined"
@@ -258,7 +248,15 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
               :model-value="selectedChange.typeName"
               :disabled="!isOwner || !isDraft"
               :hide-details="true"
-              :items="changeTypes.map((it) => it.name)"
+              :items="
+                changeTypes
+                  .filter((type) =>
+                    selectedChangeTypeTags.every((tag) =>
+                      type.tags.includes(tag),
+                    ),
+                  )
+                  .map((type) => type.name)
+              "
               label="Change Type"
               @update:model-value="
                 (newTypeName) =>
@@ -266,7 +264,29 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
               "
             />
           </v-col>
-          <v-col>
+          <v-col class="pa-0">
+            <v-chip-group
+              v-model="selectedChangeTypeTags"
+              column
+              multiple
+              filter
+            >
+              <v-chip
+                v-for="tag in changeTypeTags"
+                :key="tag"
+                :value="tag"
+                filter
+                density="compact"
+                variant="tonal"
+                class="px-1 py-0 ma-1"
+              >
+                {{ tag }}</v-chip
+              >
+            </v-chip-group>
+          </v-col>
+        </v-row>
+        <v-row class="pa-0 ma-0">
+          <v-col class="pa-0 mt-2">
             <v-textarea
               variant="underlined"
               density="compact"
@@ -284,8 +304,28 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
         </v-row>
       </v-col>
       <v-col cols="6">
+        <span v-if="!isOwner" class="text-body-2"
+          ><b>[Readonly]</b> You can view the annotation but cannot edit
+          it</span
+        >
+        <span v-else-if="!isDraft" class="text-body-2"
+          ><b>[Readonly]</b> You can modify the annotation if you want</span
+        >
+        <span v-else-if="!hasTemporarySnapshot" class="text-body-2"
+          >You can <span class="font-weight-medium">finish annotation</span> or
+          <span class="font-weight-medium"
+            >start change division to continue next annotation</span
+          ></span
+        >
+        <span v-else class="text-body-2"
+          ><b>[Change Division in Progress]</b> You can
+          <span class="font-weight-medium">finish change division</span> or
+          <span class="font-weight-medium"
+            >modify the intermediate source code</span
+          ></span
+        >
         <div v-if="isOwner && !isDraft">
-          <v-row no-gutters class="pa-1">
+          <v-row no-gutters class="pa-0">
             <v-col>
               <v-btn
                 variant="flat"
@@ -302,7 +342,7 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
           </v-row>
         </div>
         <div v-if="isOwner && isDraft">
-          <v-row no-gutters class="pa-1">
+          <v-row no-gutters class="pa-0">
             <v-col>
               <v-tooltip location="top center" origin="auto" :open-delay="500">
                 <template #activator="{ props: tooltipProps }">
@@ -345,7 +385,7 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
               </v-tooltip>
             </v-col>
           </v-row>
-          <v-row no-gutters class="pa-1">
+          <v-row no-gutters class="pt-1">
             <v-col>
               <v-tooltip location="top center" origin="auto" :open-delay="500">
                 <template #activator="{ props: tooltipProps }">
@@ -377,7 +417,7 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
                 </div>
               </v-tooltip>
             </v-col>
-            <v-col class="pl-2">
+            <v-col class="pl-1">
               <v-tooltip location="top center" origin="auto" :open-delay="500">
                 <template #activator="{ props: tooltipProps }">
                   <div v-bind="tooltipProps">
@@ -419,7 +459,7 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
                 </div>
               </v-tooltip>
             </v-col>
-            <v-col class="pl-2">
+            <v-col class="pl-1">
               <v-tooltip location="top center" origin="auto" :open-delay="500">
                 <template #activator="{ props: tooltipProps }">
                   <div v-bind="tooltipProps">
@@ -450,7 +490,7 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
               </v-tooltip>
             </v-col>
           </v-row>
-          <v-row no-gutters class="pa-1">
+          <v-row no-gutters class="pt-1">
             <v-col>
               <v-tooltip location="top center" origin="auto" :open-delay="500">
                 <template #activator="{ props: tooltipProps }">
@@ -502,7 +542,7 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
               </v-tooltip>
             </v-col>
           </v-row>
-          <v-row no-gutters class="pa-1">
+          <v-row no-gutters class="pt-1">
             <v-col class="d-flex align-center">
               <v-tooltip location="top center" origin="auto" :open-delay="500">
                 <template #activator="{ props: tooltipProps }">

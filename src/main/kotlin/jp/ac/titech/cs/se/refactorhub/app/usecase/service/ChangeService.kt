@@ -17,7 +17,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.UUID
 
-private const val DEFAULT_CHANGE_TYPE = "Other"
+private const val DEFAULT_CHANGE_TYPE = "Non-Refactoring"
 
 @KoinApiExtension
 class ChangeService : KoinComponent {

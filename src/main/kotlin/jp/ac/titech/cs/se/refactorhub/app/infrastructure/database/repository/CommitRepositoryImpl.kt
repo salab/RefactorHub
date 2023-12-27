@@ -46,7 +46,7 @@ class CommitRepositoryImpl : CommitRepository {
     ): Commit {
         return transaction {
             CommitDao.new {
-                this.expriment = ExperimentDao[experimentId]
+                this.experiment = ExperimentDao[experimentId]
                 this.orderIndex = orderIndex
                 this.owner = owner
                 this.repository = repository

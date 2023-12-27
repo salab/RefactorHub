@@ -11,4 +11,5 @@ data class ChangeType(
     override val after: Map<String, CodeElementMetadata> = mapOf(),
     override val description: String = "",
     override val referenceUrl: String = "",
+    val tags: List<String>
 ) : ChangeType

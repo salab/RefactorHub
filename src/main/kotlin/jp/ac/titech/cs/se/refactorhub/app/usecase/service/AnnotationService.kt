@@ -38,7 +38,7 @@ class AnnotationService : KoinComponent {
         val annotation = annotationRepository.findById(annotationId)
         return annotation ?: throw NotFoundException("Annotation(id=$annotationId) is not found")
     }
-    fun getUserAnnotations(userId: UUID): List<Annotation> {
+    fun getUserAnnotations(userId: UUID): List<AnnotationOverview> {
         return annotationRepository.findByOwnerId(userId)
     }
 

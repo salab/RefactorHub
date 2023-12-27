@@ -1,8 +1,9 @@
 [
   {
-    "name": "Other",
+    "name": "Non-Refactoring",
     "description": "Non-refactoring changes like feature, bug fix",
     "referenceUrl": "",
+    "tags": [],
     "before": {
       "removed code": {
         "description": "Code fragments which is removed",
@@ -24,6 +25,7 @@
     "name": "Any Refactoring",
     "description": "Any refactoring",
     "referenceUrl": "",
+    "tags": [],
     "before": {},
     "after": {}
   },
@@ -31,6 +33,7 @@
     "name": "Extract Method",
     "description": "Extracting code fragments from existing method, and creating a new method based on the extracted code",
     "referenceUrl": "https://refactoring.com/catalog/extractFunction.html",
+    "tags": ["Extract", "Method"],
     "before": {
       "extracted code": {
         "description": "Code fragments which is extracted",
@@ -105,6 +108,7 @@
     "name": "Move Attribute",
     "description": "Moving field to the other class",
     "referenceUrl": "https://refactoring.com/catalog/moveField.html",
+    "tags": ["Move", "Attribute"],
     "before": {
       "target field": {
         "description": "Field which is moved",
@@ -156,6 +160,7 @@
     "name": "Move Class",
     "description": "Moving class to the other package",
     "referenceUrl": "https://www.refactoring.com/catalog/moveClass.html",
+    "tags": ["Move", "Class"],
     "before": {
       "target class": {
         "description": "Class which is moved",
@@ -237,6 +242,7 @@
     "name": "Rename Variable",
     "description": "Renaming variable",
     "referenceUrl": "https://refactoring.com/catalog/renameVariable.html",
+    "tags": ["Rename", "Variable"],
     "before": {
       "target variable": {
         "description": "Variable which is renamed",
@@ -319,6 +325,7 @@
   {
     "name": "Inline Method",
     "description": "",
+    "tags": ["Inline", "Method"],
     "before": {
       "invocation": {
         "type": "MethodInvocation",
@@ -350,6 +357,7 @@
   {
     "name": "Extract Interface",
     "description": "",
+    "tags": ["Extract", "Interface"],
     "before": {
       "target class": {
         "type": "ClassDeclaration",
@@ -366,6 +374,7 @@
   {
     "name": "Push Down Method",
     "description": "",
+    "tags": ["Push Down", "Method"],
     "before": {
       "target method": {
         "type": "MethodDeclaration",
@@ -382,6 +391,7 @@
   {
     "name": "Push Down Attribute",
     "description": "",
+    "tags": ["Push Down", "Attribute"],
     "before": {
       "target field": {
         "type": "FieldDeclaration",
@@ -398,6 +408,7 @@
   {
     "name": "Pull Up Method",
     "description": "",
+    "tags": ["Pull Up", "Method"],
     "before": {
       "target method": {
         "type": "MethodDeclaration",
@@ -414,6 +425,7 @@
   {
     "name": "Pull Up Attribute",
     "description": "",
+    "tags": ["Pull Up", "Attribute"],
     "before": {
       "target field": {
         "type": "FieldDeclaration",
@@ -430,6 +442,7 @@
   {
     "name": "Move Method",
     "description": "",
+    "tags": ["Move", "Method"],
     "before": {
       "target method": {
         "type": "MethodDeclaration",
@@ -446,6 +459,7 @@
   {
     "name": "Extract And Move Method",
     "description": "",
+    "tags": ["Extract", "Move", "Method"],
     "before": {
       "extracted code": {
         "type": "CodeFragment",
@@ -477,6 +491,7 @@
   {
     "name": "Rename Method",
     "description": "",
+    "tags": ["Rename", "Method"],
     "before": {
       "target method": {
         "type": "MethodDeclaration",
@@ -501,6 +516,7 @@
   {
     "name": "Extract Superclass",
     "description": "",
+    "tags": ["Extract", "Class"],
     "before": {
       "target class": {
         "type": "ClassDeclaration",
@@ -517,6 +533,7 @@
   {
     "name": "Rename Parameter",
     "description": "",
+    "tags": ["Rename", "Parameter"],
     "before": {
       "target parameter": {
         "type": "ParameterDeclaration",
@@ -547,6 +564,7 @@
   {
     "name": "Rename Class",
     "description": "",
+    "tags": ["Rename", "Class"],
     "before": {
       "target class": {
         "type": "ClassDeclaration",
@@ -563,6 +581,7 @@
   {
     "name": "Move And Rename Class",
     "description": "",
+    "tags": ["Move", "Rename", "Class"],
     "before": {
       "target class": {
         "type": "ClassDeclaration",
@@ -579,6 +598,7 @@
   {
     "name": "Parameterize Variable",
     "description": "",
+    "tags": ["Parameterize", "Variable"],
     "before": {
       "target variable": {
         "type": "VariableDeclaration",
@@ -601,6 +621,7 @@
   {
     "name": "Move And Inline Method",
     "description": "",
+    "tags": ["Move", "Inline", "Method"],
     "before": {
       "invocation": {
         "type": "MethodInvocation",
@@ -632,6 +653,7 @@
   {
     "name": "Move And Rename Method",
     "description": "",
+    "tags": ["Move", "Rename", "Method"],
     "before": {
       "target method": {
         "type": "MethodDeclaration",
@@ -648,6 +670,7 @@
   {
     "name": "Extract Variable",
     "description": "",
+    "tags": ["Extract", "Variable"],
     "before": {
       "target method": {
         "type": "MethodDeclaration",
@@ -668,6 +691,7 @@
   {
     "name": "Change Return Type",
     "description": "",
+    "tags": ["Type", "Return"],
     "before": {
       "target type": {
         "type": "ReturnType",
@@ -689,6 +713,7 @@
   },
   {
     "name": "Rename Attribute",
+    "tags": ["Rename", "Attribute"],
     "description": "",
     "before": {
       "target field": {
@@ -706,6 +731,7 @@
   {
     "name": "Change Parameter Type",
     "description": "",
+    "tags": ["Type", "Parameter"],
     "before": {
       "target type": {
         "type": "ParameterType",
@@ -728,6 +754,7 @@
   {
     "name": "Change Variable Type",
     "description": "",
+    "tags": ["Type", "Variable"],
     "before": {
       "target type": {
         "type": "VariableType",

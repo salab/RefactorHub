@@ -41,6 +41,7 @@ class ChangeTypeRepositoryImpl : ChangeTypeRepository {
                 this.after = after
                 this.description = description
                 this.referenceUrl = referenceUrl
+                this.tags = listOf()
             }.asModel()
         }
     }

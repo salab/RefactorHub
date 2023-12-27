@@ -33,7 +33,7 @@ object Commits : UUIDTable("commits") {
 class CommitDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Commit> {
     companion object : UUIDEntityClass<CommitDao>(Commits)
 
-    var expriment by ExperimentDao referencedOn Commits.experimentId
+    var experiment by ExperimentDao referencedOn Commits.experimentId
     var orderIndex by Commits.orderIndex
     var owner by Commits.owner
     var repository by Commits.repository
@@ -63,6 +63,29 @@ class CommitDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Commit> {
             this.afterFiles,
             this.fileMappings,
             this.patch
+        )
+    }
+}
+
+class CommitOverviewDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Commit.Overview> {
+    companion object : UUIDEntityClass<CommitOverviewDao>(Commits)
+
+    var experiment by ExperimentDao referencedOn Commits.experimentId
+    var orderIndex by Commits.orderIndex
+    var owner by Commits.owner
+    var repository by Commits.repository
+    var sha by Commits.sha
+    var url by Commits.url
+    var message by Commits.message
+
+    override fun asModel(): Commit.Overview {
+        return Commit.Overview(
+            this.id.value,
+            this.owner,
+            this.repository,
+            this.sha,
+            this.url,
+            this.message
         )
     }
 }

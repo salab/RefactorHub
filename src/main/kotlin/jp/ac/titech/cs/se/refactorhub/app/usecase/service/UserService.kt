@@ -3,6 +3,7 @@ package jp.ac.titech.cs.se.refactorhub.app.usecase.service
 import jp.ac.titech.cs.se.refactorhub.app.exception.NotFoundException
 import jp.ac.titech.cs.se.refactorhub.app.exception.UnauthorizedException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.UserRepository
+import jp.ac.titech.cs.se.refactorhub.app.model.AnnotationOverview
 import jp.ac.titech.cs.se.refactorhub.app.model.User
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
@@ -21,9 +22,7 @@ class UserService : KoinComponent {
     }
 
     fun getUserAnnotationIds(userId: UUID): List<AnnotationOverview> {
-        return annotationService.getUserAnnotations(userId).map {
-            AnnotationOverview(it.experimentId, it.commit.id, it.id, it.isDraft)
-        }
+        return annotationService.getUserAnnotations(userId)
     }
 
     fun getMe(userId: UUID?): User {
@@ -36,10 +35,3 @@ class UserService : KoinComponent {
         return user ?: userRepository.create(subId, name)
     }
 }
-
-data class AnnotationOverview(
-    val experimentId: UUID,
-    val commitId: UUID,
-    val annotationId: UUID,
-    val isDraft: Boolean
-)
