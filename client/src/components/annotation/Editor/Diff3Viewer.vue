@@ -256,8 +256,10 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
       const { correspondingAfterLines } = intermediateLines[intermediateLine]
       afterLines[
         correspondingAfterLines[correspondingAfterLines.length - 1]
-      ].followingEmptyLines +=
-        removedLines - addedLines - correspondingAfterLines.length + 1
+      ].followingEmptyLines += Math.max(
+        removedLines - addedLines - correspondingAfterLines.length + 1,
+        0,
+      )
     }
   })
 
@@ -283,8 +285,10 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
       const { correspondingBeforeLines } = intermediateLines[intermediateLine]
       beforeLines[
         correspondingBeforeLines[correspondingBeforeLines.length - 1]
-      ].followingEmptyLines +=
-        addedLines - removedLines - correspondingBeforeLines.length + 1
+      ].followingEmptyLines += Math.max(
+        addedLines - removedLines - correspondingBeforeLines.length + 1,
+        0,
+      )
     } else if (removedLines > addedLines && before) {
       const afterLine = before.oppositeLine + addedLines
       afterLines[afterLine].followingEmptyLines += removedLines - addedLines
