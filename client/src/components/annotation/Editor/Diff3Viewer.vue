@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import * as monaco from 'monaco-editor'
 import { DiffCategory } from 'refactorhub'
+import { debounce } from 'lodash-es'
 import { CommonTokenSequenceDecorationManager } from './ts/commonTokensDecorations'
 import { CodeFragmentManager } from './ts/codeFragments'
 import { ElementDecorationManager } from './ts/elementDecorations'
 import { ElementWidgetManager } from './ts/elementWidgets'
 import { logger } from '@/utils/logger'
 import { DiffViewer } from '@/composables/useViewer'
-import { DiffHunk } from 'apis'
+import { FilePair } from '@/composables/useAnnotation'
+import apis from '@/apis'
+
+const AUTO_INSERTED_LINE_CONTENT =
+  '// Do Not Modify This Line; RefactorHub Inserted\n'
 
 const props = defineProps({
   viewer: {
@@ -41,6 +46,402 @@ function navigate(viewer: DiffViewer) {
   const { category, range } = navigation
   const fileViewer = category === 'before' ? originalViewer : intermediateViewer
   setTimeout(() => fileViewer?.revealRangeAtTop(range), 100)
+}
+
+let beforeLineDecorationsCollection:
+  | monaco.editor.IEditorDecorationsCollection
+  | undefined
+let intermediateLineDecorationsCollection:
+  | monaco.editor.IEditorDecorationsCollection
+  | undefined
+let afterLineDecorationsCollection:
+  | monaco.editor.IEditorDecorationsCollection
+  | undefined
+
+function updateDiff(filePair1: FilePair, filePair2: FilePair) {
+  beforeLineDecorationsCollection?.clear()
+  intermediateLineDecorationsCollection?.clear()
+  afterLineDecorationsCollection?.clear()
+
+  const beforeText = filePair1.before?.text ?? ''
+  const intermediateText = filePair1.after?.text ?? ''
+  const afterText = filePair2.after?.text ?? ''
+
+  const diffHunks1 = filePair1.diffHunks
+  const diffHunks2 = filePair2.diffHunks
+
+  const beforeLines: {
+    [lineNumber: number]: { followingEmptyLines: number; isRemoved: boolean }
+  } = {}
+  for (let l = 0; l < beforeText.split('\n').length + 1; l++) {
+    beforeLines[l] = { followingEmptyLines: 0, isRemoved: false }
+  }
+  const intermediateLines: {
+    [lineNumber: number]: {
+      followingEmptyLines: number
+      isAdded: boolean
+      isRemoved: boolean
+      correspondingBeforeLines: number[]
+      correspondingAfterLines: number[]
+    }
+  } = {}
+  let correspondingBeforeLine = 0
+  let correspondingAfterLine = 0
+  for (let l = 0; l < intermediateText.split('\n').length + 1; l++) {
+    const diffHunk1 = diffHunks1.find(({ before, after }) => {
+      if (before && before.oppositeLine === l) return true
+      if (after) return after.startLine <= l && l <= after.endLine
+      return false
+    })
+    const correspondingBeforeLines: number[] = []
+    if (diffHunk1) {
+      const { before, after } = diffHunk1
+      if (before && before.oppositeLine === l) {
+        if (after) {
+          correspondingBeforeLines.push(correspondingBeforeLine)
+          correspondingBeforeLine++
+        } else {
+          for (
+            let beforeL = correspondingBeforeLine;
+            beforeL <= before.endLine;
+            beforeL++
+          ) {
+            correspondingBeforeLines.push(beforeL)
+          }
+          correspondingBeforeLine = before.endLine + 1
+        }
+      } else if (after) {
+        if (before) {
+          if (after.endLine === l) {
+            if (correspondingBeforeLine <= before.endLine) {
+              for (
+                let beforeL = correspondingBeforeLine;
+                beforeL <= before.endLine;
+                beforeL++
+              ) {
+                correspondingBeforeLines.push(beforeL)
+              }
+              correspondingBeforeLine = before.endLine + 1
+            } else {
+              correspondingBeforeLines.push(before.endLine)
+              // updating correspondingBeforeLine is unnecessary
+            }
+          } else if (correspondingBeforeLine <= before.endLine) {
+            correspondingBeforeLines.push(correspondingBeforeLine)
+            correspondingBeforeLine++
+          } else {
+            correspondingBeforeLines.push(before.endLine)
+            // updating correspondingBeforeLine is unnecessary
+          }
+        } else {
+          correspondingBeforeLines.push(after.oppositeLine)
+          // updating correspondingBeforeLine is unnecessary
+        }
+      }
+    } else {
+      correspondingBeforeLines.push(correspondingBeforeLine)
+      correspondingBeforeLine++
+    }
+
+    const diffHunk2 = diffHunks2.find(({ before, after }) => {
+      if (after && after.oppositeLine === l) return true
+      if (before) return before.startLine <= l && l <= before.endLine
+      return false
+    })
+    const correspondingAfterLines: number[] = []
+    if (diffHunk2) {
+      const { before, after } = diffHunk2
+      if (after && after.oppositeLine === l) {
+        if (before) {
+          correspondingAfterLines.push(correspondingAfterLine)
+          correspondingAfterLine++
+        } else {
+          for (
+            let afterL = correspondingAfterLine;
+            afterL <= after.endLine;
+            afterL++
+          ) {
+            correspondingAfterLines.push(afterL)
+          }
+          correspondingAfterLine = after.endLine + 1
+        }
+      } else if (before) {
+        if (after) {
+          if (before.endLine === l) {
+            if (correspondingAfterLine <= after.endLine) {
+              for (
+                let afterL = correspondingAfterLine;
+                afterL <= after.endLine;
+                afterL++
+              ) {
+                correspondingAfterLines.push(afterL)
+              }
+              correspondingAfterLine = after.endLine + 1
+            } else {
+              correspondingAfterLines.push(after.endLine)
+              // updating correspondingAfterLine is unnecessary
+            }
+          } else if (correspondingAfterLine <= after.endLine) {
+            correspondingAfterLines.push(correspondingAfterLine)
+            correspondingAfterLine++
+          } else {
+            correspondingAfterLines.push(after.endLine)
+            // updating correspondingAfterLine is unnecessary
+          }
+        } else {
+          correspondingAfterLines.push(before.oppositeLine)
+          // updating correspondingAfterLine is unnecessary
+        }
+      }
+    } else {
+      correspondingAfterLines.push(correspondingAfterLine)
+      correspondingAfterLine++
+    }
+
+    intermediateLines[l] = {
+      followingEmptyLines: 0,
+      isAdded: false,
+      isRemoved: false,
+      correspondingBeforeLines,
+      correspondingAfterLines,
+    }
+  }
+  const afterLines: {
+    [lineNumber: number]: { followingEmptyLines: number; isAdded: boolean }
+  } = {}
+  for (let l = 0; l < afterText.split('\n').length + 1; l++) {
+    afterLines[l] = { followingEmptyLines: 0, isAdded: false }
+  }
+
+  diffHunks1.forEach(({ before, after }) => {
+    if (before) {
+      for (let l = before.startLine; l <= before.endLine; l++) {
+        beforeLines[l].isRemoved = true
+      }
+    }
+    if (after) {
+      for (let l = after.startLine; l <= after.endLine; l++) {
+        intermediateLines[l].isAdded = true
+      }
+    }
+    const removedLines = !before ? 0 : before.endLine - before.startLine + 1
+    const addedLines = !after ? 0 : after.endLine - after.startLine + 1
+    if (removedLines < addedLines && after) {
+      const beforeLine = after.oppositeLine + removedLines
+      beforeLines[beforeLine].followingEmptyLines += addedLines - removedLines
+    } else if (removedLines > addedLines && before) {
+      const intermediateLine = before.oppositeLine + addedLines
+      intermediateLines[intermediateLine].followingEmptyLines = Math.max(
+        removedLines - addedLines,
+        intermediateLines[intermediateLine].followingEmptyLines,
+      )
+      const { correspondingAfterLines } = intermediateLines[intermediateLine]
+      afterLines[
+        correspondingAfterLines[correspondingAfterLines.length - 1]
+      ].followingEmptyLines +=
+        removedLines - addedLines - correspondingAfterLines.length + 1
+    }
+  })
+
+  diffHunks2.forEach(({ before, after }) => {
+    if (before) {
+      for (let l = before.startLine; l <= before.endLine; l++) {
+        intermediateLines[l].isRemoved = true
+      }
+    }
+    if (after) {
+      for (let l = after.startLine; l <= after.endLine; l++) {
+        afterLines[l].isAdded = true
+      }
+    }
+    const removedLines = !before ? 0 : before.endLine - before.startLine + 1
+    const addedLines = !after ? 0 : after.endLine - after.startLine + 1
+    if (removedLines < addedLines && after) {
+      const intermediateLine = after.oppositeLine + removedLines
+      intermediateLines[intermediateLine].followingEmptyLines = Math.max(
+        addedLines - removedLines,
+        intermediateLines[intermediateLine].followingEmptyLines,
+      )
+      const { correspondingBeforeLines } = intermediateLines[intermediateLine]
+      beforeLines[
+        correspondingBeforeLines[correspondingBeforeLines.length - 1]
+      ].followingEmptyLines +=
+        removedLines - addedLines - correspondingBeforeLines.length + 1
+    } else if (removedLines > addedLines && before) {
+      const afterLine = before.oppositeLine + addedLines
+      afterLines[afterLine].followingEmptyLines += removedLines - addedLines
+    }
+  })
+
+  let newBeforeText = ''
+  let newBeforeLine = 0
+  const beforeLinesMap: { [originalBeforeLine: number]: number } = {}
+  const newBeforeLines: {
+    [newBeforeLine: number]: { type: 'unmodified' | 'removed' | 'empty' }
+  } = {}
+  for (let l = 0; l < beforeText.split('\n').length + 1; l++) {
+    const text =
+      l === 0
+        ? ''
+        : beforeText.split('\n')[l - 1] +
+          (l === beforeText.split('\n').length ? '' : '\n')
+    newBeforeText += text
+    if (l !== 0) newBeforeLine++
+    beforeLinesMap[l] = newBeforeLine
+    newBeforeLines[newBeforeLine] = {
+      type: beforeLines[l].isRemoved ? 'removed' : 'unmodified',
+    }
+    for (let i = 0; i < beforeLines[l].followingEmptyLines; i++) {
+      newBeforeText += '\n'
+      newBeforeLine++
+      newBeforeLines[newBeforeLine] = {
+        type: 'empty',
+      }
+    }
+  }
+  let newIntermediateText = ''
+  let newIntermediateLine = 0
+  const intermediateLinesMap: { [originalIntermediateLine: number]: number } =
+    {}
+  const newIntermediateLines: {
+    [newIntermediateLine: number]: {
+      type: 'unmodified' | 'added' | 'removed' | 'both' | 'empty'
+    }
+  } = {}
+  for (let l = 0; l < intermediateText.split('\n').length + 1; l++) {
+    const text =
+      l === 0
+        ? ''
+        : intermediateText.split('\n')[l - 1] +
+          (l === intermediateText.split('\n').length ? '' : '\n')
+    newIntermediateText += text
+    if (l !== 0) newIntermediateLine++
+    intermediateLinesMap[l] = newIntermediateLine
+    newIntermediateLines[newIntermediateLine] = {
+      type: intermediateLines[l].isAdded
+        ? intermediateLines[l].isRemoved
+          ? 'both'
+          : 'added'
+        : intermediateLines[l].isRemoved
+        ? 'removed'
+        : 'unmodified',
+    }
+    for (let i = 0; i < intermediateLines[l].followingEmptyLines; i++) {
+      newIntermediateText += AUTO_INSERTED_LINE_CONTENT
+      newIntermediateLine++
+      newIntermediateLines[newIntermediateLine] = {
+        type: 'empty',
+      }
+    }
+  }
+  let newAfterText = ''
+  let newAfterLine = 0
+  const afterLinesMap: { [originalAfterLine: number]: number } = {}
+  const newAfterLines: {
+    [newAfterLine: number]: { type: 'unmodified' | 'added' | 'empty' }
+  } = {}
+  for (let l = 0; l < afterText.split('\n').length + 1; l++) {
+    const text =
+      l === 0
+        ? ''
+        : afterText.split('\n')[l - 1] +
+          (l === afterText.split('\n').length ? '' : '\n')
+    newAfterText += text
+    if (l !== 0) newAfterLine++
+    afterLinesMap[l] = newAfterLine
+    newAfterLines[newAfterLine] = {
+      type: afterLines[l].isAdded ? 'added' : 'unmodified',
+    }
+    for (let i = 0; i < afterLines[l].followingEmptyLines; i++) {
+      newAfterText += '\n'
+      newAfterLine++
+      newAfterLines[newAfterLine] = {
+        type: 'empty',
+      }
+    }
+  }
+
+  originalViewer?.setValue(newBeforeText)
+  intermediateViewer?.setValue(newIntermediateText)
+  modifiedViewer?.setValue(newAfterText)
+
+  beforeLineDecorationsCollection = originalViewer?.createDecorationsCollection(
+    Object.entries(newBeforeLines)
+      .filter(([, { type }]) => type !== 'unmodified')
+      .map(([lineNumber, { type }]) => {
+        const range = new monaco.Range(
+          Number.parseInt(lineNumber),
+          1,
+          Number.parseInt(lineNumber),
+          1,
+        )
+        const className =
+          type === 'removed' ? 'file-changed-before' : 'file-changed-empty'
+        return {
+          range,
+          options: {
+            isWholeLine: true,
+            className,
+          },
+        }
+      }),
+  )
+  intermediateLineDecorationsCollection =
+    intermediateViewer?.createDecorationsCollection(
+      Object.entries(newIntermediateLines)
+        .filter(([, { type }]) => type !== 'unmodified')
+        .map(([lineNumber, { type }]) => {
+          const range = new monaco.Range(
+            Number.parseInt(lineNumber),
+            1,
+            Number.parseInt(lineNumber),
+            1,
+          )
+          let className
+          switch (type) {
+            case 'added':
+              className = 'file-changed-after'
+              break
+            case 'removed':
+              className = 'file-changed-before'
+              break
+            case 'both':
+              className = 'file-changed-both'
+              break
+            default:
+              className = 'file-changed-empty'
+              break
+          }
+          return {
+            range,
+            options: {
+              isWholeLine: true,
+              className,
+            },
+          }
+        }),
+    )
+  afterLineDecorationsCollection = modifiedViewer?.createDecorationsCollection(
+    Object.entries(newAfterLines)
+      .filter(([, { type }]) => type !== 'unmodified')
+      .map(([lineNumber, { type }]) => {
+        const range = new monaco.Range(
+          Number.parseInt(lineNumber),
+          1,
+          Number.parseInt(lineNumber),
+          1,
+        )
+        const className =
+          type === 'added' ? 'file-changed-after' : 'file-changed-empty'
+        return {
+          range,
+          options: {
+            isWholeLine: true,
+            className,
+          },
+        }
+      }),
+  )
 }
 
 function createViewer(viewer: DiffViewer) {
@@ -105,6 +506,8 @@ function createViewer(viewer: DiffViewer) {
   })
   modifiedViewer.setModel(useAnnotation().getTextModel(filePair2, 'after'))
 
+  updateDiff(filePair1, filePair2)
+
   originalViewer.onDidScrollChange((e) => {
     scrollTop.value = e.scrollTop
     scrollLeft.value = e.scrollLeft
@@ -135,6 +538,38 @@ function createViewer(viewer: DiffViewer) {
   )
 
   navigate(viewer)
+
+  intermediateViewer.onDidChangeModelContent(
+    debounce(async (e: monaco.editor.IModelContentChangedEvent) => {
+      const { annotationId } = useAnnotation().currentIds.value
+      if (!annotationId) return
+      const pathPair = filePair1.getPathPair()
+      const filePath =
+        pathPair.notFound ??
+        // eslint-disable-next-line prettier/prettier
+          (pathPair.after ?? pathPair.before)
+      const fileContent = intermediateViewer?.getValue() ?? ''
+      const changedText = e.changes[0]?.text
+      if (fileContent === changedText) {
+        return
+      }
+      useAnnotation().updateAnnotation(
+        {
+          ...(
+            await apis.snapshots.modifyTemporarySnapshot(annotationId, {
+              filePath,
+              fileContent: fileContent.replaceAll(
+                AUTO_INSERTED_LINE_CONTENT,
+                '',
+              ),
+              isRemoved: false,
+            })
+          ).data,
+        },
+        true,
+      )
+    }, 1000),
+  )
 
   const elementDecorationManager = new ElementDecorationManager(
     filePair1.getPathPair(),
@@ -172,9 +607,7 @@ function createViewer(viewer: DiffViewer) {
         )
         return
       }
-      if (filePair1.before) originalViewer?.setValue(filePair1.before.text)
-      if (filePair1.after) intermediateViewer?.setValue(filePair1.after.text)
-      if (filePair2.after) modifiedViewer?.setValue(filePair2.after.text)
+      updateDiff(filePair1, filePair2)
       navigate(newViewer)
       elementDecorationManager.update(filePair1.getPathPair())
       codeFragmentManager.update(
@@ -591,6 +1024,18 @@ onMounted(async () => {
   .file-changed-after {
     background: rgba(175, 208, 107, 0.5);
   }
+  .file-changed-both {
+    background: rgba(255, 255, 50, 0.5);
+  }
+  .file-changed-empty {
+    background: repeating-linear-gradient(
+      -48deg,
+      rgba(150, 150, 150, 0.5),
+      rgba(150, 150, 150, 0.5) 1.5px,
+      rgba(255, 255, 255, 0.5) 0,
+      rgba(255, 255, 255, 0.5) 6px
+    );
+  }
   .glyph-margin {
     background: rgba(230, 230, 230, 0.5);
   }
@@ -598,7 +1043,7 @@ onMounted(async () => {
 
 ::v-deep(.element-editor-modifiable) {
   .monaco-editor-background {
-    background: rgba(179, 229, 252, 0.5);
+    background: rgba(201, 238, 255, 0.5);
   }
 }
 </style>
