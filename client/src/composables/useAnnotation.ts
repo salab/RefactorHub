@@ -959,6 +959,12 @@ export const useAnnotation = () => {
     currentChange,
     currentIds,
     canEditCurrentChange,
+    isDividingChange: computed(
+      () =>
+        !!annotation.value?.hasTemporarySnapshot &&
+        getChangeList()[getChangeList().length - 2]?.id ===
+          currentChangeId.value,
+    ),
     initialize,
     setup,
     getChangeList,

@@ -63,7 +63,8 @@ const openLocation = () => {
     })
     updateViewer(
       mainViewerId.value,
-      mainViewer.type === 'file'
+      mainViewer.type === 'file' &&
+        (!useAnnotation().isDividingChange.value || props.category === 'before')
         ? {
             type: 'file',
             filePair,

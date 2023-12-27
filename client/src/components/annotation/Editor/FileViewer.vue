@@ -7,7 +7,6 @@ import { ElementDecorationManager } from './ts/elementDecorations'
 import { ElementWidgetManager } from './ts/elementWidgets'
 import { logger } from '@/utils/logger'
 import { FileViewer } from '@/composables/useViewer'
-import apis from '@/apis'
 
 const props = defineProps({
   viewer: {
@@ -15,6 +14,28 @@ const props = defineProps({
     required: true,
   },
 })
+
+const isDividingChangeAfter = computed(
+  () =>
+    useAnnotation().isDividingChange.value &&
+    props.viewer.navigation.category === 'after',
+)
+
+function getFilePair(viewer?: FileViewer) {
+  if (isDividingChangeAfter.value) {
+    const filePair2 = viewer ? viewer.filePair.next : props.viewer.filePair.next
+    if (!filePair2) {
+      throw new Error(
+        `Cannot find the filePair2: path is ${
+          props.viewer.filePair.getPathPair().after
+        }`,
+      )
+    }
+    return filePair2
+  }
+  return viewer ? viewer.filePair : props.viewer.filePair
+}
+
 // eslint-disable-next-line vue/no-setup-props-destructure
 const originalCategory = props.viewer.navigation.category
 
@@ -26,34 +47,6 @@ const isOpeningFileList = ref(false)
 const { mainViewerId, getNavigator } = useViewer()
 const navigator = getNavigator(props.viewer.id)
 
-const canModifyAfter = computed(
-  () =>
-    useAnnotation().annotation.value?.ownerId ===
-      (useUser().user.value?.id ?? '') &&
-    !!useAnnotation().annotation.value?.hasTemporarySnapshot &&
-    !props.viewer.filePair.isAlreadyRemoved() &&
-    useAnnotation()
-      .getChangeList()
-      .findIndex(({ id }) => id === useAnnotation().currentChange.value?.id) ===
-      useAnnotation().getChangeList().length - 2,
-)
-const canModifyBefore = computed(
-  () =>
-    useAnnotation().annotation.value?.ownerId ===
-      (useUser().user.value?.id ?? '') &&
-    !!useAnnotation().annotation.value?.hasTemporarySnapshot &&
-    !props.viewer.filePair.isAlreadyRemoved() &&
-    useAnnotation()
-      .getChangeList()
-      .findIndex(({ id }) => id === useAnnotation().currentChange.value?.id) ===
-      useAnnotation().getChangeList().length - 1,
-)
-const canModify = computed(
-  () =>
-    (canModifyAfter.value && props.viewer.navigation.category === 'after') ||
-    (canModifyBefore.value && props.viewer.navigation.category === 'before'),
-)
-
 let fileViewer: monaco.editor.IStandaloneCodeEditor | undefined
 let changedLineDecorationsCollection:
   | monaco.editor.IEditorDecorationsCollection
@@ -62,7 +55,7 @@ let changedLineDecorationsCollection:
 function updateChangedLineDecorations() {
   changedLineDecorationsCollection?.clear()
   const changedRanges: monaco.Range[] = []
-  for (const { before, after } of props.viewer.filePair.diffHunks) {
+  for (const { before, after } of getFilePair().diffHunks) {
     if (props.viewer.navigation.category === 'before' && before) {
       changedRanges.push(
         new monaco.Range(before.startLine, 1, before.endLine, 1),
@@ -102,11 +95,12 @@ function createFileViewer(
   originalViewer?: monaco.editor.IStandaloneCodeEditor
   modifiedViewer?: monaco.editor.IStandaloneCodeEditor
 } {
-  const { filePair, navigation } = viewer
+  const filePair = getFilePair(viewer)
+  const { navigation } = viewer
   const { category } = navigation
   fileViewer = monaco.editor.create(container, {
     automaticLayout: true,
-    readOnly: !canModify.value,
+    readOnly: true,
     renderWhitespace: 'all',
   })
   const textModel = useAnnotation().getTextModel(filePair, category)
@@ -133,36 +127,43 @@ async function createViewer(viewer: FileViewer) {
     logger.error(`Cannot find the container element: id is ${viewer.id}`)
     return
   }
-  const { filePair } = viewer
+  const filePair = getFilePair(viewer)
 
   const viewers = await createFileViewer(container, props.viewer)
   const originalViewer = viewers.originalViewer
   const modifiedViewer = viewers.modifiedViewer
 
-  const elementDecorationManager = new ElementDecorationManager(
-    filePair.getPathPair(),
-    originalViewer,
-    modifiedViewer,
-  )
-  const codeFragmentManager = new CodeFragmentManager(
-    filePair.getPathPair(),
-    filePair.before?.elements ?? [],
-    filePair.after?.elements ?? [],
-    originalViewer,
-    modifiedViewer,
-  )
-  const elementWidgetManager = new ElementWidgetManager(
-    filePair.before?.elements ?? [],
-    filePair.after?.elements ?? [],
-    originalViewer,
-    modifiedViewer,
-  )
-  const commonTokenSequenceDecorationManager =
-    new CommonTokenSequenceDecorationManager(
-      filePair.getPathPair(),
-      originalViewer,
-      modifiedViewer,
-    )
+  const elementDecorationManager = !isDividingChangeAfter.value
+    ? new ElementDecorationManager(
+        filePair.getPathPair(),
+        originalViewer,
+        modifiedViewer,
+      )
+    : undefined
+  const codeFragmentManager = !isDividingChangeAfter.value
+    ? new CodeFragmentManager(
+        filePair.getPathPair(),
+        filePair.before?.elements ?? [],
+        filePair.after?.elements ?? [],
+        originalViewer,
+        modifiedViewer,
+      )
+    : undefined
+  const elementWidgetManager = !isDividingChangeAfter.value
+    ? new ElementWidgetManager(
+        filePair.before?.elements ?? [],
+        filePair.after?.elements ?? [],
+        originalViewer,
+        modifiedViewer,
+      )
+    : undefined
+  const commonTokenSequenceDecorationManager = !isDividingChangeAfter.value
+    ? new CommonTokenSequenceDecorationManager(
+        filePair.getPathPair(),
+        originalViewer,
+        modifiedViewer,
+      )
+    : undefined
 
   watch(
     () => props.viewer,
@@ -171,22 +172,21 @@ async function createViewer(viewer: FileViewer) {
         useViewer().recreateViewer(newViewer.id)
         return
       }
-      const text = newViewer.filePair[newViewer.navigation.category]?.text
+      const filePair = getFilePair(newViewer)
+      const text = filePair[newViewer.navigation.category]?.text
       if (text !== undefined) fileViewer?.setValue(text)
       updateChangedLineDecorations()
-      elementDecorationManager.update(newViewer.filePair.getPathPair())
-      codeFragmentManager.update(
-        newViewer.filePair.getPathPair(),
-        newViewer.filePair.before?.elements ?? [],
-        newViewer.filePair.after?.elements ?? [],
+      elementDecorationManager?.update(filePair.getPathPair())
+      codeFragmentManager?.update(
+        filePair.getPathPair(),
+        filePair.before?.elements ?? [],
+        filePair.after?.elements ?? [],
       )
-      elementWidgetManager.update(
-        newViewer.filePair.before?.elements ?? [],
-        newViewer.filePair.after?.elements ?? [],
+      elementWidgetManager?.update(
+        filePair.before?.elements ?? [],
+        filePair.after?.elements ?? [],
       )
-      commonTokenSequenceDecorationManager.update(
-        newViewer.filePair.getPathPair(),
-      )
+      commonTokenSequenceDecorationManager?.update(filePair.getPathPair())
       navigate(newViewer)
     },
   )
@@ -196,6 +196,8 @@ async function createViewer(viewer: FileViewer) {
     category: DiffCategory,
   ) {
     if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_WIDGET) return
+    if (isDividingChangeAfter.value || !commonTokenSequenceDecorationManager)
+      return
     const commonTokenSequenceId =
       commonTokenSequenceDecorationManager.getIdFromHoverMessageClickEvent(e)
     if (commonTokenSequenceId === undefined) return
@@ -205,7 +207,9 @@ async function createViewer(viewer: FileViewer) {
     useCommonTokenSequence().updateSelectedId(commonTokenSequenceId)
     const sequencesOnThisViewer = tokenSequenceSet.filterCategory(category)
     const currentPath =
-      category === 'before' ? filePair.before?.path : filePair.after?.path
+      category === 'before'
+        ? getFilePair().before?.path
+        : getFilePair().after?.path
     if (currentPath === undefined)
       throw new Error('cannot get currentPath of viewer')
     const currentDestinationIndex = sequencesOnThisViewer.findIndex(
@@ -240,14 +244,23 @@ async function createViewer(viewer: FileViewer) {
       )
     }
     const { id: newViewerId } = useViewer().createViewer(
-      {
-        type: 'file',
-        filePair: filePairOnOtherViewer,
-        navigation: {
-          category: otherCategory,
-          range: sequencesOnOtherViewer[0].range,
-        },
-      },
+      !useAnnotation().isDividingChange.value || otherCategory === 'before'
+        ? {
+            type: 'file',
+            filePair: filePairOnOtherViewer,
+            navigation: {
+              category: otherCategory,
+              range: sequencesOnOtherViewer[0].range,
+            },
+          }
+        : {
+            type: 'diff',
+            filePair: filePairOnOtherViewer,
+            navigation: {
+              category: otherCategory,
+              range: sequencesOnOtherViewer[0].range,
+            },
+          },
       category === 'before' ? 'next' : 'prev',
     )
     useViewer().setNavigator(
@@ -272,7 +285,8 @@ async function createViewer(viewer: FileViewer) {
   ) {
     if (e.target.position) latestMousePosition = e.target.position
     if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_TEXT) return
-    const path = filePair.getPathPair()[category]
+    if (isDividingChangeAfter.value) return
+    const path = getFilePair().getPathPair()[category]
     if (path === undefined) return
     useCommonTokenSequence().updateIsHovered(path, category, e.target.position)
   }
@@ -381,7 +395,7 @@ onMounted(async () => {
               {{
                 getFileName(
                   getFilePath(
-                    viewer.filePair.getPathPair(),
+                    getFilePair().getPathPair(),
                     viewer.navigation.category,
                   ),
                 )
@@ -391,7 +405,7 @@ onMounted(async () => {
           {{
             getFileName(
               getFilePath(
-                viewer.filePair.getPathPair(),
+                getFilePair().getPathPair(),
                 viewer.navigation.category,
               ),
             )
@@ -415,151 +429,6 @@ onMounted(async () => {
         </template>
         {{ isOpeningFileList ? 'Close' : 'Open' }} file list
       </v-tooltip>
-
-      <span
-        v-if="!canModify && (canModifyBefore || canModifyAfter)"
-        class="text-shrink text-subtitle-2"
-        :style="`border-bottom: 1px solid ${colors.info}; color: ${colors.info}`"
-      >
-        <v-icon
-          size="small"
-          icon="$mdiSourceCommitLocal"
-          color="info"
-          style="min-width: max-content; align-self: center"
-        />
-        You can modify
-        <v-btn
-          v-if="canModifyAfter"
-          :color="colors.after"
-          flat
-          size="x-small"
-          text="after"
-          class="mx-1"
-          @click="
-            (e: PointerEvent) => {
-              e.stopPropagation() // prevent @click of v-sheet in MainViewer
-              useViewer().createViewer(
-                {
-                  type: 'file',
-                  filePair: viewer.filePair,
-                  navigation: {
-                    category: 'after',
-                  },
-                },
-                'next',
-              )
-            }
-          "
-        />
-        <v-btn
-          v-if="canModifyBefore"
-          :color="colors.before"
-          flat
-          size="x-small"
-          text="before"
-          class="mx-1"
-          @click="
-            (e: PointerEvent) => {
-              e.stopPropagation() // prevent @click of v-sheet in MainViewer
-              useViewer().createViewer(
-                {
-                  type: 'file',
-                  filePair: viewer.filePair,
-                  navigation: {
-                    category: 'before',
-                  },
-                },
-                'prev',
-              )
-            }
-          "
-        />source code</span
-      >
-      <span
-        v-if="canModify"
-        class="text-shrink text-subtitle-2"
-        :style="`border-bottom: 1px solid ${colors.info}; color: ${colors.info}`"
-      >
-        <v-icon
-          size="small"
-          icon="$mdiSourceCommitLocal"
-          color="info"
-          style="min-width: max-content; align-self: center"
-        />
-        <span class="font-weight-bold">[Modifiable]</span>
-        <v-btn
-          color="info"
-          flat
-          size="x-small"
-          class="mx-1"
-          @click="
-            async () => {
-              const { annotationId } = useAnnotation().currentIds.value
-              if (!annotationId) return
-              const pathPair = viewer.filePair.getPathPair()
-              const filePath =
-                viewer.navigation.category === 'before'
-                  ? pathPair.notFound ??
-                    // eslint-disable-next-line prettier/prettier
-                  (pathPair.before ?? pathPair.after)
-                  : pathPair.notFound ??
-                    // eslint-disable-next-line prettier/prettier
-                  (pathPair.after ?? pathPair.before)
-              const fileContent = fileViewer?.getValue() ?? ''
-              useAnnotation().updateAnnotation(
-                {
-                  ...(
-                    await apis.snapshots.modifyTemporarySnapshot(annotationId, {
-                      filePath,
-                      fileContent,
-                      isRemoved: false,
-                    })
-                  ).data,
-                },
-                true,
-              )
-            }
-          "
-          ><span class="text-none">Save Modification</span></v-btn
-        ><v-btn
-          v-if="
-            (canModifyAfter && viewer.filePair.next?.isNotRemovedYet()) ||
-            (canModifyBefore && viewer.filePair.isNotRemovedYet())
-          "
-          color="info"
-          flat
-          size="x-small"
-          class="mx-1"
-          @click="
-            async () => {
-              const { annotationId } = useAnnotation().currentIds.value
-              if (!annotationId) return
-              const pathPair = viewer.filePair.getPathPair()
-              const filePath =
-                viewer.navigation.category === 'before'
-                  ? pathPair.notFound ??
-                    // eslint-disable-next-line prettier/prettier
-                  (pathPair.before ?? pathPair.after)
-                  : pathPair.notFound ??
-                    // eslint-disable-next-line prettier/prettier
-                  (pathPair.after ?? pathPair.before)
-              useAnnotation().updateAnnotation(
-                {
-                  ...(
-                    await apis.snapshots.modifyTemporarySnapshot(annotationId, {
-                      filePath,
-                      fileContent: '',
-                      isRemoved: true,
-                    })
-                  ).data,
-                },
-                true,
-              )
-            }
-          "
-          ><span class="text-none">Remove This File</span></v-btn
-        >
-      </span>
 
       <v-spacer />
       <v-divider v-if="navigator" vertical />

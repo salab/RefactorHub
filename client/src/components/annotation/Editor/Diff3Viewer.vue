@@ -284,7 +284,7 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
       beforeLines[
         correspondingBeforeLines[correspondingBeforeLines.length - 1]
       ].followingEmptyLines +=
-        removedLines - addedLines - correspondingBeforeLines.length + 1
+        addedLines - removedLines - correspondingBeforeLines.length + 1
     } else if (removedLines > addedLines && before) {
       const afterLine = before.oppositeLine + addedLines
       afterLines[afterLine].followingEmptyLines += removedLines - addedLines
@@ -749,14 +749,23 @@ function createViewer(viewer: DiffViewer) {
       )
     }
     const { id: newViewerId } = useViewer().createViewer(
-      {
-        type: 'file',
-        filePair: filePairOnOtherViewer,
-        navigation: {
-          category: otherCategory,
-          range: sequencesOnOtherViewer[0].range,
-        },
-      },
+      otherCategory === 'before'
+        ? {
+            type: 'file',
+            filePair: filePairOnOtherViewer,
+            navigation: {
+              category: otherCategory,
+              range: sequencesOnOtherViewer[0].range,
+            },
+          }
+        : {
+            type: 'diff',
+            filePair: filePairOnOtherViewer,
+            navigation: {
+              category: otherCategory,
+              range: sequencesOnOtherViewer[0].range,
+            },
+          },
       category === 'before' ? 'next' : 'prev',
     )
     useViewer().setNavigator(
@@ -936,6 +945,38 @@ onMounted(async () => {
         </template>
         {{ isOpeningFileList ? 'Close' : 'Open' }} file list
       </v-tooltip>
+
+      <v-btn
+        v-if="viewer.filePair.next?.isNotRemovedYet()"
+        color="info"
+        flat
+        size="x-small"
+        class="mx-1"
+        @click="
+          async () => {
+            const { annotationId } = useAnnotation().currentIds.value
+            if (!annotationId) return
+            const pathPair = viewer.filePair.getPathPair()
+            const filePath =
+              pathPair.notFound ??
+              // eslint-disable-next-line prettier/prettier
+                (pathPair.after ?? pathPair.before)
+            useAnnotation().updateAnnotation(
+              {
+                ...(
+                  await apis.snapshots.modifyTemporarySnapshot(annotationId, {
+                    filePath,
+                    fileContent: '',
+                    isRemoved: true,
+                  })
+                ).data,
+              },
+              true,
+            )
+          }
+        "
+        ><span class="text-none">Remove Intermediate File</span></v-btn
+      >
 
       <v-spacer />
       <v-divider v-if="navigator" vertical />

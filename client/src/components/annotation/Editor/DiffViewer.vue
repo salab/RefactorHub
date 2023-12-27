@@ -23,29 +23,6 @@ const isOpeningFileList = ref(false)
 const { mainViewerId, getNavigator } = useViewer()
 const navigator = getNavigator(props.viewer.id)
 
-const canModifyAfter = computed(
-  () =>
-    useAnnotation().annotation.value?.ownerId ===
-      (useUser().user.value?.id ?? '') &&
-    !!useAnnotation().annotation.value?.hasTemporarySnapshot &&
-    !props.viewer.filePair.isAlreadyRemoved() &&
-    useAnnotation()
-      .getChangeList()
-      .findIndex(({ id }) => id === useAnnotation().currentChange.value?.id) ===
-      useAnnotation().getChangeList().length - 2,
-)
-const canModifyBefore = computed(
-  () =>
-    useAnnotation().annotation.value?.ownerId ===
-      (useUser().user.value?.id ?? '') &&
-    !!useAnnotation().annotation.value?.hasTemporarySnapshot &&
-    !props.viewer.filePair.isAlreadyRemoved() &&
-    useAnnotation()
-      .getChangeList()
-      .findIndex(({ id }) => id === useAnnotation().currentChange.value?.id) ===
-      useAnnotation().getChangeList().length - 1,
-)
-
 function calculateDiff(diffHunks: DiffHunk[]) {
   const changes: monaco.editor.LineRangeMapping[] = []
   let beforeLineNumber = 0
@@ -421,66 +398,6 @@ onMounted(async () => {
         </template>
         {{ isOpeningFileList ? 'Close' : 'Open' }} file list
       </v-tooltip>
-
-      <span
-        v-if="canModifyBefore || canModifyAfter"
-        class="text-shrink text-subtitle-2"
-        :style="`border-bottom: 1px solid ${colors.info}; color: ${colors.info}`"
-      >
-        <v-icon
-          size="small"
-          icon="$mdiSourceCommitLocal"
-          color="info"
-          style="min-width: max-content; align-self: center"
-        />
-        You can modify
-        <v-btn
-          v-if="canModifyAfter"
-          :color="colors.after"
-          flat
-          size="x-small"
-          text="after"
-          class="mx-1"
-          @click="
-            (e: PointerEvent) => {
-              e.stopPropagation() // prevent @click of v-sheet in MainViewer
-              useViewer().createViewer(
-                {
-                  type: 'file',
-                  filePair: viewer.filePair,
-                  navigation: {
-                    category: 'after',
-                  },
-                },
-                'next',
-              )
-            }
-          "
-        />
-        <v-btn
-          v-if="canModifyBefore"
-          :color="colors.before"
-          flat
-          size="x-small"
-          text="before"
-          class="mx-1"
-          @click="
-            (e: PointerEvent) => {
-              e.stopPropagation() // prevent @click of v-sheet in MainViewer
-              useViewer().createViewer(
-                {
-                  type: 'file',
-                  filePair: viewer.filePair,
-                  navigation: {
-                    category: 'before',
-                  },
-                },
-                'prev',
-              )
-            }
-          "
-        />source code</span
-      >
 
       <v-spacer />
       <v-divider v-if="navigator" vertical />
