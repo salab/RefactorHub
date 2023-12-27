@@ -5,7 +5,7 @@ import { CommonTokenSequenceType } from 'composables/useCommonTokenSequence'
 
 const changeList = computed(() => {
   const list = [...useAnnotation().getChangeList()]
-  if (useAnnotation().isDividingChange.value) list.pop()
+  if (useAnnotation().annotation.value?.hasTemporarySnapshot) list.pop()
   return list
 })
 const selectedChangeId = ref(useAnnotation().currentChange.value?.id)

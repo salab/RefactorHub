@@ -45,12 +45,28 @@ const isRemovable = (key: string) =>
   <v-navigation-drawer
     :model-value="isActive"
     :location="category === 'after' ? 'right' : 'left'"
-    :width="200"
+    :width="225"
     permanent
   >
     <div class="d-flex flex-column fill-height">
-      <v-sheet :color="colors[category]" class="d-flex justify-center py-1">
-        <span class="text-button">{{ category }} Parameters</span>
+      <v-sheet
+        :color="
+          useAnnotation().isDividingChange.value && props.category === 'after'
+            ? '#c9eeff'
+            : colors[category]
+        "
+        class="d-flex justify-center py-1"
+      >
+        <span class="text-button"
+          >{{
+            `${
+              useAnnotation().isDividingChange.value &&
+              props.category === 'after'
+                ? 'intermediate'
+                : category
+            } Parameters`
+          }}
+        </span>
         <v-tooltip location="top center" origin="auto">
           <template #activator="{ props: tooltipProps }">
             <div
@@ -68,7 +84,12 @@ const isRemovable = (key: string) =>
               <v-btn
                 v-bind="tooltipProps"
                 size="30"
-                :color="colors[props.category]"
+                :color="
+                  useAnnotation().isDividingChange.value &&
+                  props.category === 'after'
+                    ? '#c9eeff'
+                    : colors[props.category]
+                "
                 :icon="
                   (props.category === 'before' && isActive) ||
                   (props.category === 'after' && !isActive)
