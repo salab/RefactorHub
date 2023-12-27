@@ -202,6 +202,7 @@ async function createViewer(viewer: DiffViewer) {
         sequence.isIn(currentPath, category) &&
         sequence.range.containsPosition(latestMousePosition),
     )
+    useViewer().deleteNavigators()
     useViewer().setNavigator(
       {
         label: joinedRaw,
@@ -418,7 +419,7 @@ onMounted(async () => {
             "
           />
         </template>
-        Show previous
+        Show previous common token sequence
       </v-tooltip>
       <v-tooltip
         v-if="navigator"
@@ -427,24 +428,23 @@ onMounted(async () => {
         :open-delay="500"
       >
         <template #activator="{ props: tooltipProps }">
-          <code
-            v-bind="tooltipProps"
-            class="text-shrink"
-            style="
-              max-width: 20%;
-              border: 0.5px solid black;
-              background-color: rgba(255, 250, 240, 0.7);
-            "
-            >{{ navigator.label }}</code
+          <span v-if="navigator" v-bind="tooltipProps" class="text-body-2"
+            ><u>
+              {{
+                `${navigator.currentDestinationIndex + 1}/${
+                  navigator.destinations.length
+                }`
+              }}</u
+            ></span
           >
         </template>
-        <code>{{ navigator.label }}</code>
+        <div class="text-subtitle-2">
+          Search Result of Common Token Sequence
+        </div>
+        <cite
+          ><code>{{ navigator.label }}</code></cite
+        >
       </v-tooltip>
-      <span v-if="navigator" class="text-body-2 ml-1">{{
-        `${navigator.currentDestinationIndex + 1}/${
-          navigator.destinations.length
-        }`
-      }}</span>
       <v-tooltip location="top center" origin="auto" :open-delay="500">
         <template #activator="{ props: tooltipProps }">
           <v-btn
@@ -452,7 +452,7 @@ onMounted(async () => {
             v-bind="tooltipProps"
             variant="plain"
             density="compact"
-            :icon="'$mdiMenuRightOutline'"
+            icon="$mdiMenuRightOutline"
             flat
             @click="
               (e: PointerEvent) => {
@@ -462,29 +462,22 @@ onMounted(async () => {
             "
           />
         </template>
-        Show next
+        Show next common token sequence
       </v-tooltip>
-      <v-tooltip location="top center" origin="auto" :open-delay="500">
-        <template #activator="{ props: tooltipProps }">
-          <v-btn
-            v-if="navigator"
-            v-bind="tooltipProps"
-            variant="plain"
-            density="compact"
-            icon="$mdiCloseCircleOutline"
-            flat
-            class="mr-1"
-            @click="
-              () => {
-                useViewer().deleteNavigator(viewer.id)
-                // TODO: 他のところから切り替わった際を考える
-                useCommonTokenSequence().updateSelectedId(undefined)
-              }
-            "
-          />
-        </template>
-        Delete navigation
-      </v-tooltip>
+      <v-btn
+        v-if="navigator"
+        variant="plain"
+        density="compact"
+        icon="$mdiCloseCircleOutline"
+        flat
+        class="mr-1"
+        @click="
+          () => {
+            useViewer().deleteNavigators()
+            useCommonTokenSequence().updateSelectedId(undefined)
+          }
+        "
+      />
       <v-divider v-if="navigator" vertical />
 
       <v-tooltip location="top center" origin="auto" :open-delay="500">

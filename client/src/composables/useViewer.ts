@@ -148,6 +148,10 @@ export const useViewer = () => {
   function deleteNavigator(viewerId: string) {
     viewerNavigationMap.value.delete(viewerId)
   }
+  function deleteNavigators() {
+    viewerNavigationMap.value.clear()
+  }
+
   function navigate(viewerId: string, direction: 'next' | 'prev') {
     const navigator = viewerNavigationMap.value.get(viewerId)
     const viewer = viewers.value.find((viewer) => viewer.id === viewerId)
@@ -212,6 +216,7 @@ export const useViewer = () => {
     setNavigator,
     getNavigator,
     deleteNavigator,
+    deleteNavigators,
     navigate,
 
     updateFilePairs,
