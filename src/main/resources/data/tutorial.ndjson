@@ -1,5 +1,6 @@
-{"type":"Extract Method","commit":{"sha":"cb49e436b9d7ee55f2531ebc2ef1863f5c9ba9fe","owner":"rstudio","repository":"rstudio"},"data":{"before":{},"after":{}},"description":"Extract Method protected setMaxHeight(maxHeight int) : void extracted from protected wrapMenuBar(menuBar ToolbarMenuBar) : Widget in class org.rstudio.core.client.widget.ScrollableToolbarPopupMenu"}
-{"type":"Move Attribute","commit":{"sha":"f05e86c4d31987ff2f30330745c3eb605de4c4dc","owner":"Graylog2","repository":"graylog2-server"},"data":{"before":{},"after":{}},"description":"Move Attribute private COMPARATOR : Comparator<IndexRange> from class org.graylog2.indexer.ranges.MongoIndexRangeService to public COMPARATOR : Comparator<IndexRange> from class org.graylog2.indexer.ranges.IndexRange"}
-{"type":"Move Class","commit":{"sha":"3972b9b3d4e03bdb5e62dfa663e3e0a1871e3c9f","owner":"JetBrains","repository":"intellij-community"},"data":{"before":{},"after":{}},"description":"Move Class com.intellij.psi.codeStyle.autodetect.NewLineBlocksIterator moved to com.intellij.psi.formatter.common.NewLineBlocksIterator"}
-{"type":"Rename Variable","commit":{"sha":"726dd024720727bd2db08af31deab693e22a6173","owner":"bitcoinj","repository":"bitcoinj"},"data":{"before":{},"after":{}},"description":"Rename Variable enforceBIP16 : boolean to enforcePayToScriptHash : boolean in method protected connectTransactions(height int, block Block) : TransactionOutputChanges in class com.google.bitcoin.core.FullPrunedBlockChain"}
-{"type":"Any","commit":{"sha":"08f37df9f39f101bba0ee96845e232d2c72bf426","owner":"JetBrains","repository":"intellij-community"},"data":{"before":{},"after":{}},"description":""}
+{"sha":"cb49e436b9d7ee55f2531ebc2ef1863f5c9ba9fe","owner":"rstudio","repository":"rstudio"}
+{"sha":"f05e86c4d31987ff2f30330745c3eb605de4c4dc","owner":"Graylog2","repository":"graylog2-server"}
+{"sha":"240097b78b70172e1cf9bc37876a566ddfb9e115","owner":"apache","repository":"hive"}
+{"sha":"e19c6874431dc2c3046436c2ac249a0ab2ef3457","owner":"brettwooldridge","repository":"HikariCP"}
+{"sha":"3e33c686ce0273aa6fed6ba7aa5cb96476950f39","owner":"Kappamaki64","repository":"ExampleGame"}
+{"sha":"03605cbecefb3e21c0924319fda61e5d6ac6c5a1","owner":"Kappamaki64","repository":"ExampleGame"}
