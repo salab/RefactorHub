@@ -76,6 +76,8 @@ const appendTemporarySnapshot = async () => {
 
   const { annotationId, changeId } = currentIds.value
   if (!annotationId || !changeId) return
+  useViewer().deleteNavigators()
+  useCommonTokenSequence().updateSelectedId(undefined)
   useAnnotation().updateAnnotation(
     {
       ...(
@@ -95,6 +97,8 @@ const settleTemporarySnapshot = async () => {
   }
   const { annotationId } = currentIds.value
   if (!annotationId) return
+  useViewer().deleteNavigators()
+  useCommonTokenSequence().updateSelectedId(undefined)
   useAnnotation().updateAnnotation(
     {
       ...(await apis.snapshots.settleTemporarySnapshot(annotationId)).data,
@@ -113,6 +117,8 @@ const removeChange = async () => {
   const { currentIds } = useAnnotation()
   const { annotationId, snapshotId, changeId } = currentIds.value
   if (!annotationId || !snapshotId || !changeId) return
+  useViewer().deleteNavigators()
+  useCommonTokenSequence().updateSelectedId(undefined)
   useAnnotation().updateAnnotation(
     {
       ...(await apis.changes.removeChange(annotationId, snapshotId, changeId))
@@ -135,6 +141,8 @@ const updateIsDraft = async (isDraft: boolean) => {
 
 const switchCurrentChange = (newChangeId: string) => {
   if (newChangeId === currentChange.value?.id) return
+  useViewer().deleteNavigators()
+  useCommonTokenSequence().updateSelectedId(undefined)
   useAnnotation().updateCurrentChangeId(newChangeId)
 }
 
