@@ -441,13 +441,13 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
           let className
           switch (type) {
             case 'added':
-              className = 'file-changed-after'
+              className = 'file-changed-intermediate-after'
               break
             case 'removed':
-              className = 'file-changed-before'
+              className = 'file-changed-intermediate-before'
               break
             case 'both':
-              className = 'file-changed-both'
+              className = 'file-changed-intermediate-both'
               break
             default:
               className = 'file-changed-empty'
@@ -1164,8 +1164,26 @@ onMounted(async () => {
   .file-changed-after {
     background: rgba(175, 208, 107, 0.5);
   }
-  .file-changed-both {
-    background: rgba(255, 255, 50, 0.5);
+  .file-changed-intermediate-before {
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0),
+      rgba(255, 165, 153, 0.8) calc(100% - 150px)
+    );
+  }
+  .file-changed-intermediate-after {
+    background: linear-gradient(
+      to right,
+      rgba(202, 218, 105, 0.5) 150px,
+      rgba(0, 0, 0, 0)
+    );
+  }
+  .file-changed-intermediate-both {
+    background: linear-gradient(
+      to right,
+      rgba(202, 218, 105, 0.5) 150px,
+      rgba(255, 165, 153, 0.8) calc(100% - 150px)
+    );
   }
   .file-changed-empty {
     background: repeating-linear-gradient(
