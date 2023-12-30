@@ -1,0 +1,554 @@
+[
+  {
+    "name": "Non-Refactoring",
+    "description": "Non-refactoring changes like feature, bug fix",
+    "referenceUrl": "",
+    "tags": [],
+    "before": {
+      "removed codes": {
+        "description": "Code fragments to be removed",
+        "type": "CodeFragment",
+        "multiple": true
+      }
+    },
+    "after": {
+      "added codes": {
+        "description": "Code fragments which were added",
+        "type": "CodeFragment",
+        "multiple": true
+      }
+    }
+  },
+  {
+    "name": "Extract Method",
+    "description": "Extracting a code fragment from existing method, and creating a new method based on the extracted code in the same class",
+    "referenceUrl": "https://refactoring.com/catalog/extractFunction.html",
+    "tags": ["Extract", "Method"],
+    "before": {
+      "extracted code": {
+        "description": "Code fragment to be extracted",
+        "type": "CodeFragment",
+        "required": true
+      }
+    },
+    "after": {
+      "extracted code": {
+        "description": "Code fragment which was extracted",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "extracted method": {
+        "description": "Method which was newly created by the extraction",
+        "type": "MethodDeclaration",
+        "required": true,
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "after",
+                "name": "extracted code"
+              }
+            ],
+            "element": "MethodDeclaration"
+          }
+        ]
+      },
+      "invocation": {
+        "description": "Method invocation by which the extracted code was replaced",
+        "type": "MethodInvocation",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Move Method",
+    "description": "Moving a method to the other class",
+    "tags": ["Move", "Method"],
+    "before": {
+      "moved method": {
+        "description": "Method to be moved",
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "references before": {
+        "description": "References of the method before moving",
+        "type": "MethodInvocation",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "before",
+                "name": "moved method"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "after": {
+      "moved method": {
+        "description": "Method which was moved",
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "references after": {
+        "description": "References of the method after moving",
+        "type": "MethodInvocation",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "after",
+                "name": "moved method"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Rename Method",
+    "description": "Changing the name of a method",
+    "tags": ["Rename", "Method"],
+    "before": {
+      "original method": {
+        "description": "Method to be renamed",
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "references before": {
+        "description": "References of the method before renaming",
+        "type": "MethodInvocation",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "before",
+                "name": "original method"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "after": {
+      "renamed method": {
+        "description": "Method which was renamed",
+        "type": "MethodDeclaration",
+        "required": true
+      },
+      "references after": {
+        "description": "References of the method after renaming",
+        "type": "MethodInvocation",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "after",
+                "name": "renamed method"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Move Attribute",
+    "description": "Moving an attribute to the other class",
+    "referenceUrl": "https://refactoring.com/catalog/moveField.html",
+    "tags": ["Move", "Attribute"],
+    "before": {
+      "moved attribute": {
+        "description": "Attribute to be moved",
+        "type": "FieldDeclaration",
+        "required": true
+      },
+      "references before": {
+        "description": "References of the attribute before moving",
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "before",
+                "name": "moved attribute"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "after": {
+      "moved attribute": {
+        "description": "Attribute which was moved",
+        "type": "FieldDeclaration",
+        "required": true
+      },
+      "references after": {
+        "description": "References of the attribute after moving",
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "after",
+                "name": "moved attribute"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Rename Attribute",
+    "description": "Changing the name of an attribute",
+    "tags": ["Rename", "Attribute"],
+    "before": {
+      "original attribute": {
+        "description": "Attribute to be renamed",
+        "type": "FieldDeclaration",
+        "required": true
+      },
+      "references before": {
+        "description": "References of the attribute before renaming",
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "before",
+                "name": "original attribute"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "after": {
+      "renamed attribute": {
+        "description": "Attribute which was renamed",
+        "type": "FieldDeclaration",
+        "required": true
+      },
+      "references after": {
+        "description": "References of the attribute after renaming",
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "after",
+                "name": "renamed attribute"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Extract Variable",
+    "description": "Extracting a code fragment, and creating a new variable based on the extracted code in the same method",
+    "tags": ["Extract", "Variable"],
+    "before": {
+      "extracted code": {
+        "description": "Code fragment to be extracted",
+        "type": "CodeFragment",
+        "required": true
+      }
+    },
+    "after": {
+      "extracted code": {
+        "description": "Code fragment which was extracted",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "extracted variable": {
+        "type": "VariableDeclaration",
+        "description": "Variable which was newly created by the extraction",
+        "required": true,
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "after",
+                "name": "extracted code"
+              }
+            ],
+            "element": "VariableDeclaration"
+          }
+        ]
+      },
+      "reference": {
+        "description": "Reference of the variable by which the extracted code was replaced",
+        "type": "SimpleName",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Rename Variable",
+    "description": "Changing the name of a variable",
+    "referenceUrl": "https://refactoring.com/catalog/renameVariable.html",
+    "tags": ["Rename", "Variable"],
+    "before": {
+      "original variable": {
+        "description": "Variable to be renamed",
+        "type": "VariableDeclaration",
+        "required": true
+      },
+      "references before": {
+        "description": "References of the variable before renaming",
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "before",
+                "name": "original variable"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "after": {
+      "renamed variable": {
+        "description": "Variable which was renamed",
+        "type": "VariableDeclaration",
+        "required": true
+      },
+      "references": {
+        "description": "References of the variable after renaming",
+        "type": "SimpleName",
+        "multiple": true,
+        "autofills": [
+          {
+            "type": "Reference",
+            "follows": [
+              {
+                "category": "after",
+                "name": "renamed variable"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Trim",
+    "description": "Removing the \"else\" clause by moving the code in the \"else\" clause to after the \"if\" statement in the case where an escape from the outer block always occurs in the \"then\" clause of an \"if\" statement",
+    "referenceUrl": "",
+    "tags": ["Trim", "If-Else"],
+    "before": {
+      "moved codes": {
+        "description": "Code fragment to be moved from the \"else\" clause",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "removed else clause": {
+        "description": "\"else\" clause to be removed",
+        "type": "CodeFragment",
+        "required": true
+      }
+    },
+    "after": {
+      "moved codes": {
+        "description": "Code fragment which was moved from the \"else\" clause",
+        "type": "CodeFragment",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Trim-INVERSE",
+    "description": "Adding the \"else\" clause and moving the code after the \"if\" statement to the \"else\" clause in the case where an escape from the outer block always occurs in the \"then\" clause of an \"if\" statement",
+    "referenceUrl": "",
+    "tags": ["Trim", "If-Else"],
+    "before": {
+      "moved codes": {
+        "description": "Code fragment to be moved to \"else\" clause",
+        "type": "CodeFragment",
+        "required": true
+      }
+    },
+    "after": {
+      "moved codes": {
+        "description": "Code fragment which was moved to \"else\" clause",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "added else clause": {
+        "description": "\"else\" clause which was added",
+        "type": "CodeFragment",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Reverse Conditional",
+    "description": "Reversing the conditional expression of an \"if\" statement and replacing the \"then\" and \"else\" clauses",
+    "referenceUrl": "",
+    "tags": ["If-Else", "Conditional"],
+    "before": {
+      "original conditional": {
+        "description": "Conditional expression to be reversed",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "code when original conditional satisfied": {
+        "description": "Code fragment in the \"then\" clause before reversing that is executed when the conditional before reversing is satisfied",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "code when original conditional unsatisfied": {
+        "description": "Code fragment in the \"else\" clause before reversing that is executed when the conditional before reversing is unsatisfied",
+        "type": "CodeFragment",
+        "required": true
+      }
+    },
+    "after": {
+      "reversed conditional": {
+        "description": "Conditional expression which was reversed",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "code when original conditional satisfied": {
+        "description": "Code fragment in the \"else\" clause after reversing that is executed when the conditional before reversing is satisfied",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "code when original conditional unsatisfied": {
+        "description": "Code fragment in the \"then\" clause after reversing that is executed when the conditional before reversing is unsatisfied",
+        "type": "CodeFragment",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Change Conditional to Switch",
+    "description": "Changing a chain of \"if-else\" statements to a \"switch\" statement",
+    "referenceUrl": "",
+    "tags": ["If-Else", "Conditional", "Switch"],
+    "before": {
+      "if-else chain": {
+        "description": "Chain of \"if-else\" statements to be changed to a \"switch\" statement",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "conditionals": {
+        "description": "Conditional expressions in the chain of \"if-else\" statements",
+        "type": "CodeFragment",
+        "required": true,
+        "multiple": true
+      }
+    },
+    "after": {
+      "switch": {
+        "description": "\"switch\" statement which was newly created by the change",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "conditionals": {
+        "description": "Conditional expressions in the \"switch\" statements",
+        "type": "CodeFragment",
+        "required": true,
+        "multiple": true
+      }
+    }
+  },
+  {
+    "name": "Restructure Conditional Expression",
+    "description": "Restructuring conditional expressions with equivalent truth values",
+    "referenceUrl": "",
+    "tags": ["Conditional"],
+    "before": {
+      "original conditional": {
+        "description": "Conditional expression to be restructured",
+        "type": "CodeFragment",
+        "required": true
+      }
+    },
+    "after": {
+      "restructured conditional": {
+        "description": "Conditional expression which was restructured",
+        "type": "CodeFragment",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Introduce Block",
+    "description": "Introducing a block of a clause",
+    "referenceUrl": "",
+    "tags": ["Block"],
+    "before": {
+      "surrounded code": {
+        "description": "Code fragment to be surrounded by introduced block",
+        "type": "CodeFragment",
+        "required": true
+      }
+    },
+    "after": {
+      "introduced block": {
+        "description": "Block which was introduced",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "surrounded code": {
+        "description": "Code fragment which was surrounded by introduced block",
+        "type": "CodeFragment",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Expand Block",
+    "description": "Expanding a block of a clause",
+    "referenceUrl": "",
+    "tags": ["Block"],
+    "before": {
+      "expanded block": {
+        "description": "Block to be expanded",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "surrounded code": {
+        "description": "Code fragment which was surrounded by expanded block",
+        "type": "CodeFragment",
+        "required": true
+      }
+    },
+    "after": {
+      "surrounded code": {
+        "description": "Code fragment which had been surrounded by expanded block",
+        "type": "CodeFragment",
+        "required": true
+      }
+    }
+  }
+]

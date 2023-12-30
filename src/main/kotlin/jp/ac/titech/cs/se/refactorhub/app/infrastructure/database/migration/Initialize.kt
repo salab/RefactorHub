@@ -45,7 +45,7 @@ private fun createAdmin(): UserDao {
 }
 
 private fun createChangeTypes(adminDao: UserDao) {
-    val files = listOf("types/default.json")
+    val files = listOf("types/experiment.json")
 
     for (file in files) {
         val stream = object {}.javaClass.classLoader.getResourceAsStream(file) ?: return
