@@ -2,8 +2,8 @@
 const hoveredCommonTokenSequencesHueId = 0
 const selectedCommonTokenSequencesHueId = 5
 const hoveredElementHueId = 3
-const editingElementHueId = 1
-const otherCommonTokenSequencesHueIdMin = 6
+const editingElementHueId = 7
+const otherCommonTokenSequencesHueIdMin = 8
 
 const { maxId, selectedId, getWithId } = useCommonTokenSequence()
 
