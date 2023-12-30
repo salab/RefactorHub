@@ -2,6 +2,7 @@ import * as monaco from 'monaco-editor'
 import { DiffCategory } from 'refactorhub'
 import { TokenSequence } from 'composables/useCommonTokenSequence'
 import { PathPair } from 'composables/useAnnotation'
+import { CodeElementType } from '@/apis'
 
 /** Dependencies: beforePath, afterPath, linesMap */
 export class CommonTokenSequenceDecorationManager {
@@ -26,6 +27,12 @@ export class CommonTokenSequenceDecorationManager {
     before: undefined,
     after: undefined,
   }
+
+  private readonly isEditingElement = ref(false)
+  private readonly isHoveringElement = ref(false)
+  private readonly canDisplayDecoration = computed(
+    () => !this.isEditingElement.value && !this.isHoveringElement.value,
+  )
 
   public constructor(
     pathPair: PathPair,
@@ -55,6 +62,47 @@ export class CommonTokenSequenceDecorationManager {
         this.updateDecorations('after')
       },
     )
+    watch(
+      () => this.canDisplayDecoration.value,
+      () => {
+        this.updateDecorations('before')
+        this.updateDecorations('after')
+      },
+    )
+    watch(
+      () => useParameter().hoveredElement.value.before,
+      (newElementMetaData) => {
+        this.isHoveringElement.value = !!newElementMetaData
+      },
+    )
+    watch(
+      () => useParameter().hoveredElement.value.after,
+      (newElementMetaData) => {
+        this.isHoveringElement.value = !!newElementMetaData
+      },
+    )
+    watch(
+      () => useParameter().editingElement.value.before,
+      (newElementMetaData) => {
+        if (
+          newElementMetaData &&
+          newElementMetaData.type !== CodeElementType.CodeFragment
+        )
+          this.isEditingElement.value = true
+        else this.isEditingElement.value = false
+      },
+    )
+    watch(
+      () => useParameter().editingElement.value.after,
+      (newElementMetaData) => {
+        if (
+          newElementMetaData &&
+          newElementMetaData.type !== CodeElementType.CodeFragment
+        )
+          this.isEditingElement.value = true
+        else this.isEditingElement.value = false
+      },
+    )
   }
 
   public update(
@@ -75,6 +123,7 @@ export class CommonTokenSequenceDecorationManager {
 
   private updateDecorations(category: DiffCategory) {
     this.decorationsCollection[category]?.clear()
+    if (!this.canDisplayDecoration.value) return
     const viewer = this.viewer[category]
     const model = viewer?.getModel()
     const path = this.pathPair[category]
