@@ -265,7 +265,13 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
                   )
                   .map((type) => type.name)
               "
-              label="Change Type"
+              :label="`Change Type (${
+                changeTypes.filter((type) =>
+                  selectedChangeTypeTags.every((tag) =>
+                    type.tags.includes(tag),
+                  ),
+                ).length
+              } / ${changeTypes.length})`"
               @update:model-value="
                 (newTypeName) =>
                   updateChange(newTypeName, currentChange?.description)
@@ -273,24 +279,33 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
             />
           </v-col>
           <v-col class="pa-0">
-            <v-chip-group
-              v-model="selectedChangeTypeTags"
-              column
-              multiple
-              filter
-            >
-              <v-chip
-                v-for="tag in changeTypeTags"
-                :key="tag"
-                :value="tag"
+            <div>
+              <div
+                class="text-caption"
+                :style="`color: ${vuetifyColors.grey.darken1}`"
+              >
+                Change Type Filter
+              </div>
+              <v-chip-group
+                v-model="selectedChangeTypeTags"
+                column
+                multiple
                 filter
-                density="compact"
-                variant="tonal"
-                class="px-1 py-0 ma-1"
+                class="pa-0"
               >
-                {{ tag }}</v-chip
-              >
-            </v-chip-group>
+                <v-chip
+                  v-for="tag in changeTypeTags"
+                  :key="tag"
+                  :value="tag"
+                  filter
+                  density="compact"
+                  variant="tonal"
+                  class="px-1 py-0 mx-1 my-0"
+                >
+                  {{ tag }}</v-chip
+                >
+              </v-chip-group>
+            </div>
           </v-col>
         </v-row>
         <v-row class="pa-0 ma-0">
