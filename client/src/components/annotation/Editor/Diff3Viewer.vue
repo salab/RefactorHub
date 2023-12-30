@@ -1143,7 +1143,7 @@ onMounted(async () => {
 }
 
 .text-shrink {
-  display: flex;
+  text-overflow: ellipsis;
   overflow-x: hidden;
   white-space: nowrap;
 }

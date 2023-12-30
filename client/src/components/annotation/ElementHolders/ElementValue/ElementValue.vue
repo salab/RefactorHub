@@ -362,5 +362,9 @@ $scrollbar-width: 4px;
   display: flex;
   overflow-x: scroll;
   white-space: nowrap;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 </style>

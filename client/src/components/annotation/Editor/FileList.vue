@@ -43,9 +43,16 @@ function getFilePair(fileName: string): FilePair {
             icon="$mdiFolderOutline"
             style="min-width: max-content"
           />
-          <span class="mx-2 text-body-2 font-weight-medium path">{{
-            fileTree.collapsedName
-          }}</span>
+          <v-tooltip location="top center" origin="auto" :open-delay="500">
+            <template #activator="{ props: tooltipProps }">
+              <span
+                v-bind="tooltipProps"
+                class="mx-2 text-body-2 font-weight-medium text-shrink"
+                >{{ fileTree.collapsedName }}</span
+              >
+            </template>
+            {{ fileTree.collapsedName }}
+          </v-tooltip>
         </div>
       </v-list-item>
     </template>
@@ -55,44 +62,83 @@ function getFilePair(fileName: string): FilePair {
     >
       <v-list-item density="compact">
         <div class="d-flex align-center flex-nowrap" style="max-width: 100%">
-          <v-icon
-            v-if="getFilePair(fileName).status === 'modified'"
-            size="small"
-            icon="$mdiPencilBox"
-            color="amber"
-            style="min-width: max-content"
-          />
-          <v-icon
-            v-if="getFilePair(fileName).status === 'added'"
-            size="small"
-            icon="$mdiPlusBox"
-            color="green"
-            style="min-width: max-content"
-          />
-          <v-icon
-            v-if="getFilePair(fileName).status === 'removed'"
-            size="small"
-            icon="$mdiMinusBox"
-            color="red"
-            style="min-width: max-content"
-          />
-          <v-icon
-            v-if="getFilePair(fileName).status === 'unmodified'"
-            size="small"
-            icon="$mdiEqualBox"
-            color="brown"
-            style="min-width: max-content"
-          />
-          <v-icon
-            v-if="getFilePair(fileName).status === 'not found'"
-            size="small"
-            icon="$mdiCloseBox"
-            color="grey"
-            style="min-width: max-content"
-          />
-          <span class="text-body-2 font-weight-bold path mx-2">{{
-            fileName
-          }}</span>
+          <v-tooltip location="top center" origin="auto" :open-delay="500">
+            <template #activator="{ props: tooltipProps }">
+              <v-icon
+                v-if="getFilePair(fileName).status === 'modified'"
+                v-bind="tooltipProps"
+                size="small"
+                icon="$mdiPencilBox"
+                color="amber"
+                style="min-width: max-content"
+              />
+            </template>
+            This file is modified
+          </v-tooltip>
+          <v-tooltip location="top center" origin="auto" :open-delay="500">
+            <template #activator="{ props: tooltipProps }">
+              <v-icon
+                v-if="getFilePair(fileName).status === 'added'"
+                v-bind="tooltipProps"
+                size="small"
+                icon="$mdiPlusBox"
+                color="green"
+                style="min-width: max-content"
+              />
+            </template>
+            This file is added
+          </v-tooltip>
+          <v-tooltip location="top center" origin="auto" :open-delay="500">
+            <template #activator="{ props: tooltipProps }">
+              <v-icon
+                v-if="getFilePair(fileName).status === 'removed'"
+                v-bind="tooltipProps"
+                size="small"
+                icon="$mdiMinusBox"
+                color="red"
+                style="min-width: max-content"
+              />
+            </template>
+            This file is removed
+          </v-tooltip>
+          <v-tooltip location="top center" origin="auto" :open-delay="500">
+            <template #activator="{ props: tooltipProps }">
+              <v-icon
+                v-if="getFilePair(fileName).status === 'unmodified'"
+                v-bind="tooltipProps"
+                size="small"
+                icon="$mdiEqualBox"
+                color="brown"
+                style="min-width: max-content"
+              />
+            </template>
+            This file has no changes; the source code is identical before and
+            after the change
+          </v-tooltip>
+          <v-tooltip location="top center" origin="auto" :open-delay="500">
+            <template #activator="{ props: tooltipProps }">
+              <v-icon
+                v-if="getFilePair(fileName).status === 'not found'"
+                v-bind="tooltipProps"
+                size="small"
+                icon="$mdiCloseBox"
+                color="grey"
+                style="min-width: max-content"
+              />
+            </template>
+            This file does not exist in the two snapshots before and after the
+            change
+          </v-tooltip>
+          <v-tooltip location="top center" origin="auto" :open-delay="500">
+            <template #activator="{ props: tooltipProps }">
+              <span
+                v-bind="tooltipProps"
+                class="text-body-2 font-weight-bold text-shrink mx-2"
+                >{{ fileName }}</span
+              >
+            </template>
+            {{ fileName }}
+          </v-tooltip>
           <v-spacer />
           <v-btn
             :color="colors.before"
@@ -157,16 +203,29 @@ function getFilePair(fileName: string): FilePair {
           class="d-flex align-center flex-nowrap"
           style="max-width: 100%"
         >
-          <v-icon
-            v-if="getFilePair(fileName).status === 'renamed'"
-            size="small"
-            icon="$mdiArrowRightBoldBox"
-            color="purple"
-            style="min-width: max-content"
-          />
-          <span class="text-body-2 font-weight-bold ml-1 path">{{
-            getFilePair(fileName).after?.path
-          }}</span>
+          <v-tooltip location="top center" origin="auto" :open-delay="500">
+            <template #activator="{ props: tooltipProps }">
+              <v-icon
+                v-if="getFilePair(fileName).status === 'renamed'"
+                v-bind="tooltipProps"
+                size="small"
+                icon="$mdiArrowRightBoldBox"
+                color="purple"
+                style="min-width: max-content"
+              />
+            </template>
+            This file is renamed
+          </v-tooltip>
+          <v-tooltip location="top center" origin="auto" :open-delay="500">
+            <template #activator="{ props: tooltipProps }">
+              <span
+                v-bind="tooltipProps"
+                class="text-body-2 font-weight-bold ml-1 text-shrink"
+                >{{ getFilePair(fileName).after?.path }}</span
+              >
+            </template>
+            {{ getFilePair(fileName).after?.path }}
+          </v-tooltip>
         </div>
       </v-list-item>
       <v-divider />
@@ -180,16 +239,16 @@ function getFilePair(fileName: string): FilePair {
         :file-tree="directory"
         :former-path="`${formerPath}/${fileTree.collapsedName}`"
         :on-file-change="onFileChange"
-      ></file-list>
+      />
       <v-divider color="primary" />
     </template>
   </v-list-group>
 </template>
 
 <style lang="scss" scoped>
-.path {
-  display: flex;
-  overflow-x: scroll;
+.text-shrink {
+  text-overflow: ellipsis;
+  overflow-x: hidden;
   white-space: nowrap;
 }
 </style>

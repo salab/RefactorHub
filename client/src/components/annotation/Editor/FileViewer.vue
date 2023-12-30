@@ -383,7 +383,7 @@ onMounted(async () => {
         </v-btn-group>
       </v-menu>
 
-      <div class="flex-shrink-1 mx-1" style="min-width: 0%">
+      <div class="flex-shrink-1 d-flex mx-1" style="min-width: 0%">
         <v-tooltip location="top center" origin="auto" :open-delay="500">
           <template #activator="{ props: tooltipProps }">
             <span
@@ -575,7 +575,7 @@ onMounted(async () => {
 }
 
 .text-shrink {
-  display: flex;
+  text-overflow: ellipsis;
   overflow-x: hidden;
   white-space: nowrap;
 }
