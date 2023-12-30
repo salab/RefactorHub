@@ -420,12 +420,12 @@
         "type": "CodeFragment",
         "required": true
       },
-      "code when original conditional satisfied": {
+      "code when satisfying original conditional": {
         "description": "Code fragment in the \"then\" clause before reversing that is executed when the conditional before reversing is satisfied",
         "type": "CodeFragment",
         "required": true
       },
-      "code when original conditional unsatisfied": {
+      "code when unsatisfying original conditional": {
         "description": "Code fragment in the \"else\" clause before reversing that is executed when the conditional before reversing is unsatisfied",
         "type": "CodeFragment",
         "required": true
@@ -437,12 +437,12 @@
         "type": "CodeFragment",
         "required": true
       },
-      "code when original conditional satisfied": {
+      "code when satisfying original conditional": {
         "description": "Code fragment in the \"else\" clause after reversing that is executed when the conditional before reversing is satisfied",
         "type": "CodeFragment",
         "required": true
       },
-      "code when original conditional unsatisfied": {
+      "code when unsatisfying original conditional": {
         "description": "Code fragment in the \"then\" clause after reversing that is executed when the conditional before reversing is unsatisfied",
         "type": "CodeFragment",
         "required": true
