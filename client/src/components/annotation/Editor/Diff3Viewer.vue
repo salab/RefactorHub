@@ -20,8 +20,6 @@ const props = defineProps({
     required: true,
   },
 })
-const pending = ref(0)
-const isLoading = computed(() => pending.value > 0)
 
 const scrollTop = ref(0)
 const scrollLeft = ref(0)
@@ -63,7 +61,7 @@ function navigate(
     range.endColumn,
   )
   const fileViewer = category === 'before' ? originalViewer : intermediateViewer
-  setTimeout(() => fileViewer?.revealRangeAtTop(mappedRange), 100)
+  setTimeout(() => fileViewer?.revealRangeAtTop(mappedRange), 250)
 }
 
 let beforeLineDecorationsCollection:
@@ -314,6 +312,9 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
       type: beforeLines[l].isRemoved ? 'removed' : 'unmodified',
     }
     for (let i = 0; i < beforeLines[l].followingEmptyLines; i++) {
+      if (newBeforeText && newBeforeText[newBeforeText.length - 1] !== '\n') {
+        newBeforeText += '\n'
+      }
       newBeforeText += '\n'
       newBeforeLine++
       newBeforeLines[newBeforeLine] = {
@@ -349,6 +350,12 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
         : 'unmodified',
     }
     for (let i = 0; i < intermediateLines[l].followingEmptyLines; i++) {
+      if (
+        newIntermediateText &&
+        newIntermediateText[newIntermediateText.length - 1] !== '\n'
+      ) {
+        newIntermediateText += '\n'
+      }
       newIntermediateText += AUTO_INSERTED_LINE_CONTENT
       newIntermediateLine++
       newIntermediateLines[newIntermediateLine] = {
@@ -375,6 +382,9 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
       type: afterLines[l].isAdded ? 'added' : 'unmodified',
     }
     for (let i = 0; i < afterLines[l].followingEmptyLines; i++) {
+      if (newAfterText && newAfterText[newAfterText.length - 1] !== '\n') {
+        newAfterText += '\n'
+      }
       newAfterText += '\n'
       newAfterLine++
       newAfterLines[newAfterLine] = {
@@ -390,7 +400,21 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
   const oldModifiedViewerCursorPosition = modifiedViewer?.getPosition()
 
   originalViewer?.setValue(newBeforeText)
-  intermediateViewer?.setValue(newIntermediateText)
+  const intermediateSelections = intermediateViewer?.getSelections() ?? null
+  if (intermediateViewer?.getValue() !== newIntermediateText) {
+    intermediateViewer?.getModel()?.pushEditOperations(
+      intermediateSelections,
+      [
+        {
+          range:
+            intermediateViewer.getModel()?.getFullModelRange() ??
+            new monaco.Range(0, 0, 0, 0),
+          text: newIntermediateText,
+        },
+      ],
+      () => intermediateSelections,
+    )
+  }
   modifiedViewer?.setValue(newAfterText)
 
   originalViewer?.setScrollTop(oldScrollTop)
@@ -441,13 +465,13 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
           let className
           switch (type) {
             case 'added':
-              className = 'file-changed-after'
+              className = 'file-changed-intermediate-after'
               break
             case 'removed':
-              className = 'file-changed-before'
+              className = 'file-changed-intermediate-before'
               break
             case 'both':
-              className = 'file-changed-both'
+              className = 'file-changed-intermediate-both'
               break
             default:
               className = 'file-changed-empty'
@@ -589,46 +613,6 @@ function createViewer(viewer: DiffViewer) {
 
   navigate(viewer, beforeLinesMap, intermediateLinesMap)
 
-  intermediateViewer.onDidChangeModelContent(
-    debounce(async (e: monaco.editor.IModelContentChangedEvent) => {
-      const filePair1 = props.viewer.filePair
-      const filePair2 = filePair1.next
-      if (!filePair2) {
-        logger.error(
-          `Cannot find the filePair2: path is ${filePair1.getPathPair().after}`,
-        )
-        return
-      }
-      const { annotationId } = useAnnotation().currentIds.value
-      if (!annotationId) return
-      const pathPair = filePair1.getPathPair()
-      const filePath =
-        pathPair.notFound ??
-        // eslint-disable-next-line prettier/prettier
-          (pathPair.after ?? pathPair.before)
-      const fileContent = intermediateViewer?.getValue() ?? ''
-      const changedText = e.changes[0]?.text
-      if (fileContent === changedText) {
-        return
-      }
-      useAnnotation().updateAnnotation(
-        {
-          ...(
-            await apis.snapshots.modifyTemporarySnapshot(annotationId, {
-              filePath,
-              fileContent: fileContent.replaceAll(
-                AUTO_INSERTED_LINE_CONTENT,
-                '',
-              ),
-              isRemoved: false,
-            })
-          ).data,
-        },
-        true,
-      )
-    }, 1500),
-  )
-
   const elementDecorationManager = new ElementDecorationManager(
     filePair1.getPathPair(),
     originalViewer,
@@ -662,10 +646,58 @@ function createViewer(viewer: DiffViewer) {
       intermediateLinesMap,
     )
 
+  function update() {
+    const filePair1 = props.viewer.filePair
+    const filePair2 = filePair1.next
+    if (!filePair2) {
+      logger.error(
+        `Cannot find the filePair2: path is ${filePair1.getPathPair().after}`,
+      )
+      return
+    }
+    const { beforeLinesMap, intermediateLinesMap } = updateDiff(
+      filePair1,
+      filePair2,
+    )
+    navigate(props.viewer, beforeLinesMap, intermediateLinesMap)
+    elementDecorationManager.update(
+      filePair1.getPathPair(),
+      beforeLinesMap,
+      intermediateLinesMap,
+    )
+    codeFragmentManager.update(
+      filePair1.getPathPair(),
+      filePair1.before?.elements ?? [],
+      filePair1.after?.elements ?? [],
+      beforeLinesMap,
+      intermediateLinesMap,
+    )
+    elementWidgetManager.update(
+      filePair1.before?.elements ?? [],
+      filePair1.after?.elements ?? [],
+      beforeLinesMap,
+      intermediateLinesMap,
+    )
+    commonTokenSequenceDecorationManager.update(
+      filePair1.getPathPair(),
+      beforeLinesMap,
+      intermediateLinesMap,
+    )
+
+    originalViewer?.onMouseMove((e) => onMouseMove(e, 'before', beforeLinesMap))
+    intermediateViewer?.onMouseMove((e) =>
+      onMouseMove(e, 'after', intermediateLinesMap),
+    )
+  }
+
   watch(
     () => props.viewer,
-    (newViewer) => {
-      const filePair1 = newViewer.filePair
+    () => update(),
+  )
+
+  intermediateViewer.onDidChangeModelContent(
+    debounce(async () => {
+      const filePair1 = props.viewer.filePair
       const filePair2 = filePair1.next
       if (!filePair2) {
         logger.error(
@@ -673,157 +705,168 @@ function createViewer(viewer: DiffViewer) {
         )
         return
       }
-      const { beforeLinesMap, intermediateLinesMap } = updateDiff(
-        filePair1,
-        filePair2,
+      const { annotationId } = useAnnotation().currentIds.value
+      if (!annotationId) return
+      const pathPair = filePair1.getPathPair()
+      const filePath =
+        pathPair.notFound ??
+        // eslint-disable-next-line prettier/prettier
+          (pathPair.after ?? pathPair.before)
+      const fileContent =
+        intermediateViewer
+          ?.getValue()
+          ?.replaceAll(AUTO_INSERTED_LINE_CONTENT, '') ?? ''
+      const savedContent = filePair1.after?.text ?? ''
+      if (fileContent === savedContent) {
+        update()
+        return
+      }
+      useLoader().setLoadingText('updating the intermediate source code')
+      useViewer().deleteNavigators()
+      useCommonTokenSequence().updateSelectedId(undefined)
+      useAnnotation().updateAnnotation(
+        {
+          ...(
+            await apis.snapshots.modifyTemporarySnapshot(annotationId, {
+              filePath,
+              fileContent,
+              isRemoved: false,
+            })
+          ).data,
+        },
+        true,
       )
-      navigate(newViewer, beforeLinesMap, intermediateLinesMap)
-      elementDecorationManager.update(
-        filePair1.getPathPair(),
-        beforeLinesMap,
-        intermediateLinesMap,
-      )
-      codeFragmentManager.update(
-        filePair1.getPathPair(),
-        filePair1.before?.elements ?? [],
-        filePair1.after?.elements ?? [],
-        beforeLinesMap,
-        intermediateLinesMap,
-      )
-      elementWidgetManager.update(
-        filePair1.before?.elements ?? [],
-        filePair1.after?.elements ?? [],
-        beforeLinesMap,
-        intermediateLinesMap,
-      )
-      commonTokenSequenceDecorationManager.update(
-        filePair1.getPathPair(),
-        beforeLinesMap,
-        intermediateLinesMap,
-      )
-    },
+      useLoader().finishLoading()
+    }, 3000),
   )
 
-  function onMouseDown(
-    e: monaco.editor.IEditorMouseEvent,
-    category: DiffCategory,
-  ) {
-    if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_WIDGET) return
-    const commonTokenSequenceId =
-      commonTokenSequenceDecorationManager.getIdFromHoverMessageClickEvent(e)
-    if (commonTokenSequenceId === undefined) return
-    const { joinedRaw, tokenSequenceSet } = useCommonTokenSequence().getWithId(
-      commonTokenSequenceId,
-    )
-    useCommonTokenSequence().updateSelectedId(commonTokenSequenceId)
-    const sequencesOnThisViewer = tokenSequenceSet.filterCategory(category)
-    const currentPath =
-      category === 'before' ? filePair1.before?.path : filePair1?.after?.path
-    if (currentPath === undefined)
-      throw new Error('cannot get currentPath of viewer')
-    const currentDestinationIndex = sequencesOnThisViewer.findIndex(
-      (sequence) =>
-        latestMousePosition &&
-        sequence.isIn(currentPath, category) &&
-        sequence.range.containsPosition(latestMousePosition),
-    )
-    useViewer().deleteNavigators()
-    useViewer().setNavigator(
-      {
-        label: joinedRaw,
-        currentDestinationIndex:
-          currentDestinationIndex === -1 ? 0 : currentDestinationIndex,
-        destinations: sequencesOnThisViewer.map((sequence) => ({
-          path: sequence.path,
-          category,
-          range: sequence.range,
-        })),
-      },
-      props.viewer.id,
-    )
+  originalViewer?.onMouseDown((e) =>
+    onMouseDown(e, 'before', commonTokenSequenceDecorationManager),
+  )
+  intermediateViewer?.onMouseDown((e) =>
+    onMouseDown(e, 'after', commonTokenSequenceDecorationManager),
+  )
 
-    const otherCategory = category === 'before' ? 'after' : 'before'
-    const sequencesOnOtherViewer =
-      tokenSequenceSet.filterCategory(otherCategory)
-    const filePairOnOtherViewer = useAnnotation().getCurrentFilePair(
-      sequencesOnOtherViewer[0].path,
-    )
-    if (!filePairOnOtherViewer) {
-      throw new Error(
-        `cannot find filePair; path=${sequencesOnOtherViewer[0].path}`,
-      )
-    }
-    const { id: newViewerId } = useViewer().createViewer(
-      otherCategory === 'before'
-        ? {
-            type: 'file',
-            filePair: filePairOnOtherViewer,
-            navigation: {
-              category: otherCategory,
-              range: sequencesOnOtherViewer[0].range,
-            },
-          }
-        : {
-            type: 'diff',
-            filePair: filePairOnOtherViewer,
-            navigation: {
-              category: otherCategory,
-              range: sequencesOnOtherViewer[0].range,
-            },
-          },
-      category === 'before' ? 'next' : 'prev',
-    )
-    useViewer().setNavigator(
-      {
-        label: joinedRaw,
-        currentDestinationIndex: 0,
-        destinations: sequencesOnOtherViewer.map((sequence) => ({
-          path: sequence.path,
-          category: otherCategory,
-          range: sequence.range,
-        })),
-      },
-      newViewerId,
-    )
-  }
-  originalViewer?.onMouseDown((e) => onMouseDown(e, 'before'))
-  intermediateViewer?.onMouseDown((e) => onMouseDown(e, 'after'))
-
-  function onMouseMove(
-    e: monaco.editor.IEditorMouseEvent,
-    category: DiffCategory,
-    linesMap: {
-      [lineNumber: number]: number
-    },
-  ) {
-    const position = e.target.position
-    if (!position) return
-    const oldLine = Object.entries(linesMap).find(
-      ([, newLineNumber]) => newLineNumber === position.lineNumber,
-    )
-    if (!oldLine) return undefined
-    const inverseLineNumber = Number.parseInt(oldLine[0])
-    const inversePosition = new monaco.Position(
-      inverseLineNumber,
-      position.column,
-    )
-    latestMousePosition = inversePosition
-    if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_TEXT) return
-    const path =
-      category === 'before' ? filePair1.before?.path : filePair1?.after?.path
-    if (path === undefined) return
-    useCommonTokenSequence().updateIsHovered(path, category, inversePosition)
-  }
   originalViewer?.onMouseMove((e) => onMouseMove(e, 'before', beforeLinesMap))
   intermediateViewer?.onMouseMove((e) =>
     onMouseMove(e, 'after', intermediateLinesMap),
   )
 }
 
-onMounted(async () => {
-  pending.value++
-  await createViewer(props.viewer)
-  pending.value--
+function onMouseDown(
+  e: monaco.editor.IEditorMouseEvent,
+  category: DiffCategory,
+  commonTokenSequenceDecorationManager: CommonTokenSequenceDecorationManager,
+) {
+  if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_WIDGET) return
+  const commonTokenSequenceId =
+    commonTokenSequenceDecorationManager.getIdFromHoverMessageClickEvent(e)
+  if (commonTokenSequenceId === undefined) return
+  const { joinedRaw, tokenSequenceSet } = useCommonTokenSequence().getWithId(
+    commonTokenSequenceId,
+  )
+  useCommonTokenSequence().updateSelectedId(commonTokenSequenceId)
+  const sequencesOnThisViewer = tokenSequenceSet.filterCategory(category)
+  const currentPath =
+    category === 'before'
+      ? props.viewer.filePair.before?.path
+      : props.viewer.filePair.after?.path
+  if (currentPath === undefined)
+    throw new Error('cannot get currentPath of viewer')
+  const currentDestinationIndex = sequencesOnThisViewer.findIndex(
+    (sequence) =>
+      latestMousePosition &&
+      sequence.isIn(currentPath, category) &&
+      sequence.range.containsPosition(latestMousePosition),
+  )
+  useViewer().deleteNavigators()
+  useViewer().setNavigator(
+    {
+      label: joinedRaw,
+      currentDestinationIndex:
+        currentDestinationIndex === -1 ? 0 : currentDestinationIndex,
+      destinations: sequencesOnThisViewer.map((sequence) => ({
+        path: sequence.path,
+        category,
+        range: sequence.range,
+      })),
+    },
+    props.viewer.id,
+  )
+
+  const otherCategory = category === 'before' ? 'after' : 'before'
+  const sequencesOnOtherViewer = tokenSequenceSet.filterCategory(otherCategory)
+  const filePairOnOtherViewer = useAnnotation().getCurrentFilePair(
+    sequencesOnOtherViewer[0].path,
+  )
+  if (!filePairOnOtherViewer) {
+    throw new Error(
+      `cannot find filePair; path=${sequencesOnOtherViewer[0].path}`,
+    )
+  }
+  const { id: newViewerId } = useViewer().createViewer(
+    otherCategory === 'before'
+      ? {
+          type: 'file',
+          filePair: filePairOnOtherViewer,
+          navigation: {
+            category: otherCategory,
+            range: sequencesOnOtherViewer[0].range,
+          },
+        }
+      : {
+          type: 'diff',
+          filePair: filePairOnOtherViewer,
+          navigation: {
+            category: otherCategory,
+            range: sequencesOnOtherViewer[0].range,
+          },
+        },
+    category === 'before' ? 'next' : 'prev',
+  )
+  useViewer().setNavigator(
+    {
+      label: joinedRaw,
+      currentDestinationIndex: 0,
+      destinations: sequencesOnOtherViewer.map((sequence) => ({
+        path: sequence.path,
+        category: otherCategory,
+        range: sequence.range,
+      })),
+    },
+    newViewerId,
+  )
+}
+function onMouseMove(
+  e: monaco.editor.IEditorMouseEvent,
+  category: DiffCategory,
+  linesMap: {
+    [lineNumber: number]: number
+  },
+) {
+  const position = e.target.position
+  if (!position) return
+  const oldLine = Object.entries(linesMap).find(
+    ([, newLineNumber]) => newLineNumber === position.lineNumber,
+  )
+  if (!oldLine) return undefined
+  const inverseLineNumber = Number.parseInt(oldLine[0])
+  const inversePosition = new monaco.Position(
+    inverseLineNumber,
+    position.column,
+  )
+  latestMousePosition = inversePosition
+  if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_TEXT) return
+  const path =
+    category === 'before'
+      ? props.viewer.filePair.before?.path
+      : props.viewer.filePair.after?.path
+  if (path === undefined) return
+  useCommonTokenSequence().updateIsHovered(path, category, inversePosition)
+}
+
+onMounted(() => {
+  createViewer(props.viewer)
 })
 </script>
 
@@ -925,7 +968,7 @@ onMounted(async () => {
             <span
               v-bind="tooltipProps"
               class="text-shrink text-subtitle-2"
-              :style="`background-color: ${colors.after}`"
+              :style="`background-color: ${colors.intermediate}`"
             >
               {{ getPathDifference(viewer.filePair.getPathPair())[1] }}
             </span>
@@ -966,6 +1009,9 @@ onMounted(async () => {
               pathPair.notFound ??
               // eslint-disable-next-line prettier/prettier
                 (pathPair.after ?? pathPair.before)
+            useLoader().setLoadingText('updating the intermediate source code')
+            useViewer().deleteNavigators()
+            useCommonTokenSequence().updateSelectedId(undefined)
             useAnnotation().updateAnnotation(
               {
                 ...(
@@ -978,6 +1024,7 @@ onMounted(async () => {
               },
               true,
             )
+            useLoader().finishLoading()
           }
         "
         ><span class="text-none">Remove Intermediate File</span></v-btn
@@ -1115,23 +1162,17 @@ onMounted(async () => {
           :id="`${viewer.id}-before`"
           class="element-editor"
           :style="`width: ${100 / 3}%; height: 100%;`"
-        >
-          <loading-circle :active="isLoading" />
-        </div>
+        />
         <div
           :id="`${viewer.id}-intermediate`"
           class="element-editor element-editor-modifiable"
           :style="`width: ${100 / 3}%; height: 100%;`"
-        >
-          <loading-circle :active="isLoading" />
-        </div>
+        />
         <div
           :id="`${viewer.id}-after`"
           class="element-editor"
           :style="`width: ${100 / 3}%; height: 100%;`"
-        >
-          <loading-circle :active="isLoading" />
-        </div>
+        />
       </div>
     </div>
   </v-sheet>
@@ -1143,7 +1184,7 @@ onMounted(async () => {
 }
 
 .text-shrink {
-  display: flex;
+  text-overflow: ellipsis;
   overflow-x: hidden;
   white-space: nowrap;
 }
@@ -1155,8 +1196,26 @@ onMounted(async () => {
   .file-changed-after {
     background: rgba(175, 208, 107, 0.5);
   }
-  .file-changed-both {
-    background: rgba(255, 255, 50, 0.5);
+  .file-changed-intermediate-before {
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0),
+      rgba(255, 165, 153, 0.8) calc(100% - 150px)
+    );
+  }
+  .file-changed-intermediate-after {
+    background: linear-gradient(
+      to right,
+      rgba(202, 218, 105, 0.5) 150px,
+      rgba(0, 0, 0, 0)
+    );
+  }
+  .file-changed-intermediate-both {
+    background: linear-gradient(
+      to right,
+      rgba(202, 218, 105, 0.5) 150px,
+      rgba(255, 165, 153, 0.8) calc(100% - 150px)
+    );
   }
   .file-changed-empty {
     background: repeating-linear-gradient(

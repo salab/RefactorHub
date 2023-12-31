@@ -287,13 +287,18 @@ const toggleEditing = () => {
                 variant="text"
                 :size="16"
                 icon
-                color="secondary"
+                :color="!isEditing ? `secondary` : vuetifyColors.pink.accent2"
                 @click="toggleEditing"
               >
-                <v-icon :size="16" icon="$mdiMarker" />
+                <v-icon v-if="!isEditing" :size="16" icon="$mdiMarker" />
+                <v-icon v-else :size="16" icon="$mdiMarkerCancel" />
               </v-btn>
             </template>
-            Start to select on editor
+            {{
+              !isEditing
+                ? 'Start to select on editor'
+                : 'Cancel selecting on editor'
+            }}
           </v-tooltip>
           <v-tooltip location="top center" origin="auto" :open-delay="500">
             <template #activator="{ props: tooltipProps }">
@@ -362,5 +367,9 @@ $scrollbar-width: 4px;
   display: flex;
   overflow-x: scroll;
   white-space: nowrap;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 </style>

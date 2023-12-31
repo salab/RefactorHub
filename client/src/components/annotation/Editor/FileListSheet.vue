@@ -40,7 +40,7 @@ const allDirectories = computed(() => getDirectories(collapsedDirectory.value))
 
 <template>
   <v-sheet v-if="isOpeningFileList" style="width: 100%; height: 100%">
-    <h2 class="mx-1">Changed File List</h2>
+    <h2 class="ml-5">Changed File List</h2>
     <div style="width: 100%; height: 100%; overflow-y: scroll">
       <v-list
         :opened="allDirectories.map((d) => `${viewerId}:${d}`)"

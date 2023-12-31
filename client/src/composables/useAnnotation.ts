@@ -582,7 +582,7 @@ export const useAnnotation = () => {
     filePairsMap.value = new Map()
     changeTypes.value = []
     codeElementTypes.value = []
-    currentChangeId.value = ''
+    currentChangeId.value = undefined
   }
 
   async function setup(annotationId: string): Promise<FilePair> {
@@ -657,7 +657,7 @@ export const useAnnotation = () => {
       throw new Error('filePair should have path information')
     }
     const text = file?.text ?? ''
-    const extension = file?.extension ?? 'text/plain'
+    const extension = file?.extension ?? 'java'
     return monaco.editor.createModel(text, extension)
   }
   function getChangeParametersTextModels(

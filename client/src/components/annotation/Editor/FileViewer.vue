@@ -38,9 +38,9 @@ function getFilePair(viewer?: FileViewer) {
 
 // eslint-disable-next-line vue/no-setup-props-destructure
 const originalCategory = props.viewer.navigation.category
-
-const pending = ref(0)
-const isLoading = computed(() => pending.value > 0)
+const originalIsDividingChangeAfter =
+  useAnnotation().isDividingChange.value &&
+  props.viewer.navigation.category === 'after'
 
 const isOpeningFileList = ref(false)
 
@@ -84,7 +84,7 @@ function navigate(viewer: FileViewer) {
   })
   setTimeout(() => {
     fileViewer?.revealRangeAtTop(range)
-  }, 100)
+  }, 250)
 }
 
 function createFileViewer(
@@ -121,7 +121,7 @@ function createFileViewer(
 
 let latestMousePosition: monaco.Position | undefined
 
-async function createViewer(viewer: FileViewer) {
+function createViewer(viewer: FileViewer) {
   const container = document.getElementById(viewer.id)
   if (!container) {
     logger.error(`Cannot find the container element: id is ${viewer.id}`)
@@ -129,7 +129,7 @@ async function createViewer(viewer: FileViewer) {
   }
   const filePair = getFilePair(viewer)
 
-  const viewers = await createFileViewer(container, props.viewer)
+  const viewers = createFileViewer(container, props.viewer)
   const originalViewer = viewers.originalViewer
   const modifiedViewer = viewers.modifiedViewer
 
@@ -168,7 +168,10 @@ async function createViewer(viewer: FileViewer) {
   watch(
     () => props.viewer,
     (newViewer) => {
-      if (newViewer.navigation.category !== originalCategory) {
+      if (
+        newViewer.navigation.category !== originalCategory ||
+        isDividingChangeAfter.value !== originalIsDividingChangeAfter
+      ) {
         useViewer().recreateViewer(newViewer.id)
         return
       }
@@ -191,114 +194,119 @@ async function createViewer(viewer: FileViewer) {
     },
   )
 
-  function onMouseDown(
-    e: monaco.editor.IEditorMouseEvent,
-    category: DiffCategory,
-  ) {
-    if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_WIDGET) return
-    if (isDividingChangeAfter.value || !commonTokenSequenceDecorationManager)
-      return
-    const commonTokenSequenceId =
-      commonTokenSequenceDecorationManager.getIdFromHoverMessageClickEvent(e)
-    if (commonTokenSequenceId === undefined) return
-    const { joinedRaw, tokenSequenceSet } = useCommonTokenSequence().getWithId(
-      commonTokenSequenceId,
-    )
-    useCommonTokenSequence().updateSelectedId(commonTokenSequenceId)
-    const sequencesOnThisViewer = tokenSequenceSet.filterCategory(category)
-    const currentPath =
-      category === 'before'
-        ? getFilePair().before?.path
-        : getFilePair().after?.path
-    if (currentPath === undefined)
-      throw new Error('cannot get currentPath of viewer')
-    const currentDestinationIndex = sequencesOnThisViewer.findIndex(
-      (sequence) =>
-        latestMousePosition &&
-        sequence.isIn(currentPath, category) &&
-        sequence.range.containsPosition(latestMousePosition),
-    )
-    useViewer().deleteNavigators()
-    useViewer().setNavigator(
-      {
-        label: joinedRaw,
-        currentDestinationIndex:
-          currentDestinationIndex === -1 ? 0 : currentDestinationIndex,
-        destinations: sequencesOnThisViewer.map((sequence) => ({
-          path: sequence.path,
-          category,
-          range: sequence.range,
-        })),
-      },
-      props.viewer.id,
-    )
+  originalViewer?.onMouseDown((e) =>
+    onMouseDown(e, 'before', commonTokenSequenceDecorationManager),
+  )
+  modifiedViewer?.onMouseDown((e) =>
+    onMouseDown(e, 'after', commonTokenSequenceDecorationManager),
+  )
 
-    const otherCategory = category === 'before' ? 'after' : 'before'
-    const sequencesOnOtherViewer =
-      tokenSequenceSet.filterCategory(otherCategory)
-    const filePairOnOtherViewer = useAnnotation().getCurrentFilePair(
-      sequencesOnOtherViewer[0].path,
-    )
-    if (!filePairOnOtherViewer) {
-      throw new Error(
-        `cannot find filePair; path=${sequencesOnOtherViewer[0].path}`,
-      )
-    }
-    const { id: newViewerId } = useViewer().createViewer(
-      !useAnnotation().isDividingChange.value || otherCategory === 'before'
-        ? {
-            type: 'file',
-            filePair: filePairOnOtherViewer,
-            navigation: {
-              category: otherCategory,
-              range: sequencesOnOtherViewer[0].range,
-            },
-          }
-        : {
-            type: 'diff',
-            filePair: filePairOnOtherViewer,
-            navigation: {
-              category: otherCategory,
-              range: sequencesOnOtherViewer[0].range,
-            },
-          },
-      category === 'before' ? 'next' : 'prev',
-    )
-    useViewer().setNavigator(
-      {
-        label: joinedRaw,
-        currentDestinationIndex: 0,
-        destinations: sequencesOnOtherViewer.map((sequence) => ({
-          path: sequence.path,
-          category: otherCategory,
-          range: sequence.range,
-        })),
-      },
-      newViewerId,
-    )
-  }
-  originalViewer?.onMouseDown((e) => onMouseDown(e, 'before'))
-  modifiedViewer?.onMouseDown((e) => onMouseDown(e, 'after'))
-
-  function onMouseMove(
-    e: monaco.editor.IEditorMouseEvent,
-    category: DiffCategory,
-  ) {
-    if (e.target.position) latestMousePosition = e.target.position
-    if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_TEXT) return
-    if (isDividingChangeAfter.value) return
-    const path = getFilePair().getPathPair()[category]
-    if (path === undefined) return
-    useCommonTokenSequence().updateIsHovered(path, category, e.target.position)
-  }
   originalViewer?.onMouseMove((e) => onMouseMove(e, 'before'))
   modifiedViewer?.onMouseMove((e) => onMouseMove(e, 'after'))
 }
 
-onMounted(async () => {
-  pending.value++
-  await createViewer(props.viewer)
-  pending.value--
+function onMouseDown(
+  e: monaco.editor.IEditorMouseEvent,
+  category: DiffCategory,
+  commonTokenSequenceDecorationManager:
+    | CommonTokenSequenceDecorationManager
+    | undefined,
+) {
+  if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_WIDGET) return
+  if (isDividingChangeAfter.value || !commonTokenSequenceDecorationManager)
+    return
+  const commonTokenSequenceId =
+    commonTokenSequenceDecorationManager.getIdFromHoverMessageClickEvent(e)
+  if (commonTokenSequenceId === undefined) return
+  const { joinedRaw, tokenSequenceSet } = useCommonTokenSequence().getWithId(
+    commonTokenSequenceId,
+  )
+  useCommonTokenSequence().updateSelectedId(commonTokenSequenceId)
+  const sequencesOnThisViewer = tokenSequenceSet.filterCategory(category)
+  const currentPath =
+    category === 'before'
+      ? getFilePair().before?.path
+      : getFilePair().after?.path
+  if (currentPath === undefined)
+    throw new Error('cannot get currentPath of viewer')
+  const currentDestinationIndex = sequencesOnThisViewer.findIndex(
+    (sequence) =>
+      latestMousePosition &&
+      sequence.isIn(currentPath, category) &&
+      sequence.range.containsPosition(latestMousePosition),
+  )
+  useViewer().deleteNavigators()
+  useViewer().setNavigator(
+    {
+      label: joinedRaw,
+      currentDestinationIndex:
+        currentDestinationIndex === -1 ? 0 : currentDestinationIndex,
+      destinations: sequencesOnThisViewer.map((sequence) => ({
+        path: sequence.path,
+        category,
+        range: sequence.range,
+      })),
+    },
+    props.viewer.id,
+  )
+
+  const otherCategory = category === 'before' ? 'after' : 'before'
+  const sequencesOnOtherViewer = tokenSequenceSet.filterCategory(otherCategory)
+  const filePairOnOtherViewer = useAnnotation().getCurrentFilePair(
+    sequencesOnOtherViewer[0].path,
+  )
+  if (!filePairOnOtherViewer) {
+    throw new Error(
+      `cannot find filePair; path=${sequencesOnOtherViewer[0].path}`,
+    )
+  }
+  const { id: newViewerId } = useViewer().createViewer(
+    !useAnnotation().isDividingChange.value || otherCategory === 'before'
+      ? {
+          type: 'file',
+          filePair: filePairOnOtherViewer,
+          navigation: {
+            category: otherCategory,
+            range: sequencesOnOtherViewer[0].range,
+          },
+        }
+      : {
+          type: 'diff',
+          filePair: filePairOnOtherViewer,
+          navigation: {
+            category: otherCategory,
+            range: sequencesOnOtherViewer[0].range,
+          },
+        },
+    category === 'before' ? 'next' : 'prev',
+  )
+  useViewer().setNavigator(
+    {
+      label: joinedRaw,
+      currentDestinationIndex: 0,
+      destinations: sequencesOnOtherViewer.map((sequence) => ({
+        path: sequence.path,
+        category: otherCategory,
+        range: sequence.range,
+      })),
+    },
+    newViewerId,
+  )
+}
+function onMouseMove(
+  e: monaco.editor.IEditorMouseEvent,
+  category: DiffCategory,
+) {
+  if (e.target.position) latestMousePosition = e.target.position
+  if (e.target.type !== monaco.editor.MouseTargetType.CONTENT_TEXT) return
+  if (isDividingChangeAfter.value) return
+  const path = getFilePair().getPathPair()[category]
+  if (path === undefined) return
+  useCommonTokenSequence().updateIsHovered(path, category, e.target.position)
+}
+
+onMounted(() => {
+  createViewer(props.viewer)
 })
 </script>
 
@@ -383,7 +391,7 @@ onMounted(async () => {
         </v-btn-group>
       </v-menu>
 
-      <div class="flex-shrink-1 mx-1" style="min-width: 0%">
+      <div class="flex-shrink-1 d-flex mx-1" style="min-width: 0%">
         <v-tooltip location="top center" origin="auto" :open-delay="500">
           <template #activator="{ props: tooltipProps }">
             <span
@@ -558,9 +566,7 @@ onMounted(async () => {
           :on-file-change="() => (isOpeningFileList = !isOpeningFileList)"
         />
       </v-expand-transition>
-      <div :id="viewer.id" class="wh-100 element-editor">
-        <loading-circle :active="isLoading" />
-      </div>
+      <div :id="viewer.id" class="wh-100 element-editor" />
     </div>
   </v-sheet>
 </template>
@@ -575,7 +581,7 @@ onMounted(async () => {
 }
 
 .text-shrink {
-  display: flex;
+  text-overflow: ellipsis;
   overflow-x: hidden;
   white-space: nowrap;
 }

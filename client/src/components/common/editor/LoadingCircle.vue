@@ -1,21 +1,10 @@
-<script setup lang="ts">
-defineProps({
-  active: {
-    type: Boolean,
-    default: false,
-  },
-})
-</script>
-
 <template>
   <div
-    v-if="active"
+    v-if="useLoader().isLoading"
     class="background d-flex flex-column align-center justify-center"
   >
     <v-progress-circular indeterminate />
-    <span v-if="useLoader().isLoading" class="text-caption">{{
-      useLoader().loadingText.value
-    }}</span>
+    <span class="text-caption">{{ useLoader().loadingText.value }}</span>
   </div>
 </template>
 

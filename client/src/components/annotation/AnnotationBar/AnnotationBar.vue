@@ -5,6 +5,11 @@ const experimentId = computed(
   () => useAnnotation().annotation.value?.experimentId,
 )
 const experimentTitle = ref('')
+if (experimentId.value)
+  useExperiment()
+    .get(experimentId.value)
+    .then((experiment) => (experimentTitle.value = experiment.title))
+
 function updateExperimentTitle() {
   if (!experimentId.value) return
   useExperiment()

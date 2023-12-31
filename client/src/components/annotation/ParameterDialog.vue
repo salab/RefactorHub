@@ -49,7 +49,10 @@ const dialogIsOpening = ref(false)
           <div class="text-h6">
             {{ information.changeType.name }}
           </div>
-          <v-divider class="mb-3" />
+          <v-divider />
+          <div class="text-body-1 font-weight-light mb-1">
+            {{ information.changeType.description }}
+          </div>
           <v-sheet
             v-for="parameterPair in information.diff"
             :key="parameterPair.parameterName"

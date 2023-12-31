@@ -2,16 +2,9 @@
 const hoveredCommonTokenSequencesHueId = 0
 const selectedCommonTokenSequencesHueId = 5
 const hoveredElementHueId = 3
-const editingElementHueId = 1
-const otherCommonTokenSequencesHueIdMin = 6
-const { hoveredElement, editingElement } = useParameter()
-const elementIsHighlighted = computed(
-  () =>
-    !!hoveredElement.value.before ||
-    !!hoveredElement.value.after ||
-    !!editingElement.value.before ||
-    !!editingElement.value.after,
-)
+const editingElementHueId = 7
+const otherCommonTokenSequencesHueIdMin = 8
+
 const { maxId, selectedId, getWithId } = useCommonTokenSequence()
 
 function calcHue(hueId: number) {
@@ -100,35 +93,33 @@ function getCommonTokenSequenceBorderWidth(id: number) {
 <template>
   <!-- prettier-ignore -->
   <component :is="'style'">
-      .element-value-hovered {
-        background-color: {{ getHoveredElementColor(0.2) }};
+    .element-value-hovered {
+      background-color: {{ getHoveredElementColor(0.2) }};
+    }
+    .element-value-editing {
+      background-color: {{ getEditingElementColor(0.2) }};
+    }
+    .element-widget {
+      cursor: pointer;
+      border: 2px solid;
+      opacity: 0.6;
+      background-color: {{ getEditingElementColor(0.2) }};
+      color: {{ getEditingElementColor(0.9) }};
+      &:hover {
+        opacity: 1;
       }
-      .element-value-editing {
-        background-color: {{ getEditingElementColor(0.2) }};
+    }
+    .element-decoration {
+      border: 1px solid;
+      background-color: {{ getHoveredElementColor(0.2) }};
+      border-color: {{ getHoveredElementColor(0.9) }} !important;
+    }
+    <template v-for="id in [...new Array(maxId + 1).keys()]">
+      .commonTokenSequence-decoration-{{ id }} {
+        border: {{ getCommonTokenSequenceBorderWidth(id) }}px solid;
+        background-color: {{ getCommonTokenSequenceBackgroundColor(id) }};
+        border-color: {{ getCommonTokenSequenceColor(id) }} !important;
       }
-      .element-widget {
-        cursor: pointer;
-        border: 2px solid;
-        opacity: 0.6;
-        background-color: {{ getEditingElementColor(0.2) }};
-        color: {{ getEditingElementColor(0.9) }};
-        &:hover {
-          opacity: 1;
-        }
-      }
-      .element-decoration {
-        border: 1px solid;
-        background-color: {{ getHoveredElementColor(0.2) }};
-        border-color: {{ getHoveredElementColor(0.9) }} !important;
-      }
-    <template v-if="!elementIsHighlighted">
-      <template v-for="id in [...new Array(maxId + 1).keys()]">
-        .commonTokenSequence-decoration-{{ id }} {
-          border: {{ getCommonTokenSequenceBorderWidth(id) }}px solid;
-          background-color: {{ getCommonTokenSequenceBackgroundColor(id) }};
-          border-color: {{ getCommonTokenSequenceColor(id) }} !important;
-        }
-      </template>
     </template>
   </component>
 </template>

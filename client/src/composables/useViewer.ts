@@ -171,14 +171,18 @@ export const useViewer = () => {
       return
     }
     const newViewer: Viewer =
-      viewer.type === 'file'
+      viewer.type === 'file' &&
+      (!useAnnotation().isDividingChange.value ||
+        destination.category === 'before')
         ? {
-            ...viewer,
+            id: viewerId,
+            type: 'file',
             filePair,
             navigation: { ...destination },
           }
         : {
-            ...viewer,
+            id: viewerId,
+            type: 'diff',
             filePair,
             navigation: { ...destination },
           }

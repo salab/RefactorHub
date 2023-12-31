@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { debounce } from 'lodash-es'
 import apis from '@/apis'
 import { CommonTokenSequenceType } from 'composables/useCommonTokenSequence'
 
@@ -24,10 +23,12 @@ const changeTypeTags = computed(() => {
   return tags
 })
 const selectedChangeTypeTags = ref<string[]>([])
+const changeDescription = ref(currentChange.value?.description ?? '')
 
 watch(
   () => currentChange.value?.id,
   (newCurrentChangeId) => {
+    changeDescription.value = currentChange.value?.description ?? ''
     // NOTE: there is not newCurrentChangeId in v-tabs of changes when change is removed, so reload twice
     selectedChangeId.value = newCurrentChangeId
     setTimeout(() => (selectedChangeId.value = newCurrentChangeId), 1)
@@ -46,25 +47,36 @@ const hasTemporarySnapshot = computed(
   () => useAnnotation().annotation.value?.hasTemporarySnapshot ?? false,
 )
 
-const updateChange = debounce(
-  async (
-    typeName: string = currentChange.value?.typeName ?? '',
-    description: string = currentChange.value?.description ?? '',
-  ) => {
-    const { annotationId, snapshotId, changeId } =
-      useAnnotation().currentIds.value
-    if (!annotationId || !snapshotId || !changeId) return
-    useAnnotation().updateChange(
-      (
-        await apis.changes.updateChange(annotationId, snapshotId, changeId, {
-          typeName,
-          description,
-        })
-      ).data,
-    )
-  },
-  500,
-)
+async function updateChangeType(typeName: string) {
+  const description = currentChange.value?.description ?? ''
+  const { annotationId, snapshotId, changeId } =
+    useAnnotation().currentIds.value
+  if (!annotationId || !snapshotId || !changeId) return
+  useAnnotation().updateChange(
+    (
+      await apis.changes.updateChange(annotationId, snapshotId, changeId, {
+        typeName,
+        description,
+      })
+    ).data,
+  )
+}
+async function updateChangeDescription() {
+  const typeName = currentChange.value?.typeName ?? ''
+  const description = changeDescription.value
+  if (description === currentChange.value?.description) return
+  const { annotationId, snapshotId, changeId } =
+    useAnnotation().currentIds.value
+  if (!annotationId || !snapshotId || !changeId) return
+  useAnnotation().updateChange(
+    (
+      await apis.changes.updateChange(annotationId, snapshotId, changeId, {
+        typeName,
+        description,
+      })
+    ).data,
+  )
+}
 const appendTemporarySnapshot = async () => {
   const { annotation, currentIds } = useAnnotation()
   if (annotation.value?.hasTemporarySnapshot) {
@@ -76,6 +88,9 @@ const appendTemporarySnapshot = async () => {
 
   const { annotationId, changeId } = currentIds.value
   if (!annotationId || !changeId) return
+  useLoader().setLoadingText('dividing the changes automatically')
+  useViewer().deleteNavigators()
+  useCommonTokenSequence().updateSelectedId(undefined)
   useAnnotation().updateAnnotation(
     {
       ...(
@@ -86,6 +101,7 @@ const appendTemporarySnapshot = async () => {
     },
     true,
   )
+  useLoader().finishLoading()
 }
 const settleTemporarySnapshot = async () => {
   const { annotation, currentIds } = useAnnotation()
@@ -95,12 +111,16 @@ const settleTemporarySnapshot = async () => {
   }
   const { annotationId } = currentIds.value
   if (!annotationId) return
+  useLoader().setLoadingText('finishing change division')
+  useViewer().deleteNavigators()
+  useCommonTokenSequence().updateSelectedId(undefined)
   useAnnotation().updateAnnotation(
     {
       ...(await apis.snapshots.settleTemporarySnapshot(annotationId)).data,
     },
     true,
   )
+  useLoader().finishLoading()
 }
 const removeChange = async () => {
   const changeList = useAnnotation().getChangeList()
@@ -113,6 +133,9 @@ const removeChange = async () => {
   const { currentIds } = useAnnotation()
   const { annotationId, snapshotId, changeId } = currentIds.value
   if (!annotationId || !snapshotId || !changeId) return
+  useLoader().setLoadingText('undoing change division')
+  useViewer().deleteNavigators()
+  useCommonTokenSequence().updateSelectedId(undefined)
   useAnnotation().updateAnnotation(
     {
       ...(await apis.changes.removeChange(annotationId, snapshotId, changeId))
@@ -120,6 +143,7 @@ const removeChange = async () => {
     },
     true,
   )
+  useLoader().finishLoading()
 }
 const updateIsDraft = async (isDraft: boolean) => {
   const { annotationId } = useAnnotation().currentIds.value
@@ -135,6 +159,8 @@ const updateIsDraft = async (isDraft: boolean) => {
 
 const switchCurrentChange = (newChangeId: string) => {
   if (newChangeId === currentChange.value?.id) return
+  useViewer().deleteNavigators()
+  useCommonTokenSequence().updateSelectedId(undefined)
   useAnnotation().updateCurrentChangeId(newChangeId)
 }
 
@@ -257,32 +283,46 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
                   )
                   .map((type) => type.name)
               "
-              label="Change Type"
+              :label="`Change Type (${
+                changeTypes.filter((type) =>
+                  selectedChangeTypeTags.every((tag) =>
+                    type.tags.includes(tag),
+                  ),
+                ).length
+              } / ${changeTypes.length})`"
               @update:model-value="
-                (newTypeName) =>
-                  updateChange(newTypeName, currentChange?.description)
+                (newTypeName) => updateChangeType(newTypeName)
               "
             />
           </v-col>
           <v-col class="pa-0">
-            <v-chip-group
-              v-model="selectedChangeTypeTags"
-              column
-              multiple
-              filter
-            >
-              <v-chip
-                v-for="tag in changeTypeTags"
-                :key="tag"
-                :value="tag"
+            <div>
+              <div
+                class="text-caption"
+                :style="`color: ${vuetifyColors.grey.darken1}`"
+              >
+                Change Type Filter
+              </div>
+              <v-chip-group
+                v-model="selectedChangeTypeTags"
+                column
+                multiple
                 filter
-                density="compact"
-                variant="tonal"
-                class="px-1 py-0 ma-1"
+                class="pa-0"
               >
-                {{ tag }}</v-chip
-              >
-            </v-chip-group>
+                <v-chip
+                  v-for="tag in changeTypeTags"
+                  :key="tag"
+                  :value="tag"
+                  filter
+                  density="compact"
+                  variant="tonal"
+                  class="px-1 py-0 mx-1 my-0"
+                >
+                  {{ tag }}</v-chip
+                >
+              </v-chip-group>
+            </div>
           </v-col>
         </v-row>
         <v-row class="pa-0 ma-0">
@@ -290,14 +330,18 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
             <v-textarea
               variant="underlined"
               density="compact"
-              :model-value="selectedChange?.description"
+              :model-value="changeDescription"
               :disabled="!isOwner || !isDraft"
               :hide-details="true"
               rows="1"
               label="Description"
               @update:model-value="
-                (newDescription) =>
-                  updateChange(currentChange?.typeName, newDescription)
+                (newDescription) => (changeDescription = newDescription)
+              "
+              @update:focused="
+                (focused) => {
+                  if (!focused) updateChangeDescription()
+                }
               "
             />
           </v-col>
