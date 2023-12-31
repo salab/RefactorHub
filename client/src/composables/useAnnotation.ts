@@ -657,7 +657,7 @@ export const useAnnotation = () => {
       throw new Error('filePair should have path information')
     }
     const text = file?.text ?? ''
-    const extension = file?.extension ?? 'text/plain'
+    const extension = file?.extension ?? 'java'
     return monaco.editor.createModel(text, extension)
   }
   function getChangeParametersTextModels(

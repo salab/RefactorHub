@@ -108,6 +108,7 @@ private fun parseDiffHunk(diffBody: String): List<DiffHunk> {
     val diffBodyRaws = diffBody.split("\n").map { it + "\n" }
     val headerRegex = Regex("""^@@ -(\d+)\S* \+(\d+)\S* @@""")
     for (raw in diffBodyRaws) {
+        if (raw == "\\ No newline at end of file\n") continue
         val matchedHeader = headerRegex.find(raw)
         if (matchedHeader != null) {
             // header

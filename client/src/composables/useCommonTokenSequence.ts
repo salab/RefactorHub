@@ -609,6 +609,9 @@ function getIndexFromPosition(text: string, position: monaco.Position): number {
     }
     indexCount += raw.length
   }
+  if (position.lineNumber === raws.length + 1 && position.column === 0) {
+    return indexCount
+  }
   throw new Error(
     `position ${position.toString()} must be less than text which has ${
       raws.length

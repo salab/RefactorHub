@@ -112,8 +112,11 @@ function getFilePair(fileName: string): FilePair {
                 style="min-width: max-content"
               />
             </template>
-            This file has no changes; the source code is identical before and
-            after the change
+            This file has no changes; the before and
+            {{
+              useAnnotation().isDividingChange.value ? 'intermediate' : 'after'
+            }}
+            source codes are identical
           </v-tooltip>
           <v-tooltip location="top center" origin="auto" :open-delay="500">
             <template #activator="{ props: tooltipProps }">
@@ -126,8 +129,11 @@ function getFilePair(fileName: string): FilePair {
                 style="min-width: max-content"
               />
             </template>
-            This file does not exist in the two snapshots before and after the
-            change
+            This file does not exist in the before and
+            {{
+              useAnnotation().isDividingChange.value ? 'intermediate' : 'after'
+            }}
+            source codes
           </v-tooltip>
           <v-tooltip location="top center" origin="auto" :open-delay="500">
             <template #activator="{ props: tooltipProps }">

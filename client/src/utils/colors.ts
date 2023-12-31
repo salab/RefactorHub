@@ -325,6 +325,7 @@ export const vuetifyColors = Object.freeze({
 export const colors = {
   before: 'rgb(255,178,173)',
   after: 'rgb(215,232,185)',
+  intermediate: '#c9eeff',
   background: shades.white,
   surface: grey.lighten4,
   primary: grey.lighten2,

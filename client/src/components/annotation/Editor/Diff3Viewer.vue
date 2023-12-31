@@ -312,6 +312,9 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
       type: beforeLines[l].isRemoved ? 'removed' : 'unmodified',
     }
     for (let i = 0; i < beforeLines[l].followingEmptyLines; i++) {
+      if (newBeforeText && newBeforeText[newBeforeText.length - 1] !== '\n') {
+        newBeforeText += '\n'
+      }
       newBeforeText += '\n'
       newBeforeLine++
       newBeforeLines[newBeforeLine] = {
@@ -347,6 +350,12 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
         : 'unmodified',
     }
     for (let i = 0; i < intermediateLines[l].followingEmptyLines; i++) {
+      if (
+        newIntermediateText &&
+        newIntermediateText[newIntermediateText.length - 1] !== '\n'
+      ) {
+        newIntermediateText += '\n'
+      }
       newIntermediateText += AUTO_INSERTED_LINE_CONTENT
       newIntermediateLine++
       newIntermediateLines[newIntermediateLine] = {
@@ -373,6 +382,9 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
       type: afterLines[l].isAdded ? 'added' : 'unmodified',
     }
     for (let i = 0; i < afterLines[l].followingEmptyLines; i++) {
+      if (newAfterText && newAfterText[newAfterText.length - 1] !== '\n') {
+        newAfterText += '\n'
+      }
       newAfterText += '\n'
       newAfterLine++
       newAfterLines[newAfterLine] = {
@@ -613,6 +625,8 @@ function createViewer(viewer: DiffViewer) {
         return
       }
       useLoader().setLoadingText('updating the intermediate source code')
+      useViewer().deleteNavigators()
+      useCommonTokenSequence().updateSelectedId(undefined)
       useAnnotation().updateAnnotation(
         {
           ...(
@@ -939,7 +953,7 @@ onMounted(() => {
             <span
               v-bind="tooltipProps"
               class="text-shrink text-subtitle-2"
-              :style="`background-color: ${colors.after}`"
+              :style="`background-color: ${colors.intermediate}`"
             >
               {{ getPathDifference(viewer.filePair.getPathPair())[1] }}
             </span>
@@ -981,6 +995,8 @@ onMounted(() => {
               // eslint-disable-next-line prettier/prettier
                 (pathPair.after ?? pathPair.before)
             useLoader().setLoadingText('updating the intermediate source code')
+            useViewer().deleteNavigators()
+            useCommonTokenSequence().updateSelectedId(undefined)
             useAnnotation().updateAnnotation(
               {
                 ...(

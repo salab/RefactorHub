@@ -52,7 +52,7 @@ const isRemovable = (key: string) =>
       <v-sheet
         :color="
           useAnnotation().isDividingChange.value && props.category === 'after'
-            ? '#c9eeff'
+            ? colors.intermediate
             : colors[category]
         "
         class="d-flex justify-center py-1"
@@ -87,7 +87,7 @@ const isRemovable = (key: string) =>
                 :color="
                   useAnnotation().isDividingChange.value &&
                   props.category === 'after'
-                    ? '#c9eeff'
+                    ? colors.intermediate
                     : colors[props.category]
                 "
                 :icon="
