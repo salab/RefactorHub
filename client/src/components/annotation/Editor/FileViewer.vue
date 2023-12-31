@@ -42,9 +42,6 @@ const originalIsDividingChangeAfter =
   useAnnotation().isDividingChange.value &&
   props.viewer.navigation.category === 'after'
 
-const pending = ref(0)
-const isLoading = computed(() => pending.value > 0)
-
 const isOpeningFileList = ref(false)
 
 const { mainViewerId, getNavigator } = useViewer()
@@ -124,7 +121,7 @@ function createFileViewer(
 
 let latestMousePosition: monaco.Position | undefined
 
-async function createViewer(viewer: FileViewer) {
+function createViewer(viewer: FileViewer) {
   const container = document.getElementById(viewer.id)
   if (!container) {
     logger.error(`Cannot find the container element: id is ${viewer.id}`)
@@ -132,7 +129,7 @@ async function createViewer(viewer: FileViewer) {
   }
   const filePair = getFilePair(viewer)
 
-  const viewers = await createFileViewer(container, props.viewer)
+  const viewers = createFileViewer(container, props.viewer)
   const originalViewer = viewers.originalViewer
   const modifiedViewer = viewers.modifiedViewer
 
@@ -308,10 +305,8 @@ function onMouseMove(
   useCommonTokenSequence().updateIsHovered(path, category, e.target.position)
 }
 
-onMounted(async () => {
-  pending.value++
-  await createViewer(props.viewer)
-  pending.value--
+onMounted(() => {
+  createViewer(props.viewer)
 })
 </script>
 
@@ -571,9 +566,7 @@ onMounted(async () => {
           :on-file-change="() => (isOpeningFileList = !isOpeningFileList)"
         />
       </v-expand-transition>
-      <div :id="viewer.id" class="wh-100 element-editor">
-        <loading-circle :active="isLoading" />
-      </div>
+      <div :id="viewer.id" class="wh-100 element-editor" />
     </div>
   </v-sheet>
 </template>

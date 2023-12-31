@@ -12,7 +12,7 @@ const annotationId = typeof paramId === 'string' ? paramId : paramId[0]
 const loadingIsStarted = ref(false)
 const isLoading = useLoader().isLoading
 useLoader()
-  .startLoading(annotationId)
+  .startLoadingAnnotation(annotationId)
   .then(() => (loadingIsStarted.value = true))
 
 const annotation = computed(() => useAnnotation().annotation.value)
@@ -22,10 +22,10 @@ const currentChange = computed(() => useAnnotation().currentChange.value)
 <template>
   <v-app>
     <div v-if="isLoading">
-      <loading-circle :active="isLoading" />
+      <loading-circle />
     </div>
     <div class="app">
-      <annotation-bar />
+      <annotation-bar v-if="loadingIsStarted && annotation" />
       <element-holders
         v-if="loadingIsStarted && annotation && currentChange"
         :current-change="currentChange"

@@ -582,7 +582,7 @@ export const useAnnotation = () => {
     filePairsMap.value = new Map()
     changeTypes.value = []
     codeElementTypes.value = []
-    currentChangeId.value = ''
+    currentChangeId.value = undefined
   }
 
   async function setup(annotationId: string): Promise<FilePair> {

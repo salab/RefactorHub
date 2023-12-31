@@ -20,8 +20,6 @@ const props = defineProps({
     required: true,
   },
 })
-const pending = ref(0)
-const isLoading = computed(() => pending.value > 0)
 
 const scrollTop = ref(0)
 const scrollLeft = ref(0)
@@ -590,7 +588,7 @@ function createViewer(viewer: DiffViewer) {
   navigate(viewer, beforeLinesMap, intermediateLinesMap)
 
   intermediateViewer.onDidChangeModelContent(
-    debounce(async (e: monaco.editor.IModelContentChangedEvent) => {
+    debounce(async () => {
       const filePair1 = props.viewer.filePair
       const filePair2 = filePair1.next
       if (!filePair2) {
@@ -606,26 +604,28 @@ function createViewer(viewer: DiffViewer) {
         pathPair.notFound ??
         // eslint-disable-next-line prettier/prettier
           (pathPair.after ?? pathPair.before)
-      const fileContent = intermediateViewer?.getValue() ?? ''
-      const changedText = e.changes[0]?.text
-      if (fileContent === changedText) {
+      const fileContent =
+        intermediateViewer
+          ?.getValue()
+          ?.replaceAll(AUTO_INSERTED_LINE_CONTENT, '') ?? ''
+      const savedContent = filePair1.after?.text ?? ''
+      if (fileContent === savedContent) {
         return
       }
+      useLoader().setLoadingText('updating the intermediate source code')
       useAnnotation().updateAnnotation(
         {
           ...(
             await apis.snapshots.modifyTemporarySnapshot(annotationId, {
               filePath,
-              fileContent: fileContent.replaceAll(
-                AUTO_INSERTED_LINE_CONTENT,
-                '',
-              ),
+              fileContent,
               isRemoved: false,
             })
           ).data,
         },
         true,
       )
+      useLoader().finishLoading()
     }, 3000),
   )
 
@@ -700,6 +700,13 @@ function createViewer(viewer: DiffViewer) {
         filePair1.getPathPair(),
         beforeLinesMap,
         intermediateLinesMap,
+      )
+
+      originalViewer?.onMouseMove((e) =>
+        onMouseMove(e, 'before', beforeLinesMap),
+      )
+      intermediateViewer?.onMouseMove((e) =>
+        onMouseMove(e, 'after', intermediateLinesMap),
       )
     },
   )
@@ -829,10 +836,8 @@ function onMouseMove(
   useCommonTokenSequence().updateIsHovered(path, category, inversePosition)
 }
 
-onMounted(async () => {
-  pending.value++
-  await createViewer(props.viewer)
-  pending.value--
+onMounted(() => {
+  createViewer(props.viewer)
 })
 </script>
 
@@ -975,6 +980,7 @@ onMounted(async () => {
               pathPair.notFound ??
               // eslint-disable-next-line prettier/prettier
                 (pathPair.after ?? pathPair.before)
+            useLoader().setLoadingText('updating the intermediate source code')
             useAnnotation().updateAnnotation(
               {
                 ...(
@@ -987,6 +993,7 @@ onMounted(async () => {
               },
               true,
             )
+            useLoader().finishLoading()
           }
         "
         ><span class="text-none">Remove Intermediate File</span></v-btn
@@ -1124,23 +1131,17 @@ onMounted(async () => {
           :id="`${viewer.id}-before`"
           class="element-editor"
           :style="`width: ${100 / 3}%; height: 100%;`"
-        >
-          <loading-circle :active="isLoading" />
-        </div>
+        />
         <div
           :id="`${viewer.id}-intermediate`"
           class="element-editor element-editor-modifiable"
           :style="`width: ${100 / 3}%; height: 100%;`"
-        >
-          <loading-circle :active="isLoading" />
-        </div>
+        />
         <div
           :id="`${viewer.id}-after`"
           class="element-editor"
           :style="`width: ${100 / 3}%; height: 100%;`"
-        >
-          <loading-circle :active="isLoading" />
-        </div>
+        />
       </div>
     </div>
   </v-sheet>

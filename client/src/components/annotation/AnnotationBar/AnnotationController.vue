@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { debounce } from 'lodash-es'
 import apis from '@/apis'
 import { CommonTokenSequenceType } from 'composables/useCommonTokenSequence'
 
@@ -24,10 +23,12 @@ const changeTypeTags = computed(() => {
   return tags
 })
 const selectedChangeTypeTags = ref<string[]>([])
+const changeDescription = ref(currentChange.value?.description ?? '')
 
 watch(
   () => currentChange.value?.id,
   (newCurrentChangeId) => {
+    changeDescription.value = currentChange.value?.description ?? ''
     // NOTE: there is not newCurrentChangeId in v-tabs of changes when change is removed, so reload twice
     selectedChangeId.value = newCurrentChangeId
     setTimeout(() => (selectedChangeId.value = newCurrentChangeId), 1)
@@ -46,25 +47,36 @@ const hasTemporarySnapshot = computed(
   () => useAnnotation().annotation.value?.hasTemporarySnapshot ?? false,
 )
 
-const updateChange = debounce(
-  async (
-    typeName: string = currentChange.value?.typeName ?? '',
-    description: string = currentChange.value?.description ?? '',
-  ) => {
-    const { annotationId, snapshotId, changeId } =
-      useAnnotation().currentIds.value
-    if (!annotationId || !snapshotId || !changeId) return
-    useAnnotation().updateChange(
-      (
-        await apis.changes.updateChange(annotationId, snapshotId, changeId, {
-          typeName,
-          description,
-        })
-      ).data,
-    )
-  },
-  500,
-)
+async function updateChangeType(typeName: string) {
+  const description = currentChange.value?.description ?? ''
+  const { annotationId, snapshotId, changeId } =
+    useAnnotation().currentIds.value
+  if (!annotationId || !snapshotId || !changeId) return
+  useAnnotation().updateChange(
+    (
+      await apis.changes.updateChange(annotationId, snapshotId, changeId, {
+        typeName,
+        description,
+      })
+    ).data,
+  )
+}
+async function updateChangeDescription() {
+  const typeName = currentChange.value?.typeName ?? ''
+  const description = changeDescription.value
+  if (description === currentChange.value?.description) return
+  const { annotationId, snapshotId, changeId } =
+    useAnnotation().currentIds.value
+  if (!annotationId || !snapshotId || !changeId) return
+  useAnnotation().updateChange(
+    (
+      await apis.changes.updateChange(annotationId, snapshotId, changeId, {
+        typeName,
+        description,
+      })
+    ).data,
+  )
+}
 const appendTemporarySnapshot = async () => {
   const { annotation, currentIds } = useAnnotation()
   if (annotation.value?.hasTemporarySnapshot) {
@@ -76,6 +88,7 @@ const appendTemporarySnapshot = async () => {
 
   const { annotationId, changeId } = currentIds.value
   if (!annotationId || !changeId) return
+  useLoader().setLoadingText('dividing the changes automatically')
   useViewer().deleteNavigators()
   useCommonTokenSequence().updateSelectedId(undefined)
   useAnnotation().updateAnnotation(
@@ -88,6 +101,7 @@ const appendTemporarySnapshot = async () => {
     },
     true,
   )
+  useLoader().finishLoading()
 }
 const settleTemporarySnapshot = async () => {
   const { annotation, currentIds } = useAnnotation()
@@ -97,6 +111,7 @@ const settleTemporarySnapshot = async () => {
   }
   const { annotationId } = currentIds.value
   if (!annotationId) return
+  useLoader().setLoadingText('finishing change division')
   useViewer().deleteNavigators()
   useCommonTokenSequence().updateSelectedId(undefined)
   useAnnotation().updateAnnotation(
@@ -105,6 +120,7 @@ const settleTemporarySnapshot = async () => {
     },
     true,
   )
+  useLoader().finishLoading()
 }
 const removeChange = async () => {
   const changeList = useAnnotation().getChangeList()
@@ -117,6 +133,7 @@ const removeChange = async () => {
   const { currentIds } = useAnnotation()
   const { annotationId, snapshotId, changeId } = currentIds.value
   if (!annotationId || !snapshotId || !changeId) return
+  useLoader().setLoadingText('undoing change division')
   useViewer().deleteNavigators()
   useCommonTokenSequence().updateSelectedId(undefined)
   useAnnotation().updateAnnotation(
@@ -126,6 +143,7 @@ const removeChange = async () => {
     },
     true,
   )
+  useLoader().finishLoading()
 }
 const updateIsDraft = async (isDraft: boolean) => {
   const { annotationId } = useAnnotation().currentIds.value
@@ -273,8 +291,7 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
                 ).length
               } / ${changeTypes.length})`"
               @update:model-value="
-                (newTypeName) =>
-                  updateChange(newTypeName, currentChange?.description)
+                (newTypeName) => updateChangeType(newTypeName)
               "
             />
           </v-col>
@@ -313,14 +330,18 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
             <v-textarea
               variant="underlined"
               density="compact"
-              :model-value="selectedChange?.description"
+              :model-value="changeDescription"
               :disabled="!isOwner || !isDraft"
               :hide-details="true"
               rows="1"
               label="Description"
               @update:model-value="
-                (newDescription) =>
-                  updateChange(currentChange?.typeName, newDescription)
+                (newDescription) => (changeDescription = newDescription)
+              "
+              @update:focused="
+                (focused) => {
+                  if (!focused) updateChangeDescription()
+                }
               "
             />
           </v-col>

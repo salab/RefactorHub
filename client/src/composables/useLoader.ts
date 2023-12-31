@@ -1,25 +1,28 @@
 export const useLoader = () => {
-  const isLoading = useState('isLoading', () => false)
-  const loadingText = useState('loadingText', () => '')
+  const loadingText = useState<string | undefined>(
+    'loadingText',
+    () => undefined,
+  )
 
   function setLoadingText(text: string) {
     loadingText.value = text
   }
+  function finishLoading() {
+    loadingText.value = undefined
+  }
 
-  function startLoading(annotationId: string): Promise<void> {
-    isLoading.value = true
+  function startLoadingAnnotation(annotationId: string): Promise<void> {
+    setLoadingText('initializing')
     initialize()
 
     // start loading asynchronously
     loadAnnotation(annotationId).then(() => {
-      isLoading.value = false
-      setLoadingText('')
+      finishLoading()
     })
     return Promise.resolve() // loading is started
   }
 
   function initialize() {
-    setLoadingText('initializing')
     useAnnotation().initialize()
     useParameter().initialize()
     useCommonTokenSequence().initialize()
@@ -33,9 +36,10 @@ export const useLoader = () => {
   }
 
   return {
-    isLoading: computed(() => isLoading.value),
+    isLoading: computed(() => loadingText.value !== undefined),
     loadingText: computed(() => loadingText.value),
+    startLoadingAnnotation,
     setLoadingText,
-    startLoading,
+    finishLoading,
   }
 }

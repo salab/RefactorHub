@@ -15,8 +15,6 @@ const props = defineProps({
     required: true,
   },
 })
-const pending = ref(0)
-const isLoading = computed(() => pending.value > 0)
 
 const isOpeningFileList = ref(false)
 
@@ -116,7 +114,7 @@ function navigate(viewer: DiffViewer) {
   setTimeout(() => fileViewer?.revealRangeAtTop(range), 500)
 }
 
-async function createViewer(viewer: DiffViewer) {
+function createViewer(viewer: DiffViewer) {
   const container = document.getElementById(viewer.id)
   if (!container) {
     logger.error(`Cannot find the container element: id is ${viewer.id}`)
@@ -124,7 +122,7 @@ async function createViewer(viewer: DiffViewer) {
   }
   const { filePair } = viewer
 
-  const viewers = await createDiffViewer(container, props.viewer)
+  const viewers = createDiffViewer(container, props.viewer)
   originalViewer = viewers.originalViewer
   modifiedViewer = viewers.modifiedViewer
 
@@ -276,10 +274,8 @@ function onMouseMove(
   useCommonTokenSequence().updateIsHovered(path, category, e.target.position)
 }
 
-onMounted(async () => {
-  pending.value++
-  await createViewer(props.viewer)
-  pending.value--
+onMounted(() => {
+  createViewer(props.viewer)
 })
 </script>
 
@@ -534,9 +530,7 @@ onMounted(async () => {
           :on-file-change="() => (isOpeningFileList = !isOpeningFileList)"
         />
       </v-expand-transition>
-      <div :id="viewer.id" class="wh-100 element-editor">
-        <loading-circle :active="isLoading" />
-      </div>
+      <div :id="viewer.id" class="wh-100 element-editor" />
     </div>
   </v-sheet>
 </template>
