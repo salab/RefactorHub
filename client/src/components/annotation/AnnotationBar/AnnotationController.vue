@@ -13,16 +13,30 @@ const selectedChange = computed(() =>
 )
 const currentChange = computed(() => useAnnotation().currentChange.value)
 const changeTypes = computed(() => useAnnotation().changeTypes.value)
-const changeTypeTags = computed(() => {
-  const tagSet = new Set<string>()
-  changeTypes.value.forEach((type) =>
-    type.tags.forEach((tag) => tagSet.add(tag)),
-  )
-  const tags = [...tagSet.values()]
-  tags.sort()
-  return tags
+const changeTypeVerbTags = computed(() => {
+  // HARD CODING
+  return ['Extract', 'Move', 'Rename', 'Trim']
 })
-const selectedChangeTypeTags = ref<string[]>([])
+const changeTypeNounTags = computed(() => {
+  // HARD CODING
+  return [
+    'Method',
+    'Attribute',
+    'Variable',
+    'If-Else',
+    'Switch',
+    'Block',
+    'Conditional',
+  ]
+})
+const selectedChangeTypeVerbTags = ref<string[]>([])
+const selectedChangeTypeNounTags = ref<string[]>([])
+const selectedChangeTypeTags = computed(() => {
+  return [
+    ...selectedChangeTypeVerbTags.value,
+    ...selectedChangeTypeNounTags.value,
+  ]
+})
 const changeDescription = ref(currentChange.value?.description ?? '')
 
 watch(
@@ -266,7 +280,7 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
           </v-tab>
         </v-tabs>
         <v-row class="mt-0">
-          <v-col cols="4">
+          <v-col cols="5">
             <v-select
               v-if="changeTypes && selectedChange"
               variant="underlined"
@@ -303,25 +317,64 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
               >
                 Change Type Filter
               </div>
-              <v-chip-group
-                v-model="selectedChangeTypeTags"
-                column
-                multiple
-                filter
-                class="pa-0"
-              >
-                <v-chip
-                  v-for="tag in changeTypeTags"
-                  :key="tag"
-                  :value="tag"
+              <div class="ml-2 d-flex align-center">
+                <div
+                  :style="`color: ${vuetifyColors.grey.darken1}`"
+                  style="font-size: xx-small"
+                  class="mr-1"
+                >
+                  Operation
+                </div>
+                <v-chip-group
+                  v-model="selectedChangeTypeVerbTags"
+                  column
+                  multiple
                   filter
-                  density="compact"
-                  variant="tonal"
-                  class="px-1 py-0 mx-1 my-0"
+                  class="pa-0"
                 >
-                  {{ tag }}</v-chip
+                  <v-chip
+                    v-for="tag in changeTypeVerbTags"
+                    :key="tag"
+                    :value="tag"
+                    filter
+                    density="compact"
+                    size="small"
+                    variant="tonal"
+                    class="px-1 py-0 ml-1 mr-0 my-0"
+                  >
+                    {{ tag }}</v-chip
+                  >
+                </v-chip-group>
+              </div>
+              <div class="ml-2 d-flex align-center">
+                <div
+                  :style="`color: ${vuetifyColors.grey.darken1}`"
+                  style="font-size: xx-small"
+                  class="mr-1"
                 >
-              </v-chip-group>
+                  Code Element
+                </div>
+                <v-chip-group
+                  v-model="selectedChangeTypeNounTags"
+                  column
+                  multiple
+                  filter
+                  class="pa-0"
+                >
+                  <v-chip
+                    v-for="tag in changeTypeNounTags"
+                    :key="tag"
+                    :value="tag"
+                    filter
+                    density="compact"
+                    size="small"
+                    variant="tonal"
+                    class="px-1 py-0 ml-1 mr-0 my-0"
+                  >
+                    {{ tag }}</v-chip
+                  >
+                </v-chip-group>
+              </div>
             </div>
           </v-col>
         </v-row>
