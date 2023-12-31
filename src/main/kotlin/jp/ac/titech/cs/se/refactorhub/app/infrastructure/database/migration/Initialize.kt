@@ -75,14 +75,26 @@ private fun createTutorial(adminDao: UserDao) {
 private fun createExperiments(adminDao: UserDao) {
     createExperiment(
         adminDao,
-        "Experiment A",
-        "RefactorHub 2.0 Experiment: Part A",
+        "Experiment A1 (P)",
+        "RefactorHub 2.0 Experiment: Part A, Type 1, with Tool P",
         "data/experiment-A.ndjson"
     )
     createExperiment(
         adminDao,
-        "Experiment B",
-        "RefactorHub 2.0 Experiment: Part B",
+        "Experiment A1 (Q)",
+        "RefactorHub 2.0 Experiment: Part A, Type 1, with Tool Q",
+        "data/experiment-A.ndjson"
+    )
+    createExperiment(
+        adminDao,
+        "Experiment B1 (P)",
+        "RefactorHub 2.0 Experiment: Part B, Type 1, with Tool P",
+        "data/experiment-B.ndjson"
+    )
+    createExperiment(
+        adminDao,
+        "Experiment B1 (Q)",
+        "RefactorHub 2.0 Experiment: Part B, Type 1, with Tool Q",
         "data/experiment-B.ndjson"
     )
 }
