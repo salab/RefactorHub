@@ -400,7 +400,21 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
   const oldModifiedViewerCursorPosition = modifiedViewer?.getPosition()
 
   originalViewer?.setValue(newBeforeText)
-  intermediateViewer?.setValue(newIntermediateText)
+  const intermediateSelections = intermediateViewer?.getSelections() ?? null
+  if (intermediateViewer?.getValue() !== newIntermediateText) {
+    intermediateViewer?.getModel()?.pushEditOperations(
+      intermediateSelections,
+      [
+        {
+          range:
+            intermediateViewer.getModel()?.getFullModelRange() ??
+            new monaco.Range(0, 0, 0, 0),
+          text: newIntermediateText,
+        },
+      ],
+      () => intermediateSelections,
+    )
+  }
   modifiedViewer?.setValue(newAfterText)
 
   originalViewer?.setScrollTop(oldScrollTop)
@@ -599,50 +613,6 @@ function createViewer(viewer: DiffViewer) {
 
   navigate(viewer, beforeLinesMap, intermediateLinesMap)
 
-  intermediateViewer.onDidChangeModelContent(
-    debounce(async () => {
-      const filePair1 = props.viewer.filePair
-      const filePair2 = filePair1.next
-      if (!filePair2) {
-        logger.error(
-          `Cannot find the filePair2: path is ${filePair1.getPathPair().after}`,
-        )
-        return
-      }
-      const { annotationId } = useAnnotation().currentIds.value
-      if (!annotationId) return
-      const pathPair = filePair1.getPathPair()
-      const filePath =
-        pathPair.notFound ??
-        // eslint-disable-next-line prettier/prettier
-          (pathPair.after ?? pathPair.before)
-      const fileContent =
-        intermediateViewer
-          ?.getValue()
-          ?.replaceAll(AUTO_INSERTED_LINE_CONTENT, '') ?? ''
-      const savedContent = filePair1.after?.text ?? ''
-      if (fileContent === savedContent) {
-        return
-      }
-      useLoader().setLoadingText('updating the intermediate source code')
-      useViewer().deleteNavigators()
-      useCommonTokenSequence().updateSelectedId(undefined)
-      useAnnotation().updateAnnotation(
-        {
-          ...(
-            await apis.snapshots.modifyTemporarySnapshot(annotationId, {
-              filePath,
-              fileContent,
-              isRemoved: false,
-            })
-          ).data,
-        },
-        true,
-      )
-      useLoader().finishLoading()
-    }, 3000),
-  )
-
   const elementDecorationManager = new ElementDecorationManager(
     filePair1.getPathPair(),
     originalViewer,
@@ -676,10 +646,58 @@ function createViewer(viewer: DiffViewer) {
       intermediateLinesMap,
     )
 
+  function update() {
+    const filePair1 = props.viewer.filePair
+    const filePair2 = filePair1.next
+    if (!filePair2) {
+      logger.error(
+        `Cannot find the filePair2: path is ${filePair1.getPathPair().after}`,
+      )
+      return
+    }
+    const { beforeLinesMap, intermediateLinesMap } = updateDiff(
+      filePair1,
+      filePair2,
+    )
+    navigate(props.viewer, beforeLinesMap, intermediateLinesMap)
+    elementDecorationManager.update(
+      filePair1.getPathPair(),
+      beforeLinesMap,
+      intermediateLinesMap,
+    )
+    codeFragmentManager.update(
+      filePair1.getPathPair(),
+      filePair1.before?.elements ?? [],
+      filePair1.after?.elements ?? [],
+      beforeLinesMap,
+      intermediateLinesMap,
+    )
+    elementWidgetManager.update(
+      filePair1.before?.elements ?? [],
+      filePair1.after?.elements ?? [],
+      beforeLinesMap,
+      intermediateLinesMap,
+    )
+    commonTokenSequenceDecorationManager.update(
+      filePair1.getPathPair(),
+      beforeLinesMap,
+      intermediateLinesMap,
+    )
+
+    originalViewer?.onMouseMove((e) => onMouseMove(e, 'before', beforeLinesMap))
+    intermediateViewer?.onMouseMove((e) =>
+      onMouseMove(e, 'after', intermediateLinesMap),
+    )
+  }
+
   watch(
     () => props.viewer,
-    (newViewer) => {
-      const filePair1 = newViewer.filePair
+    () => update(),
+  )
+
+  intermediateViewer.onDidChangeModelContent(
+    debounce(async () => {
+      const filePair1 = props.viewer.filePair
       const filePair2 = filePair1.next
       if (!filePair2) {
         logger.error(
@@ -687,42 +705,39 @@ function createViewer(viewer: DiffViewer) {
         )
         return
       }
-      const { beforeLinesMap, intermediateLinesMap } = updateDiff(
-        filePair1,
-        filePair2,
+      const { annotationId } = useAnnotation().currentIds.value
+      if (!annotationId) return
+      const pathPair = filePair1.getPathPair()
+      const filePath =
+        pathPair.notFound ??
+        // eslint-disable-next-line prettier/prettier
+          (pathPair.after ?? pathPair.before)
+      const fileContent =
+        intermediateViewer
+          ?.getValue()
+          ?.replaceAll(AUTO_INSERTED_LINE_CONTENT, '') ?? ''
+      const savedContent = filePair1.after?.text ?? ''
+      if (fileContent === savedContent) {
+        update()
+        return
+      }
+      useLoader().setLoadingText('updating the intermediate source code')
+      useViewer().deleteNavigators()
+      useCommonTokenSequence().updateSelectedId(undefined)
+      useAnnotation().updateAnnotation(
+        {
+          ...(
+            await apis.snapshots.modifyTemporarySnapshot(annotationId, {
+              filePath,
+              fileContent,
+              isRemoved: false,
+            })
+          ).data,
+        },
+        true,
       )
-      navigate(newViewer, beforeLinesMap, intermediateLinesMap)
-      elementDecorationManager.update(
-        filePair1.getPathPair(),
-        beforeLinesMap,
-        intermediateLinesMap,
-      )
-      codeFragmentManager.update(
-        filePair1.getPathPair(),
-        filePair1.before?.elements ?? [],
-        filePair1.after?.elements ?? [],
-        beforeLinesMap,
-        intermediateLinesMap,
-      )
-      elementWidgetManager.update(
-        filePair1.before?.elements ?? [],
-        filePair1.after?.elements ?? [],
-        beforeLinesMap,
-        intermediateLinesMap,
-      )
-      commonTokenSequenceDecorationManager.update(
-        filePair1.getPathPair(),
-        beforeLinesMap,
-        intermediateLinesMap,
-      )
-
-      originalViewer?.onMouseMove((e) =>
-        onMouseMove(e, 'before', beforeLinesMap),
-      )
-      intermediateViewer?.onMouseMove((e) =>
-        onMouseMove(e, 'after', intermediateLinesMap),
-      )
-    },
+      useLoader().finishLoading()
+    }, 3000),
   )
 
   originalViewer?.onMouseDown((e) =>
