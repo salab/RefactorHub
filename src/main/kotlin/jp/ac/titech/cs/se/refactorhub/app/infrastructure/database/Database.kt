@@ -33,11 +33,11 @@ fun Application.connectDB() {
         .baselineVersion("1.0") // latest
         .load()
 
-    val info = flyway.info()
-    if (info.current() == null) {
+//    val info = flyway.info()
+//    if (info.current() == null) {
         flyway.clean()
         initializeDatabase()
         flyway.baseline()
-    }
+//    }
     flyway.migrate()
 }
