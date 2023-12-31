@@ -27,12 +27,14 @@ export const useLoader = () => {
     useParameter().initialize()
     useCommonTokenSequence().initialize()
     useViewer().initialize()
+    useEvaluation().initialize()
   }
 
   async function loadAnnotation(annotationId: string) {
     const initialFilePair = await useAnnotation().setup(annotationId)
     useCommonTokenSequence().setup()
     useViewer().setup(initialFilePair)
+    useEvaluation().setup()
   }
 
   return {

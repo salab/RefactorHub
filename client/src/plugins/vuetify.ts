@@ -36,6 +36,7 @@ import {
   mdiChevronDoubleRight,
   mdiChevronDoubleLeft,
   mdiAlertCircle,
+  mdiPlusCircle,
 } from '@mdi/js'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -80,6 +81,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         mdiChevronDoubleRight,
         mdiChevronDoubleLeft,
         mdiAlertCircle,
+        mdiPlusCircle,
       },
       sets: { mdi },
     },

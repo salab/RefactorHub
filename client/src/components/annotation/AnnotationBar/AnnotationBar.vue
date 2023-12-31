@@ -74,7 +74,12 @@ export const annotationBarSize = defaultAppBarHeight + extensionHeight
           <div
             :style="`height: ${extensionHeight}px; background-color: ${colors.surface};`"
           >
-            <annotation-controller />
+            <annotation-controller
+              v-if="useEvaluation().isBaseline.value === false"
+            />
+            <annotation-controller-baseline
+              v-if="useEvaluation().isBaseline.value === true"
+            />
           </div>
           <v-divider thickness="3" />
         </div>
