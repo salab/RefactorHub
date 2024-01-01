@@ -21,9 +21,9 @@ const isAuthenticated = useUser().isAuthenticated
       </div>
     </div>
     <div v-else class="text-center ma-6">
-      <div class="text-h6">Please Sign In</div>
+      <div class="text-title-1">Please Sign-in to Continue</div>
       <v-btn href="/login" flat class="text-none mt-1">
-        Sign In
+        SIGN IN
         <template #prepend>
           <v-icon icon="$mdiGithub" :size="30" />
         </template>

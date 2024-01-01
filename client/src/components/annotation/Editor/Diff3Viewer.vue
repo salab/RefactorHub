@@ -1031,84 +1031,93 @@ onMounted(() => {
       >
 
       <v-spacer />
-      <v-divider v-if="navigator" vertical />
-      <v-tooltip location="top center" origin="auto" :open-delay="500">
-        <template #activator="{ props: tooltipProps }">
-          <v-btn
-            v-if="navigator"
-            v-bind="tooltipProps"
-            variant="plain"
-            density="compact"
-            icon="$mdiMenuLeftOutline"
-            flat
-            @click="
-              (e: PointerEvent) => {
-                e.stopPropagation() // prevent @click of v-sheet in MainViewer
-                useViewer().navigate(viewer.id, 'prev')
-              }
-            "
-          />
-        </template>
-        Show previous common token sequence
-      </v-tooltip>
-      <v-tooltip
+      <div
         v-if="navigator"
-        location="top center"
-        origin="auto"
-        :open-delay="500"
+        class="d-flex align-center flex-nowrap"
+        :style="`background-color: ${
+          navigator.destinations[0].category === 'before'
+            ? colors.before
+            : colors.intermediate
+        };`"
       >
-        <template #activator="{ props: tooltipProps }">
-          <span v-if="navigator" v-bind="tooltipProps" class="text-body-2"
-            ><u>
-              {{
-                `${navigator.currentDestinationIndex + 1}/${
-                  navigator.destinations.length
-                }`
-              }}</u
-            ></span
+        <v-divider vertical />
+        <v-tooltip location="top center" origin="auto" :open-delay="500">
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              variant="plain"
+              density="compact"
+              icon="$mdiMenuLeftOutline"
+              flat
+              @click="
+                (e: PointerEvent) => {
+                  e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                  useViewer().navigate(viewer.id, 'prev')
+                }
+              "
+            />
+          </template>
+          Show previous common token sequence
+        </v-tooltip>
+        <v-tooltip location="top center" origin="auto" :open-delay="500">
+          <template #activator="{ props: tooltipProps }">
+            <span v-bind="tooltipProps" class="text-body-2"
+              ><u>
+                {{
+                  `${navigator.currentDestinationIndex + 1}/${
+                    navigator.destinations.length
+                  }`
+                }}</u
+              ></span
+            >
+          </template>
+          <div class="text-subtitle-2">
+            Search Result of Common Token Sequence
+            <span class="text-button"
+              >({{
+                navigator.destinations[0].category === 'before'
+                  ? 'before'
+                  : 'intermediate'
+              }})</span
+            >
+          </div>
+          <cite
+            ><code>{{ navigator.label }}</code></cite
           >
-        </template>
-        <div class="text-subtitle-2">
-          Search Result of Common Token Sequence
-        </div>
-        <cite
-          ><code>{{ navigator.label }}</code></cite
-        >
-      </v-tooltip>
-      <v-tooltip location="top center" origin="auto" :open-delay="500">
-        <template #activator="{ props: tooltipProps }">
-          <v-btn
-            v-if="navigator"
-            v-bind="tooltipProps"
-            variant="plain"
-            density="compact"
-            icon="$mdiMenuRightOutline"
-            flat
-            @click="
-              (e: PointerEvent) => {
-                e.stopPropagation() // prevent @click of v-sheet in MainViewer
-                useViewer().navigate(viewer.id, 'next')
-              }
-            "
-          />
-        </template>
-        Show next common token sequence
-      </v-tooltip>
-      <v-btn
-        v-if="navigator"
-        variant="plain"
-        density="compact"
-        icon="$mdiCloseCircleOutline"
-        flat
-        class="mr-1"
-        @click="
-          () => {
-            useViewer().deleteNavigators()
-            useCommonTokenSequence().updateSelectedId(undefined)
-          }
-        "
-      />
-      <v-divider v-if="navigator" vertical />
+        </v-tooltip>
+        <v-tooltip location="top center" origin="auto" :open-delay="500">
+          <template #activator="{ props: tooltipProps }">
+            <v-btn
+              v-bind="tooltipProps"
+              variant="plain"
+              density="compact"
+              icon="$mdiMenuRightOutline"
+              flat
+              @click="
+                (e: PointerEvent) => {
+                  e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                  useViewer().navigate(viewer.id, 'next')
+                }
+              "
+            />
+          </template>
+          Show next common token sequence
+        </v-tooltip>
+        <v-btn
+          variant="plain"
+          density="compact"
+          icon="$mdiCloseCircleOutline"
+          flat
+          class="mr-1"
+          @click="
+            () => {
+              useViewer().deleteNavigators()
+              useCommonTokenSequence().updateSelectedId(undefined)
+            }
+          "
+        />
+        <v-divider vertical />
+      </div>
 
       <v-tooltip location="top center" origin="auto" :open-delay="500">
         <template #activator="{ props: tooltipProps }">
