@@ -15,7 +15,18 @@ const currentChange = computed(() => useAnnotation().currentChange.value)
 const changeTypes = computed(() => useAnnotation().changeTypes.value)
 const changeTypeVerbTags = computed(() => {
   // HARD CODING
-  return ['Extract', 'Move', 'Rename', 'Trim']
+  return [
+    'Extract',
+    'Move',
+    'Rename',
+    'Inline',
+    'Trim',
+    'Reverse',
+    'Change',
+    'Restructure',
+    'Introduce',
+    'Expand',
+  ]
 })
 const changeTypeNounTags = computed(() => {
   // HARD CODING

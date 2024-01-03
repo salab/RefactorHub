@@ -164,6 +164,88 @@
     }
   },
   {
+    "name": "Inline Method",
+    "description": "Inlining the body of a method to its invocation, and removing the method in the same class",
+    "tags": ["Inline", "Method"],
+    "before": {
+      "inlined code": {
+        "description": "Code fragment to be inlined",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "inlined method": {
+        "description": "Method to be removed by the inlining",
+        "type": "MethodDeclaration",
+        "required": true,
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "before",
+                "name": "inlined code"
+              }
+            ],
+            "element": "MethodDeclaration"
+          }
+        ]
+      },
+      "invocation": {
+        "description": "Method invocation to be replaced by inlined code",
+        "type": "MethodInvocation",
+        "required": true
+      }
+    },
+    "after": {
+      "inlined code": {
+        "description": "Code fragment which was inlined",
+        "type": "CodeFragment",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Extract Attribute",
+    "description": "Extracting a code fragment, and creating a new attribute based on the extracted code in the same class",
+    "tags": ["Extract", "Attribute"],
+    "before": {
+      "extracted code": {
+        "description": "Code fragment to be extracted",
+        "type": "CodeFragment",
+        "required": true
+      }
+    },
+    "after": {
+      "extracted code": {
+        "description": "Code fragment which was extracted",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "extracted attribute": {
+        "type": "FieldDeclaration",
+        "description": "Attribute which was newly created by the extraction",
+        "required": true,
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "after",
+                "name": "extracted code"
+              }
+            ],
+            "element": "FieldDeclaration"
+          }
+        ]
+      },
+      "reference": {
+        "description": "Reference of the attribute by which the extracted code was replaced",
+        "type": "SimpleName",
+        "required": true
+      }
+    }
+  },
+  {
     "name": "Move Attribute",
     "description": "Moving an attribute to the other class",
     "referenceUrl": "https://refactoring.com/catalog/moveField.html",
@@ -267,6 +349,47 @@
     }
   },
   {
+    "name": "Inline Attribute",
+    "description": "Inlining the value of an attribute to its reference, and removing the attribute in the same class",
+    "tags": ["Inline", "Attribute"],
+    "before": {
+      "inlined code": {
+        "description": "Code fragment to be inlined",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "inlined attribute": {
+        "type": "FieldDeclaration",
+        "description": "Attribute to be removed by the inlining",
+        "required": true,
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "before",
+                "name": "inlined code"
+              }
+            ],
+            "element": "FieldDeclaration"
+          }
+        ]
+      },
+      "reference": {
+        "description": "Reference of the attribute to be replaced by inlined code",
+        "type": "SimpleName",
+        "required": true
+      }
+    },
+    "after": {
+      "inlined code": {
+        "description": "Code fragment which was inlined",
+        "type": "CodeFragment",
+        "required": true
+      }
+    }
+  },
+  {
     "name": "Extract Variable",
     "description": "Extracting a code fragment, and creating a new variable based on the extracted code in the same method",
     "tags": ["Extract", "Variable"],
@@ -360,6 +483,47 @@
     }
   },
   {
+    "name": "Inline Variable",
+    "description": "Inlining the value of an variable to its reference, and removing the variable in the same method",
+    "tags": ["Inline", "Variable"],
+    "before": {
+      "inlined code": {
+        "description": "Code fragment to be inlined",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "inlined variable": {
+        "type": "VariableDeclaration",
+        "description": "Variable to be removed by the inlining",
+        "required": true,
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "before",
+                "name": "inlined code"
+              }
+            ],
+            "element": "VariableDeclaration"
+          }
+        ]
+      },
+      "reference": {
+        "description": "Reference of the attribute to be replaced by inlined code",
+        "type": "SimpleName",
+        "required": true
+      }
+    },
+    "after": {
+      "inlined code": {
+        "description": "Code fragment which was inlined",
+        "type": "CodeFragment",
+        "required": true
+      }
+    }
+  },
+  {
     "name": "Trim",
     "description": "Removing the \"else\" clause by moving the code in the \"else\" clause to after the \"if\" statement in the case where an escape from the outer block always occurs in the \"then\" clause of an \"if\" statement",
     "referenceUrl": "",
@@ -413,7 +577,7 @@
     "name": "Reverse Conditional",
     "description": "Reversing the conditional expression of an \"if\" statement and replacing the \"then\" and \"else\" clauses",
     "referenceUrl": "",
-    "tags": ["If-Else", "Conditional"],
+    "tags": ["Reverse", "If-Else", "Conditional"],
     "before": {
       "original conditional": {
         "description": "Conditional expression to be reversed",
@@ -453,7 +617,7 @@
     "name": "Change Conditional to Switch",
     "description": "Changing a chain of \"if-else\" statements to a \"switch\" statement",
     "referenceUrl": "",
-    "tags": ["If-Else", "Conditional", "Switch"],
+    "tags": ["Change", "If-Else", "Conditional", "Switch"],
     "before": {
       "if-else chain": {
         "description": "Chain of \"if-else\" statements to be changed to a \"switch\" statement",
@@ -485,7 +649,7 @@
     "name": "Restructure Conditional Expression",
     "description": "Restructuring conditional expressions with equivalent truth values",
     "referenceUrl": "",
-    "tags": ["Conditional"],
+    "tags": ["Restructure", "Conditional"],
     "before": {
       "original conditional": {
         "description": "Conditional expression to be restructured",
@@ -505,7 +669,7 @@
     "name": "Introduce Block",
     "description": "Introducing a block of a clause",
     "referenceUrl": "",
-    "tags": ["Block"],
+    "tags": ["Introduce", "Block"],
     "before": {
       "surrounded code": {
         "description": "Code fragment to be surrounded by introduced block",
@@ -530,7 +694,7 @@
     "name": "Expand Block",
     "description": "Expanding a block of a clause",
     "referenceUrl": "",
-    "tags": ["Block"],
+    "tags": ["Expand", "Block"],
     "before": {
       "expanded block": {
         "description": "Block to be expanded",
