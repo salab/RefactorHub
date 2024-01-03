@@ -31,7 +31,11 @@ export class CommonTokenSequenceDecorationManager {
   private readonly isEditingElement = ref(false)
   private readonly isHoveringElement = ref(false)
   private readonly canDisplayDecoration = computed(
-    () => !this.isEditingElement.value && !this.isHoveringElement.value,
+    () =>
+      !this.isEditingElement.value &&
+      !this.isHoveringElement.value &&
+      useParameter().autoHighlightedElements.value.before.length === 0 &&
+      useParameter().autoHighlightedElements.value.after.length === 0,
   )
 
   public constructor(

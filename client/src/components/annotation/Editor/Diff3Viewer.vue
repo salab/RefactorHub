@@ -737,6 +737,19 @@ function createViewer(viewer: DiffViewer) {
         true,
       )
       useLoader().finishLoading()
+
+      const intermediateParameters =
+        useAnnotation().currentChange.value?.parameterData.after
+      if (!intermediateParameters) return
+      Object.entries(intermediateParameters).forEach(([key, holder]) => {
+        holder.elements.forEach((element, index) => {
+          useParameter().addAutoHighlightedElement('after', {
+            key,
+            index,
+            type: element.type,
+          })
+        })
+      })
     }, 3000),
   )
 
@@ -1025,6 +1038,19 @@ onMounted(() => {
               true,
             )
             useLoader().finishLoading()
+
+            const intermediateParameters =
+              useAnnotation().currentChange.value?.parameterData.after
+            if (!intermediateParameters) return
+            Object.entries(intermediateParameters).forEach(([key, holder]) => {
+              holder.elements.forEach((element, index) => {
+                useParameter().addAutoHighlightedElement('after', {
+                  key,
+                  index,
+                  type: element.type,
+                })
+              })
+            })
           }
         "
         ><span class="text-none">Remove Intermediate File</span></v-btn
