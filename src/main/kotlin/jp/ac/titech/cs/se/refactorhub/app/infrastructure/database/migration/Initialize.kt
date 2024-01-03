@@ -33,7 +33,7 @@ private fun createTables() {
 private fun createInitialData() {
     val adminDao = createAdmin()
     createChangeTypes(adminDao)
-    createTutorial(adminDao)
+    createTutorials(adminDao)
     createExperiments(adminDao)
 }
 
@@ -63,12 +63,18 @@ private fun createChangeTypes(adminDao: UserDao) {
     }
 }
 
-private fun createTutorial(adminDao: UserDao) {
+private fun createTutorials(adminDao: UserDao) {
     createExperiment(
         adminDao,
-        "Tutorial",
-        "Tutorial of RefactorHub 2.0",
-        "data/tutorial.ndjson"
+        "Tutorial Tool (P)",
+        "Tutorial of RefactorHub 2.0 with Tool P",
+        "data/tutorial-tool.ndjson"
+    )
+    createExperiment(
+        adminDao,
+        "Tutorial Tool (Q)",
+        "Tutorial of RefactorHub 2.0 with Tool Q",
+        "data/tutorial-tool.ndjson"
     )
 }
 
@@ -76,25 +82,25 @@ private fun createExperiments(adminDao: UserDao) {
     createExperiment(
         adminDao,
         "Experiment A1 (P)",
-        "RefactorHub 2.0 Experiment: Part A, Type 1, with Tool P",
+        "RefactorHub 2.0 Experiment: Part A, Order 1, with Tool P",
         "data/experiment-A.ndjson"
     )
     createExperiment(
         adminDao,
         "Experiment A1 (Q)",
-        "RefactorHub 2.0 Experiment: Part A, Type 1, with Tool Q",
+        "RefactorHub 2.0 Experiment: Part A, Order 1, with Tool Q",
         "data/experiment-A.ndjson"
     )
     createExperiment(
         adminDao,
         "Experiment B1 (P)",
-        "RefactorHub 2.0 Experiment: Part B, Type 1, with Tool P",
+        "RefactorHub 2.0 Experiment: Part B, Order 1, with Tool P",
         "data/experiment-B.ndjson"
     )
     createExperiment(
         adminDao,
         "Experiment B1 (Q)",
-        "RefactorHub 2.0 Experiment: Part B, Type 1, with Tool Q",
+        "RefactorHub 2.0 Experiment: Part B, Order 1, with Tool Q",
         "data/experiment-B.ndjson"
     )
 }
