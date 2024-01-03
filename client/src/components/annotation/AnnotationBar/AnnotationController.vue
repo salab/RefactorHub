@@ -291,34 +291,45 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
           </v-tab>
         </v-tabs>
         <v-row class="mt-0">
-          <v-col cols="5">
-            <v-select
+          <v-col cols="3">
+            <v-tooltip
               v-if="changeTypes && selectedChange"
-              variant="underlined"
-              density="compact"
-              :model-value="selectedChange.typeName"
-              :disabled="!isOwner || !isDraft"
-              :hide-details="true"
-              :items="
-                changeTypes
-                  .filter((type) =>
-                    selectedChangeTypeTags.every((tag) =>
-                      type.tags.includes(tag),
-                    ),
-                  )
-                  .map((type) => type.name)
-              "
-              :label="`Change Type (${
-                changeTypes.filter((type) =>
-                  selectedChangeTypeTags.every((tag) =>
-                    type.tags.includes(tag),
-                  ),
-                ).length
-              } / ${changeTypes.length})`"
-              @update:model-value="
-                (newTypeName) => updateChangeType(newTypeName)
-              "
-            />
+              location="top center"
+              origin="auto"
+              :open-delay="500"
+            >
+              <template #activator="{ props: tooltipProps }">
+                <div v-bind="tooltipProps">
+                  <v-select
+                    variant="underlined"
+                    density="compact"
+                    :model-value="selectedChange.typeName"
+                    :disabled="!isOwner || !isDraft"
+                    :hide-details="true"
+                    :items="
+                      changeTypes
+                        .filter((type) =>
+                          selectedChangeTypeTags.every((tag) =>
+                            type.tags.includes(tag),
+                          ),
+                        )
+                        .map((type) => type.name)
+                    "
+                    :label="`Change Type (${
+                      changeTypes.filter((type) =>
+                        selectedChangeTypeTags.every((tag) =>
+                          type.tags.includes(tag),
+                        ),
+                      ).length
+                    } / ${changeTypes.length})`"
+                    @update:model-value="
+                      (newTypeName) => updateChangeType(newTypeName)
+                    "
+                  />
+                </div>
+              </template>
+              {{ selectedChange.typeName }}
+            </v-tooltip>
           </v-col>
           <v-col class="pa-0">
             <div>
