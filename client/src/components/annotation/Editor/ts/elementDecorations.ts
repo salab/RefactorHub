@@ -17,6 +17,11 @@ export class ElementDecorationManager {
     after: undefined,
   }
 
+  private readonly elements: globalThis.ComputedRef<{
+    before: ElementMetadata[]
+    after: ElementMetadata[]
+  }>
+
   private readonly linesMap: {
     [category in DiffCategory]?: {
       [lineNumber: number]: number
@@ -47,17 +52,28 @@ export class ElementDecorationManager {
     this.linesMap.before = beforeLinesMap
     this.linesMap.after = afterLinesMap
 
-    this.updateDecoration('before', useParameter().hoveredElement.value.before)
-    this.updateDecoration('after', useParameter().hoveredElement.value.after)
+    this.elements = computed(() => {
+      const { before: beforeElements, after: afterElements } =
+        useParameter().autoHighlightedElements.value
+      const elements = {
+        before: [...beforeElements],
+        after: [...afterElements],
+      }
+      const { before, after } = useParameter().hoveredElement.value
+      if (before) elements.before.push(before)
+      if (after) elements.after.push(after)
+      return elements
+    })
+
+    this.updateDecoration('before', this.elements.value.before)
+    this.updateDecoration('after', this.elements.value.after)
     watch(
-      () => useParameter().hoveredElement.value.before,
-      (newElementMetaData) =>
-        this.updateDecoration('before', newElementMetaData),
+      () => this.elements.value.before.length,
+      () => this.updateDecoration('before', this.elements.value.before),
     )
     watch(
-      () => useParameter().hoveredElement.value.after,
-      (newElementMetaData) =>
-        this.updateDecoration('after', newElementMetaData),
+      () => this.elements.value.after.length,
+      () => this.updateDecoration('after', this.elements.value.after),
     )
   }
 
@@ -73,25 +89,31 @@ export class ElementDecorationManager {
     this.pathPair = pathPair
     this.linesMap.before = beforeLinesMap
     this.linesMap.after = afterLinesMap
-    this.updateDecoration('before', useParameter().hoveredElement.value.before)
-    this.updateDecoration('after', useParameter().hoveredElement.value.after)
+    this.updateDecoration('before', this.elements.value.before)
+    this.updateDecoration('after', this.elements.value.after)
   }
 
   private updateDecoration(
     category: DiffCategory,
-    elementMetaData: ElementMetadata | undefined,
+    elements: ElementMetadata[],
   ) {
     this.decorationsCollection[category]?.clear()
     const viewer = this.viewer[category]
-    if (!elementMetaData || !viewer) return
-    const location =
-      useAnnotation().currentChange.value?.parameterData[category][
-        elementMetaData.key
-      ].elements[elementMetaData.index].location
-    if (!location || location.path !== this.pathPair[category]) return
-    this.decorationsCollection[category] = viewer.createDecorationsCollection([
-      this.createElementDecoration(location, category),
-    ])
+    if (!viewer) return
+    const locations: Location[] = []
+    for (const element of elements) {
+      const location =
+        useAnnotation().currentChange.value?.parameterData[category][
+          element.key
+        ].elements[element.index].location
+      if (!location || location.path !== this.pathPair[category]) continue
+      locations.push(location)
+    }
+    this.decorationsCollection[category] = viewer.createDecorationsCollection(
+      locations.map((location) =>
+        this.createElementDecoration(location, category),
+      ),
+    )
   }
 
   private createElementDecoration(

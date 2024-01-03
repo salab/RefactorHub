@@ -87,6 +87,11 @@ watch(
     }
     valueChanged.value = true
     valueChangedTooltip.value = true
+    useParameter().addAutoHighlightedElement(props.category, {
+      key: props.elementKey,
+      index: props.elementIndex,
+      type: props.element.type,
+    })
     setTimeout(() => {
       valueChanged.value = false
       valueChangedTooltip.value = false
@@ -178,6 +183,14 @@ const isEditing = computed(() => {
     metadata?.key === props.elementKey && metadata?.index === props.elementIndex
   )
 })
+const isAutoHighlighted = computed(() => {
+  const elements = useParameter().autoHighlightedElements.value[props.category]
+  return elements.some(
+    (metadata) =>
+      metadata.key === props.elementKey &&
+      metadata.index === props.elementIndex,
+  )
+})
 
 const toggleEditing = () => {
   if (!isEditing.value) {
@@ -209,7 +222,7 @@ const toggleEditing = () => {
       <div
         v-bind="valueChangedTooltipProps"
         :class="{
-          ['element-value-hovered']: isHovered,
+          ['element-value-hovered']: isHovered || isAutoHighlighted,
           ['element-value-editing']: isEditing,
         }"
         class="d-flex"

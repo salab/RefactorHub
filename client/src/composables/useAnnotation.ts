@@ -932,8 +932,7 @@ export const useAnnotation = () => {
   }
 
   function updateCurrentChangeId(newChangeId: string) {
-    useParameter().updateEditingElement('before', undefined)
-    useParameter().updateEditingElement('after', undefined)
+    useParameter().initialize()
     const oldChangeId = currentChangeId.value
     if (oldChangeId === undefined) {
       currentChangeId.value = newChangeId
