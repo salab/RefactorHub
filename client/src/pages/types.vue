@@ -134,6 +134,7 @@ const create = async () => {
           <div class="text-h5">{{ type.name }}</div>
           <div class="text-body-1">{{ type.description }}</div>
           <a :href="type.referenceUrl">{{ type.referenceUrl }}</a>
+          <div class="text-body-2">tags: {{ type.tags.join(', ') }}</div>
           <v-row no-gutters class="mt-2">
             <v-col class="mr-2">
               <v-card
