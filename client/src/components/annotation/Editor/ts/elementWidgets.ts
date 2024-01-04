@@ -188,7 +188,10 @@ export class ElementWidgetManager {
       getPosition: () => ({
         position: {
           lineNumber: range.startLineNumber,
-          column: range.startColumn,
+          column:
+            range.startColumn < range.endColumn - 1
+              ? range.startColumn
+              : range.endColumn - 1,
         },
         preference: [monaco.editor.ContentWidgetPositionPreference.EXACT],
       }),
