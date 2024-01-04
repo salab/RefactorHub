@@ -464,7 +464,7 @@
         "type": "VariableDeclaration",
         "required": true
       },
-      "references": {
+      "references after": {
         "description": "References of the variable after renaming",
         "type": "SimpleName",
         "multiple": true,
@@ -574,6 +574,38 @@
     }
   },
   {
+    "name": "Change Conditional to Switch",
+    "description": "Changing a chain of \"if-else\" statements to a \"switch\" statement",
+    "referenceUrl": "",
+    "tags": ["Change", "If-Else", "Conditional", "Switch"],
+    "before": {
+      "if-else chain": {
+        "description": "Chain of \"if-else\" statements to be changed to a \"switch\" statement",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "conditionals": {
+        "description": "Conditional expressions in the chain of \"if-else\" statements",
+        "type": "CodeFragment",
+        "required": true,
+        "multiple": true
+      }
+    },
+    "after": {
+      "switch": {
+        "description": "\"switch\" statement which was newly created by the change",
+        "type": "CodeFragment",
+        "required": true
+      },
+      "conditionals": {
+        "description": "Conditional expressions in the \"switch\" statements",
+        "type": "CodeFragment",
+        "required": true,
+        "multiple": true
+      }
+    }
+  },
+  {
     "name": "Reverse Conditional",
     "description": "Reversing the conditional expression of an \"if\" statement and replacing the \"then\" and \"else\" clauses",
     "referenceUrl": "",
@@ -610,38 +642,6 @@
         "description": "Code fragment in the \"then\" clause after reversing that is executed when the conditional before reversing is unsatisfied",
         "type": "CodeFragment",
         "required": true
-      }
-    }
-  },
-  {
-    "name": "Change Conditional to Switch",
-    "description": "Changing a chain of \"if-else\" statements to a \"switch\" statement",
-    "referenceUrl": "",
-    "tags": ["Change", "If-Else", "Conditional", "Switch"],
-    "before": {
-      "if-else chain": {
-        "description": "Chain of \"if-else\" statements to be changed to a \"switch\" statement",
-        "type": "CodeFragment",
-        "required": true
-      },
-      "conditionals": {
-        "description": "Conditional expressions in the chain of \"if-else\" statements",
-        "type": "CodeFragment",
-        "required": true,
-        "multiple": true
-      }
-    },
-    "after": {
-      "switch": {
-        "description": "\"switch\" statement which was newly created by the change",
-        "type": "CodeFragment",
-        "required": true
-      },
-      "conditionals": {
-        "description": "Conditional expressions in the \"switch\" statements",
-        "type": "CodeFragment",
-        "required": true,
-        "multiple": true
       }
     }
   },
