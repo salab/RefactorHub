@@ -34,7 +34,7 @@ private fun createInitialData() {
     val adminDao = createAdmin()
     createChangeTypes(adminDao)
     createTutorial(adminDao)
-//    createExperiments(adminDao)
+    createExperiments(adminDao)
 }
 
 private fun createAdmin(): UserDao {
@@ -68,7 +68,7 @@ private fun createTutorial(adminDao: UserDao) {
         adminDao,
         "Tutorial",
         "Tutorial",
-        "data/tutorial-commit.ndjson"
+        "data/tutorial.ndjson"
     )
 }
 
@@ -77,13 +77,13 @@ private fun createExperiments(adminDao: UserDao) {
         adminDao,
         "Experiment 1",
         "Experiment that input data has refactoring type, description",
-        "data/experiment-1-commit.ndjson"
+        "data/experiment-1.ndjson"
     )
     createExperiment(
         adminDao,
         "Experiment 2",
         "Experiment that input data does not have anything",
-        "data/experiment-2-commit.ndjson"
+        "data/experiment-2.ndjson"
     )
 }
 
