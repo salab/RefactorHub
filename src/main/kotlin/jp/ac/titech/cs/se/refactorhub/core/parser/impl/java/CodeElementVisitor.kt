@@ -16,16 +16,20 @@ import jp.ac.titech.cs.se.refactorhub.core.model.element.impl.VariableType
 import org.eclipse.jdt.core.dom.ASTNode
 import org.eclipse.jdt.core.dom.ASTVisitor
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration
+import org.eclipse.jdt.core.dom.Block
 import org.eclipse.jdt.core.dom.CompilationUnit
 import org.eclipse.jdt.core.dom.EnhancedForStatement
 import org.eclipse.jdt.core.dom.EnumDeclaration
 import org.eclipse.jdt.core.dom.FieldDeclaration
+import org.eclipse.jdt.core.dom.IfStatement
 import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.PackageDeclaration
 import org.eclipse.jdt.core.dom.QualifiedName
 import org.eclipse.jdt.core.dom.SimpleName
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration
+import org.eclipse.jdt.core.dom.SwitchCase
+import org.eclipse.jdt.core.dom.SwitchStatement
 import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment
@@ -277,21 +281,57 @@ class CodeElementVisitor(
         return super.visit(node)
     }
 
-    /* TODO
-    override fun visit(node: Block): Boolean {
-        node.statements().forEach {
-            val statement = it as Statement
-            elements.add(
-                jp.ac.titech.cs.se.refactorhub.tool.model.element.impl.Statement(
-                    methodName,
-                    className,
-                    Location(path, statement.range)
-                )
+    override fun visit(node: IfStatement): Boolean {
+        val className = getFullyQualifiedClassName(node)
+        val methodName = getMethodName(node)
+        elements.add(
+            jp.ac.titech.cs.se.refactorhub.core.model.element.impl.IfStatement(
+                methodName,
+                className,
+                node.location
             )
-        }
+        )
         return super.visit(node)
     }
-    */
+
+    override fun visit(node: SwitchStatement): Boolean {
+        val className = getFullyQualifiedClassName(node)
+        val methodName = getMethodName(node)
+        elements.add(
+            jp.ac.titech.cs.se.refactorhub.core.model.element.impl.SwitchStatement(
+                methodName,
+                className,
+                node.location
+            )
+        )
+        return super.visit(node)
+    }
+
+    override fun visit(node: SwitchCase): Boolean {
+        val className = getFullyQualifiedClassName(node)
+        val methodName = getMethodName(node)
+        elements.add(
+            jp.ac.titech.cs.se.refactorhub.core.model.element.impl.SwitchCase(
+                methodName,
+                className,
+                node.location
+            )
+        )
+        return super.visit(node)
+    }
+
+    override fun visit(node: Block): Boolean {
+        val className = getFullyQualifiedClassName(node)
+        val methodName = getMethodName(node)
+        elements.add(
+            jp.ac.titech.cs.se.refactorhub.core.model.element.impl.Block(
+                methodName,
+                className,
+                node.location
+            )
+        )
+        return super.visit(node)
+    }
 
     private val ASTNode.endPosition: Int get() = this.startPosition + this.length
 
