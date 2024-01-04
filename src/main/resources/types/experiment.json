@@ -529,19 +529,31 @@
     "referenceUrl": "",
     "tags": ["Trim", "If-Else"],
     "before": {
-      "moved codes": {
+      "moved code": {
         "description": "Code fragment to be moved from the \"else\" clause",
         "type": "CodeFragment",
         "required": true
       },
-      "removed else clause": {
-        "description": "\"else\" clause to be removed",
-        "type": "CodeFragment",
-        "required": true
+      "removed else block": {
+        "description": "Block of the \"else\" clause to be removed",
+        "type": "Block",
+        "required": true,
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "before",
+                "name": "moved code"
+              }
+            ],
+            "element": "Block"
+          }
+        ]
       }
     },
     "after": {
-      "moved codes": {
+      "moved code": {
         "description": "Code fragment which was moved from the \"else\" clause",
         "type": "CodeFragment",
         "required": true
@@ -554,22 +566,34 @@
     "referenceUrl": "",
     "tags": ["Trim", "If-Else"],
     "before": {
-      "moved codes": {
+      "moved code": {
         "description": "Code fragment to be moved to \"else\" clause",
         "type": "CodeFragment",
         "required": true
       }
     },
     "after": {
-      "moved codes": {
+      "moved code": {
         "description": "Code fragment which was moved to \"else\" clause",
         "type": "CodeFragment",
         "required": true
       },
-      "added else clause": {
-        "description": "\"else\" clause which was added",
-        "type": "CodeFragment",
-        "required": true
+      "added else block": {
+        "description": "Block of the \"else\" clause which was added",
+        "type": "Block",
+        "required": true,
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "after",
+                "name": "moved code"
+              }
+            ],
+            "element": "Block"
+          }
+        ]
       }
     }
   },
@@ -581,7 +605,7 @@
     "before": {
       "if-else chain": {
         "description": "Chain of \"if-else\" statements to be changed to a \"switch\" statement",
-        "type": "CodeFragment",
+        "type": "IfStatement",
         "required": true
       },
       "conditionals": {
@@ -594,12 +618,24 @@
     "after": {
       "switch": {
         "description": "\"switch\" statement which was newly created by the change",
-        "type": "CodeFragment",
-        "required": true
+        "type": "SwitchStatement",
+        "required": true,
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "after",
+                "name": "conditionals"
+              }
+            ],
+            "element": "SwitchStatement"
+          }
+        ]
       },
       "conditionals": {
-        "description": "Conditional expressions in the \"switch\" statements",
-        "type": "CodeFragment",
+        "description": "Cases of the \"switch\" statements",
+        "type": "SwitchCase",
         "required": true,
         "multiple": true
       }
@@ -616,14 +652,14 @@
         "type": "CodeFragment",
         "required": true
       },
-      "code when satisfying original conditional": {
-        "description": "Code fragment in the \"then\" clause before reversing that is executed when the conditional before reversing is satisfied",
-        "type": "CodeFragment",
+      "block when satisfying original conditional": {
+        "description": "Block in the \"then\" clause before reversing that is executed when the conditional before reversing is satisfied",
+        "type": "Block",
         "required": true
       },
-      "code when unsatisfying original conditional": {
-        "description": "Code fragment in the \"else\" clause before reversing that is executed when the conditional before reversing is unsatisfied",
-        "type": "CodeFragment",
+      "block when unsatisfying original conditional": {
+        "description": "Block in the \"else\" clause before reversing that is executed when the conditional before reversing is unsatisfied",
+        "type": "Block",
         "required": true
       }
     },
@@ -633,14 +669,14 @@
         "type": "CodeFragment",
         "required": true
       },
-      "code when satisfying original conditional": {
-        "description": "Code fragment in the \"else\" clause after reversing that is executed when the conditional before reversing is satisfied",
-        "type": "CodeFragment",
+      "block when satisfying original conditional": {
+        "description": "Block in the \"else\" clause after reversing that is executed when the conditional before reversing is satisfied",
+        "type": "Block",
         "required": true
       },
-      "code when unsatisfying original conditional": {
-        "description": "Code fragment in the \"then\" clause after reversing that is executed when the conditional before reversing is unsatisfied",
-        "type": "CodeFragment",
+      "block when unsatisfying original conditional": {
+        "description": "Block in the \"then\" clause after reversing that is executed when the conditional before reversing is unsatisfied",
+        "type": "Block",
         "required": true
       }
     }
@@ -680,8 +716,20 @@
     "after": {
       "introduced block": {
         "description": "Block which was introduced",
-        "type": "CodeFragment",
-        "required": true
+        "type": "Block",
+        "required": true,
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "after",
+                "name": "surrounded code"
+              }
+            ],
+            "element": "Block"
+          }
+        ]
       },
       "surrounded code": {
         "description": "Code fragment which was surrounded by introduced block",
@@ -698,20 +746,30 @@
     "before": {
       "expanded block": {
         "description": "Block to be expanded",
-        "type": "CodeFragment",
-        "required": true
+        "type": "Block",
+        "required": true,
+        "autofills": [
+          {
+            "type": "Surround",
+            "follows": [
+              {
+                "category": "before",
+                "name": "surrounded code"
+              }
+            ],
+            "element": "Block"
+          }
+        ]
       },
       "surrounded code": {
         "description": "Code fragment which was surrounded by expanded block",
-        "type": "CodeFragment",
-        "required": true
+        "type": "CodeFragment"
       }
     },
     "after": {
       "surrounded code": {
         "description": "Code fragment which had been surrounded by expanded block",
-        "type": "CodeFragment",
-        "required": true
+        "type": "CodeFragment"
       }
     }
   }

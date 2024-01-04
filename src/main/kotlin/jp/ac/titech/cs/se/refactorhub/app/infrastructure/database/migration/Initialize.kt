@@ -82,6 +82,12 @@ private fun createTutorials(adminDao: UserDao) {
         "Tutorial of Refactorings with Tool Q",
         "data/tutorial-refactoring.ndjson"
     )
+    createExperiment(
+        adminDao,
+        "Tutorial Tangled (Q)",
+        "Tutorial of tangled changes with Tool Q",
+        "data/tutorial-tangled.ndjson"
+    )
 }
 
 private fun createExperiments(adminDao: UserDao) {
