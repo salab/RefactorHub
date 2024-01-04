@@ -35,7 +35,9 @@ export function getRangeWidthOnEditor(
   return (
     width *
     (getMaxColumnOnEditor(range.startLineNumber, range.endLineNumber, editor) -
-      range.startColumn)
+      (range.startColumn < range.endColumn - 1
+        ? range.startColumn
+        : range.endColumn - 1))
   )
 }
 
