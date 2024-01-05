@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import apis from '@/apis'
+import apis, { ActionName } from '@/apis'
 import { CommonTokenSequenceType } from 'composables/useCommonTokenSequence'
 
 const changeList = computed(() => {
@@ -162,6 +162,7 @@ const switchCurrentChange = (newChangeId: string) => {
   useViewer().deleteNavigators()
   useCommonTokenSequence().updateSelectedId(undefined)
   useAnnotation().updateCurrentChangeId(newChangeId)
+  sendAction(ActionName.SwitchCurrentChange, { newChangeId })
 }
 
 const commonTokenSequenceSetting = useCommonTokenSequence().setting
@@ -176,7 +177,21 @@ const updateCommonTokensTypes = (types: CommonTokenSequenceType[]) => {
     oneToManyOrManyToOne: types.includes('oneToManyOrManyToOne'),
     manyToMany: types.includes('manyToMany'),
   })
+  sendAction(ActionName.ChangeCommonTokenSequencesSetting, {
+    oneToOne: types.includes('oneToOne'),
+    oneToManyOrManyToOne: types.includes('oneToManyOrManyToOne'),
+    manyToMany: types.includes('manyToMany'),
+  })
 }
+
+watch(
+  () => selectedChangeTypeTags.value,
+  (newSelectedChangeTypeTags) => {
+    sendAction(ActionName.FilterChangeType, {
+      selectedChangeTypeTags: newSelectedChangeTypeTags,
+    })
+  },
+)
 </script>
 
 <template>

@@ -1,7 +1,7 @@
 import * as monaco from 'monaco-editor'
 import { DiffCategory } from 'refactorhub'
 import { FilePair } from './useAnnotation'
-import { Token } from '@/apis'
+import { ActionName, Token } from '@/apis'
 
 export type CommonTokenSequenceType =
   | 'oneToOne'
@@ -175,11 +175,22 @@ class TokenSequenceSet {
     category: DiffCategory,
     position: monaco.Position,
   ) {
+    const oldIsHovered = this._isHovered
     this._isHovered = this.sequenceSet.some(
       (sequence) =>
         sequence.isIn(path, category) &&
         sequence.range.containsPosition(position),
     )
+    if (
+      useCommonTokenSequence().setting.value[this.type] &&
+      oldIsHovered !== this._isHovered
+    ) {
+      sendAction(ActionName.HoverCommonTokenSequences, {
+        type: this.type,
+        joinedRaw: this.sequenceSet[0].joinedRaw,
+        hovering: this._isHovered,
+      })
+    }
   }
 }
 class CommonTokenSequenceStorage {

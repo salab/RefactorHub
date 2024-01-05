@@ -9,7 +9,7 @@ import { ElementWidgetManager } from './ts/elementWidgets'
 import { logger } from '@/utils/logger'
 import { DiffViewer } from '@/composables/useViewer'
 import { FilePair } from '@/composables/useAnnotation'
-import apis from '@/apis'
+import apis, { ActionName } from '@/apis'
 
 const AUTO_INSERTED_LINE_CONTENT =
   '// Do Not Modify This Line; RefactorHub Inserted\n'
@@ -1078,6 +1078,11 @@ onMounted(() => {
               @click="
                 (e: PointerEvent) => {
                   e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                  sendAction(ActionName.ShowPreviousCommonTokenSequence, {
+                    category: navigator?.destinations[0].category,
+                    currentDestinationIndex: navigator?.currentDestinationIndex,
+                    joinedRaw: navigator?.label,
+                  })
                   useViewer().navigate(viewer.id, 'prev')
                 }
               "
@@ -1122,6 +1127,11 @@ onMounted(() => {
               @click="
                 (e: PointerEvent) => {
                   e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                  sendAction(ActionName.ShowNextCommonTokenSequence, {
+                    category: navigator?.destinations[0].category,
+                    currentDestinationIndex: navigator?.currentDestinationIndex,
+                    joinedRaw: navigator?.label,
+                  })
                   useViewer().navigate(viewer.id, 'next')
                 }
               "

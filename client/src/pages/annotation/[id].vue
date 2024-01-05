@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { annotationBarSize } from '@/components/annotation/AnnotationBar/AnnotationBar.vue'
+import { ActionName } from '@/apis'
 
 definePageMeta({
   layout: false,
@@ -17,6 +18,29 @@ useLoader()
 
 const annotation = computed(() => useAnnotation().annotation.value)
 const currentChange = computed(() => useAnnotation().currentChange.value)
+
+sendAction(ActionName.OpenAnnotation, { annotationId })
+watch(
+  () => useViewer().mainViewerId.value,
+  (newMainViewerId) => {
+    sendAction(ActionName.ChangeMainViewer, { mainViewerId: newMainViewerId })
+  },
+)
+watch(
+  () => useCommonTokenSequence().selectedId.value,
+  (newSelectedId) => {
+    if (newSelectedId !== undefined) {
+      const { joinedRaw, tokenSequenceSet } =
+        useCommonTokenSequence().getWithId(newSelectedId)
+      sendAction(ActionName.SearchCommonTokenSequences, {
+        type: tokenSequenceSet.type,
+        joinedRaw,
+      })
+    } else {
+      sendAction(ActionName.CloseCommonTokenSequencesSearchResult)
+    }
+  },
+)
 </script>
 
 <template>

@@ -14,18 +14,57 @@ interface Action {
 
 enum class ActionName {
     // Server
+    // annotations
+    GetAnnotation,
+    PublishAnnotation,
+
+    // snapshots
+    AppendTemporarySnapshot,
+    ModifyTemporarySnapshot,
+    SettleTemporarySnapshot,
+
+    // changes
+    AppendChange,
     UpdateChange,
+    RemoveChange,
+
+    // parameters
     PutNewParameter,
+    AppendParameterElement,
     RemoveParameter,
     VerifyParameter,
-    AppendParameterElement,
     UpdateParameterValue,
     ClearParameterValue,
 
     // Client
+    // routing
+    OpenExperiments,
+    OpenExperiment,
+    StartAnnotation,
+    OpenAnnotation,
+
+    // viewer
+    UpdateViewers,
+    ChangeMainViewer,
+
+    // changes
+    FilterChangeType,
+    SwitchCurrentChange,
+    OpenChangeInformation,
+
+    // parameters
     OpenElementLocation,
     ToggleEditingElement,
-    SetDisplayedFile
+    HoverElement,
+    ToggleOpeningParameterList,
+
+    // common token sequences
+    ChangeCommonTokenSequencesSetting,
+    HoverCommonTokenSequences,
+    SearchCommonTokenSequences,
+    CloseCommonTokenSequencesSearchResult,
+    ShowPreviousCommonTokenSequence,
+    ShowNextCommonTokenSequence,
 }
 
 enum class ActionType {
