@@ -95,25 +95,73 @@ private fun createExperiments(adminDao: UserDao) {
         adminDao,
         "Experiment A1 (P)",
         "RefactorHub 2.0 Experiment: Part A, Order 1, with Tool P",
-        "data/experiment-A.ndjson"
+        "data/experiment-A1.ndjson"
     )
     createExperiment(
         adminDao,
         "Experiment A1 (Q)",
         "RefactorHub 2.0 Experiment: Part A, Order 1, with Tool Q",
-        "data/experiment-A.ndjson"
+        "data/experiment-A1.ndjson"
+    )
+    createExperiment(
+        adminDao,
+        "Experiment A2 (P)",
+        "RefactorHub 2.0 Experiment: Part A, Order 2, with Tool P",
+        "data/experiment-A2.ndjson"
+    )
+    createExperiment(
+        adminDao,
+        "Experiment A2 (Q)",
+        "RefactorHub 2.0 Experiment: Part A, Order 2, with Tool Q",
+        "data/experiment-A2.ndjson"
+    )
+    createExperiment(
+        adminDao,
+        "Experiment A3 (P)",
+        "RefactorHub 2.0 Experiment: Part A, Order 3, with Tool P",
+        "data/experiment-A3.ndjson"
+    )
+    createExperiment(
+        adminDao,
+        "Experiment A3 (Q)",
+        "RefactorHub 2.0 Experiment: Part A, Order 3, with Tool Q",
+        "data/experiment-A3.ndjson"
     )
     createExperiment(
         adminDao,
         "Experiment B1 (P)",
         "RefactorHub 2.0 Experiment: Part B, Order 1, with Tool P",
-        "data/experiment-B.ndjson"
+        "data/experiment-B1.ndjson"
     )
     createExperiment(
         adminDao,
         "Experiment B1 (Q)",
         "RefactorHub 2.0 Experiment: Part B, Order 1, with Tool Q",
-        "data/experiment-B.ndjson"
+        "data/experiment-B1.ndjson"
+    )
+    createExperiment(
+        adminDao,
+        "Experiment B2 (P)",
+        "RefactorHub 2.0 Experiment: Part B, Order 2, with Tool P",
+        "data/experiment-B2.ndjson"
+    )
+    createExperiment(
+        adminDao,
+        "Experiment B2 (Q)",
+        "RefactorHub 2.0 Experiment: Part B, Order 2, with Tool Q",
+        "data/experiment-B2.ndjson"
+    )
+    createExperiment(
+        adminDao,
+        "Experiment B3 (P)",
+        "RefactorHub 2.0 Experiment: Part B, Order 3, with Tool P",
+        "data/experiment-B3.ndjson"
+    )
+    createExperiment(
+        adminDao,
+        "Experiment B3 (Q)",
+        "RefactorHub 2.0 Experiment: Part B, Order 3, with Tool Q",
+        "data/experiment-B3.ndjson"
     )
 }
 
