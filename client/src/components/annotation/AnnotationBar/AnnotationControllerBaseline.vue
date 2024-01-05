@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import apis from '@/apis'
+import apis, { ActionName } from '@/apis'
 
 const changeList = computed(() => [...useAnnotation().getChangeList()])
 const selectedChangeId = ref(useAnnotation().currentChange.value?.id)
@@ -158,7 +158,17 @@ const switchCurrentChange = (newChangeId: string) => {
   useViewer().deleteNavigators()
   useCommonTokenSequence().updateSelectedId(undefined)
   useAnnotation().updateCurrentChangeId(newChangeId)
+  sendAction(ActionName.SwitchCurrentChange, { newChangeId })
 }
+
+watch(
+  () => selectedChangeTypeTags.value,
+  (newSelectedChangeTypeTags) => {
+    sendAction(ActionName.FilterChangeType, {
+      selectedChangeTypeTags: newSelectedChangeTypeTags,
+    })
+  },
+)
 </script>
 
 <template>

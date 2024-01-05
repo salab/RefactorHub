@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { DiffCategory } from 'refactorhub'
-import apis, { CodeElement, ActionName, ActionType } from '@/apis'
-import { log } from '@/utils/action'
+import apis, { CodeElement, ActionName } from '@/apis'
+import { sendAction } from '@/utils/action'
 import { asMonacoRange } from '@/components/common/editor/utils/range'
 
 const props = defineProps({
@@ -125,9 +125,11 @@ const openLocation = () => {
   if (file.value && mainViewer) {
     const filePair = useAnnotation().getCurrentFilePair(file.value.path)
     if (!filePair) return
-    log(ActionName.OpenElementLocation, ActionType.Client, {
+    sendAction(ActionName.OpenElementLocation, {
       category: props.category,
-      file: file.value,
+      parameterName: props.elementKey,
+      elementIndex: props.elementIndex,
+      range,
     })
     updateViewer(
       mainViewerId.value,
@@ -194,24 +196,27 @@ const isAutoHighlighted = computed(() => {
 
 const toggleEditing = () => {
   if (!isEditing.value) {
-    log(ActionName.ToggleEditingElement, ActionType.Client, {
-      category: props.category,
-      element: {
-        key: props.elementKey,
-        index: props.elementIndex,
-        type: props.element.type,
-      },
-    })
     useParameter().updateEditingElement(props.category, {
       key: props.elementKey,
       index: props.elementIndex,
       type: props.element.type,
     })
-  } else {
-    log(ActionName.ToggleEditingElement, ActionType.Client, {
+    sendAction(ActionName.ToggleEditingElement, {
       category: props.category,
+      parameterName: props.elementKey,
+      elementIndex: props.elementIndex,
+      type: props.element.type,
+      toEdit: true,
     })
+  } else {
     useParameter().updateEditingElement(props.category, undefined)
+    sendAction(ActionName.ToggleEditingElement, {
+      category: props.category,
+      parameterName: props.elementKey,
+      elementIndex: props.elementIndex,
+      type: props.element.type,
+      toEdit: false,
+    })
   }
 }
 </script>
@@ -227,17 +232,33 @@ const toggleEditing = () => {
         }"
         class="d-flex"
         @mouseenter="
-          () =>
+          () => {
             useParameter().updateHoveredElement(props.category, {
               key: props.elementKey,
               index: props.elementIndex,
               type: props.element.type,
             })
+            sendAction(ActionName.HoverElement, {
+              category: props.category,
+              parameterName: props.elementKey,
+              elementIndex: props.elementIndex,
+              type: props.element.type,
+              hovering: true,
+            })
+          }
         "
         @mouseleave="
           () => {
-            if (isHovered)
+            if (isHovered) {
               useParameter().updateHoveredElement(props.category, undefined)
+            }
+            sendAction(ActionName.HoverElement, {
+              category: props.category,
+              parameterName: props.elementKey,
+              elementIndex: props.elementIndex,
+              type: props.element.type,
+              hovering: false,
+            })
           }
         "
       >

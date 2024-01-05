@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ChangeParameters } from '@/composables/useAnnotation'
+import { ActionName } from '@/apis'
 
 interface ContinueButton {
   text: string
@@ -31,6 +32,20 @@ const parameterInformationList = computed(() =>
 )
 
 const dialogIsOpening = ref(false)
+
+watch(
+  () => dialogIsOpening.value,
+  (newDialogIsOpening) => {
+    if (newDialogIsOpening) {
+      sendAction(ActionName.OpenChangeInformation, {
+        title: props.title,
+        subtitle: props.subtitle,
+        changeParametersList: props.changeParametersList,
+        continueButtonText: props.continueButton?.text,
+      })
+    }
+  },
+)
 </script>
 
 <template>

@@ -57,8 +57,8 @@ class AnnotationController : KoinComponent {
         typeName: String,
         userId: UUID?
     ): Change {
-        val verifiedUserId = annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
-        return changeService.update(changeId, description, typeName, verifiedUserId)
+        annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
+        return changeService.update(changeId, description, typeName)
     }
     fun removeChange(annotationId: UUID, snapshotId: UUID, changeId: UUID, userId: UUID?): Annotation.HasTemporarySnapshotAndSnapshots {
         val verifiedUserId = annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
@@ -76,8 +76,8 @@ class AnnotationController : KoinComponent {
         multiple: Boolean,
         userId: UUID?
     ): Change {
-        val verifiedUserId = annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
-        return changeService.putNewParameter(changeId, diffCategory, parameterName, elementType, multiple, verifiedUserId)
+        annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
+        return changeService.putNewParameter(changeId, diffCategory, parameterName, elementType, multiple)
     }
     fun removeParameter(
         annotationId: UUID,
@@ -87,8 +87,8 @@ class AnnotationController : KoinComponent {
         parameterName: String,
         userId: UUID?
     ): Change {
-        val verifiedUserId = annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
-        return changeService.removeParameter(changeId, diffCategory, parameterName, verifiedUserId)
+        annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
+        return changeService.removeParameter(changeId, diffCategory, parameterName)
     }
     fun verifyParameter(
         annotationId: UUID,
@@ -99,8 +99,8 @@ class AnnotationController : KoinComponent {
         isVerified: Boolean,
         userId: UUID?
     ): Change {
-        val verifiedUserId = annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
-        return changeService.verifyParameter(changeId, diffCategory, parameterName, isVerified, verifiedUserId)
+        annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
+        return changeService.verifyParameter(changeId, diffCategory, parameterName, isVerified)
     }
     fun appendParameterElement(
         annotationId: UUID,
@@ -110,8 +110,8 @@ class AnnotationController : KoinComponent {
         parameterName: String,
         userId: UUID?
     ): Change {
-        val verifiedUserId = annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
-        return changeService.appendParameterElement(changeId, diffCategory, parameterName, verifiedUserId)
+        annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
+        return changeService.appendParameterElement(changeId, diffCategory, parameterName)
     }
     fun updateParameterValue(
         annotationId: UUID,
@@ -123,8 +123,8 @@ class AnnotationController : KoinComponent {
         element: CodeElement,
         userId: UUID?
     ): Change {
-        val verifiedUserId = annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
-        return changeService.updateParameterValue(changeId, diffCategory, parameterName, elementIndex, element, verifiedUserId, annotationId, snapshotId)
+        annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
+        return changeService.updateParameterValue(changeId, diffCategory, parameterName, elementIndex, element, annotationId, snapshotId)
     }
     fun clearParameterValue(
         annotationId: UUID,
@@ -135,7 +135,7 @@ class AnnotationController : KoinComponent {
         elementIndex: Int,
         userId: UUID?
     ): Change {
-        val verifiedUserId = annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
-        return changeService.clearParameterValue(changeId, diffCategory, parameterName, elementIndex, verifiedUserId)
+        annotationService.verifyIds(userId, annotationId, snapshotId, changeId)
+        return changeService.clearParameterValue(changeId, diffCategory, parameterName, elementIndex)
     }
 }

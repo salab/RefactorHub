@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import apis, { Experiment } from '@/apis'
+import apis, { ActionName, Experiment } from '@/apis'
 
 definePageMeta({
   middleware: 'authenticated',
@@ -20,6 +20,10 @@ const myAnnotations = ref<
 
 useAsyncData(async () => {
   experiment.value = await useExperiment().get(experimentId)
+  sendAction(ActionName.OpenExperiment, {
+    experimentId,
+    title: experiment.value.title,
+  })
 })
 
 onMounted(async () => {
@@ -45,6 +49,12 @@ const start = async (commitId: string) => {
   const annotationId = (
     await apis.experiments.startAnnotation(experimentId, commitId)
   ).data
+  sendAction(ActionName.StartAnnotation, {
+    experimentId,
+    commitId,
+    commit: experiment.value?.targetCommits.find(({ id }) => id === commitId),
+    annotationId,
+  })
   navigateTo(`/annotation/${annotationId}`)
 }
 </script>

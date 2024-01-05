@@ -7,6 +7,7 @@ import { ElementDecorationManager } from './ts/elementDecorations'
 import { ElementWidgetManager } from './ts/elementWidgets'
 import { logger } from '@/utils/logger'
 import { FileViewer } from '@/composables/useViewer'
+import { ActionName } from '@/apis'
 
 const props = defineProps({
   viewer: {
@@ -463,6 +464,11 @@ onMounted(() => {
               @click="
                 (e: PointerEvent) => {
                   e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                  sendAction(ActionName.ShowPreviousCommonTokenSequence, {
+                    category: navigator?.destinations[0].category,
+                    currentDestinationIndex: navigator?.currentDestinationIndex,
+                    joinedRaw: navigator?.label,
+                  })
                   useViewer().navigate(viewer.id, 'prev')
                 }
               "
@@ -509,6 +515,11 @@ onMounted(() => {
               @click="
                 (e: PointerEvent) => {
                   e.stopPropagation() // prevent @click of v-sheet in MainViewer
+                  sendAction(ActionName.ShowNextCommonTokenSequence, {
+                    category: navigator?.destinations[0].category,
+                    currentDestinationIndex: navigator?.currentDestinationIndex,
+                    joinedRaw: navigator?.label,
+                  })
                   useViewer().navigate(viewer.id, 'next')
                 }
               "

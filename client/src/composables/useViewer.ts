@@ -2,6 +2,7 @@ import { DiffCategory } from 'refactorhub'
 import { Range } from 'monaco-editor'
 import cryptoRandomString from 'crypto-random-string'
 import { FilePair } from './useAnnotation'
+import { ActionName } from '@/apis'
 
 interface ViewerBase {
   readonly id: string
@@ -48,6 +49,18 @@ export const useViewer = () => {
     () => new Map(),
   )
 
+  function sendViewerAction() {
+    sendAction(ActionName.UpdateViewers, {
+      viewers: viewers.value.map((viewer) => ({
+        id: viewer.id,
+        type: viewer.type,
+        pathPair: viewer.filePair.getPathPair(),
+        filePairStatus: viewer.filePair.status,
+        navigation: viewer.navigation,
+      })),
+    })
+  }
+
   function initialize() {
     viewers.value = []
     mainViewerId.value = ''
@@ -63,6 +76,7 @@ export const useViewer = () => {
       filePair: initialFilePair,
     })
     mainViewerId.value = id
+    sendViewerAction()
   }
 
   function createViewer(
@@ -80,6 +94,8 @@ export const useViewer = () => {
     const index = mainIndex + (direction === 'next' ? 1 : 0)
     mainViewerId.value = id
     viewers.value.splice(index, 0, { ...viewer, id })
+
+    sendViewerAction()
     return viewers.value[index]
   }
   function updateViewer(
@@ -95,6 +111,8 @@ export const useViewer = () => {
       ...viewer,
       id,
     }
+
+    sendViewerAction()
     return viewers.value[index]
   }
   function recreateViewer(id: string) {
@@ -115,6 +133,8 @@ export const useViewer = () => {
       viewerNavigationMap.value.delete(id)
       viewerNavigationMap.value.set(newId, navigator)
     }
+
+    sendViewerAction()
     return viewers.value[index]
   }
   function duplicateViewer(id: string) {
@@ -126,6 +146,8 @@ export const useViewer = () => {
     const newId = cryptoRandomString({ length: 10 })
     mainViewerId.value = newId
     viewers.value.splice(index + 1, 0, { ...viewers.value[index], id: newId })
+
+    sendViewerAction()
   }
   function deleteViewer(id: string) {
     if (viewers.value.length <= 1) return
@@ -137,6 +159,8 @@ export const useViewer = () => {
     mainViewerId.value = viewers.value[index ? index - 1 : 1].id
     viewers.value.splice(index, 1)
     viewerNavigationMap.value.delete(id)
+
+    sendViewerAction()
   }
 
   function setNavigator(navigator: Navigator, viewerId = mainViewerId.value) {

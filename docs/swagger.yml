@@ -1327,21 +1327,29 @@ components:
       type: string
       enum:
         [
-            Save,
-            Discard,
-            Update,
-            PutCodeElementHolder,
-            RemoveCodeElementHolder,
-            VerifyCodeElementHolder,
-            AppendCodeElementDefaultValue,
-            UpdateCodeElementValue,
-            RemoveCodeElementValue,
-            Fork,
-            Edit,
+          OpenExperiments,
+          OpenExperiment,
+          StartAnnotation,
+          OpenAnnotation,
 
-            OpenElementLocation,
-            ToggleEditingElement,
-            SetDisplayedFile,
+          UpdateViewers,
+          ChangeMainViewer,
+
+          FilterChangeType,
+          SwitchCurrentChange,
+          OpenChangeInformation,
+
+          OpenElementLocation,
+          ToggleEditingElement,
+          HoverElement,
+          ToggleOpeningParameterList,
+
+          ChangeCommonTokenSequencesSetting,
+          HoverCommonTokenSequences,
+          SearchCommonTokenSequences,
+          CloseCommonTokenSequencesSearchResult,
+          ShowPreviousCommonTokenSequence,
+          ShowNextCommonTokenSequence,
         ]
 
   parameters:

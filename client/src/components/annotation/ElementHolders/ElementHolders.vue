@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DiffCategory } from 'refactorhub'
-import { Change } from 'apis'
+import { ActionName, Change } from '@/apis'
 
 const props = defineProps({
   currentChange: {
@@ -96,7 +96,15 @@ const isRemovable = (key: string) =>
                     ? '$mdiChevronDoubleLeft'
                     : '$mdiChevronDoubleRight'
                 "
-                @click="isActive = !isActive"
+                @click="
+                  () => {
+                    isActive = !isActive
+                    sendAction(ActionName.ToggleOpeningParameterList, {
+                      category: props.category,
+                      isActive,
+                    })
+                  }
+                "
               />
             </div>
           </template>

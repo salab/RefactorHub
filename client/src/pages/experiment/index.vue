@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Experiment } from '@/apis'
+import { ActionName, Experiment } from '@/apis'
 
 const form = reactive({
   title: '',
@@ -48,6 +48,8 @@ const create = async () => {
     pending.value = false
   }
 }
+
+sendAction(ActionName.OpenExperiments)
 </script>
 
 <template>
