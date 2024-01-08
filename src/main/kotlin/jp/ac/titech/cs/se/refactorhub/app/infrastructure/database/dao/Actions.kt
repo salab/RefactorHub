@@ -7,14 +7,14 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.extension.json
 import jp.ac.titech.cs.se.refactorhub.app.model.Action
 import jp.ac.titech.cs.se.refactorhub.core.model.ActionName
 import jp.ac.titech.cs.se.refactorhub.core.model.ActionType
-import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
+import org.jetbrains.exposed.dao.LongEntity
+import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 import org.koin.java.KoinJavaComponent.inject
 import java.time.LocalDateTime
 
-object Actions : IntIdTable("actions") {
+object Actions : LongIdTable("actions") {
     val name = enumerationByName("name", 50, ActionName::class)
     val type = enumerationByName("type", 50, ActionType::class)
     val userId = reference("user_id", Users)
@@ -22,8 +22,8 @@ object Actions : IntIdTable("actions") {
     val data = jsonb("data", ::stringify, ::parse)
 }
 
-class ActionDao(id: EntityID<Int>) : IntEntity(id), ModelConverter<Action> {
-    companion object : IntEntityClass<ActionDao>(Actions)
+class ActionDao(id: EntityID<Long>) : LongEntity(id), ModelConverter<Action> {
+    companion object : LongEntityClass<ActionDao>(Actions)
 
     var name by Actions.name
     var type by Actions.type
