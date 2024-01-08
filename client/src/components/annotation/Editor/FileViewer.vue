@@ -177,8 +177,8 @@ function createViewer(viewer: FileViewer) {
         return
       }
       const filePair = getFilePair(newViewer)
-      const text = filePair[newViewer.navigation.category]?.text
-      if (text !== undefined) fileViewer?.setValue(text)
+      const text = filePair[newViewer.navigation.category]?.text ?? ''
+      fileViewer?.setValue(text)
       updateChangedLineDecorations()
       elementDecorationManager?.update(filePair.getPathPair())
       codeFragmentManager?.update(
