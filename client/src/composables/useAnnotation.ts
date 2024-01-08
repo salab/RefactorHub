@@ -32,21 +32,25 @@ export interface ChangeParametersTextModels {
     parameterName: string
     before: {
       description: string
+      required: boolean
       model: monaco.editor.ITextModel
     }
     after: {
       description: string
+      required: boolean
       model: monaco.editor.ITextModel
     }
   }[]
   before: {
     parameterName: string
     description: string
+    required: boolean
     model: monaco.editor.ITextModel
   }[]
   after: {
     parameterName: string
     description: string
+    required: boolean
     model: monaco.editor.ITextModel
   }[]
 }
@@ -684,6 +688,7 @@ export const useAnnotation = () => {
       const parameters: {
         parameterName: string
         description: string
+        required: boolean
         locations: { path: string; range: Range }[]
       }[] = []
       for (const [parameterName, elementHolder] of Object.entries(
@@ -691,6 +696,7 @@ export const useAnnotation = () => {
       )) {
         const description =
           changeType[category][parameterName]?.description ?? ''
+        const required = changeType[category][parameterName]?.required ?? false
         const locations = []
         for (const element of elementHolder.elements) {
           const path = element.location?.path
@@ -698,7 +704,7 @@ export const useAnnotation = () => {
           if (!path || !range) continue
           locations.push({ path, range })
         }
-        parameters.push({ parameterName, description, locations })
+        parameters.push({ parameterName, description, required, locations })
       }
       return parameters
     }
@@ -806,8 +812,16 @@ export const useAnnotation = () => {
         }
         diff.push({
           parameterName: before.parameterName,
-          before: { description: before.description, model: textModels.before },
-          after: { description: after.description, model: textModels.after },
+          before: {
+            description: before.description,
+            required: before.required,
+            model: textModels.before,
+          },
+          after: {
+            description: after.description,
+            required: after.required,
+            model: textModels.after,
+          },
         })
         parametersBefore = parametersBefore.filter(
           (parameter) => parameter.parameterName !== before.parameterName,
@@ -833,6 +847,7 @@ export const useAnnotation = () => {
           return {
             parameterName: parameter.parameterName,
             description: parameter.description,
+            required: parameter.required,
             model: monaco.editor.createModel(text, 'java'),
           }
         },
@@ -851,6 +866,7 @@ export const useAnnotation = () => {
           return {
             parameterName: parameter.parameterName,
             description: parameter.description,
+            required: parameter.required,
             model: monaco.editor.createModel(text, 'java'),
           }
         },

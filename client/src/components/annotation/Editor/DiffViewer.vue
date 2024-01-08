@@ -156,10 +156,8 @@ function createViewer(viewer: DiffViewer) {
   watch(
     () => props.viewer,
     (newViewer) => {
-      if (newViewer.filePair.before)
-        originalViewer?.setValue(newViewer.filePair.before.text)
-      if (newViewer.filePair.after)
-        modifiedViewer?.setValue(newViewer.filePair.after.text)
+      originalViewer?.setValue(newViewer.filePair.before?.text ?? '')
+      modifiedViewer?.setValue(newViewer.filePair.after?.text ?? '')
       navigate(newViewer)
       elementDecorationManager.update(newViewer.filePair.getPathPair())
       codeFragmentManager.update(

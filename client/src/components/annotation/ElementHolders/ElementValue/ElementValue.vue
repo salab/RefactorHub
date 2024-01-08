@@ -377,6 +377,7 @@ const toggleEditing = () => {
                   :continue-button="{
                     text: multiple ? 'delete' : 'clear',
                     color: 'error',
+                    onlyValidAnnotation: false,
                     onClick: () => deleteElement(),
                   }"
                 />
