@@ -129,6 +129,18 @@ private fun createExperiments(adminDao: UserDao) {
     )
     createExperiment(
         adminDao,
+        "Experiment A4 (P)",
+        "RefactorHub 2.0 Experiment: Part A, Order 4, with Tool P",
+        "data/experiment-A4.ndjson"
+    )
+    createExperiment(
+        adminDao,
+        "Experiment A4 (Q)",
+        "RefactorHub 2.0 Experiment: Part A, Order 4, with Tool Q",
+        "data/experiment-A4.ndjson"
+    )
+    createExperiment(
+        adminDao,
         "Experiment B1 (P)",
         "RefactorHub 2.0 Experiment: Part B, Order 1, with Tool P",
         "data/experiment-B1.ndjson"
@@ -162,6 +174,18 @@ private fun createExperiments(adminDao: UserDao) {
         "Experiment B3 (Q)",
         "RefactorHub 2.0 Experiment: Part B, Order 3, with Tool Q",
         "data/experiment-B3.ndjson"
+    )
+    createExperiment(
+        adminDao,
+        "Experiment B4 (P)",
+        "RefactorHub 2.0 Experiment: Part B, Order 4, with Tool P",
+        "data/experiment-B4.ndjson"
+    )
+    createExperiment(
+        adminDao,
+        "Experiment B4 (Q)",
+        "RefactorHub 2.0 Experiment: Part B, Order 4, with Tool Q",
+        "data/experiment-B4.ndjson"
     )
 }
 
