@@ -68,13 +68,13 @@ private fun createTutorials(adminDao: UserDao) {
         adminDao,
         "Tutorial Tool (P)",
         "Tutorial of RefactorHub 2.0 with Tool P",
-        "data/tutorial-tool.ndjson"
+        "data/tutorial-tool-P.ndjson"
     )
     createExperiment(
         adminDao,
         "Tutorial Tool (Q)",
         "Tutorial of RefactorHub 2.0 with Tool Q",
-        "data/tutorial-tool.ndjson"
+        "data/tutorial-tool-Q.ndjson"
     )
     createExperiment(
         adminDao,
@@ -84,9 +84,9 @@ private fun createTutorials(adminDao: UserDao) {
     )
     createExperiment(
         adminDao,
-        "Tutorial Tangled (Q)",
-        "Tutorial of tangled changes with Tool Q",
-        "data/tutorial-tangled.ndjson"
+        "Tutorial Exercise (Q)",
+        "Tutorial of some changes with Tool Q",
+        "data/tutorial-exercise.ndjson"
     )
 }
 
