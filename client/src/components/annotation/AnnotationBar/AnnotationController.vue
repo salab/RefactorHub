@@ -267,6 +267,7 @@ watch(
                         ? {
                             text: 'switch',
                             color: 'success',
+                            onlyValidAnnotation: false,
                             onClick: () => {
                               switchCurrentChange(change.id)
                             },
@@ -437,6 +438,7 @@ watch(
                         :continue-button="{
                           text: 'finish',
                           color: 'success',
+                          onlyValidAnnotation: true,
                           onClick: () => updateIsDraft(false),
                         }"
                       />
@@ -512,6 +514,7 @@ watch(
                         :continue-button="{
                           text: 'finish',
                           color: 'info',
+                          onlyValidAnnotation: true,
                           onClick: () => settleTemporarySnapshot(),
                         }"
                       />
@@ -589,6 +592,7 @@ watch(
                         :continue-button="{
                           text: 'remove',
                           color: 'error',
+                          onlyValidAnnotation: false,
                           onClick: () => removeChange(),
                         }"
                       />

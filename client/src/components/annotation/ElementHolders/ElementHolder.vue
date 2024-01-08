@@ -113,6 +113,7 @@ const removeElementKey = async () => {
                   :continue-button="{
                     text: 'remove',
                     color: 'error',
+                    onlyValidAnnotation: false,
                     onClick: () => removeElementKey(),
                   }"
                 />
