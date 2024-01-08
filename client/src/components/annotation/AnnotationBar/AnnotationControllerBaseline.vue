@@ -230,6 +230,7 @@ watch(
                         ? {
                             text: 'switch',
                             color: 'success',
+                            onlyValidAnnotation: false,
                             onClick: () => {
                               switchCurrentChange(change.id)
                             },
@@ -429,6 +430,7 @@ watch(
                         :continue-button="{
                           text: 'finish',
                           color: 'success',
+                          onlyValidAnnotation: true,
                           onClick: () => updateIsDraft(false),
                         }"
                       />
