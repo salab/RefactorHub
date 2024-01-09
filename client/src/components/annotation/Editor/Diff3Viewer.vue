@@ -13,6 +13,8 @@ import apis, { ActionName } from '@/apis'
 
 const AUTO_INSERTED_LINE_CONTENT =
   '// Do Not Modify This Line; RefactorHub Inserted\n'
+const AUTO_INSERTED_LINE_CONTENT_CRLF =
+  '// Do Not Modify This Line; RefactorHub Inserted\r\n'
 
 const props = defineProps({
   viewer: {
@@ -401,7 +403,10 @@ function updateDiff(filePair1: FilePair, filePair2: FilePair) {
 
   originalViewer?.setValue(newBeforeText)
   const intermediateSelections = intermediateViewer?.getSelections() ?? null
-  if (intermediateViewer?.getValue() !== newIntermediateText) {
+  if (
+    intermediateViewer?.getValue().replaceAll('\r', '') !==
+    newIntermediateText.replaceAll('\r', '')
+  ) {
     intermediateViewer?.getModel()?.pushEditOperations(
       intermediateSelections,
       [
@@ -715,7 +720,8 @@ function createViewer(viewer: DiffViewer) {
       const fileContent =
         intermediateViewer
           ?.getValue()
-          ?.replaceAll(AUTO_INSERTED_LINE_CONTENT, '') ?? ''
+          ?.replaceAll(AUTO_INSERTED_LINE_CONTENT, '')
+          ?.replaceAll(AUTO_INSERTED_LINE_CONTENT_CRLF, '') ?? ''
       const savedContent = filePair1.after?.text ?? ''
       if (fileContent === savedContent) {
         update()
