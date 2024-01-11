@@ -110,6 +110,7 @@ export class CodeFragmentManager {
     const { annotationId, snapshotId, changeId } =
       useAnnotation().currentIds.value
     if (!metadata || !annotationId || !snapshotId || !changeId) return
+    if (metadata.type !== CodeElementType.CodeFragment) return
 
     const nextElement = cloneDeep(element)
     nextElement.location!.range = asRange(range)
