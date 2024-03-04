@@ -50,6 +50,30 @@ const create = async () => {
 }
 
 sendAction(ActionName.OpenExperiments)
+
+function sortExperiments(experiments: Experiment[]): Experiment[] {
+  const array = [...experiments]
+  // HARD CODING
+  function getPriority(experiment: Experiment): number {
+    if (experiment.title.startsWith('Demonstration')) return 0
+    if (experiment.title.startsWith('Tutorial')) {
+      if (experiment.title.startsWith('Tutorial Tool')) return 10
+      if (experiment.title.startsWith('Tutorial Refactoring')) return 11
+      if (experiment.title.startsWith('Tutorial Exercise')) return 12
+    }
+    if (experiment.title.startsWith('Experiment')) return 100
+    return 1000
+  }
+  array.sort((a, b) => {
+    const pa = getPriority(a)
+    const pb = getPriority(b)
+    if (pa !== pb) return pa - pb
+    if (a.title > b.title) return 1
+    if (a.title < b.title) return -1
+    return 0
+  })
+  return array
+}
 </script>
 
 <template>
@@ -64,8 +88,8 @@ sendAction(ActionName.OpenExperiments)
       </div>
       <div v-else>
         <v-card
-          v-for="experiment in experiments.filter(
-            (experiment) => experiment.isActive,
+          v-for="experiment in sortExperiments(
+            experiments.filter((experiment) => experiment.isActive),
           )"
           :key="experiment.id"
           variant="outlined"
