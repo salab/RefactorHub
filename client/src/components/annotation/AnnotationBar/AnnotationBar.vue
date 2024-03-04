@@ -65,7 +65,7 @@ export const annotationBarSize = defaultAppBarHeight + extensionHeight
             ><template #divider>
               <v-icon size="small" icon="$mdiChevronRight"></v-icon> </template
           ></v-breadcrumbs>
-          <!-- <commit-info /> -->
+          <commit-info />
         </div>
       </template>
       <template #extension>
