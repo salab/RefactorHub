@@ -38,6 +38,7 @@ const changeTypeNounTags = computed(() => {
     'Switch',
     'Block',
     'Conditional',
+    'Modifier',
   ]
 })
 const selectedChangeTypeVerbTags = ref<string[]>([])

@@ -772,5 +772,43 @@
         "type": "CodeFragment"
       }
     }
+  },
+  {
+    "name": "Change Method Access Modifier",
+    "description": "Changing an access modifier of a method",
+    "tags": ["Change", "Modifier", "Method"],
+    "before": {
+      "changed method": {
+        "description": "Method which has an access modifier to be changed",
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "changed method": {
+        "description": "Method which has an access modifier which was changed",
+        "type": "MethodDeclaration",
+        "required": true
+      }
+    }
+  },
+  {
+    "name": "Change Attribute Access Modifier",
+    "description": "Changing an access modifier of an attribute",
+    "tags": ["Change", "Modifier", "Attribute"],
+    "before": {
+      "changed attribute": {
+        "description": "Attribute which has an access modifier to be changed",
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    },
+    "after": {
+      "changed attribute": {
+        "description": "Attribute which has an access modifier which was changed",
+        "type": "FieldDeclaration",
+        "required": true
+      }
+    }
   }
 ]
