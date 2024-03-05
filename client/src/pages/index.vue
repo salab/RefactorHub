@@ -7,7 +7,7 @@ const isAuthenticated = useUser().isAuthenticated
     <div class="py-10 text-center">
       <v-img src="/logo.png" max-height="100" />
       <div class="mt-6 text-h5">A Commit Annotator for Refactoring</div>
-      <div class="text-subtitle-1">Version 2.0.0</div>
+      <div class="text-subtitle-1">Version 2.0.0-ss</div>
     </div>
     <v-divider />
     <div v-if="isAuthenticated" class="ma-6">
@@ -29,18 +29,18 @@ const isAuthenticated = useUser().isAuthenticated
         </template>
       </v-btn>
     </div>
-    <!-- <div class="text-center">
+    <div class="text-center">
       <v-divider />
-      <h2 class="text-h4 mt-6">Demonstration</h2>
+      <h2 class="text-h5 mt-6">Demonstration</h2>
       <iframe
         class="mt-4"
         width="560"
         height="315"
-        src="https://www.youtube.com/embed/Ew1wVBZkpro"
+        src="https://www.youtube.com/embed/H2Blz8ovwe0"
         frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowfullscreen
-      ></iframe>
-    </div> -->
+      />
+    </div>
   </v-container>
 </template>
