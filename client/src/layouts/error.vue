@@ -1,3 +1,14 @@
+<script setup lang="ts">
+import { NuxtError } from '@nuxt/types'
+
+defineProps({
+  error: {
+    type: Object as () => NuxtError,
+    required: true,
+  },
+})
+</script>
+
 <template>
   <v-container fluid fill-height>
     <v-row>
@@ -16,17 +27,3 @@
     </v-row>
   </v-container>
 </template>
-
-<script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
-import { NuxtError } from '@nuxt/types'
-
-export default defineComponent({
-  props: {
-    error: {
-      type: Object as () => NuxtError,
-      required: true,
-    },
-  },
-})
-</script>

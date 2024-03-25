@@ -1,57 +1,59 @@
-import { NuxtConfig } from '@nuxt/types'
-import MonacoEditorWebpackPlugin from 'monaco-editor-webpack-plugin'
+import vuetify from 'vite-plugin-vuetify'
+import monacoEditorPlugin from 'vite-plugin-monaco-editor'
 
-export default {
+export default defineNuxtConfig({
   srcDir: 'src',
+  app: {
+    head: {
+      link: [
+        {
+          rel: 'preconnect',
+          href: 'https://fonts.googleapis.com',
+        },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css?family=Roboto:100,200,300,400,500,700,900&display=swap',
+          crossorigin: '',
+        },
+      ],
+    },
+  },
   ssr: false,
-  target: 'static',
-  head: {
-    title: 'RefactorHub',
-    meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      {
-        hid: 'description',
-        name: 'description',
-        content: process.env.npm_package_description || '',
-      },
-    ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
-  },
-  plugins: ['@/plugins/auth.ts'],
-  components: true,
-  build: {
-    extend(config) {
-      if (config.plugins) {
-        config.plugins.push(
-          new MonacoEditorWebpackPlugin({
-            languages: ['java'],
-          })
-        )
-      }
+  components: [
+    {
+      path: '~/components/',
+      extensions: ['.vue'],
+      pathPrefix: false,
     },
-  },
-  buildModules: [
-    '@nuxt/typescript-build',
-    '@nuxtjs/composition-api',
-    '@nuxtjs/eslint-module',
-    '@nuxtjs/stylelint-module',
-    '@nuxtjs/vuetify',
-    'nuxt-typed-vuex',
   ],
-  modules: ['@nuxtjs/axios', '@nuxtjs/proxy'],
-  vuetify: {
-    customVariables: ['@/assets/styles/_variables.scss'],
-    defaultAssets: {
-      icons: 'fa',
+  build: {
+    transpile: ['vuetify'],
+  },
+  modules: [],
+  hooks: {
+    'vite:extendConfig': (config) => {
+      config.plugins?.push(vuetify())
     },
-    treeShake: true,
   },
-  axios: {
-    proxy: true,
+  typescript: {
+    strict: true,
+    typeCheck: true,
   },
-  proxy: {
-    '/api': process.env.API_URL || 'http://localhost:8080',
-    '/login': 'http://localhost:8080',
+  vite: {
+    ssr: {
+      noExternal: ['vuetify'],
+    },
+    define: {
+      'process.env.DEBUG': false,
+    },
+    plugins: [monacoEditorPlugin({})],
+    server: {
+      proxy: {
+        '/api': process.env.API_URL || 'http://localhost:8080',
+        '/login': 'http://localhost:8080',
+      },
+    },
   },
-} as NuxtConfig
+  css: ['@/assets/main.scss'],
+  devtools: { enabled: true },
+})

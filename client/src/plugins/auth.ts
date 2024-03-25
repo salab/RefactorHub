@@ -1,13 +1,12 @@
+import { defineNuxtPlugin } from '#app'
 import apis from '@/apis'
-import { Plugin } from '@nuxt/types'
+import { useUser } from '#imports'
 
-const auth: Plugin = async (ctx) => {
+export default defineNuxtPlugin(async () => {
   try {
     const me = (await apis.users.getMe()).data
-    ctx.app.$accessor.setUser(me)
+    useUser().user.value = me
   } catch {
     // TODO
   }
-}
-
-export default auth
+})

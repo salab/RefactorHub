@@ -1,10 +1,7 @@
 import apis from '@/apis'
-import { Middleware } from '@nuxt/types'
 
-const authenticated: Middleware = async () => {
+export default defineNuxtRouteMiddleware(async (to) => {
   await apis.users.getMe().catch(() => {
-    location.href = '/login'
+    if (to.path !== '/login') location.href = '/login'
   })
-}
-
-export default authenticated
+})

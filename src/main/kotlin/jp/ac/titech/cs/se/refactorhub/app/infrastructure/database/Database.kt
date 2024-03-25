@@ -35,6 +35,7 @@ fun Application.connectDB() {
 
     val info = flyway.info()
     if (info.current() == null) {
+        flyway.clean()
         initializeDatabase()
         flyway.baseline()
     }

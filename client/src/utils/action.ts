@@ -1,18 +1,18 @@
 import apis, { ActionName, ActionType } from '@/apis'
 import { logger } from '@/utils/logger'
 
-export const log = async (
+export function sendAction(
   name: ActionName,
-  type: ActionType,
-  data: object = {}
-) => {
-  try {
-    await apis.actions.postAction({
+  data: object = {},
+  type: ActionType = ActionType.Client,
+) {
+  apis.actions
+    .postAction({
       name,
       type,
       data,
     })
-  } catch (e) {
-    logger.log(e)
-  }
+    .catch((e) => {
+      logger.warn(e)
+    })
 }

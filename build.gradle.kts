@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "jp.ac.titech.cs.se"
-version = "1.1.0"
+version = "2.0.0"
 
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
@@ -19,7 +19,6 @@ application {
 repositories {
     mavenCentral()
     jcenter()
-    maven("https://kotlin.bintray.com/kotlinx")
 }
 
 dependencies {

@@ -1,40 +1,43 @@
 package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 
-import jp.ac.titech.cs.se.refactorhub.app.model.CreateRefactoringBody
+import jp.ac.titech.cs.se.refactorhub.app.model.AnnotationData
 import jp.ac.titech.cs.se.refactorhub.app.model.Experiment
-import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
+import jp.ac.titech.cs.se.refactorhub.app.usecase.service.AnnotationService
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.ExperimentService
+import jp.ac.titech.cs.se.refactorhub.core.model.Commit
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.UUID
 
 @KoinApiExtension
 class ExperimentController : KoinComponent {
     private val experimentService: ExperimentService by inject()
+    private val annotationService: AnnotationService by inject()
 
-    data class CreateExperimentBody(
-        val title: String,
-        val description: String,
-        val refactorings: List<CreateRefactoringBody>
-    )
-
-    fun create(body: CreateExperimentBody, userId: Int?): Experiment {
-        return experimentService.create(body.title, body.description, body.refactorings, true, userId)
+    fun get(experimentId: UUID): Experiment {
+        return experimentService.get(experimentId)
     }
-
     fun getAll(): List<Experiment> {
         return experimentService.getAll()
     }
 
-    fun get(id: Int): Experiment {
-        return experimentService.get(id)
+    fun create(
+        ownerId: UUID?,
+        title: String,
+        description: String,
+        isActive: Boolean,
+        targetCommits: List<Commit>
+    ): Experiment {
+        return experimentService.create(ownerId, title, description, isActive, targetCommits)
     }
 
-    fun getResult(id: Int): List<Refactoring> {
-        return experimentService.getResult(id)
+    fun startAnnotation(userId: UUID?, experimentId: UUID, commitId: UUID): UUID {
+        experimentService.verifyIds(experimentId, commitId)
+        return annotationService.createAnnotationIfNotExist(userId, experimentId, commitId).id
     }
 
-    fun getRefactorings(id: Int): List<Refactoring> {
-        return experimentService.getRefactorings(id)
+    fun getExperimentResult(userId: UUID?, experimentId: UUID): List<AnnotationData> {
+        return annotationService.getExperimentAnnotationsData(userId, experimentId)
     }
 }

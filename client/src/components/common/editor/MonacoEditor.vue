@@ -1,48 +1,53 @@
-<template>
-  <div :id="id" class="wh-100">
-    <loading :active="isLoading" />
-  </div>
-</template>
-
-<script lang="ts">
-import { defineComponent, ref, onMounted } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import * as monaco from 'monaco-editor'
 import cryptoRandomString from 'crypto-random-string'
 
-export default defineComponent({
-  props: {
-    isLoading: {
-      type: Boolean,
-      default: false,
-    },
+const props = defineProps({
+  before: {
+    type: Object as () => monaco.editor.ITextModel,
+    default: undefined,
   },
-  setup() {
-    const id = cryptoRandomString({ length: 10 })
-    const diffEditor = ref<monaco.editor.IStandaloneDiffEditor>()
+  after: {
+    type: Object as () => monaco.editor.ITextModel,
+    default: undefined,
+  },
+})
+const id = cryptoRandomString({ length: 10 })
 
-    onMounted(() => {
-      const container = document.getElementById(id)
-      if (container !== null) {
-        diffEditor.value = monaco.editor.createDiffEditor(container, {
-          enableSplitViewResizing: false,
-          automaticLayout: true,
-          readOnly: true,
-          scrollBeyondLastLine: false,
-        })
-      }
+const lineCount = ref(0)
+
+onMounted(() => {
+  const container = document.getElementById(id)
+  if (container === null) return
+  if (props.before && props.after) {
+    const diffEditor = monaco.editor.createDiffEditor(container, {
+      automaticLayout: true,
+      readOnly: true,
     })
-
-    return {
-      id,
-      diffEditor,
-    }
-  },
+    diffEditor.setModel({
+      original: props.before,
+      modified: props.after,
+    })
+    lineCount.value = Math.max(
+      props.before.getLineCount(),
+      props.after.getLineCount(),
+    )
+    return
+  }
+  const model = props.before ?? props.after
+  if (!model) return
+  const editor = monaco.editor.create(container, {
+    automaticLayout: true,
+    readOnly: true,
+  })
+  editor.setModel(model)
+  lineCount.value = model.getLineCount()
 })
 </script>
 
-<style lang="scss" scoped>
-.wh-100 {
-  width: 100%;
-  height: 100%;
-}
-</style>
+<template>
+  <div
+    :id="id"
+    :style="`width: 100%; height: ${lineCount < 10 ? lineCount * 20 : 200}px`"
+  />
+</template>

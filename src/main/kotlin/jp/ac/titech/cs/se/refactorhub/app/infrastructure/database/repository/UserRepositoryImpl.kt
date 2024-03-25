@@ -5,10 +5,11 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.Users
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.UserRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.User
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.UUID
 
 class UserRepositoryImpl : UserRepository {
 
-    override fun findById(id: Int): User? {
+    override fun findById(id: UUID): User? {
         return transaction {
             UserDao.findById(id)?.asModel()
         }

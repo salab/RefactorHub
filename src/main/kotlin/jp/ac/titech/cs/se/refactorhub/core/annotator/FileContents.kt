@@ -1,22 +1,22 @@
 package jp.ac.titech.cs.se.refactorhub.core.annotator
 
-import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileContent
-import jp.ac.titech.cs.se.refactorhub.core.parser.CodeElementParser
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.File
+import jp.ac.titech.cs.se.refactorhub.core.parser.CodeParser
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.IOUtils
 import org.kohsuke.github.GHContent
 import org.kohsuke.github.GitHub
 import java.io.IOException
 import java.net.HttpURLConnection
-import java.net.URL
+import java.net.URI
+import java.nio.charset.StandardCharsets
 
 val GITHUB_ACCESS_TOKEN = System.getenv("GITHUB_ACCESS_TOKEN") ?: ""
-
-fun getFileContent(owner: String, repository: String, sha: String, path: String): FileContent {
+fun getFile(owner: String, repository: String, sha: String, path: String): File {
     return try {
-        createFileContent(getGHContent(owner, repository, sha, path))
+        createFile(getGHContent(owner, repository, sha, path))
     } catch (e: IOException) {
-        FileContent(e.localizedMessage, uri = "https://github.com/$owner/$repository/blob/$sha/$path")
+        return File(path, e.localizedMessage)
     }
 }
 
@@ -30,20 +30,20 @@ private fun getGHContent(
     return client.getRepository("$owner/$repository").getFileContent(path, sha)
 }
 
-private fun createFileContent(content: GHContent): FileContent {
-    val text = if (content.isText) IOUtils.toString(content.read())
-    else return FileContent("This is a binary file.", uri = content.htmlUrl)
-    val extension = FilenameUtils.getExtension(content.name)
-    return FileContent(
-        text,
-        extension,
-        content.htmlUrl,
-        CodeElementParser.get(extension).parse(text, content.path)
-    )
+private fun createFile(content: GHContent): File {
+    val text = if (content.isText) IOUtils.toString(content.read(), StandardCharsets.UTF_8) else "This is a binary file."
+    return createFile(content.path, text)
+}
+
+fun createFile(path: String, text: String): File {
+    val extension = FilenameUtils.getExtension(path)
+    val elements = CodeParser.get(extension).parse(text, path)
+    val tokens = CodeParser.get(extension).tokenize(text)
+    return File(path, text, extension, elements, tokens)
 }
 
 private val GHContent.isText: Boolean
-    get() = (URL(downloadUrl).openConnection() as HttpURLConnection).run {
+    get() = (URI(downloadUrl).toURL().openConnection() as HttpURLConnection).run {
         requestMethod = "HEAD"
         connect()
         contentType.matches(Regex("text/.*"))

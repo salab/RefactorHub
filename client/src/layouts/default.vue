@@ -1,35 +1,28 @@
+<script setup lang="ts">
+const isAuthenticated = useUser().isAuthenticated
+</script>
+<script lang="ts">
+export const defaultAppBarHeight = 45
+</script>
+
 <template>
   <v-app>
-    <v-app-bar app flat>
-      <v-container class="py-0 fill-height">
+    <v-app-bar color="primary" app flat :height="defaultAppBarHeight">
+      <template #prepend>
         <a href="/" class="d-inline-block">
-          <v-img src="/icon.png" width="32" height="32"></v-img>
+          <v-img src="/logo.png" width="128" />
         </a>
-        <v-spacer />
-        <v-btn v-if="!isAuthenticated" href="/login" depressed>
-          <v-icon left>fab fa-github</v-icon>
-          Sign in
+      </template>
+      <template #append>
+        <v-btn v-if="!isAuthenticated" href="/login" text="Sign in">
+          <template #prepend>
+            <v-icon icon="$mdiGithub" :size="30" />
+          </template>
         </v-btn>
-      </v-container>
+      </template>
     </v-app-bar>
     <v-main>
-      <nuxt />
+      <slot />
     </v-main>
   </v-app>
 </template>
-
-<script lang="ts">
-import { computed, defineComponent, useContext } from '@nuxtjs/composition-api'
-
-export default defineComponent({
-  setup() {
-    const {
-      app: { $accessor },
-    } = useContext()
-    const isAuthenticated = computed(() => $accessor.isAuthenticated)
-    return {
-      isAuthenticated,
-    }
-  },
-})
-</script>

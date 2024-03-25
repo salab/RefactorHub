@@ -4,7 +4,6 @@ import jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.impl.PackageProces
 import jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.impl.ReferenceProcessor
 import jp.ac.titech.cs.se.refactorhub.core.annotator.autofill.impl.SurroundProcessor
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
-import jp.ac.titech.cs.se.refactorhub.core.model.annotator.CommitContent
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.Autofill
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.impl.Package
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.autofill.impl.Reference
@@ -19,7 +18,8 @@ interface AutofillProcessor<T : Autofill> {
         sourceElement: CodeElement,
         targetCategory: DiffCategory,
         targetMetadata: CodeElementMetadata,
-        content: CommitContent
+        getFileCodeElementsMap: (DiffCategory) -> Map<String, List<CodeElement>>,
+        isInDiffHunk: (DiffCategory, filePath: String, queryLineNumber: Int) -> Boolean
     ): List<CodeElement>
 }
 
@@ -29,7 +29,8 @@ fun autofill(
     sourceElement: CodeElement,
     targetCategory: DiffCategory,
     targetMetadata: CodeElementMetadata,
-    content: CommitContent
+    getFileCodeElementsMap: (DiffCategory) -> Map<String, List<CodeElement>>,
+    isInDiffHunk: (DiffCategory, filePath: String, queryLineNumber: Int) -> Boolean
 ): List<CodeElement> {
     return when (autofill) {
         is Package -> PackageProcessor().process(
@@ -38,7 +39,8 @@ fun autofill(
             sourceElement,
             targetCategory,
             targetMetadata,
-            content
+            getFileCodeElementsMap,
+            isInDiffHunk
         )
         is Reference -> ReferenceProcessor().process(
             autofill,
@@ -46,7 +48,8 @@ fun autofill(
             sourceElement,
             targetCategory,
             targetMetadata,
-            content
+            getFileCodeElementsMap,
+            isInDiffHunk
         )
         is Surround -> SurroundProcessor().process(
             autofill,
@@ -54,7 +57,8 @@ fun autofill(
             sourceElement,
             targetCategory,
             targetMetadata,
-            content
+            getFileCodeElementsMap,
+            isInDiffHunk
         )
         else -> listOf()
     }

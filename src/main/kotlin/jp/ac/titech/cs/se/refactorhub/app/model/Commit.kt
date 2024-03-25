@@ -1,35 +1,40 @@
 package jp.ac.titech.cs.se.refactorhub.app.model
 
 import jp.ac.titech.cs.se.refactorhub.core.model.Commit
-import java.util.Date
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.File
+import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileMapping
+import jp.ac.titech.cs.se.refactorhub.core.model.divider.CommitFileData
+import java.time.LocalDateTime
+import java.util.UUID
 
 data class Commit(
+    val id: UUID,
     override val owner: String,
     override val repository: String,
-    override val sha: String
-) : Commit
-
-data class CommitDetail(
-    val owner: String,
-    val repository: String,
-    val sha: String,
+    override val sha: String,
+    val parentSha: String,
     val url: String,
     val message: String,
-    val author: String,
-    val authorDate: Date,
-    val files: List<CommitFile>,
-    val parent: String
-)
+    val authorName: String,
+    val authoredDateTime: String, // format: LocalDateTime.toString()
+    override val beforeFiles: List<File>,
+    override val afterFiles: List<File>,
+    override val fileMappings: List<FileMapping>,
+    override val patch: String
+) : Commit, CommitFileData {
+    fun data() = object : Commit {
+        override val owner: String = this@Commit.owner
+        override val repository: String = this@Commit.repository
+        override val sha: String = this@Commit.sha
+    }
 
-data class CommitFile(
-    val sha: String,
-    val status: CommitFileStatus,
-    val name: String,
-    val previousName: String,
-    val patch: String
-)
-
-@Suppress("EnumEntryName")
-enum class CommitFileStatus {
-    modified, added, removed, renamed
+    data class Overview(
+        val id: UUID,
+        val owner: String,
+        val repository: String,
+        val sha: String,
+        val url: String,
+        val message: String,
+    )
+    fun overview() = Overview(id, owner, repository, sha, url, message)
 }

@@ -1,11 +1,14 @@
 package jp.ac.titech.cs.se.refactorhub.core.model.element
 
+import jp.ac.titech.cs.se.refactorhub.core.model.element.impl.Block
+import jp.ac.titech.cs.se.refactorhub.core.model.element.impl.IfStatement
+import jp.ac.titech.cs.se.refactorhub.core.model.element.impl.SwitchCase
+import jp.ac.titech.cs.se.refactorhub.core.model.element.impl.SwitchStatement
 import kotlin.reflect.KClass
 
 enum class CodeElementType {
     PackageDeclaration,
 
-    TypeDeclaration,
     ClassDeclaration,
     InterfaceDeclaration,
     EnumDeclaration,
@@ -29,6 +32,11 @@ enum class CodeElementType {
     QualifiedName,
 
     Statement,
+    IfStatement,
+    SwitchStatement,
+    SwitchCase,
+
+    Block,
 
     CodeFragment;
 
@@ -36,7 +44,7 @@ enum class CodeElementType {
         get() = when (this) {
             PackageDeclaration -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.PackageDeclaration::class
 
-            TypeDeclaration -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.TypeDeclaration::class
+            //TypeDeclaration -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.TypeDeclaration::class
             ClassDeclaration -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.ClassDeclaration::class
             InterfaceDeclaration -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.InterfaceDeclaration::class
             EnumDeclaration -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.EnumDeclaration::class
@@ -60,6 +68,11 @@ enum class CodeElementType {
             QualifiedName -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.QualifiedName::class
 
             Statement -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.Statement::class
+            IfStatement -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.IfStatement::class
+            SwitchStatement -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.SwitchStatement::class
+            SwitchCase -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.SwitchCase::class
+
+            Block -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.Block::class
 
             CodeFragment -> jp.ac.titech.cs.se.refactorhub.core.model.element.impl.CodeFragment::class
         }

@@ -1,31 +1,19 @@
 package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.repository
 
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.CommitDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.ExperimentDao
-import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.RefactoringDao
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.dao.UserDao
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.ExperimentRepository
+import jp.ac.titech.cs.se.refactorhub.app.model.Commit
 import jp.ac.titech.cs.se.refactorhub.app.model.Experiment
-import jp.ac.titech.cs.se.refactorhub.app.model.Refactoring
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.UUID
 
 class ExperimentRepositoryImpl : ExperimentRepository {
-    override fun create(
-        title: String,
-        description: String,
-        refactorings: List<Refactoring>,
-        isActive: Boolean,
-        userId: Int
-    ): Experiment {
+    override fun findById(id: UUID): Experiment? {
         return transaction {
-            ExperimentDao.new {
-                this.owner = UserDao[userId]
-                this.title = title
-                this.description = description
-                this.isActive = isActive
-            }.apply {
-                this.refactorings = SizedCollection(refactorings.map { RefactoringDao[it.id] })
-            }.asModel()
+            ExperimentDao.findById(id)?.asModel()
         }
     }
 
@@ -35,9 +23,19 @@ class ExperimentRepositoryImpl : ExperimentRepository {
         }
     }
 
-    override fun findById(id: Int): Experiment? {
+    override fun create(
+        ownerId: UUID,
+        title: String,
+        description: String,
+        isActive: Boolean,
+    ): Experiment {
         return transaction {
-            ExperimentDao.findById(id)?.asModel()
+            ExperimentDao.new {
+                this.owner = UserDao[ownerId]
+                this.title = title
+                this.description = description
+                this.isActive = isActive
+            }.asModel()
         }
     }
 }

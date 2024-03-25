@@ -12,51 +12,69 @@ import io.ktor.routing.route
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
+import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.toUUID
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ExperimentController
 import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
 @Location("")
-class CreateExperiment
+class GetExperiments
 
 @KtorExperimentalLocationsAPI
 @Location("")
-class GetAllExperiments
+class CreateExperiment
+data class Commit(
+    override val owner: String,
+    override val repository: String,
+    override val sha: String
+): jp.ac.titech.cs.se.refactorhub.core.model.Commit
+data class CreateExperimentBody(
+    val title: String,
+    val description: String,
+    val commits: List<Commit>
+)
 
 @KtorExperimentalLocationsAPI
-@Location("/{id}")
-data class GetExperiment(val id: Int)
+@Location("/{experimentId}")
+data class GetExperiment(val experimentId: String)
 
 @KtorExperimentalLocationsAPI
-@Location("/{id}/result")
-data class GetExperimentResult(val id: Int)
+@Location("/{experimentId}/commits/{commitId}")
+data class StartAnnotation(val experimentId: String, val commitId: String)
 
 @KtorExperimentalLocationsAPI
-@Location("/{id}/refactorings")
-data class GetExperimentRefactorings(val id: Int)
+@Location("/{experimentId}/result")
+data class GetExperimentResult(val experimentId: String)
 
 @KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.experiments() {
     route("/experiments") {
         val experimentController: ExperimentController by inject()
-        post<CreateExperiment> {
-            val body = call.receive<ExperimentController.CreateExperimentBody>()
-            val session = call.sessions.get<Session>()
-            call.respond(experimentController.create(body, session?.id))
-        }
-        get<GetAllExperiments> {
+
+        get<GetExperiments> {
             call.respond(experimentController.getAll())
         }
+        post<CreateExperiment> {
+            val userId = call.sessions.get<Session>()?.userId?.toUUID()
+            val (title, description, commits) = call.receive<CreateExperimentBody>()
+            call.respond(experimentController.create(userId, title, description, true, commits))
+        }
         get<GetExperiment> {
-            call.respond(experimentController.get(it.id))
+            val experimentId = it.experimentId.toUUID()
+            call.respond(experimentController.get(experimentId))
+        }
+        post<StartAnnotation> {
+            val userId = call.sessions.get<Session>()?.userId?.toUUID()
+            val experimentId = it.experimentId.toUUID()
+            val commitId = it.commitId.toUUID()
+            call.respond(experimentController.startAnnotation(userId, experimentId, commitId))
         }
         get<GetExperimentResult> {
-            call.respond(experimentController.getResult(it.id))
-        }
-        get<GetExperimentRefactorings> {
-            call.respond(experimentController.getRefactorings(it.id))
+            val userId = call.sessions.get<Session>()?.userId?.toUUID()
+            val experimentId = it.experimentId.toUUID()
+            call.respond(experimentController.getExperimentResult(userId, experimentId))
         }
     }
 }

@@ -1,0 +1,98 @@
+import { createVuetify } from 'vuetify'
+import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+import {
+  mdiArrowRightBoldBox,
+  mdiMinusBox,
+  mdiPencilBox,
+  mdiPlusBox,
+  mdiEqualBox,
+  mdiCloseBox,
+  mdiEyeOutline,
+  mdiCloseCircleOutline,
+  mdiAsterisk,
+  mdiCheckCircle,
+  mdiCircleOutline,
+  mdiDelete,
+  mdiDeleteCircle,
+  mdiEraser,
+  mdiMarker,
+  mdiMarkerCancel,
+  mdiGithub,
+  mdiArrowDownDropCircleOutline,
+  mdiArrowUpDropCircleOutline,
+  mdiTabPlus,
+  mdiTabRemove,
+  mdiFolderOutline,
+  mdiMenuLeftOutline,
+  mdiMenuRightOutline,
+  mdiCompare,
+  mdiInformation,
+  mdiProgressCheck,
+  mdiSourceCommit,
+  mdiSourceCommitLocal,
+  mdiChevronRight,
+  mdiChevronDoubleRight,
+  mdiChevronDoubleLeft,
+  mdiAlertCircle,
+} from '@mdi/js'
+
+export default defineNuxtPlugin((nuxtApp) => {
+  const vuetify = createVuetify({
+    ssr: true,
+    components,
+    directives,
+    icons: {
+      defaultSet: 'mdi',
+      aliases: {
+        ...aliases,
+        mdiArrowRightBoldBox,
+        mdiMinusBox,
+        mdiPencilBox,
+        mdiPlusBox,
+        mdiEqualBox,
+        mdiCloseBox,
+        mdiEyeOutline,
+        mdiCloseCircleOutline,
+        mdiAsterisk,
+        mdiCheckCircle,
+        mdiCircleOutline,
+        mdiDelete,
+        mdiDeleteCircle,
+        mdiEraser,
+        mdiMarker,
+        mdiMarkerCancel,
+        mdiGithub,
+        mdiArrowDownDropCircleOutline,
+        mdiArrowUpDropCircleOutline,
+        mdiTabPlus,
+        mdiTabRemove,
+        mdiFolderOutline,
+        mdiMenuLeftOutline,
+        mdiMenuRightOutline,
+        mdiCompare,
+        mdiInformation,
+        mdiProgressCheck,
+        mdiSourceCommit,
+        mdiSourceCommitLocal,
+        mdiChevronRight,
+        mdiChevronDoubleRight,
+        mdiChevronDoubleLeft,
+        mdiAlertCircle,
+      },
+      sets: { mdi },
+    },
+    theme: {
+      themes: {
+        light: {
+          dark: false,
+          colors,
+        },
+      },
+      defaultTheme: 'light',
+    },
+  })
+
+  nuxtApp.vueApp.use(vuetify)
+})

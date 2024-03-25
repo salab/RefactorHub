@@ -7,19 +7,13 @@ import jp.ac.titech.cs.se.refactorhub.core.model.ActionType
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.UUID
 
 @KoinApiExtension
 class ActionController : KoinComponent {
-
-    data class ActionBody(
-        val name: ActionName,
-        val type: ActionType,
-        val data: JsonNode
-    )
-
     private val actionService: ActionService by inject()
 
-    fun log(name: ActionName, type: ActionType, data: JsonNode, user: Int?) {
-        return actionService.log(name, type, data, user)
+    fun log(name: ActionName, type: ActionType, data: JsonNode, userId: UUID?) {
+        return actionService.log(name, type, data, userId)
     }
 }

@@ -9,7 +9,7 @@ export function asMonacoRange(range?: Range): monaco.Range {
     range.startLine,
     range.startColumn,
     range.endLine,
-    range.endColumn + 1
+    range.endColumn + 1,
   )
 }
 
@@ -24,24 +24,27 @@ export function asRange(range: monaco.Range): Range {
 
 export function getRangeWidthOnEditor(
   range: monaco.Range,
-  editor: monaco.editor.ICodeEditor
+  editor: monaco.editor.ICodeEditor,
 ) {
-  const width = editor.getOption(monaco.editor.EditorOptions.fontInfo.id)
-    .typicalHalfwidthCharacterWidth
+  const width = editor.getOption(
+    monaco.editor.EditorOptions.fontInfo.id,
+  ).typicalHalfwidthCharacterWidth
   if (range.startLineNumber === range.endLineNumber) {
     return width * (range.endColumn - range.startColumn)
   }
   return (
     width *
     (getMaxColumnOnEditor(range.startLineNumber, range.endLineNumber, editor) -
-      range.startColumn)
+      (range.startColumn < range.endColumn - 1
+        ? range.startColumn
+        : range.endColumn - 1))
   )
 }
 
 function getMaxColumnOnEditor(
   startLineNumber: number,
   endLineNumber: number,
-  editor: monaco.editor.ICodeEditor
+  editor: monaco.editor.ICodeEditor,
 ) {
   const model = editor.getModel()
   if (!model) return 0
@@ -54,7 +57,7 @@ function getMaxColumnOnEditor(
 
 export function getRangeHeightOnEditor(
   range: monaco.Range,
-  editor: monaco.editor.ICodeEditor
+  editor: monaco.editor.ICodeEditor,
 ) {
   return (
     editor.getOption(monaco.editor.EditorOptions.fontInfo.id).lineHeight +
