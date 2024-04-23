@@ -623,6 +623,9 @@ function getIndexFromPosition(text: string, position: monaco.Position): number {
   if (position.lineNumber === raws.length + 1 && position.column === 0) {
     return indexCount
   }
+  if (raws[0] == "This is a binary file.") {
+    return 0
+  }
   throw new Error(
     `position ${position.toString()} must be less than text which has ${
       raws.length
