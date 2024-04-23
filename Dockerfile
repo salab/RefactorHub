@@ -6,6 +6,7 @@ COPY client/package.json client/build.gradle.kts /app/client/
 RUN ./gradlew shadowJar --paralell --no-daemon --continue || true
 
 COPY . /app
+RUN ["./gradlew", "clean"]
 RUN [ "./gradlew", "shadowJar", "--parallel", "--no-daemon" ]
 
 FROM ubuntu:latest
