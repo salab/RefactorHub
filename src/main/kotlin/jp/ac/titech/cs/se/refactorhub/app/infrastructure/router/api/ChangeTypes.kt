@@ -29,7 +29,6 @@ data class CreateChangeTypeBody(
     val referenceUrl: String = ""
 )
 
-@KtorExperimentalLocationsAPI
 fun Route.changeTypes() {
     route("/change_types") {
         val changeTypeController: ChangeTypeController by inject()
