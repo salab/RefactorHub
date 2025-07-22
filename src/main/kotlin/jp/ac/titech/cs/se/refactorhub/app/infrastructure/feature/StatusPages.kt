@@ -1,7 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.app.infrastructure.feature
 
-import io.ktor.application.call
-import io.ktor.features.StatusPages
+import io.ktor.server.plugins.statuspages.StatusPagesConfig
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import jp.ac.titech.cs.se.refactorhub.app.exception.*
@@ -10,20 +9,20 @@ data class ErrorResponse(
     val message: String?
 )
 
-fun StatusPages.Configuration.setExceptions() {
-    exception<BadRequestException> {
-        call.respond(HttpStatusCode.BadRequest, ErrorResponse(it.message))
+fun StatusPagesConfig.setExceptions() {
+    exception<BadRequestException> { call, cause ->
+        call.respond(HttpStatusCode.BadRequest, ErrorResponse(cause.message))
     }
-    exception<UnauthorizedException> {
-        call.respond(HttpStatusCode.Unauthorized, ErrorResponse(it.message))
+    exception<UnauthorizedException> { call, cause ->
+        call.respond(HttpStatusCode.Unauthorized, ErrorResponse(cause.message))
     }
-    exception<ForbiddenException> {
-        call.respond(HttpStatusCode.Forbidden, ErrorResponse(it.message))
+    exception<ForbiddenException> { call, cause ->
+        call.respond(HttpStatusCode.Forbidden, ErrorResponse(cause.message))
     }
-    exception<NotFoundException> {
-        call.respond(HttpStatusCode.NotFound, ErrorResponse(it.message))
+    exception<NotFoundException> { call, cause ->
+        call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message))
     }
-    exception<ConflictException> {
-        call.respond(HttpStatusCode.Conflict, ErrorResponse(it.message))
+    exception<ConflictException> { call, cause ->
+        call.respond(HttpStatusCode.Conflict, ErrorResponse(cause.message))
     }
 }
