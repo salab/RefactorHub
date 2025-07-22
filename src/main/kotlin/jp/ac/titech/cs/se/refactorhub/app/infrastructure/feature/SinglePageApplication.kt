@@ -1,29 +1,29 @@
 package jp.ac.titech.cs.se.refactorhub.app.infrastructure.feature
 
-import io.ktor.application.Application
-import io.ktor.application.ApplicationCallPipeline
-import io.ktor.application.ApplicationFeature
-import io.ktor.application.call
+import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationCallPipeline
+import io.ktor.server.application.BaseApplicationPlugin
+import io.ktor.server.application.call
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.HttpStatusCodeContent
-import io.ktor.http.content.JarFileContent
-import io.ktor.http.content.defaultResource
-import io.ktor.http.content.resolveResource
-import io.ktor.http.content.resources
-import io.ktor.http.content.static
-import io.ktor.request.acceptItems
-import io.ktor.request.uri
-import io.ktor.response.ApplicationSendPipeline
-import io.ktor.response.respond
-import io.ktor.routing.routing
+import io.ktor.server.http.content.HttpStatusCodeContent
+import io.ktor.server.http.content.JarFileContent
+import io.ktor.server.http.content.defaultResource
+import io.ktor.server.http.content.resolveResource
+import io.ktor.server.http.content.resources
+import io.ktor.server.http.content.static
+import io.ktor.server.request.acceptItems
+import io.ktor.server.request.uri
+import io.ktor.server.response.ApplicationSendPipeline
+import io.ktor.server.response.respond
+import io.ktor.server.routing.routing
 import io.ktor.util.AttributeKey
 import java.io.FileNotFoundException
 import java.nio.file.Paths
 
 class SinglePageApplication(private val configuration: Configuration) {
 
-    companion object Feature : ApplicationFeature<Application, Configuration, SinglePageApplication> {
+    companion object Feature : BaseApplicationPlugin<Application, Configuration, SinglePageApplication> {
 
         override val key = AttributeKey<SinglePageApplication>("SinglePageApplication")
 

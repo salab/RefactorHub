@@ -2,7 +2,7 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import io.ktor.application.Application
+import io.ktor.server.application.Application
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.migration.initializeDatabase
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database

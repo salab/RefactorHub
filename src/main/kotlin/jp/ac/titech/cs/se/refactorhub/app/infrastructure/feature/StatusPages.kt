@@ -3,7 +3,7 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.feature
 import io.ktor.application.call
 import io.ktor.features.StatusPages
 import io.ktor.http.HttpStatusCode
-import io.ktor.response.respond
+import io.ktor.server.response.respond
 import jp.ac.titech.cs.se.refactorhub.app.exception.*
 
 data class ErrorResponse(
