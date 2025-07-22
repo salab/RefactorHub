@@ -2,7 +2,7 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth
 
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
-import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.AuthenticationConfig
 import io.ktor.server.auth.OAuthAccessTokenResponse
 import io.ktor.server.auth.OAuthServerSettings
 import io.ktor.server.auth.authenticate
@@ -30,7 +30,7 @@ private const val GITHUB = "github"
 @Location("/login")
 private class Login
 
-fun Authentication.Configuration.github() {
+fun AuthenticationConfig.github() {
     oauth(GITHUB) {
         client = HttpClient(Apache)
         providerLookup = {
@@ -81,7 +81,7 @@ fun Route.login() {
 }
 
 private fun getMe(accessToken: String): User {
-    val userService by inject(UserService::class.java)
+    val userService:UserService by inject(UserService::class.java)
     val me = GitHub.connectUsingOAuth(accessToken).myself
     return userService.createIfNotExist(me.id.toInt(), me.login)
 }
