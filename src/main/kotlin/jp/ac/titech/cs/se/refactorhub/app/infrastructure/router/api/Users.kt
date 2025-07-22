@@ -12,15 +12,12 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.toUUID
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.UserController
 import org.koin.ktor.ext.inject
 
-@KtorExperimentalLocationsAPI
 @Location("/me")
 class GetMe
 
-@KtorExperimentalLocationsAPI
 @Location("/{userId}/annotations")
 data class GetUserAnnotationIds(val userId: String)
 
-@KtorExperimentalLocationsAPI
 fun Route.users() {
     route("/users") {
         val userController: UserController by inject()

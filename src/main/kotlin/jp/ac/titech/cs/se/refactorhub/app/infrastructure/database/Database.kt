@@ -3,13 +3,11 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.database
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.Application
-import io.ktor.util.KtorExperimentalAPI
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.migration.initializeDatabase
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database
 import java.net.URI
 
-@KtorExperimentalAPI
 fun Application.connectDB() {
     val uri = URI(environment.config.property("ktor.database.url").getString())
     val (username, password) = uri.userInfo.split(":")

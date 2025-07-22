@@ -10,7 +10,6 @@ import io.ktor.auth.authentication
 import io.ktor.auth.oauth
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
-import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import io.ktor.locations.location
 import io.ktor.locations.locations
@@ -21,7 +20,6 @@ import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.sessions.sessions
 import io.ktor.sessions.set
-import io.ktor.util.KtorExperimentalAPI
 import jp.ac.titech.cs.se.refactorhub.app.model.User
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.UserService
 import org.kohsuke.github.GitHub
@@ -29,12 +27,9 @@ import org.koin.java.KoinJavaComponent.inject
 
 private const val GITHUB = "github"
 
-@KtorExperimentalLocationsAPI
 @Location("/login")
 private class Login
 
-@KtorExperimentalAPI
-@KtorExperimentalLocationsAPI
 fun Authentication.Configuration.github() {
     oauth(GITHUB) {
         client = HttpClient(Apache)
@@ -53,7 +48,6 @@ fun Authentication.Configuration.github() {
     }
 }
 
-@KtorExperimentalLocationsAPI
 private fun <T : Any> ApplicationCall.redirectUrl(t: T): String {
     val host = request.host()
     val path = application.locations.href(t)
@@ -63,7 +57,6 @@ private fun <T : Any> ApplicationCall.redirectUrl(t: T): String {
     }
 }
 
-@KtorExperimentalLocationsAPI
 fun Route.login() {
     authenticate(GITHUB) {
         location<Login> {

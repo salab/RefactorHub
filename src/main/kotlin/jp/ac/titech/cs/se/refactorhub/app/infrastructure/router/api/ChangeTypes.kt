@@ -1,7 +1,6 @@
 package jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api
 
 import io.ktor.application.call
-import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import io.ktor.locations.get
 import io.ktor.locations.post
@@ -17,11 +16,9 @@ import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ChangeTypeContro
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
 import org.koin.ktor.ext.inject
 
-@KtorExperimentalLocationsAPI
 @Location("")
 class GetChangeTypes
 
-@KtorExperimentalLocationsAPI
 @Location("")
 class CreateChangeType
 data class CreateChangeTypeBody(

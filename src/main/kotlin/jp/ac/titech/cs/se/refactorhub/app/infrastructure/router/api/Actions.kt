@@ -2,7 +2,6 @@ package jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.application.call
-import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import io.ktor.locations.post
 import io.ktor.request.receive
@@ -18,7 +17,6 @@ import jp.ac.titech.cs.se.refactorhub.core.model.ActionName
 import jp.ac.titech.cs.se.refactorhub.core.model.ActionType
 import org.koin.ktor.ext.inject
 
-@KtorExperimentalLocationsAPI
 @Location("")
 class PostAction
 data class PostActionBody(
@@ -27,7 +25,6 @@ data class PostActionBody(
     val data: JsonNode
 )
 
-@KtorExperimentalLocationsAPI
 fun Route.actions() {
     route("/actions") {
         val actionController: ActionController by inject()

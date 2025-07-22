@@ -23,80 +23,64 @@ import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
 import org.koin.ktor.ext.inject
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}")
 class GetAnnotation(val annotationId: String)
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}")
 class PublishAnnotation(val annotationId: String)
 data class PublishAnnotationBody(val isDraft: Boolean)
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}/data")
 class GetAnnotationData(val annotationId: String)
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}/snapshots")
 class AppendTemporarySnapshot(val annotationId: String)
 data class AppendTemporarySnapshotBody(val changeId: String)
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}/snapshots")
 class ModifyTemporarySnapshot(val annotationId: String)
 data class ModifyTemporarySnapshotBody(val filePath: String, val fileContent: String, val isRemoved: Boolean)
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}/snapshots")
 class SettleTemporarySnapshot(val annotationId: String)
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}/snapshots/{snapshotId}/changes")
 class AppendChange(val annotationId: String, val snapshotId: String)
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}/snapshots/{snapshotId}/changes/{changeId}")
 class UpdateChange(val annotationId: String, val snapshotId: String, val changeId: String)
 data class UpdateChangeBody(val description: String, val typeName: String)
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}/snapshots/{snapshotId}/changes/{changeId}")
 class RemoveChange(val annotationId: String, val snapshotId: String, val changeId: String)
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}/snapshots/{snapshotId}/changes/{changeId}/{diffCategory}")
 class PutNewParameter(val annotationId: String, val snapshotId: String, val changeId: String,
                       val diffCategory: DiffCategory)
 data class PutNewParameterBody(val parameterName: String, val elementType: String, val multiple: Boolean)
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}/snapshots/{snapshotId}/changes/{changeId}/{diffCategory}/{parameterName}")
 class AppendParameterElement(val annotationId: String, val snapshotId: String, val changeId: String,
                              val diffCategory: DiffCategory, val parameterName: String)
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}/snapshots/{snapshotId}/changes/{changeId}/{diffCategory}/{parameterName}")
 class RemoveParameter(val annotationId: String, val snapshotId: String, val changeId: String,
                       val diffCategory: DiffCategory, val parameterName: String)
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}/snapshots/{snapshotId}/changes/{changeId}/{diffCategory}/{parameterName}")
 class VerifyParameter(val annotationId: String, val snapshotId: String, val changeId: String,
                       val diffCategory: DiffCategory, val parameterName: String)
 data class VerifyParameterBody(val isVerified: Boolean)
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}/snapshots/{snapshotId}/changes/{changeId}/{diffCategory}/{parameterName}/{elementIndex}")
 class UpdateParameterValue(val annotationId: String, val snapshotId: String, val changeId: String,
                            val diffCategory: DiffCategory, val parameterName: String, val elementIndex: Int)
 data class UpdateParameterValueBody(val element: CodeElement)
 
-@KtorExperimentalLocationsAPI
 @Location("/{annotationId}/snapshots/{snapshotId}/changes/{changeId}/{diffCategory}/{parameterName}/{elementIndex}")
 class ClearParameterValue(val annotationId: String, val snapshotId: String, val changeId: String,
                           val diffCategory: DiffCategory, val parameterName: String, val elementIndex: Int)
 
-@KtorExperimentalLocationsAPI
 fun Route.annotations() {
     route("/annotations") {
         val annotationController: AnnotationController by inject()
