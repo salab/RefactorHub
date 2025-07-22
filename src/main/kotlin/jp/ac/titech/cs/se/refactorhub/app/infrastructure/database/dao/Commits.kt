@@ -10,7 +10,7 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
-import org.koin.java.KoinJavaComponent
+import org.koin.java.KoinJavaComponent.inject
 import java.util.UUID
 
 object Commits : UUIDTable("commits") {
@@ -91,19 +91,19 @@ class CommitOverviewDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Com
 }
 
 private fun stringifyFileList(data: List<File>): String {
-    val mapper by KoinJavaComponent.inject(ObjectMapper::class.java)
+    val mapper: ObjectMapper by inject(ObjectMapper::class.java)
     return mapper.writeValueAsString(data)
 }
 private fun parseFileList(src: String): List<File> {
-    val mapper by KoinJavaComponent.inject(ObjectMapper::class.java)
+    val mapper: ObjectMapper by inject(ObjectMapper::class.java)
     return mapper.readValue(src)
 }
 
 private fun stringifyFileMappings(data: List<FileMapping>): String {
-    val mapper by KoinJavaComponent.inject(ObjectMapper::class.java)
+    val mapper: ObjectMapper by inject(ObjectMapper::class.java)
     return mapper.writeValueAsString(data)
 }
 private fun parseFileMappings(src: String): List<FileMapping> {
-    val mapper by KoinJavaComponent.inject(ObjectMapper::class.java)
+    val mapper: ObjectMapper by inject(ObjectMapper::class.java)
     return mapper.readValue(src)
 }

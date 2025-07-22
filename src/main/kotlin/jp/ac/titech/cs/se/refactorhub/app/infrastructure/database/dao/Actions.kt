@@ -43,11 +43,11 @@ class ActionDao(id: EntityID<Long>) : LongEntity(id), ModelConverter<Action> {
 }
 
 private fun stringify(data: JsonNode): String {
-    val mapper by inject(ObjectMapper::class.java)
+    val mapper: ObjectMapper by inject(ObjectMapper::class.java)
     return mapper.writeValueAsString(data)
 }
 
 private fun parse(src: String): JsonNode {
-    val mapper by inject(ObjectMapper::class.java)
+    val mapper: ObjectMapper by inject(ObjectMapper::class.java)
     return mapper.readValue(src)
 }

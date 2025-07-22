@@ -44,19 +44,19 @@ class ChangeTypeDao(id: EntityID<String>) : StringEntity(id), ModelConverter<Cha
 }
 
 private fun stringifyParameterMap(data: Map<String, CodeElementMetadata>): String {
-    val mapper by inject(ObjectMapper::class.java)
+    val mapper: ObjectMapper by inject(ObjectMapper::class.java)
     return mapper.writeValueAsString(data)
 }
 private fun parseParameterMap(src: String): Map<String, CodeElementMetadata> {
-    val mapper by inject(ObjectMapper::class.java)
+    val mapper: ObjectMapper by inject(ObjectMapper::class.java)
     return mapper.readValue(src)
 }
 
 private fun stringifyTags(data: List<String>): String {
-    val mapper by inject(ObjectMapper::class.java)
+    val mapper: ObjectMapper by inject(ObjectMapper::class.java)
     return mapper.writeValueAsString(data)
 }
 private fun parseTags(src: String): List<String> {
-    val mapper by inject(ObjectMapper::class.java)
+    val mapper: ObjectMapper by inject(ObjectMapper::class.java)
     return mapper.readValue(src)
 }
