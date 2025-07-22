@@ -18,7 +18,6 @@ application {
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
@@ -29,15 +28,20 @@ dependencies {
 
     // Ktor
     implementation("io.ktor:ktor-server-core:${Versions.ktor}")
+    implementation("io.ktor:ktor-server-auto-head-response:${Versions.ktor}")
+    implementation("io.ktor:ktor-server-call-logging:${Versions.ktor}")
+    implementation("io.ktor:ktor-server-content-negotiation:${Versions.ktor}")
+    implementation("io.ktor:ktor-server-status-pages:${Versions.ktor}")
     implementation("io.ktor:ktor-server-netty:${Versions.ktor}")
     implementation("io.ktor:ktor-server-host-common:${Versions.ktor}")
-    implementation("io.ktor:ktor-locations:${Versions.ktor}")
+    implementation("io.ktor:ktor-server-locations:${Versions.ktor}")
     implementation("io.ktor:ktor-client-apache:${Versions.ktor}")
-    implementation("io.ktor:ktor-auth:${Versions.ktor}")
-    implementation("io.ktor:ktor-jackson:${Versions.ktor}")
+    implementation("io.ktor:ktor-server-auth:${Versions.ktor}")
+    implementation("io.ktor:ktor-server-content-negotiation:${Versions.ktor}")
+    implementation("io.ktor:ktor-serialization-jackson:${Versions.ktor}")
 
     // DI
-    implementation("org.koin:koin-ktor:${Versions.koin}")
+    implementation("io.insert-koin:koin-ktor:${Versions.koin}")
 
     // DB
     implementation("org.jetbrains.exposed:exposed-core:${Versions.exposed}")
