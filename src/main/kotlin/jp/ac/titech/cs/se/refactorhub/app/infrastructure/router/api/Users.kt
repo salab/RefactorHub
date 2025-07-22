@@ -10,7 +10,6 @@ import io.ktor.sessions.sessions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.toUUID
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.UserController
-import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
@@ -21,7 +20,6 @@ class GetMe
 @Location("/{userId}/annotations")
 data class GetUserAnnotationIds(val userId: String)
 
-@KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.users() {
     route("/users") {

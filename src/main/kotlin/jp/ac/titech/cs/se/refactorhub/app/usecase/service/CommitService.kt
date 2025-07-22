@@ -9,14 +9,12 @@ import jp.ac.titech.cs.se.refactorhub.core.annotator.getFile
 import jp.ac.titech.cs.se.refactorhub.core.annotator.mapFiles
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileMappingStatus
 import org.kohsuke.github.GitHub
-import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.UUID
 
-@KoinApiExtension
 class CommitService : KoinComponent {
     private val commitRepository: CommitRepository by inject()
 

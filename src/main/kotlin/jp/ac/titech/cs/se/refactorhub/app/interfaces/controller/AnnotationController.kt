@@ -9,12 +9,10 @@ import jp.ac.titech.cs.se.refactorhub.app.usecase.service.ChangeService
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.SnapshotService
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
-import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.UUID
 
-@KoinApiExtension
 class AnnotationController : KoinComponent {
     private val annotationService: AnnotationService by inject()
     private val snapshotService: SnapshotService by inject()

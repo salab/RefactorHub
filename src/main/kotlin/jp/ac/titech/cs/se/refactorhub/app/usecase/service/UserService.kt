@@ -5,12 +5,10 @@ import jp.ac.titech.cs.se.refactorhub.app.exception.UnauthorizedException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.UserRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.AnnotationOverview
 import jp.ac.titech.cs.se.refactorhub.app.model.User
-import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.UUID
 
-@KoinApiExtension
 class UserService : KoinComponent {
     private val userRepository: UserRepository by inject()
     private val annotationService: AnnotationService by inject()

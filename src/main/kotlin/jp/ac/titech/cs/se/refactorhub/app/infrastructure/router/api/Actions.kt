@@ -16,7 +16,6 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.toUUID
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ActionController
 import jp.ac.titech.cs.se.refactorhub.core.model.ActionName
 import jp.ac.titech.cs.se.refactorhub.core.model.ActionType
-import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
@@ -28,7 +27,6 @@ data class PostActionBody(
     val data: JsonNode
 )
 
-@KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.actions() {
     route("/actions") {

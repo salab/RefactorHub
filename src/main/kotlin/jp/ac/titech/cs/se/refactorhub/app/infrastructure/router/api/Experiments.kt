@@ -14,7 +14,6 @@ import io.ktor.sessions.sessions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.toUUID
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ExperimentController
-import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
@@ -47,7 +46,6 @@ data class StartAnnotation(val experimentId: String, val commitId: String)
 @Location("/{experimentId}/result")
 data class GetExperimentResult(val experimentId: String)
 
-@KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.experiments() {
     route("/experiments") {

@@ -6,13 +6,11 @@ import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.ActionRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.Action
 import jp.ac.titech.cs.se.refactorhub.core.model.ActionName
 import jp.ac.titech.cs.se.refactorhub.core.model.ActionType
-import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.time.LocalDateTime
 import java.util.UUID
 
-@KoinApiExtension
 class ActionService : KoinComponent {
     private val actionRepository: ActionRepository by inject()
 

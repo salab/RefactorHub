@@ -21,7 +21,6 @@ import jp.ac.titech.cs.se.refactorhub.core.model.ActionName
 import jp.ac.titech.cs.se.refactorhub.core.model.ActionType
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
-import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
@@ -97,7 +96,6 @@ data class UpdateParameterValueBody(val element: CodeElement)
 class ClearParameterValue(val annotationId: String, val snapshotId: String, val changeId: String,
                           val diffCategory: DiffCategory, val parameterName: String, val elementIndex: Int)
 
-@KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.annotations() {
     route("/annotations") {

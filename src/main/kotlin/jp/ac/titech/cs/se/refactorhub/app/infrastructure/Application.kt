@@ -24,12 +24,10 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.feature.SinglePageAppli
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.feature.setExceptions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.module.KoinModule
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.root
-import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.Koin
 
 fun main(args: Array<String>) = EngineMain.main(args)
 
-@KoinApiExtension
 @KtorExperimentalAPI
 @KtorExperimentalLocationsAPI
 fun Application.module() {

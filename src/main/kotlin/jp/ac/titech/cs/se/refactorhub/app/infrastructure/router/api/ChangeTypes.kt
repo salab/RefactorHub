@@ -15,7 +15,6 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.toUUID
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ChangeTypeController
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
-import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
 @KtorExperimentalLocationsAPI
@@ -33,7 +32,6 @@ data class CreateChangeTypeBody(
     val referenceUrl: String = ""
 )
 
-@KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.changeTypes() {
     route("/change_types") {

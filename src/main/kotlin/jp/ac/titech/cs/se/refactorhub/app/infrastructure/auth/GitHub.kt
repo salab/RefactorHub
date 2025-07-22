@@ -25,7 +25,6 @@ import io.ktor.util.KtorExperimentalAPI
 import jp.ac.titech.cs.se.refactorhub.app.model.User
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.UserService
 import org.kohsuke.github.GitHub
-import org.koin.core.component.KoinApiExtension
 import org.koin.java.KoinJavaComponent.inject
 
 private const val GITHUB = "github"
@@ -64,7 +63,6 @@ private fun <T : Any> ApplicationCall.redirectUrl(t: T): String {
     }
 }
 
-@KoinApiExtension
 @KtorExperimentalLocationsAPI
 fun Route.login() {
     authenticate(GITHUB) {
@@ -89,7 +87,6 @@ fun Route.login() {
     }
 }
 
-@KoinApiExtension
 private fun getMe(accessToken: String): User {
     val userService by inject(UserService::class.java)
     val me = GitHub.connectUsingOAuth(accessToken).myself
