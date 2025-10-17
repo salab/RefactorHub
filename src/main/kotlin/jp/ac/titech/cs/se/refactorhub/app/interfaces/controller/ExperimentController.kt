@@ -5,12 +5,10 @@ import jp.ac.titech.cs.se.refactorhub.app.model.Experiment
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.AnnotationService
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.ExperimentService
 import jp.ac.titech.cs.se.refactorhub.core.model.Commit
-import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.UUID
 
-@KoinApiExtension
 class ExperimentController : KoinComponent {
     private val experimentService: ExperimentService by inject()
     private val annotationService: AnnotationService by inject()

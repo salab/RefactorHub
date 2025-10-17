@@ -1,28 +1,24 @@
 package jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api
 
-import io.ktor.application.call
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.locations.Location
-import io.ktor.locations.get
-import io.ktor.locations.post
-import io.ktor.request.receive
-import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.route
-import io.ktor.sessions.get
-import io.ktor.sessions.sessions
+import io.ktor.server.application.call
+import io.ktor.server.locations.Location
+import io.ktor.server.locations.get
+import io.ktor.server.locations.post
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.route
+import io.ktor.server.sessions.get
+import io.ktor.server.sessions.sessions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.toUUID
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ChangeTypeController
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
-import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
-@KtorExperimentalLocationsAPI
 @Location("")
 class GetChangeTypes
 
-@KtorExperimentalLocationsAPI
 @Location("")
 class CreateChangeType
 data class CreateChangeTypeBody(
@@ -33,8 +29,6 @@ data class CreateChangeTypeBody(
     val referenceUrl: String = ""
 )
 
-@KoinApiExtension
-@KtorExperimentalLocationsAPI
 fun Route.changeTypes() {
     route("/change_types") {
         val changeTypeController: ChangeTypeController by inject()

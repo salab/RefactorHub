@@ -1,42 +1,36 @@
 package jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth
 
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
-import io.ktor.auth.Authentication
-import io.ktor.auth.OAuthAccessTokenResponse
-import io.ktor.auth.OAuthServerSettings
-import io.ktor.auth.authenticate
-import io.ktor.auth.authentication
-import io.ktor.auth.oauth
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.call
+import io.ktor.server.auth.AuthenticationConfig
+import io.ktor.server.auth.OAuthAccessTokenResponse
+import io.ktor.server.auth.OAuthServerSettings
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.authentication
+import io.ktor.server.auth.oauth
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.locations.Location
-import io.ktor.locations.location
-import io.ktor.locations.locations
-import io.ktor.request.host
-import io.ktor.request.port
-import io.ktor.response.respondRedirect
-import io.ktor.response.respondText
-import io.ktor.routing.Route
-import io.ktor.sessions.sessions
-import io.ktor.sessions.set
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.server.locations.Location
+import io.ktor.server.locations.location
+import io.ktor.server.locations.locations
+import io.ktor.server.request.host
+import io.ktor.server.request.port
+import io.ktor.server.response.respondRedirect
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.Route
+import io.ktor.server.sessions.sessions
+import io.ktor.server.sessions.set
 import jp.ac.titech.cs.se.refactorhub.app.model.User
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.UserService
 import org.kohsuke.github.GitHub
-import org.koin.core.component.KoinApiExtension
 import org.koin.java.KoinJavaComponent.inject
 
 private const val GITHUB = "github"
 
-@KtorExperimentalLocationsAPI
 @Location("/login")
 private class Login
 
-@KtorExperimentalAPI
-@KtorExperimentalLocationsAPI
-fun Authentication.Configuration.github() {
+fun AuthenticationConfig.github() {
     oauth(GITHUB) {
         client = HttpClient(Apache)
         providerLookup = {
@@ -54,7 +48,6 @@ fun Authentication.Configuration.github() {
     }
 }
 
-@KtorExperimentalLocationsAPI
 private fun <T : Any> ApplicationCall.redirectUrl(t: T): String {
     val host = request.host()
     val path = application.locations.href(t)
@@ -64,8 +57,6 @@ private fun <T : Any> ApplicationCall.redirectUrl(t: T): String {
     }
 }
 
-@KoinApiExtension
-@KtorExperimentalLocationsAPI
 fun Route.login() {
     authenticate(GITHUB) {
         location<Login> {
@@ -89,9 +80,8 @@ fun Route.login() {
     }
 }
 
-@KoinApiExtension
 private fun getMe(accessToken: String): User {
-    val userService by inject(UserService::class.java)
+    val userService:UserService by inject(UserService::class.java)
     val me = GitHub.connectUsingOAuth(accessToken).myself
     return userService.createIfNotExist(me.id.toInt(), me.login)
 }

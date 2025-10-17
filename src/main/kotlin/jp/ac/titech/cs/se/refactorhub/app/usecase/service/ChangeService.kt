@@ -9,14 +9,12 @@ import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileMapping
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementHolder
-import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.UUID
 
 private const val DEFAULT_CHANGE_TYPE = "Non-Refactoring"
 
-@KoinApiExtension
 class ChangeService : KoinComponent {
     private val annotationService: AnnotationService by inject()
     private val snapshotService: SnapshotService by inject()

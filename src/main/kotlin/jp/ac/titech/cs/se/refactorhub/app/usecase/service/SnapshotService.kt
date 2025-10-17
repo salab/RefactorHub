@@ -6,12 +6,10 @@ import jp.ac.titech.cs.se.refactorhub.app.model.Snapshot
 import jp.ac.titech.cs.se.refactorhub.core.model.DiffCategory
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.File
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileMapping
-import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.UUID
 
-@KoinApiExtension
 class SnapshotService : KoinComponent {
     private val commitService: CommitService by inject()
     private val changeService: ChangeService by inject()

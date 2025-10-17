@@ -1,4 +1,3 @@
-version: "3"
 services:
   app:
     build: ./
@@ -14,6 +13,7 @@ services:
       DATABASE_URL: postgres://rhuser:rhpass@db:5432/refactorhub
     depends_on:
       - db
+    entrypoint: ["/wait-for-it.sh", "db:5432", "--", "java", "-jar", "/app.jar"]
 
   db:
     image: postgres:12

@@ -1,22 +1,20 @@
 package jp.ac.titech.cs.se.refactorhub.app.infrastructure
 
 import com.fasterxml.jackson.databind.SerializationFeature
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.auth.Authentication
-import io.ktor.features.AutoHeadResponse
-import io.ktor.features.CallLogging
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.StatusPages
-import io.ktor.jackson.jackson
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.locations.Locations
-import io.ktor.routing.routing
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.auth.Authentication
+import io.ktor.server.plugins.autohead.AutoHeadResponse
+import io.ktor.server.plugins.callloging.CallLogging
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.locations.Locations
+import io.ktor.server.routing.routing
 import io.ktor.server.netty.EngineMain
-import io.ktor.sessions.SessionStorageMemory
-import io.ktor.sessions.Sessions
-import io.ktor.sessions.cookie
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.server.sessions.SessionStorageMemory
+import io.ktor.server.sessions.Sessions
+import io.ktor.server.sessions.cookie
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.github
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.database.connectDB
@@ -24,14 +22,10 @@ import jp.ac.titech.cs.se.refactorhub.app.infrastructure.feature.SinglePageAppli
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.feature.setExceptions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.module.KoinModule
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.root
-import org.koin.core.component.KoinApiExtension
-import org.koin.ktor.ext.Koin
+import org.koin.ktor.plugin.Koin
 
 fun main(args: Array<String>) = EngineMain.main(args)
 
-@KoinApiExtension
-@KtorExperimentalAPI
-@KtorExperimentalLocationsAPI
 fun Application.module() {
     install(AutoHeadResponse)
     install(CallLogging)

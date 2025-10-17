@@ -3,7 +3,7 @@ WORKDIR /app
 # cache dependencies
 COPY build.gradle.kts settings.gradle.kts gradle.properties gradle gradlew gradlew.bat buildSrc /app/
 COPY client/package.json client/build.gradle.kts /app/client/
-RUN ./gradlew shadowJar --paralell --no-daemon --continue || true
+RUN ./gradlew shadowJar --parallel --no-daemon --continue || true
 
 COPY . /app
 RUN [ "./gradlew", "shadowJar", "--parallel", "--no-daemon" ]
@@ -12,5 +12,8 @@ FROM ubuntu:latest
 RUN apt-get -y update
 RUN apt-get -y install git
 RUN apt-get -y install openjdk-17-jdk
+RUN apt-get -y install netcat-openbsd
 COPY --from=build /app/build/libs/*.jar app.jar
+COPY wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
 CMD [ "java", "-jar", "/app.jar" ]

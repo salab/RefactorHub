@@ -3,12 +3,10 @@ package jp.ac.titech.cs.se.refactorhub.app.interfaces.controller
 import jp.ac.titech.cs.se.refactorhub.app.model.ChangeType
 import jp.ac.titech.cs.se.refactorhub.app.usecase.service.ChangeTypeService
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
-import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.*
 
-@KoinApiExtension
 class ChangeTypeController : KoinComponent {
     private val changeTypeService: ChangeTypeService by inject()
 

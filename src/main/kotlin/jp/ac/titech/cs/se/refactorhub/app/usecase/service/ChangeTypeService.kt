@@ -6,12 +6,10 @@ import jp.ac.titech.cs.se.refactorhub.app.exception.UnauthorizedException
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.repository.ChangeTypeRepository
 import jp.ac.titech.cs.se.refactorhub.app.model.ChangeType
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementMetadata
-import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.UUID
 
-@KoinApiExtension
 class ChangeTypeService : KoinComponent {
     private val changeTypeRepository: ChangeTypeRepository by inject()
 

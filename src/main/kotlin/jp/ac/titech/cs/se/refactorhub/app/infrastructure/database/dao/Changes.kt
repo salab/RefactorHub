@@ -38,11 +38,11 @@ class ChangeDao(id: EntityID<UUID>) : UUIDEntity(id), ModelConverter<Change> {
 }
 
 private fun stringifyParameterData(data: Change.ParameterData): String {
-    val mapper by inject(ObjectMapper::class.java)
+    val mapper: ObjectMapper by inject(ObjectMapper::class.java)
     return mapper.writeValueAsString(data)
 }
 
 private fun parseParameterData(src: String): Change.ParameterData {
-    val mapper by inject(ObjectMapper::class.java)
+    val mapper: ObjectMapper by inject(ObjectMapper::class.java)
     return mapper.readValue(src)
 }

@@ -20,12 +20,10 @@ import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileMapping
 import jp.ac.titech.cs.se.refactorhub.core.model.annotator.FileMappingStatus
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElement
 import jp.ac.titech.cs.se.refactorhub.core.model.element.CodeElementHolder
-import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.UUID
 
-@KoinApiExtension
 class AnnotationService : KoinComponent {
     private val userService: UserService by inject()
     private val experimentService: ExperimentService by inject()

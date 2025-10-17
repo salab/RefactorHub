@@ -1,27 +1,23 @@
 package jp.ac.titech.cs.se.refactorhub.app.infrastructure.router.api
 
-import io.ktor.application.call
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.locations.Location
-import io.ktor.locations.get
-import io.ktor.locations.post
-import io.ktor.request.receive
-import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.route
-import io.ktor.sessions.get
-import io.ktor.sessions.sessions
+import io.ktor.server.application.call
+import io.ktor.server.locations.Location
+import io.ktor.server.locations.get
+import io.ktor.server.locations.post
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.route
+import io.ktor.server.sessions.get
+import io.ktor.server.sessions.sessions
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.Session
 import jp.ac.titech.cs.se.refactorhub.app.infrastructure.auth.toUUID
 import jp.ac.titech.cs.se.refactorhub.app.interfaces.controller.ExperimentController
-import org.koin.core.component.KoinApiExtension
 import org.koin.ktor.ext.inject
 
-@KtorExperimentalLocationsAPI
 @Location("")
 class GetExperiments
 
-@KtorExperimentalLocationsAPI
 @Location("")
 class CreateExperiment
 data class Commit(
@@ -35,20 +31,15 @@ data class CreateExperimentBody(
     val commits: List<Commit>
 )
 
-@KtorExperimentalLocationsAPI
 @Location("/{experimentId}")
 data class GetExperiment(val experimentId: String)
 
-@KtorExperimentalLocationsAPI
 @Location("/{experimentId}/commits/{commitId}")
 data class StartAnnotation(val experimentId: String, val commitId: String)
 
-@KtorExperimentalLocationsAPI
 @Location("/{experimentId}/result")
 data class GetExperimentResult(val experimentId: String)
 
-@KoinApiExtension
-@KtorExperimentalLocationsAPI
 fun Route.experiments() {
     route("/experiments") {
         val experimentController: ExperimentController by inject()
